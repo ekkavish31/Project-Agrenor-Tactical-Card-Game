@@ -122,7 +122,7 @@
     const v = vals(ck); if (!v) return ''; if (v.need) return `<div class="vals dim">${v.need}</div>`;
     const base = (ck !== 'idle@SW' ? vals('idle@' + cur.cells[ck].dir) || vals('idle@SW') : null);
     const row = (n, a, bk) => { const p = a == null ? null : a / v.H * 100; let dl = ''; if (base && !base.need && base[bk] != null && p != null) { const q = base[bk] / base.H * 100, x = (p - q) / q * 100; dl = ` <i class="${Math.abs(x) > 5 ? 'bad' : Math.abs(x) > 2 ? 'warn' : 'ok'}">${x > 0 ? '+' : ''}${x.toFixed(1)}%</i>` } return `<tr><td>${n}</td><td>${a == null ? '—' : Math.round(a)}px</td><td>${p == null ? '—' : p.toFixed(1) + '%'}${dl}</td></tr>` };
-    return `<table class="vals"><tr><td>สูงตัว</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>${row('หัว', v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ลำตัว', v.torso, 'torso')}${row('ขา', v.leg, 'leg')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
+    return `<table class="vals"><tr><td>สูงตัว</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>${row('หัว', v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
   }
 
   /* ---------- UI state ---------- */
@@ -142,7 +142,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #poseSheet .ps-side .ps-steps{display:flex;flex-direction:column;gap:3px}#poseSheet .ps-side .ps-steps button{display:flex;align-items:center;gap:7px;text-align:left;padding:4px 8px;font-size:13px}#poseSheet .ps-side .ps-steps .n{font-weight:700;opacity:.6;min-width:16px}
 #poseSheet .qa-r{border-top:1px solid #e4e6da;padding-top:4px}#poseSheet .qa-h{display:flex;justify-content:space-between;font-size:12.5px}#poseSheet .qa-b{display:flex;gap:4px;margin-top:2px}#poseSheet .qa-b button{flex:1;padding:3px 0}
 #poseSheet .ps-zone{grid-area:zone;min-width:0;overflow-x:auto}
-#poseSheet .ps-c{position:relative}#poseSheet .ps-c.locked{outline:3px solid #2f9e44;outline-offset:-3px}#poseSheet .ps-c.locked::after{content:'🔒';position:absolute;top:8px;left:8px;font-size:24px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px #0008)}body:not(.ps-sel) #poseSheet .ps-c.locked canvas{cursor:not-allowed}#poseSheet .ps-loupe{position:absolute;top:98px;right:98px;width:180px;height:180px;border:3px solid #8a4fff;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0006;pointer-events:none;z-index:5}
+#poseSheet .ps-c{position:relative}#poseSheet .ps-c[data-ck]{display:grid;grid-template-columns:auto 200px;grid-template-rows:auto auto;align-items:start}#poseSheet .ps-c[data-ck]>canvas{grid-column:1;grid-row:1}#poseSheet .ps-c[data-ck]>.ctl{grid-column:1/-1;grid-row:2}#poseSheet .ps-c[data-ck]>.vals{grid-column:2;grid-row:1;width:200px;margin:10px 0 0;font-size:11px}#poseSheet .ps-c[data-ck]>.vals td{padding:1px 4px}#poseSheet .ps-c.locked{outline:3px solid #2f9e44;outline-offset:-3px}#poseSheet .ps-c.locked::after{content:'🔒';position:absolute;top:8px;left:8px;font-size:24px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px #0008)}body:not(.ps-sel) #poseSheet .ps-c.locked canvas{cursor:not-allowed}#poseSheet .ps-loupe{position:absolute;top:98px;right:298px;width:180px;height:180px;border:3px solid #8a4fff;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0006;pointer-events:none;z-index:5}
 #poseSheet:fullscreen{overflow:auto;background:#eef0e6;padding:0 10px 10px}#poseSheet:fullscreen .ps-top{top:0}
 #poseSheet .ps-next{flex:0 1 auto;padding:5px 12px;border-radius:10px;background:#fff8e1;border:2px solid #e0b64a;font-size:15px}#poseSheet .ps-next b{padding:2px 9px;border-radius:7px;color:#fff;margin-left:6px}#psTip{position:fixed;z-index:99999;pointer-events:none;padding:3px 9px;border-radius:7px;color:#fff;font:700 13px AgThai,system-ui,sans-serif;box-shadow:0 2px 6px #0006;white-space:nowrap}
 #poseSheet .ps-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}#poseSheet .ps-bar b{font-size:16px;margin-right:6px}
@@ -203,7 +203,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function draw() {
     const ps = $('poseSheet'); if (!ps || !document.body.classList.contains('sheet-mode')) return;
     if (!cur) { if (ps.querySelector('.ps-app')) SCROLLMEM = scrollNow(ps); ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
-    const HID = hidSet(), cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
+    const VW = 200, HID = hidSet(), cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
     /* v98.742 · LAYOUT: a sticky TOP BAR (name · next point · the tools used all the time) + a sticky SIDE BAR (the 12 points, the selected pose, the other tools) + the edit ZONE. ⛶ = full screen: only these three. */
     const mkDirty = marksDirty();
     const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
@@ -226,7 +226,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label>
         <div class="ps-tools" style="margin:2px 0;display:${RUL.on && (RUL.lines.length || RUL.meas.length) ? 'flex' : 'none'}">สี: ${swatches}</div></div>
       <div class="ps-zone" id="psZone">`;
-    h += `<div class="ps-grid" style="grid-template-columns:34px repeat(${POSES.length},${W}px)"><div class="ps-h"></div>${POSES.map(([, l]) => `<div class="ps-h">${l}</div>`).join('')}`;
+    h += `<div class="ps-grid" style="grid-template-columns:34px repeat(${POSES.length},${W + VW}px)"><div class="ps-h"></div>${POSES.map(([, l]) => `<div class="ps-h">${l}</div>`).join('')}`;
     for (const [dir, rl] of ROWS) {
       h += `<div class="ps-rl">${rl}</div>`;
       for (const [pose] of POSES) {
