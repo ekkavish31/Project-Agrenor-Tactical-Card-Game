@@ -113782,7 +113782,7 @@
   },
   {
    "id": "studio-hero-sw-guard-mwfkzn64-62zu-1",
-   "file": "assets/tactics/imported/guard-sw-mwfkzn64-62zu/frame-01.webp",
+   "file": "assets/tactics/imported/guard-sw-mwfkzn64-62zu/frame-01.png",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113852,7 +113852,7 @@
   },
   {
    "id": "studio-hero-sw-hit-mwfkzn64-62zu-1",
-   "file": "assets/tactics/imported/hit-sw-mwfkzn64-62zu/frame-01.png",
+   "file": "assets/tactics/imported/hit-sw-mwfkzn64-62zu/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113869,7 +113869,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261118-194529",
+   "artRevision": "20261118-202148",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -113877,6 +113877,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-hit-mwfkzn64-62zu-1/20261118-202145.png",
+     "at": "2026-11-18T13:21:45.821Z",
+     "stamp": "20261118-202145",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-sw-hit-mwfkzn64-62zu-1/20261118-194527.png",
      "at": "2026-11-18T12:45:29.612Z",
@@ -113915,7 +113922,7 @@
   },
   {
    "id": "studio-hero-sw-down-mwfkzn64-62zu-1",
-   "file": "assets/tactics/imported/down-sw-mwfkzn64-62zu/frame-01.png",
+   "file": "assets/tactics/imported/down-sw-mwfkzn64-62zu/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113932,13 +113939,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261118-202805",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-down-mwfkzn64-62zu-1/20261118-202805.png",
+     "at": "2026-11-18T13:28:05.292Z",
+     "stamp": "20261118-202805",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-se-down-mwfkzn64-62zu-1",
@@ -140583,7 +140599,7 @@
       "frames": [
        {
         "assetId": "studio-hero-sw-guard-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/guard-sw-mwfkzn64-62zu/frame-01.webp",
+        "src": "assets/tactics/imported/guard-sw-mwfkzn64-62zu/frame-01.png",
         "ms": 120
        }
       ]
@@ -140665,7 +140681,7 @@
       "frames": [
        {
         "assetId": "studio-hero-sw-hit-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/hit-sw-mwfkzn64-62zu/frame-01.png",
+        "src": "assets/tactics/imported/hit-sw-mwfkzn64-62zu/frame-01.webp",
         "ms": 120
        }
       ]
@@ -140747,7 +140763,7 @@
       "frames": [
        {
         "assetId": "studio-hero-sw-down-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/down-sw-mwfkzn64-62zu/frame-01.png",
+        "src": "assets/tactics/imported/down-sw-mwfkzn64-62zu/frame-01.webp",
         "ms": 120
        }
       ]
