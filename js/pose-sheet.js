@@ -234,7 +234,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const g = ps.querySelector('.ps-grid'); if (g) { g.scrollLeft = keep.gl; g.scrollTop = keep.gt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
     back(); paintAll(); wire(ps); back();
   }
-  /* v98.752 · LOUPE: while you place / drag a point, a magnified view of the picture around the pointer + a cross-hair sits in the top-right corner of THAT pose's canvas */
+  /* v98.753 · LOUPE: while you place / drag a point, a magnified view of the picture around the pointer + a cross-hair sits in the top-right corner of THAT pose's canvas */
   const LOUPE = 180, LZ = 6;
   function hideLoupes(except) { for (const l of document.querySelectorAll('#poseSheet .ps-loupe')) if (l.parentElement !== except) l.remove() }
   function paintLoupe(ck, fx, fy, el) {
@@ -322,7 +322,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const box = $('psAdjBox'); if (box) { const hh = adjBar(); if (box._h !== hh) { box._h = hh; box.innerHTML = hh } }
     if (box) box.onclick = qaClick;
     const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight; sd.style.top = hgt + 'px'; sd.style.maxHeight = 'calc(100vh - ' + (hgt + 8) + 'px)'
-      const gd = $('poseSheet')?.querySelector('.ps-grid'); if (gd) gd.style.maxHeight = 'calc(100vh - ' + (hgt + 18) + 'px)' }   /* v98.752 · the grid scrolls inside the screen: its sideways scroll bar is always visible (it sat below the fold at a high zoom) */
+      const gd = $('poseSheet')?.querySelector('.ps-grid'); if (gd) gd.style.maxHeight = 'calc(100vh - ' + (hgt + 18) + 'px)' }   /* v98.753 · the grid scrolls inside the screen: its sideways scroll bar is always visible (it sat below the fold at a high zoom) */
     if (tool === 'hand') { el.innerHTML = '✋ โหมดย้ายภาพ · ลากภาพในช่อง'; el._h = ''; return } const s = stepInfo();
     const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
     const html = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}`;
