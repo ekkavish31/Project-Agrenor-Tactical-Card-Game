@@ -141,7 +141,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #lineupDock .ps-check{font-size:12px;border-radius:999px;padding:2px 9px;font-weight:700}#lineupDock .ps-check.full{background:#d8f0dd;color:#1f6b3d}#lineupDock .ps-check.part{background:#fdecd2;color:#8a4b06}
 #psAdj{position:fixed;inset:0;z-index:1200;background:#14231ccc;display:grid;place-items:center}#psAdj .box{background:#fbfaf5;border-radius:12px;padding:12px 14px;width:min(1180px,96vw);max-height:94vh;overflow:auto;box-shadow:0 20px 60px #000a}
 #psAdj .row{display:flex;gap:12px;flex-wrap:wrap}#psAdj canvas{background:repeating-conic-gradient(#f1efe6 0 25%,#fff 0 50%) 0 0/16px 16px;border:1px solid #cfd6c2;border-radius:8px}
-#psAdj .ctl{min-width:300px;flex:1}#psAdj .sl{display:grid;grid-template-columns:96px 1fr 62px;gap:6px;align-items:center;margin:6px 0}#psAdj .sl input[type=number]{width:62px;font:inherit;text-align:right}
+#psAdj .ctl{min-width:300px;flex:1}#psAdj .sl{display:grid;grid-template-columns:96px 1fr 62px auto;gap:6px;align-items:center;margin:6px 0}#psAdj .sl input[type=number]{width:62px;font:inherit;text-align:right}
 #psAdj h3{margin:0 0 6px}#psAdj .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}#psAdj .btns button{border:1px solid #b9c48a;background:#fffdf6;border-radius:8px;padding:7px 14px;font:inherit;cursor:pointer}#psAdj .btns button.main{background:#2f5d46;color:#fff;border-color:#2f5d46}
 #psAdj .msg{color:#315d46;margin-top:8px;font-size:13px;min-height:18px}`;
     document.head.append(s);
@@ -205,15 +205,25 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
   const stepInfo = () => { const i = STEPS.findIndex(s => s[0] === step), s = STEPS[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: STEPS.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
+  /* v98.740 · the selected pose (last clicked): once it has its chin + crotch line, the 🛠 re-proportion window (head · torso height / thickness · legs length / thickness) is one click away, right under the banner */
+  function adjBar() {
+    const c = act && cur?.cells[act]; if (!c) return '';
+    const P = peek(act)?.p || {}, name = (POSES.find(q => q[0] === c.pose) || [, c.pose])[1] + ' ' + c.dir;
+    return P.chin && P.crotch ? `<div style="margin-top:6px;font-size:14px">🛠 ท่าที่เลือก <b style="background:#2e6b4f">${esc(name)}</b> <button type="button" class="act" id="psAdjOpen" style="margin-left:6px">🛠 ปรับสัดส่วน · หัว · ลำตัว สูง/หนา · ขา ยาว/หนา</button></div>`
+      : `<div style="margin-top:6px;font-size:13px;color:#7a5a00">ท่าที่เลือก <b>${esc(name)}</b> · วาง <b>คาง</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีปุ่มปรับสัดส่วน</div>`;
+  }
   function updNext() {
     const el = $('psNext'); if (!el) return; if (tool === 'hand') { el.hidden = true; return } el.hidden = false; const s = stepInfo();
     const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
-    el.innerHTML = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}`;
+    const html = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}${adjBar()}`;
+    if (el._h !== html) { el._h = html; el.innerHTML = html }   /* only when it changed (the button must survive a click) */
+    const ab = $('psAdjOpen'); if (ab) ab.onclick = () => openAdjust(act);
   }
   const paintAll = () => { updNext(); $('poseSheet')?.querySelectorAll('.ps-c[data-ck]').forEach(paint) };
   const ghostCache = new Map();
   function silhouette(img, flip) { const k = img.src + (flip ? 'f' : ''); let c = ghostCache.get(k); if (c) return c; c = document.createElement('canvas'); c.width = c.height = SRC; const g = c.getContext('2d'); if (flip) { g.translate(SRC, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0, SRC, SRC); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = '#ff7a00'; g.fillRect(0, 0, SRC, SRC); ghostCache.set(k, c); return c }
   function paint(el) {
+    try { updNext() } catch (e) { }
     const ck = el.dataset.ck, c = cur.cells[ck], cv = el.querySelector('canvas'), g = cv.getContext('2d'), W = cv.width, k = kOf(c), [ox, oy] = off(ck);
     g.clearRect(0, 0, W, W); for (let y = 0; y < W; y += 14) for (let x = (y / 14) % 2 ? 14 : 0; x < W; x += 28) { g.fillStyle = '#f1efe6'; g.fillRect(x, y, 14, 14) }
     g.fillStyle = '#fff9'; { const [x0, y0] = sc(0, 0); g.fillRect(x0, y0, SRC * Z, SRC * Z) }
@@ -400,7 +410,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const SL = [['head', 'หัว (ใหญ่-เล็ก)'], ['torso', 'ลำตัว (สูง)'], ['legs', 'ขา (ยาว)'], ['shoulder', 'ไหล่ กว้าง'], ['wTorso', 'ลำตัว หนา'], ['wLegs', 'ท่อนขา หนา']];
     box.innerHTML = `<div class="box" role="dialog" aria-label="ปรับสัดส่วน"><h3>🛠 ปรับสัดส่วน · ${esc(cur.name)} · ${POSES.find(p => p[0] === c.pose)[1]} ${c.dir}</h3>
       <div class="row"><div><div style="font-size:12px">ก่อน</div><canvas id="adjB" width="384" height="384"></canvas></div><div><div style="font-size:12px">หลัง (พรีวิวสด)</div><canvas id="adjA" width="384" height="384"></canvas></div>
-      <div class="ctl">${SL.map(([k, l]) => `<div class="sl"><span>${l}</span><input type="range" data-s="${k}" min="60" max="150" step="1" value="100"><span><input type="number" data-n="${k}" min="60" max="150" step="1" value="100">%</span></div>`).join('')}
+      <div class="ctl">${SL.map(([k, l]) => `<div class="sl"><span>${l}</span><input type="range" data-s="${k}" min="60" max="150" step="1" value="100"><span><input type="number" data-n="${k}" min="60" max="150" step="1" value="100">%</span><span class="pm" style="display:flex;gap:3px">${[-5, -1, 1, 5].map(d => `<button type="button" data-d="${k},${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</span></div>`).join('')}
         <label style="display:flex;gap:6px;align-items:center;margin:6px 0"><input type="checkbox" id="adjKeep" checked>คงความสูงตัวเท่าเดิม (ขนาดในเกมไม่เปลี่ยน)</label>
         <div class="btns"><button type="button" id="adjAuto" ${ref?.top && ref?.chin ? '' : 'disabled'} title="ปรับหัวให้ได้สัดส่วนหัว÷ตัวเท่าท่ายืน ${c.dir}">✨ ให้หัวเท่าท่ายืน</button><button type="button" id="adjReset">รีเซ็ต</button></div>
         <div class="msg" id="adjMsg"></div><div class="btns"><button type="button" class="main" id="adjSave">🛒 บันทึกเป็นภาพใหม่ (ทุกเฟรมของท่านี้)</button><button type="button" id="adjClose">ปิด</button></div></div></div></div>`;
@@ -412,6 +422,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const live = () => { clearTimeout(t); t = setTimeout(() => { try { const { canvas } = render(c.img, c.flip); ac.clearRect(0, 0, 384, 384); ac.drawImage(canvas, 0, 0); ac.strokeStyle = '#6fa16f'; ac.beginPath(); ac.moveTo(0, GY + .5); ac.lineTo(384, GY + .5); ac.stroke(); say('') } catch (e) { say('พรีวิวไม่สำเร็จ: ' + e.message) } }, 120) };
     bg(); live();
     box.querySelectorAll('[data-s]').forEach(i => i.oninput = () => { S[i.dataset.s] = +i.value; box.querySelector(`[data-n="${i.dataset.s}"]`).value = i.value; live() });
+    box.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { const [k, d] = b.dataset.d.split(','), v = Math.max(60, Math.min(150, S[k] + +d)); S[k] = v; box.querySelector(`[data-s="${k}"]`).value = v; box.querySelector(`[data-n="${k}"]`).value = v; live() });
     box.querySelectorAll('[data-n]').forEach(i => i.onchange = () => { const v = Math.max(60, Math.min(150, +i.value || 100)); S[i.dataset.n] = v; box.querySelector(`[data-s="${i.dataset.n}"]`).value = v; i.value = v; live() });
     $('adjKeep').onchange = ev => { O.keep = ev.target.checked; live() };
     $('adjReset').onclick = () => { for (const k of Object.keys(S)) { S[k] = 100; box.querySelector(`[data-s="${k}"]`).value = 100; box.querySelector(`[data-n="${k}"]`).value = 100 } live() };
