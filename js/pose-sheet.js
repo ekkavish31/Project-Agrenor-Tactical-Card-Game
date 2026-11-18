@@ -120,6 +120,7 @@
 body.anim-mode main{grid-template-rows:auto minmax(0,1fr)}body.anim-mode main>#lineupDock{grid-column:1/-1;grid-row:1;margin:10px 12px 0}body.anim-mode main>#cats,body.anim-mode main>#gridWrap,body.anim-mode main>#detail{grid-row:2}
 body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet-mode main>#cats,body.sheet-mode main>#detail{display:none}body.sheet-mode main>#gridWrap{grid-column:1/-1}
 #poseSheet{display:none}body.sheet-mode #poseSheet{display:block}
+#poseSheet .ps-next{position:sticky;top:0;z-index:6;margin:0 0 8px;padding:8px 12px;border-radius:10px;background:#fff8e1;border:2px solid #e0b64a;font-size:16px;box-shadow:0 2px 8px #0003}#poseSheet .ps-next b{padding:2px 9px;border-radius:7px;color:#fff;margin-left:6px}#psTip{position:fixed;z-index:99999;pointer-events:none;padding:3px 9px;border-radius:7px;color:#fff;font:700 13px AgThai,system-ui,sans-serif;box-shadow:0 2px 6px #0006;white-space:nowrap}
 #poseSheet .ps-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}#poseSheet .ps-bar b{font-size:16px;margin-right:6px}
 #poseSheet .ps-steps{display:flex;flex-wrap:wrap;gap:4px}#poseSheet .ps-steps button{border:1px solid #ccd3bd;background:#fff;border-radius:999px;padding:3px 10px;font:inherit;font-size:12.5px;cursor:pointer}
 #poseSheet .ps-steps button.on{outline:2px solid #2f5d46;font-weight:700}#poseSheet .ps-steps i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
@@ -176,7 +177,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const ps = $('poseSheet'); if (!ps || !document.body.classList.contains('sheet-mode')) return;
     if (!cur) { ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
     const cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
-    let h = `<div class="ps-bar"><b>${esc(cur.name)}</b><span class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col]) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i>${l}</button>`).join('')}</span><span class="sp"></span>
+    let h = `<div class="ps-next" id="psNext"></div><div class="ps-bar"><b>${esc(cur.name)}</b><span class="ps-steps" role="group" aria-label="จุดที่วาง (ตามลำดับ)">${STEPS.map(([k, l, col]) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i>${l}</button>`).join('')}</span><span class="sp"></span>
       <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max=".8" step=".05" value="${Z}"></label></div>
       <div class="ps-tools"><button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button><button type="button" class="act" id="psCopySW" title="คัดลอกจุด datum ของท่ายืน (SW / NE) ไปให้ท่าที่เลือก (คลิกในช่องของท่านั้นก่อน)">📋 datum SW → ท่าที่เลือก</button><button type="button" class="act" id="psSnapAll" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น (192,360) ทุกท่าที่มีจุดเท้า">⤓ เข้าเส้นพื้นทุกท่า</button>
         <span style="width:8px"></span><label><input type="checkbox" id="psRon" ${RUL.on ? 'checked' : ''}>ไม้บรรทัด</label><button type="button" class="act" id="psRadd" title="เพิ่มเส้นนอน (ลากเพื่อย้าย · ดับเบิลคลิกเพื่อลบ)">＋ เส้น</button><button type="button" class="act" id="psMadd" title="ตัววัด: 2 เส้นขนาน บอกระยะห่าง">＋ ตัววัด 2 เส้น</button><button type="button" class="act" id="psRclr">ล้างไม้บรรทัด</button>
@@ -202,7 +203,14 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     ps.innerHTML = h; document.body.classList.toggle('ps-hand', tool === 'hand');
     paintAll(); wire(ps);
   }
-  const paintAll = () => $('poseSheet')?.querySelectorAll('.ps-c[data-ck]').forEach(paint);
+  /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
+  const stepInfo = () => { const i = STEPS.findIndex(s => s[0] === step), s = STEPS[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: STEPS.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
+  function updNext() {
+    const el = $('psNext'); if (!el) return; if (tool === 'hand') { el.hidden = true; return } el.hidden = false; const s = stepInfo();
+    const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
+    el.innerHTML = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}`;
+  }
+  const paintAll = () => { updNext(); $('poseSheet')?.querySelectorAll('.ps-c[data-ck]').forEach(paint) };
   const ghostCache = new Map();
   function silhouette(img, flip) { const k = img.src + (flip ? 'f' : ''); let c = ghostCache.get(k); if (c) return c; c = document.createElement('canvas'); c.width = c.height = SRC; const g = c.getContext('2d'); if (flip) { g.translate(SRC, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0, SRC, SRC); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = '#ff7a00'; g.fillRect(0, 0, SRC, SRC); ghostCache.set(k, c); return c }
   function paint(el) {
@@ -267,6 +275,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
   const firstMissing = P => STEPS.find(s => !P[s[0]] || (LINES[s[0]] && lineOpen(P, s[0])))?.[0];
   function wire(ps) {
+    if (!ps.dataset.tip) { ps.dataset.tip = '1';   /* the label that follows the pointer */
+      const tip = () => { let t = $('psTip'); if (!t) { t = document.createElement('div'); t.id = 'psTip'; t.hidden = true; document.body.append(t) } return t };
+      ps.addEventListener('pointermove', ev => { const t = tip(), on = tool !== 'hand' && !drag && ev.target.closest?.('.ps-c canvas'); if (!on) { t.hidden = true; return } const s = stepInfo(); t.textContent = s.n + '/' + s.all + ' · ' + s.short; t.style.background = s.col; t.style.left = (ev.clientX + 16) + 'px'; t.style.top = (ev.clientY + 18) + 'px'; t.hidden = false });
+      ps.addEventListener('pointerleave', () => { const t = $('psTip'); if (t) t.hidden = true }) }
     const msg = t => { const m = $('psMsg'); if (m) m.textContent = t };
     ps.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { step = b.dataset.step; pinned = true; tool = 'mark'; draw() });
     const zm = $('psZoom'); if (zm) zm.onchange = () => { Z = +zm.value; try { localStorage.setItem('pose-sheet.zoom', String(Z)) } catch (e) { } draw() };
