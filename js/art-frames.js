@@ -14,7 +14,7 @@
   const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(load())) } catch (e) { } try { root.dispatchEvent(new Event('art-frames')) } catch (e) { } };
   const nominal = art => { if (!PA) PA = Object.fromEntries((root.PLACEABLE_ART?.items || []).map(i => [i.sub, i])); return PA[art]?.sw || (String(art).startsWith('vt:') ? 400 : 110) };
   const wRaw = o => (o.width || nominal(o.art)) * (o.s || 1);
-  /* v98.726 · a piece with a template: its width in the SAME units the template was saved in. A page can set a hook (setWidthHook) — the sub-map does, because a loose prop WITHOUT a width is drawn 110 wide while the catalogue says e.g. 35 (lamp); the old numbers were saved that way, so an explicit width w must count as w × catalogue ÷ 110, else a lamp placed later (width 55 / 35) got frames 2–3× too big */
+  /* v98.727 · a piece with a template: its width in the SAME units the template was saved in. A page can set a hook (setWidthHook) — the sub-map does, because a loose prop WITHOUT a width is drawn 110 wide while the catalogue says e.g. 35 (lamp); the old numbers were saved that way, so an explicit width w must count as w × catalogue ÷ 110, else a lamp placed later (width 55 / 35) got frames 2–3× too big */
   let widthHook = null;
   const wOf = o => { if (widthHook) { try { const h = widthHook(o); if (h > 0) return h } catch (e) { } } return wRaw(o) };
   const swapCells = a => root.PieceGeometry ? root.PieceGeometry.swapCells(a) : a;
