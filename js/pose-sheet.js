@@ -3,7 +3,7 @@
    (what is done to a pose applies to every frame of that pose), all on the same ruler: same scale, same ground line. SE / NW are the mirror copies of SW / NE.
    • DATUM POINTS (12, placed in this order): eyes L/R · chin · skull top · neck cut · shoulder L/R · crotch · leg edge L/R · foot L/R.  Numbers of each pose are shown under it
      (head · shoulder width · torso · leg length · leg thickness, px and % of the body height, and the change against the SW standing pose).
-     The FOOT POINT of a pose = the middle of the two ground-contact points (heel when the heel lands, ball when the toe pushes off); for the lying pose ('down') the same: put the two points at the two ENDS of the body's ground contact, the foot point is the middle (v98.781; it used to be foot L alone and ran after it).
+     The FOOT POINT of a pose = the middle of the two ground-contact points (heel when the heel lands, ball when the toe pushes off); for the lying pose ('down') the same: put the two points at the two ENDS of the body's ground contact, the foot point is the middle (v98.782; it used to be foot L alone and ran after it).
    • ✋ MOVE the picture inside its canvas (drag) — "⤓ เข้าเส้นพื้น" puts the foot point on the standard ground point (192, 360). The move is real: 💾 บันทึกตำแหน่งภาพ shifts the pixels of every frame
      of that pose and stores them as new pictures (🛒 Cart → push as before). The cells show 96 px of margin around the real 384 × 384 frame (red) so a foot outside it stays visible; a save that would cut the picture is refused.
    • 🛠 ปรับ: a window with the old head / torso / legs / shoulder / thickness sliders (live preview, "ให้หัวเท่าท่ายืน SW" auto) → saved as new pictures for every frame of the pose.
@@ -26,7 +26,7 @@
   const setLine = (P, k, pts) => { P[LINES[k]] = pts; P[k] = lineMid(pts) };
   const lineOpen = (P, k) => !!(P[LINES[k]] && P[k + 'Done'] === false);
   const STEP = Object.fromEntries(STEPS.map(s => [s[0], s]));
-  /* v98.781 · a pose seen from the front (SW row) uses the two EYES for the head size; a pose seen from behind (NE row) has no eyes → two FREE points (A, B) that you choose yourself (e.g. an ear and the crown). Back poses are compared with the STANDING BACK pose (idle NE) only */
+  /* v98.782 · a pose seen from the front (SW row) uses the two EYES for the head size; a pose seen from behind (NE row) has no eyes → two FREE points (A, B) that you choose yourself (e.g. an ear and the crown). Back poses are compared with the STANDING BACK pose (idle NE) only */
   const isBack = ck => /@(NE|NW)$/.test(ck || '');
   const stepsOf = ck => STEPS.filter(s => isBack(ck) ? s[0] !== 'eyeL' && s[0] !== 'eyeR' : s[0] !== 'headA' && s[0] !== 'headB');
   const stepsHtml = ck => stepsOf(ck).map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('');
@@ -129,7 +129,7 @@
     if (!an || !P.top || !(back ? P.headA && P.headB : P.eyeL && P.eyeR)) return { need: back ? 'วางจุดเท้า + ยอดกะโหลก + หัว จุด A/B ก่อน' : 'วางจุดเท้า + ยอดกะโหลก + ตาสองข้างก่อน' };
     /* a LYING pose (down): the length is measured along the body axis (skull top → feet), not as a height — the same line whichever way the body lies */
     const H = c.pose === 'down' ? Math.max(0, ...[P.footL, P.footR].filter(Boolean).map(f => d(P.top, f))) : an[1] - P.top[1]; if (!(H >= 20)) return { need: 'ความสูงตัวผิดปกติ' };
-    /* v98.781 · HEAD = (skull top → the EYE LINE) × 2. The eye line = the line through the two eyes; the distance is taken straight to that line (so a tilted or lying head works), twice = the whole head. The jaw / an open mouth does not count.
+    /* v98.782 · HEAD = (skull top → the EYE LINE) × 2. The eye line = the line through the two eyes; the distance is taken straight to that line (so a tilted or lying head works), twice = the whole head. The jaw / an open mouth does not count.
        The old head (skull top → chin) stays below as "หัว→คาง", for reference only. */
     let topToEyes = 0; if (!back) { const ex = P.eyeR[0] - P.eyeL[0], ey = P.eyeR[1] - P.eyeL[1], el = Math.hypot(ex, ey), tx = P.top[0] - P.eyeL[0], ty = P.top[1] - P.eyeL[1]; topToEyes = el >= 2 ? Math.abs(tx * ey - ty * ex) / el : d(P.top, [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2]) }
     const o = { H, headLabel: back ? 'หัว (A–B)' : 'หัว (ตา×2)', head: back ? d(P.headA, P.headB) : topToEyes * 2, sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
@@ -301,13 +301,13 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const HKEY = 'pose-sheet.hidden', hidAll = () => { try { return JSON.parse(localStorage.getItem(HKEY)) || {} } catch (e) { return {} } };
   const hidSet = () => new Set(hidAll()[cur?.id] || []);
   const hidSave = set => { const o = hidAll(); if (set.size) o[cur.id] = [...set]; else delete o[cur.id]; try { localStorage.setItem(HKEY, JSON.stringify(o)) } catch (e) { } };
-  /* v98.781 · LOCK: a pose with its tick ON ("🔒 ล็อก" = the old "ตรวจแล้ว") cannot be changed by accident — no points, no move, no size, no adjust, no clear, no copy / snap — until the tick is taken off */
+  /* v98.782 · LOCK: a pose with its tick ON ("🔒 ล็อก" = the old "ตรวจแล้ว") cannot be changed by accident — no points, no move, no size, no adjust, no clear, no copy / snap — until the tick is taken off */
   const isLocked = ck => !!ck && okOf(ck);
   let flashT = 0;
   function flash(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#a4341c">🔒 ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2200) }
   function flashOk(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#2e6b4f">✔ ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2600) }
   const LOCKMSG = 'ท่านี้ล็อกอยู่ — เอาติ๊ก “ล็อก” ออกก่อนจึงจะแก้ได้';
-  /* v98.781 · no chin point: the cut rows come from the NECK LINE (its middle) and the CROTCH LINE (its middle); an old chin / crotch point is still honoured when a pose has one */
+  /* v98.782 · no chin point: the cut rows come from the NECK LINE (its middle) and the CROTCH LINE (its middle); an old chin / crotch point is still honoured when a pose has one */
   const midOf = a => a && a.length ? [a.reduce((s, q) => s + q[0], 0) / a.length, a.reduce((s, q) => s + q[1], 0) / a.length] : null;
   const withChin = P => ({ ...P, chin: P.chin || midOf(P.neckLine) || P.neck || null, crotch: P.crotch || midOf(P.crotchLine) || null });
   const marksFor = (P0, mm) => { const P = withChin(P0); return { chin: Math.min(.9, Math.max(.04, (P.chin[1] - mm.top) / mm.H)), hip: Math.min(.95, Math.max(.2, (P.crotch[1] - mm.top) / mm.H)), headTop: 0, ankle: 1 } };
@@ -317,7 +317,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const mid2 = a => a && a.length ? [a.reduce((s, q) => s + q[0], 0) / a.length, a.reduce((s, q) => s + q[1], 0) / a.length] : null;
     const P = { ...P0, chin: P0.chin || mid2(P0.neckLine), crotch: P0.crotch || mid2(P0.crotchLine) };   /* zones need only the two lines; the old chin / crotch POINTS are the fallback */
     if (!P.chin || !P.crotch) return null;
-    /* v98.781 · the zones are cut by the LINES you drew (ProportionAdjust 'cuts'): the head side of the neck line = head, the far side of the crotch line = ALL legs, whatever direction the lines run (a lying pose: they run up-down) */
+    /* v98.782 · the zones are cut by the LINES you drew (ProportionAdjust 'cuts'): the head side of the neck line = head, the far side of the crotch line = ALL legs, whatever direction the lines run (a lying pose: they run up-down) */
     const lineOK = a => Array.isArray(a) && a.length >= 2, hp = P.top || (P.eyeL && P.eyeR ? [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2] : null) || (lineOK(P.neckLine) && lineOK(P.crotchLine) ? (() => { const n = mid2(P.neckLine), h = mid2(P.crotchLine), dx = n[0] - h[0], dy = n[1] - h[1], l = Math.hypot(dx, dy) || 1; return [n[0] + dx / l * 12, n[1] + dy / l * 12] })() : P.chin), cuts = lineOK(P.neckLine) && lineOK(P.crotchLine) && hp ? { neck: P.neckLine, hip: P.crotchLine, head: hp } : null;
     const key = [c.fp, P.chin, P.crotch, cuts ? JSON.stringify([P.neckLine, P.crotchLine, hp]) : ''].join('|'); if (ZCACHE.has(key)) return ZCACHE.get(key); let out = null;
     try {
@@ -335,7 +335,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const QROWS = [['head', 'หัว ใหญ่-เล็ก'], ['torso', 'ลำตัว สูง (แนวตั้ง)'], ['wTorso', 'ลำตัว หนา (แนวนอน)'], ['shoulder', 'ไหล่ กว้าง'], ['legs', 'ขา ยาว (แนวตั้ง)'], ['wLegs', 'ท่อนขา หนา (แนวนอน)']];
   const qaDirty = () => Object.values(QA.S).some(v => v !== 100);
   const qaScale = () => Object.fromEntries(Object.entries(QA.S).map(([k, v]) => [k, v / 100]));
-  /* v98.781 · LYING pose (down): rotate the picture about its centre so that the line skull-top → feet points down, run the same re-proportion there (the head / torso / legs cut by the neck LINE and the crotch LINE, which turn with it), then rotate back */
+  /* v98.782 · LYING pose (down): rotate the picture about its centre so that the line skull-top → feet points down, run the same re-proportion there (the head / torso / legs cut by the neck LINE and the crotch LINE, which turn with it), then rotate back */
   /* the picture is turned on a canvas 1.5× bigger than the frame (a long body turned by an angle that is not 90° sticks out of a 384 × 384 canvas: the ends of the arms / legs were cut off), so nothing is lost; the points turn the same way */
   const rotToD = (p, th, D) => { const c = Math.cos(th), s = Math.sin(th), x = p[0] - SRC / 2, y = p[1] - SRC / 2; return [D / 2 + x * c - y * s, D / 2 + x * s + y * c] };
   const rotFromD = (q, th, D) => { const c = Math.cos(-th), s = Math.sin(-th), x = q[0] - D / 2, y = q[1] - D / 2; return [SRC / 2 + x * c - y * s, SRC / 2 + x * s + y * c] };
@@ -421,7 +421,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       const src = silh ? silhouette(img, flip) : img; if (flip && !silh) { g.translate(dx + s, dy); g.scale(-1, 1); g.drawImage(src, 0, 0, s, s) } else g.drawImage(src, dx, dy, s, s); g.restore();
     };
     const idle = cur.cells['idle@SW'];
-    /* v98.781 · the ghost = the standing SW pose (as before), or — on the lower row (NE) — the SAME pose of the row above (SW); "⇆ เงาสลับด้าน" mirrors it (flip about the ground point) */
+    /* v98.782 · the ghost = the standing SW pose (as before), or — on the lower row (NE) — the SAME pose of the row above (SW); "⇆ เงาสลับด้าน" mirrors it (flip about the ground point) */
     const gk = ghostKey(ck), gcell = cur.cells[gk];
     if (RUL.ghost && gcell?.img && ck !== gk) { const ia = anchorOf(gk) || [GX, GY], ki = kOf(gcell), mir = !!RUL.ghostFlip, iax = mir ? SRC - ia[0] : ia[0]; const ax = GX - iax * ki, ay = GY - ia[1] * ki; /* the ghost's origin so that its anchor sits on the ground point */ g.save(); const [dx, dy] = sc(ax, ay), s = SRC * ki * Z; g.globalAlpha = .38; g.drawImage(silhouette(gcell.img, !!gcell.flip !== mir), dx, dy, s, s); g.restore() }
     if (c.img) { const prev = QA.ck === ck && QA.canvas; if (prev) drawImg(prev, false, ox, oy, k, 1, false); else drawImg(c.img, c.flip, ox, oy, k, 1, false); if (SHOW.zone && !prev) { const zo = zoneOver(ck); if (zo) drawImg(zo, false, ox, oy, k, 1, false) } } else { g.fillStyle = '#9aa18f'; g.font = '12px sans-serif'; g.textAlign = 'center'; g.fillText('กำลังโหลด…', W / 2, W / 2) }
@@ -455,7 +455,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   }
   /* what is under the pointer, in priority: ruler line → point */
   /* the head ellipse that suggests the skull top: eyes in the middle of the head, so crown ≈ eye line − 1.1 × (eye line → chin) */
-  function skullGuess(P) { return null;   /* v98.781 · no chin any more → no suggestion */
+  function skullGuess(P) { return null;   /* v98.782 · no chin any more → no suggestion */
     if (!P.eyeL || !P.eyeR || !P.chin) return null; const ex = (P.eyeL[0] + P.eyeR[0]) / 2, ey = (P.eyeL[1] + P.eyeR[1]) / 2, f = P.chin[1] - ey; if (f < 6) return null; const y = ey - f * 1.1, x = (ex + P.chin[0]) / 2, ry = (P.chin[1] - y) / 2; return { x, y, cx: x, cy: (y + P.chin[1]) / 2, rx: ry * .78, ry } }
   function hitPoint(c, ck, P, sx, sy) {
     let best = null, bd = 9;
