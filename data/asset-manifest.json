@@ -113323,13 +113323,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzbt2-dmar",
+   "artRevision": "20261118-194529",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-strike-mwfkzbt2-dmar-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.358Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-strike-mwfkzbt2-dmar-1",
@@ -113377,13 +113386,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzbt2-dmar",
+   "artRevision": "20261118-194529",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-guard-mwfkzbt2-dmar-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.516Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-guard-mwfkzbt2-dmar-1",
@@ -113431,13 +113449,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzbt2-dmar",
+   "artRevision": "20261118-194529",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-hit-mwfkzbt2-dmar-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.690Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-hit-mwfkzbt2-dmar-1",
@@ -113539,13 +113566,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261118-194527",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-idle-mwfkzn64-62zu-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:27.781Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-se-idle-mwfkzn64-62zu-1",
@@ -113576,7 +113612,7 @@
   },
   {
    "id": "studio-hero-sw-windup-mwfkzn64-62zu-1",
-   "file": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.png",
+   "file": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113593,13 +113629,29 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261118-195335",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-windup-mwfkzn64-62zu-1/20261118-195335.png",
+     "at": "2026-11-18T12:53:35.949Z",
+     "stamp": "20261118-195335",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-windup-mwfkzn64-62zu-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.203Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-se-windup-mwfkzn64-62zu-1",
@@ -113647,13 +113699,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261118-194529",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-strike-mwfkzn64-62zu-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.281Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-se-strike-mwfkzn64-62zu-1",
@@ -113701,13 +113762,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261118-194529",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-guard-mwfkzn64-62zu-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.440Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-se-guard-mwfkzn64-62zu-1",
@@ -113755,13 +113825,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261118-194529",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-hit-mwfkzn64-62zu-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.612Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-se-hit-mwfkzn64-62zu-1",
@@ -113846,7 +113925,7 @@
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-1",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-01.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-01.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113869,11 +113948,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-1/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.367Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:27.812Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-2",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-02.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-02.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113896,11 +113991,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-2/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.393Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-2/20261118-194527.png",
+     "at": "2026-11-18T12:45:27.842Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-3",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-03.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-03.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113923,11 +114034,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-3/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.425Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-3/20261118-194527.png",
+     "at": "2026-11-18T12:45:27.873Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-4",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-04.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-04.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113950,11 +114077,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-4/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.456Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-4/20261118-194527.png",
+     "at": "2026-11-18T12:45:27.905Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-5",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-05.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-05.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -113977,11 +114120,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-5/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.490Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-5/20261118-194527.png",
+     "at": "2026-11-18T12:45:27.945Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-6",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-06.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-06.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -114004,11 +114163,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-6/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.529Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-6/20261118-194527.png",
+     "at": "2026-11-18T12:45:27.986Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-7",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-07.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-07.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -114031,11 +114206,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-7/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.569Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-7/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.031Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-8",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-08.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-08.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -114058,11 +114249,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-8/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.608Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-8/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.078Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-9",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-09.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-09.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -114085,11 +114292,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-9/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.649Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-9/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.123Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-10",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-10.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-10.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -114112,11 +114335,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-10/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.692Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-10/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.172Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-11",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-11.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-11.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -114139,11 +114378,27 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-11/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.741Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-11/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.222Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-12",
-   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-12.png",
+   "file": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-12.webp",
    "category": "tactics-hero",
    "status": "final",
    "size": [
@@ -114166,7 +114421,23 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwflg344-fhf4"
+   "artRevision": "20261118-194843",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-12/20261118-194843.png",
+     "at": "2026-11-18T12:48:43.789Z",
+     "stamp": "20261118-194843",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
+     "file": "assets/_versions/studio-hero-sw-walk-mwflg344-fhf4-12/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.275Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwflkft4-xy8p-1",
@@ -114193,8 +114464,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073435",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-1/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.332Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-1/20261115-073435.png",
      "at": "2026-11-15T00:34:35.855Z",
@@ -114229,8 +114507,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073436",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-2/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.413Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-2/20261115-073436.png",
      "at": "2026-11-15T00:34:36.057Z",
@@ -114265,8 +114550,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073436",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-3/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.471Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-3/20261115-073436.png",
      "at": "2026-11-15T00:34:36.342Z",
@@ -114301,8 +114593,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073436",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-4/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.530Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-4/20261115-073436.png",
      "at": "2026-11-15T00:34:36.559Z",
@@ -114337,8 +114636,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073436",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-5/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.591Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-5/20261115-073436.png",
      "at": "2026-11-15T00:34:36.823Z",
@@ -114373,8 +114679,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073437",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-6/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.654Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-6/20261115-073437.png",
      "at": "2026-11-15T00:34:37.132Z",
@@ -114409,8 +114722,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073437",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-7/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.719Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-7/20261115-073437.png",
      "at": "2026-11-15T00:34:37.315Z",
@@ -114445,8 +114765,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073437",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-8/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.785Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-8/20261115-073437.png",
      "at": "2026-11-15T00:34:37.622Z",
@@ -114481,8 +114808,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073437",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-9/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.859Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-9/20261115-073437.png",
      "at": "2026-11-15T00:34:37.846Z",
@@ -114517,8 +114851,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073438",
+   "artRevision": "20261118-194528",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-10/20261118-194527.png",
+     "at": "2026-11-18T12:45:28.930Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-10/20261115-073438.png",
      "at": "2026-11-15T00:34:38.129Z",
@@ -114553,8 +114894,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073438",
+   "artRevision": "20261118-194529",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-11/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.035Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-11/20261115-073438.png",
      "at": "2026-11-15T00:34:38.394Z",
@@ -114589,8 +114937,15 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "20261115-073438",
+   "artRevision": "20261118-194529",
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-12/20261118-194527.png",
+     "at": "2026-11-18T12:45:29.120Z",
+     "stamp": "20261118-194527",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-walk-mwflkft4-xy8p-12/20261115-073438.png",
      "at": "2026-11-15T00:34:38.672Z",
@@ -138996,62 +139351,62 @@
      "frames": [
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-1",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-01.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-01.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-2",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-02.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-02.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-3",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-03.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-03.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-4",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-04.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-04.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-5",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-05.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-05.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-6",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-06.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-06.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-7",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-07.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-07.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-8",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-08.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-08.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-9",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-09.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-09.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-10",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-10.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-10.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-11",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-11.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-11.webp",
        "ms": 100
       },
       {
        "assetId": "studio-hero-sw-walk-mwflg344-fhf4-12",
-       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-12.png",
+       "src": "assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-12.webp",
        "ms": 100
       }
      ]
@@ -139936,7 +140291,7 @@
       "frames": [
        {
         "assetId": "studio-hero-sw-windup-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.png",
+        "src": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.webp",
         "ms": 120
        }
       ]
