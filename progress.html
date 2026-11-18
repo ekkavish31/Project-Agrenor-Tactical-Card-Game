@@ -56,7 +56,7 @@ svg.hist{width:100%;height:auto;display:block}
 .how{font-size:12px;color:var(--muted)}.how code{background:#0008;border:1px solid var(--line);border-radius:3px;padding:1px 6px;color:var(--gold)}
 .grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-top:14px}
 
-/* v98.743 · review queue */
+/* v98.744 · review queue */
 .rq-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 10px}.rq-bar .meter{flex:1;min-width:220px;height:14px;border-radius:8px;background:#0006;border:1px solid var(--line);overflow:hidden;display:flex}.rq-bar .meter i{display:block;height:100%}
 .rq-tabs{display:flex;gap:6px;flex-wrap:wrap}.rq-tabs button,.rq-act button,#rqPush,#rqGh{font:inherit;color:var(--ink);background:#2f2842;border:1px solid var(--line);border-radius:8px;padding:4px 11px;cursor:pointer}.rq-tabs button.on{background:var(--gold);color:#241a07;border-color:var(--gold);font-weight:700}
 .rq-item{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#221c30;margin:8px 0}.rq-item .v{font-size:11px;color:var(--gold);background:#0006;border-radius:6px;padding:1px 7px;height:fit-content}
@@ -150,7 +150,7 @@ function drawHist(){
 sel=(P.phases.filter(p=>p.pct<100).sort((a,b)=>b.pct-a.pct)[0]||P.phases[0]).id;
 drawMap();drawLog();drawHist();
 })();
-/* ---- review queue (v98.743): the creator rates, the AI reads the result from js/game-settings.js ('progress-review-v1') ---- */
+/* ---- review queue (v98.744): the creator rates, the AI reads the result from js/game-settings.js ('progress-review-v1') ---- */
 (function(){
   const $=id=>document.getElementById(id), esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])), Q=window.REVIEW_QUEUE||[], KEY='progress-review-v1', rd=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}, wr=o=>localStorage.setItem(KEY,JSON.stringify(o));
   let tab='wait',snap=null;const st=id=>(rd()[id]||{}).s||'wait', take=()=>{snap=new Set(Q.filter(q=>tab==='all'||st(q.id)===tab).map(q=>q.id))};   /* the list is frozen until you change tab, so a rated item stays on screen (you can add its note) */
