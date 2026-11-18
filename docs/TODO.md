@@ -939,13 +939,13 @@
 ## 33. ผลตรวจคุณภาพเทียบ FFT / Octopath / Triangle Strategy (18 พ.ย. 2026 · v98.782 · รอผู้สร้างเลือกข้อ)
 รายงานเต็มพร้อมหลักฐานและตัวเลข: `docs/reports/AUDIT-2026-11-18.md` (ยังไม่ได้แก้โค้ดตามรายงาน) · ระดับ P0 = ทำก่อน · P1 = รอบถัดไป · P2 = ขัดเกลา
 - รอบ 1 (แก้เร็ว)
-  - [ ] P0 เงาขอบขาวตัวที่โดนบัง (`js/depth-style.js:70` ฟิลเตอร์ drop-shadow ×4 ทุกเฟรม) → แคชภาพเงาขอบต่อเฟรมท่า · ตลาดตกเหลือ 2.8 fps ตอนตัวเอกอยู่หลังเสาธง (ปิดฟิลเตอร์ = 59 fps) · ย้ายจุดเกิดในตลาดออกจากหลังเสาธง
+  - [~] P0 เงาขอบขาวตัวที่โดนบัง (`js/depth-style.js:70` ฟิลเตอร์ drop-shadow ×4 ทุกเฟรม) → แคชภาพเงาขอบต่อเฟรมท่า · ตลาดตกเหลือ 2.8 fps ตอนตัวเอกอยู่หลังเสาธง (ปิดฟิลเตอร์ = 59 fps) · ย้ายจุดเกิดในตลาดออกจากหลังเสาธง
   - [ ] P1 ตั้งค่า "ระดับความยาก" + "ความเร็วแอนิเมชันต่อสู้" ไม่มีผลกับระบบต่อสู้ปัจจุบัน (`GAME_DIFFICULTY`/`GAME_SPEED` ถูกอ่านแค่ใน tactics-core.js / monster-animation.js) → ต่อเข้า town-battle/flat-battle หรือซ่อนตัวเลือก
-  - [ ] P1 manifest อ้าง `.png` 1,733 ที่ที่มีแต่ `.webp` (กลับมาหลังแก้ v98.267) → ซ่อมครั้งเดียว + ให้ `js/github-push.js` แก้นามสกุลทั้ง manifest ทุกครั้ง + เทสต์ "manifest ห้ามอ้างไฟล์ที่ไม่มี"
-  - [ ] P1 `AssetSize.key` (`js/asset-size.js:32`) ไม่ตัด base path `Project-Agrenor-Tactical-Card-Game/` → 29 คีย์ซ้ำ (20 ค่าไม่ตรง) ใน `asset-hero-ratio-v1` · ตัดทุกอย่างก่อน `assets/` แล้วย้ายค่า
-  - [ ] เทสต์ที่ไม่ผ่าน: `test-char-size` + `test-piece-geometry` (เกิดจากงาน AI v98.72x–731 ใน `js/piece-detail.js`) · `test-image-catalog` / `test-placeable-art` (รันตัวสร้างดัชนี) · `test-studio-roster` (เพิ่ม `murk`) · `test-villager-art` (ตามข้อ manifest) · `test-proportion-zones` (ต้องมี `@napi-rs/canvas`)
-  - [ ] P2 `?v=` ของไฟล์เดียวกันต่างกันข้ามหน้า 14 ไฟล์ (เช่น `village-town.html` → `town-battle.js?v=v98.658`) → ขยาย `tools/test-version.cjs` ให้ตรวจทุกหน้า + bump ให้ตรง · Cart ต้อง bump `?v=` ของ manifest เมื่อแก้
-  - [ ] P2 หน้าแรกเรียก GitHub API ทุกครั้ง (`js/title-screen.js:160`) → ได้ 403 rate limit · เรียกเฉพาะโหมดผู้สร้างหรือแคช 1 ชม.
+  - [~] P1 manifest อ้าง `.png` 1,733 ที่ที่มีแต่ `.webp` (กลับมาหลังแก้ v98.267) → ซ่อมครั้งเดียว + ให้ `js/github-push.js` แก้นามสกุลทั้ง manifest ทุกครั้ง + เทสต์ "manifest ห้ามอ้างไฟล์ที่ไม่มี"
+  - [~] P1 `AssetSize.key` (`js/asset-size.js:32`) ไม่ตัด base path `Project-Agrenor-Tactical-Card-Game/` → 29 คีย์ซ้ำ (20 ค่าไม่ตรง) ใน `asset-hero-ratio-v1` · ตัดทุกอย่างก่อน `assets/` แล้วย้ายค่า
+  - [~] เทสต์ที่ไม่ผ่าน: `test-char-size` + `test-piece-geometry` (เกิดจากงาน AI v98.72x–731 ใน `js/piece-detail.js`) · `test-image-catalog` / `test-placeable-art` (รันตัวสร้างดัชนี) · `test-studio-roster` (เพิ่ม `murk`) · `test-villager-art` (ตามข้อ manifest) · `test-proportion-zones` (ต้องมี `@napi-rs/canvas`)
+  - [~] P2 `?v=` ของไฟล์เดียวกันต่างกันข้ามหน้า 14 ไฟล์ (เช่น `village-town.html` → `town-battle.js?v=v98.658`) → ขยาย `tools/test-version.cjs` ให้ตรวจทุกหน้า + bump ให้ตรง · Cart ต้อง bump `?v=` ของ manifest เมื่อแก้
+  - [~] P2 หน้าแรกเรียก GitHub API ทุกครั้ง (`js/title-screen.js:160`) → ได้ 403 rate limit · เรียกเฉพาะโหมดผู้สร้างหรือแคช 1 ชม.
 - รอบ 2 (UI)
   - [ ] P2 ตัวอักษรขั้นต่ำ 12/14px (ชื่อการ์ดบนมือ 5px, คิวเทิร์น 10px ถูกตัด "นักผ…")
   - [ ] P2 ป้ายชื่อหมู่บ้านถูกแถบสถานะทับ · แผนที่โลกใช้อีโมจิแทนชุดไอคอน · คำไม่ตรงกัน (ตัวเรา/ตัวละคร, เมนู/ตั้งค่า) · ปุ่มผู้สร้างโผล่ให้ผู้เล่นเห็น ("Reload Assets", "โลกใหม่ · กริดละเอียด 2×") · ธาตุแสดงชื่อ lore "Yalm" → ไอคอน + ชื่อไทย · ตลาด: กล่องเขียวว่าง, ป้ายร้านถูกตัด, 404 `vendors/m2-sw.webp` `f2-sw.webp`
@@ -959,3 +959,5 @@
 - รอบ 4 (เกมเพลย์ · ต้องคุยทิศทางก่อน)
   - [ ] สมดุล: หน้าผาความยากที่อันตราย 0.7 → 1.0 (เลเวล 3: 53% → 5%), เลเวล 7+ แทบไม่แพ้, การต่อสู้จบใน 3–5 เทิร์น → กำหนดเป้าอัตราชนะต่อระดับ + ปรับ HP:ดาเมจ · ให้ `tools/simulate-flat.cjs` ดึงค่าจากไฟล์เกมแทนการคัดลอก
   - [ ] โจมตีประกบ (pincer / follow-up แบบ Triangle Strategy) · ปุ่มเร่งเทิร์นศัตรู · คิวเทิร์นแสดงผลของการ์ดล่วงหน้า · พรีวิวพื้นที่ AOE
+- **ความคืบหน้ารอบ 1 (v98.784 · ทำแล้ว):** ✔ เงาขอบขาวครอบเฉพาะกรอบตัวละคร (ตลาด 2.8 → ~33 fps ในเครื่องไม่มี GPU · ยังไม่ถึง 59 fps ที่ไม่มีเงา → ถ้าจะให้สุด ต้องแคชภาพเงาต่อเฟรมท่า) · ✔ `AssetSize.key` ตัด base path + รวมคีย์ซ้ำ 27 ตัวใน game-settings (ค่าที่ติดชื่อ repo ชนะ) · ✔ `tools/fix-manifest-ext.cjs` ซ่อม .png→.webp 2,625 ชื่อ (ยังเหลือไฟล์หายจริง 779 ชื่อ · ยังไม่ได้กันไม่ให้ Push เขียน .png กลับ) · ✔ `tools/sync-asset-versions.cjs` + `test-version` ตรวจ ?v= ตรงกันทุกหน้า · ✔ หน้าแรกแคชผล GitHub 30 นาที · ✔ `test-char-size` ผ่าน · ✔ `test-image-catalog` ผ่าน
+- **ยังค้างจากรอบ 1:** ต่อ difficulty/speed (ต้องตัดสินใจเรื่องสมดุล) · `test-piece-geometry` (เทสต์เก่ากว่า UI: ปุ่มโหมดเปลี่ยนไปแล้ว) · `test-villager-art` (คาดว่าเดินจากโฟลเดอร์ npc แต่เกมใช้ slot สตูดิโอ — ต้องแก้เทสต์) · `test-placeable-art` (ภาพใหม่ใน assets/objects ยังไม่มีแถวในแคตตาล็อก `tools/build-placeable-art.cjs` — ต้องให้ผู้สร้างตั้งชื่อ) · `test-studio-roster` (`murk` ต้องเลือกชื่อ/ภาพ/ลำดับในสตูดิโอ) · `test-proportion-zones` (ขาด `@napi-rs/canvas`) · ปิด `?v=` ของ asset-manifest ให้ Cart bump เอง · 404 `vendors/m2-sw.webp` `f2-sw.webp`

@@ -23,7 +23,7 @@
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 402 | 25.2 MB | `assets/tactics` 395 · `assets/objects` 7 | 370 | 26 |
 | 🃏 การ์ด | 168 | 44.0 MB | `assets/cards` 166 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 156 | 16 |
-| 🎛 UI · ไอคอน · เมนู | 185 | 5.3 MB | `assets/ui` 95 · `assets/icons` 82 · `assets/cursor-fantasy-active.png` 1 · `assets/cursor-fantasy.png` 1 | 90 | 9 |
+| 🎛 UI · ไอคอน · เมนู | 204 | 6.1 MB | `assets/ui` 95 · `assets/icons` 82 · `assets/cursor` 19 · `assets/cursor-fantasy-active.png` 1 | 90 | 9 |
 | 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 138 | 19.4 MB | `assets/village-town` 123 · `assets/objects` 15 | 12 | 6 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 106 | 6.9 MB | `assets/terrain` 75 · `assets/world` 27 · `assets/v03` 4 | 4 | 0 |
@@ -34,7 +34,6 @@
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
 | 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 238 | 17.2 MB | `assets/_versions` 238 | 0 | 47 |
 | 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 42 | 6.9 MB | `archive/old-scene` 31 · `_archive/undefined-bg` 2 · `adjbox.png` 1 · `art-production/facing-arrows-4.png` 1 | 0 | 12 |
-| 📦 อื่น ๆ (ยังไม่มีหมวด) | 19 | 0.8 MB | `assets/cursor` 19 | 0 | 0 |
 
 ## หมวดย่อยในแต่ละหมวด
 
@@ -85,6 +84,7 @@
 ### 🎛 UI · ไอคอน · เมนู
 - UI — 95
 - ไอคอน — 82
+- เคอร์เซอร์เกม — 19
 - UI / เคอร์เซอร์ — 8
 
 ### 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง
@@ -131,9 +131,6 @@
 - _archive — 2
 - dev — 2
 - ไฟล์ระดับบนสุดของรีโป — 1
-
-### 📦 อื่น ๆ (ยังไม่มีหมวด)
-- assets/cursor — 19
 
 ## ไฟล์ซ้ำที่กินที่มากสุด (เนื้อหาเหมือนกันทุกไบต์ — ตรวจแล้วลบสำเนาได้ ถ้าไม่มีโค้ดอ้างพาธนั้น)
 - 0.8 MB เสียไปกับสำเนา 3 ไฟล์: `assets/objects/_workshop/iron-fence3-corner/L0.webp`, `assets/objects/_workshop/iron-fence4-corner-new-2/L0.webp`, `assets/objects/_workshop/iron-fence4-corner-new/L0.webp`

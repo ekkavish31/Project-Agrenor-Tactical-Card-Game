@@ -9,3 +9,6 @@ for (const f of fs.readdirSync(root).filter(f => f.endsWith('.html'))) {
   if (tag) { assert.equal(tag[1], m[1], f + ' loads game-version.js?v=' + tag[1] + ' but the file says ' + m[1]); n++ }
 }
 console.log('version ' + m[1] + ': ' + n + ' pages agree');
+/* v98.784 · every page must load a given js/css with the same ?v= (run node tools/sync-asset-versions.cjs to fix) */
+{ const RE = /((?:js|css)\/[\w.-]+\.(?:js|css))\?v=([\w.]+)/g, seen = {}; for (const f of fs.readdirSync(root).filter(f => f.endsWith('.html'))) for (const x of fs.readFileSync(path.join(root, f), 'utf8').matchAll(RE)) (seen[x[1]] ||= {})[x[2]] = f;
+  const bad = Object.entries(seen).filter(([, v]) => Object.keys(v).length > 1).map(([k, v]) => k + ' ' + Object.keys(v).join('/')); assert.equal(bad.length, 0, 'same file, different ?v= across pages: ' + bad.join(' · ') + ' — run node tools/sync-asset-versions.cjs'); console.log('every js/css has one ?v= in all pages') }

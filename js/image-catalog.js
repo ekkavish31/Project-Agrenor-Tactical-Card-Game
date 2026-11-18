@@ -13,6 +13,7 @@
   };
   /* first match wins · [regex on the path, category, sub-category (string or fn(match))] */
   const RULES = [
+    [/^assets\/cursor\//, 'ui', 'เคอร์เซอร์เกม'],
     [/^assets\/_versions\//, 'versions', 'ประวัติของ slot'],
     [/^assets\/portraits\/story\//, 'portrait', 'ตัวละครเนื้อเรื่อง (4 อารมณ์)'],
     [/^assets\/portraits\//, 'portrait', 'ตัวเอก · ชาวบ้าน'],
