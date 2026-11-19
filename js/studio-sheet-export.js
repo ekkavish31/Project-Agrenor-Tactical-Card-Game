@@ -56,9 +56,11 @@
     return sheets;
   }
   /* lay the pieces out: a single row, or a row per pose when some pose has several frames */
-  function compose(parts, bg, many) {
+  function compose(parts, bg, many, grid4) {
     const cw = Math.max(...parts.flatMap(p => p.cvs.map(c => c.width))), ch = Math.max(...parts.flatMap(p => p.cvs.map(c => c.height)));
-    const rows = many ? parts.map(p => p.cvs) : [parts.flatMap(p => p.cvs)];
+    let rows = many ? parts.map(p => p.cvs) : [parts.flatMap(p => p.cvs)];
+    /* v98.822 · a walk sheet is laid out 4 columns × N rows (12 frames → 4 × 3), reading order left → right, top → bottom */
+    if (grid4) { const all = parts.flatMap(p => p.cvs); rows = []; for (let i = 0; i < all.length; i += 4) rows.push(all.slice(i, i + 4)) }
     const cols = Math.max(...rows.map(r => r.length)), o = document.createElement('canvas'); o.width = cols * cw; o.height = rows.length * ch; const g = o.getContext('2d');
     if (bg) { g.fillStyle = bg; g.fillRect(0, 0, o.width, o.height) }
     rows.forEach((r, y) => r.forEach((c, x) => g.drawImage(c, x * cw + Math.round((cw - c.width) / 2), y * ch + (ch - c.height))));
@@ -67,7 +69,7 @@
   const lookName = e => { try { return e.id === 'hero' ? '-' + (window.StudioVariants?.active || 'male') : '' } catch (x) { return '' } };
   async function exportSheet(e, sh, bg) {
     const parts = await gather(e, sh.kind, sh.views); if (!parts.length) return toast('ไม่มีภาพให้ส่งออก');
-    const many = parts.some(p => p.cvs.length > 1) && sh.kind.id !== 'walk' && sh.kind.id !== 'stand', cv = compose(parts, bg, many);
+    const many = parts.some(p => p.cvs.length > 1) && sh.kind.id !== 'walk' && sh.kind.id !== 'stand', cv = compose(parts, bg, many, sh.kind.id === 'walk');
     const base = (e.id === 'hero' ? 'hero' : fileKey(e)) + lookName(e), name = `${base}_${sh.kind.id === 'stand' ? 'stand-sw-ne' : sh.views[0].toLowerCase() + '_' + sh.kind.id}.png`;
     const blob = await new Promise(r => cv.toBlob(r, 'image/png')), a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     const note = parts.map(p => (POSE_NAME[p.pose] || p.pose) + (p.cvs.length > 1 ? ' ' + p.cvs.length + ' เฟรม' : '')).join(' · ');
