@@ -127,3 +127,36 @@ body.gt-on .card-book.cb-v2{--w:min(99vw,138vh)}
 body.gt-on dialog#collectionFocus.grim{--gw:min(99vw,138vh)}
 /* v98.831 · the card book is a NON-modal panel (js/layout-v08.js): its fog is the panel shade, stretched over the whole screen (the game bar too) */
 body:has(#panel[open] .card-book.cb-v2) #panelShade{top:0;z-index:249;background:radial-gradient(80% 70% at 50% 45%,rgba(255,236,205,.30),rgba(40,28,18,.55) 100%),rgba(60,44,32,.35);backdrop-filter:blur(26px) saturate(.7);-webkit-backdrop-filter:blur(26px) saturate(.7)}
+
+/* ===== v98.853 · BOOK v3 (owner's new book pictures, 16:9): assets/ui/cardbook2-open.webp + page-turn frames cardbook2-flip1/2.webp
+   • the book is ~88 % of the screen width / 95 % of its height, nothing else on screen (fog)
+   • the tab ribbons hang out of the LEFT edge (then the RIGHT edge when the left is full), tucked UNDER the book
+   • close = the gold X right of the book's top-right corner */
+/* centred on the screen: (screen height − book height) / 2 */
+.card-book.cb-v2{--w:min(86vw,166vh);--pt:max(.6vh,calc((100vh - var(--w)*.5628)/2 - 6px));padding-top:var(--pt)!important}
+body.gt-on .card-book.cb-v2{--w:min(86vw,140vh);--pt:2vh}   /* lesson: book at the top, the dialogue box stays free below */
+.cb-v2 .cb-open{aspect-ratio:1672/941!important;background:var(--cb-page,url(../assets/ui/cardbook2-open.webp)) center/100% 100% no-repeat!important;z-index:1}
+.cb-v2 .cb-open.cb-turning .cb-page,.cb-v2 .cb-open.cb-turning .cb-nav{opacity:0;transition:opacity .06s}
+.cb-v2 .cb-page,.cb-v2 .cb-nav{transition:opacity .12s}
+.cb-v2 .cb-pg{top:8.5%!important;height:78%!important;width:39%!important}
+.cb-v2 .cb-pg.L{left:8.2%!important}.cb-v2 .cb-pg.R{left:53.4%!important}
+.cb-v2 .cb-no{bottom:12.6%!important}.cb-v2 .cb-no.L{left:8%!important}.cb-v2 .cb-no.R{left:91%!important}
+.cb-v2 .cb-nav{bottom:10.6%!important;right:14%!important}
+.cb-v2 .cb-foot{display:none}
+/* ribbons on the sides */
+.cb-v2 .cb-tabs.cb-side{position:absolute!important;top:calc(var(--pt) + var(--u)*5.4)!important;height:auto!important;left:auto;right:auto;display:flex!important;flex-direction:column;gap:calc(var(--u)*.7)!important;align-items:flex-end;z-index:0!important}
+.cb-v2 .cb-tabs.cb-side.L{left:calc(var(--u)*-7.4)!important}
+.cb-v2 .cb-tabs.cb-side.R{right:calc(var(--u)*-7.4)!important;align-items:flex-start}
+.cb-v2 .cb-tabs.cb-side button{width:calc(var(--u)*10)!important;height:calc(var(--u)*7.4)!important;margin:0!important;padding:0 calc(var(--u)*2.8) 0 calc(var(--u)*1.4)!important;transform:none;flex-direction:column;justify-content:center!important;align-items:center;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,calc(var(--u)*1.3) 50%)!important;background:linear-gradient(180deg,#9c241c,#c53a2c 45%,#93211a)!important;transition:transform .15s,filter .15s}
+.cb-v2 .cb-tabs.cb-side.R button{padding:0 calc(var(--u)*1.4) 0 calc(var(--u)*2.8)!important;clip-path:polygon(0 0,100% 0,calc(100% - var(--u)*1.3) 50%,100% 100%,0 100%)!important}
+.cb-v2 .cb-tabs.cb-side button::before{inset:calc(var(--u)*.35) calc(var(--u)*2.4) calc(var(--u)*.35) calc(var(--u)*1.1)!important;border:calc(var(--u)*.14) solid #e2b95c!important;border-right:0!important}
+.cb-v2 .cb-tabs.cb-side.R button::before{inset:calc(var(--u)*.35) calc(var(--u)*1.1) calc(var(--u)*.35) calc(var(--u)*2.4)!important;border-right:calc(var(--u)*.14) solid #e2b95c!important;border-left:0!important}
+.cb-v2 .cb-tabs.cb-side button img{width:calc(var(--u)*3.4)!important;height:calc(var(--u)*3.4)!important}
+.cb-v2 .cb-tabs.cb-side button b{font-size:calc(var(--u)*1.05);margin-top:calc(var(--u)*.15)}
+.cb-v2 .cb-tabs.cb-side button em{top:calc(var(--u)*.4)!important;right:calc(var(--u)*2.5)!important}
+.cb-v2 .cb-tabs.cb-side.R button em{right:auto!important;left:calc(var(--u)*2.5)}
+.cb-v2 .cb-tabs.cb-side.L button.on{transform:translateX(calc(var(--u)*-.9))!important;background:linear-gradient(180deg,#b52a22,#e0503a 45%,#b0261f)!important}
+.cb-v2 .cb-tabs.cb-side.R button.on{transform:translateX(calc(var(--u)*.9))!important;background:linear-gradient(180deg,#b52a22,#e0503a 45%,#b0261f)!important}
+.cb-v2 .cb-tabs.cb-side button[data-t]{position:relative!important;bottom:auto!important;left:auto!important}
+/* close: right of the book's top-right corner */
+.cb-v2 .cb-close{top:calc(var(--u)*.4)!important;right:calc(var(--u)*-8.1)!important;height:auto!important;padding:calc(var(--u)*3.5) 0 0!important;width:calc(var(--u)*7)!important;background:url(../assets/ui/close-x.webp) center top/auto calc(var(--u)*3.2) no-repeat!important;display:flex;align-items:flex-end;justify-content:center;font-size:calc(var(--u)*1.25)!important}

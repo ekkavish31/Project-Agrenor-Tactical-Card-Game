@@ -19,7 +19,16 @@
     { id: 'goods', icon: ICON('treasure'), name: 'ทั่วไป', tip: 'ขายได้ที่ตลาด' },
     { id: 'event', icon: ICON('mail'), name: 'เหตุการณ์', tip: 'ใช้แล้วเกิดเรื่องราว' }
   ];
-  const PER_PAGE = 6, PER_SPREAD = PER_PAGE * 2;
+  const PER_PAGE = 6, PER_SPREAD = PER_PAGE * 2, SIDE_CAP = 6;
+  /* v98.853 · page-turn pictures: forward = the right page lifts (flip1) then falls to the left (flip2); backward = the same two in reverse */
+  const FLIP = ['assets/ui/cardbook2-flip1.webp', 'assets/ui/cardbook2-flip2.webp'], FLIP_MS = 100;
+  for (const f of FLIP) new Image().src = f;
+  const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches } catch (e) { return false } };
+  /* play the turn on `el` (its background is the book), call `mid` when the old page is covered, `done` at the end */
+  function pageTurn(el, dir, mid, done) { if (!el || reduced()) { mid?.(); done?.(); return } const fr = dir < 0 ? [...FLIP].reverse() : FLIP; el.classList.add('cb-turning'); let i = 0;
+    const step = () => { if (i < fr.length) { el.style.setProperty('--cb-page', `url("${new URL(fr[i], document.baseURI).href}")`); if (i === 0) setTimeout(() => mid?.(), FLIP_MS * .6); i++; setTimeout(step, FLIP_MS) } else { el.style.removeProperty('--cb-page'); el.classList.remove('cb-turning'); done?.() } };
+    step() }
+  window.CardBookTurn = pageTurn;
   let tab = 'use';
   const spreadOf = {};
   const kindOf = t => /^ของใช้ ·/.test(t) ? 'use' : /^การ์ดเหตุการณ์/.test(t) ? 'event' : /^ไอเทมทั่วไป/.test(t) ? 'goods' : /^วัตถุดิบและของใช้/.test(t) ? 'mat' : /^อุปกรณ์/.test(t) ? 'gear' : '';
@@ -54,7 +63,9 @@
     if (!tabs.some(t => t.id === tab)) tab = tabs[0].id;
     const total = TABS.reduce((n, t) => n + count(t.id), 0);
     const book = document.createElement('div'); book.className = 'card-book cb-v2';
-    book.innerHTML = `<nav class="cb-tabs" role="tablist">${tabs.map(t => `<button type="button" role="tab" data-t="${t.id}" title="${esc(t.name + ' · ' + t.tip)}"><img src="${t.icon}" alt="" draggable="false"><em>${count(t.id)}</em><b>${t.name}</b></button>`).join('')}</nav>
+    /* v98.853 · the ribbons hang out of the book's LEFT edge; when the left edge is full (SIDE_CAP ribbons) the rest go to the RIGHT edge */
+    const tabBtn = t => `<button type="button" role="tab" data-t="${t.id}" title="${esc(t.name + ' · ' + t.tip)}"><img src="${t.icon}" alt="" draggable="false"><em>${count(t.id)}</em><b>${t.name}</b></button>`;
+    book.innerHTML = `<nav class="cb-tabs cb-side L" role="tablist">${tabs.slice(0, SIDE_CAP).map(tabBtn).join('')}</nav>${tabs.length > SIDE_CAP ? `<nav class="cb-tabs cb-side R" role="tablist">${tabs.slice(SIDE_CAP).map(tabBtn).join('')}</nav>` : ''}
       <div class="cb-open">
         <button type="button" class="cb-close" aria-label="ปิดสมุด" title="ปิดสมุด" onclick="if(!(window.closeTopFirst&&window.closeTopFirst()))document.getElementById('panel').close()">ปิดสมุด</button>
         ${tabs.map(t => `<section class="cb-page" data-p="${t.id}" role="tabpanel" aria-label="${esc(notes[t.id] || t.name)}"><div class="cb-pg L collection-grid"></div><div class="cb-pg R collection-grid"></div><span class="cb-no L"></span><span class="cb-no R"></span></section>`).join('')}
@@ -78,8 +89,10 @@
       book.querySelectorAll('.cb-page').forEach(p => p.hidden = p.dataset.p !== id);
       lay(id); try { window.CardStudio?.fit(book) } catch (e) { }
     };
-    const turn = d => { const n = spreads(tab), k = (spreadOf[tab] || 0) + d; if (k < 0 || k >= n) return; spreadOf[tab] = k; show(tab); try { window.Sfx?.play?.('page') } catch (e) { } };
-    book.querySelector('.cb-tabs').addEventListener('click', e => { const b = e.target.closest('button[data-t]'); if (b) show(b.dataset.t) });
+    const open = book.querySelector('.cb-open'); let busyTurn = false;
+    const turnTo = (dir, fn) => { if (busyTurn) return; busyTurn = true; try { window.Sfx?.play?.('page') } catch (e) { } pageTurn(open, dir, fn, () => { busyTurn = false }) };
+    const turn = d => { const n = spreads(tab), k = (spreadOf[tab] || 0) + d; if (k < 0 || k >= n) return; turnTo(d, () => { spreadOf[tab] = k; show(tab) }) };
+    book.querySelectorAll('.cb-tabs').forEach(nav => nav.addEventListener('click', e => { const b = e.target.closest('button[data-t]'); if (!b || b.dataset.t === tab) return; const ids = tabs.map(t => t.id), d = ids.indexOf(b.dataset.t) > ids.indexOf(tab) ? 1 : -1; turnTo(d, () => show(b.dataset.t)) }));
     book.querySelector('.cb-prev').onclick = () => turn(-1); book.querySelector('.cb-next').onclick = () => turn(1);
     book.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' && !e.target.closest('input,textarea')) turn(-1); if (e.key === 'ArrowRight' && !e.target.closest('input,textarea')) turn(1) });
     host.replaceChildren(book); if (msg) book.appendChild(msg); else book.insertAdjacentHTML('beforeend', '<p id="bagMsg" class="small" role="status"></p>');
