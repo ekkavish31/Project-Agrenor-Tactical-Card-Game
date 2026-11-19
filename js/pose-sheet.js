@@ -333,7 +333,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* v98.745 · QUICK ADJUST (the old 🛠 ปรับสัดส่วน sliders as ± buttons, live on the selected pose): head · torso height / width · shoulders · legs length / width */
   const QD = () => ({ head: 100, torso: 100, wTorso: 100, shoulder: 100, legs: 100, wLegs: 100 });
   const QA = { ck: null, S: QD(), keep: true, canvas: null, P: null, t: 0, busy: false, msg: '' };
-  const QROWS = [['head', 'หัว ใหญ่-เล็ก'], ['torso', 'ลำตัว สูง (แนวตั้ง)'], ['wTorso', 'ลำตัว หนา (แนวนอน)'], ['shoulder', 'ไหล่ กว้าง'], ['legs', 'ขา ยาว (แนวตั้ง)'], ['wLegs', 'ท่อนขา หนา (แนวนอน)']];
+  const QROWS = [['head', 'หัว ใหญ่-เล็ก'], ['torso', 'ลำตัว สูง (แนวตั้ง)'], ['wTorso', 'ลำตัว หนา (แนวนอน)'], ['legs', 'ขา ยาว (แนวตั้ง)'], ['wLegs', 'ท่อนขา หนา (แนวนอน)']];
   const qaDirty = () => Object.values(QA.S).some(v => v !== 100);
   const qaScale = () => Object.fromEntries(Object.entries(QA.S).map(([k, v]) => [k, v / 100]));
   /* v98.782 · LYING pose (down): rotate the picture about its centre so that the line skull-top → feet points down, run the same re-proportion there (the head / torso / legs cut by the neck LINE and the crotch LINE, which turn with it), then rotate back */
@@ -629,7 +629,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const S = { head: 100, torso: 100, legs: 100, shoulder: 100, wLegs: 100, wTorso: 100 }, O = { keep: true }, ref = peek('idle@' + c.dir)?.p || peek('idle@SW')?.p;
     const marksOf = mm => marksFor(P, mm);
     const box = document.createElement('div'); box.id = 'psAdj';
-    const SL = [['head', 'หัว (ใหญ่-เล็ก)'], ['torso', 'ลำตัว (สูง)'], ['legs', 'ขา (ยาว)'], ['shoulder', 'ไหล่ กว้าง'], ['wTorso', 'ลำตัว หนา'], ['wLegs', 'ท่อนขา หนา']];
+    const SL = [['head', 'หัว (ใหญ่-เล็ก)'], ['torso', 'ลำตัว (สูง)'], ['legs', 'ขา (ยาว)'], ['wTorso', 'ลำตัว หนา'], ['wLegs', 'ท่อนขา หนา']];
     box.innerHTML = `<div class="box" role="dialog" aria-label="ปรับสัดส่วน"><h3>🛠 ปรับสัดส่วน · ${esc(cur.name)} · ${POSES.find(p => p[0] === c.pose)[1]} ${c.dir}</h3>
       <div class="row"><div><div style="font-size:12px">ก่อน</div><canvas id="adjB" width="384" height="384"></canvas></div><div><div style="font-size:12px">หลัง (พรีวิวสด)</div><canvas id="adjA" width="384" height="384"></canvas></div>
       <div class="ctl">${SL.map(([k, l]) => `<div class="sl"><span>${l}</span><input type="range" data-s="${k}" min="60" max="150" step="1" value="100"><span><input type="number" data-n="${k}" min="60" max="150" step="1" value="100">%</span><span class="pm" style="display:flex;gap:3px">${[-5, -1, 1, 5].map(d => `<button type="button" data-d="${k},${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</span></div>`).join('')}
