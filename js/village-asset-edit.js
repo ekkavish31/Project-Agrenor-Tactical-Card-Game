@@ -1033,7 +1033,9 @@
  /* v97.47 · a first guess of the blocking frame (cells) from the item's name; adjusted with กว้าง/ลึก ± */
  function guessBlock(label) { const t = String(label || ''); return /ต้นไม้|ต้นโอ๊ก|ต้นสน|tree|oak|pine/i.test(t) ? [1, 1] : /เกวียน|รถ|cart|wagon/i.test(t) ? [1.5, 1] : /บ่อ|well|น้ำพุ|รูปปั้น|statue/i.test(t) ? [1.5, 1.5] : /โคม|lamp|ถัง|barrel|ลัง|crate|ป้าย|sign/i.test(t) ? [.5, .5] : /หิน|rock/i.test(t) ? [1, 1] : [1, 1] }
  let blockList = [];
- function rebuildBlocks() { blockList = frame.filter(e => (e.geo || e.ov)?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.geo || e.ov, c.u, c.v, true) }) }
+ function rebuildBlocks() { blockList = frame.filter(e => (e.geo || e.ov)?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.geo || e.ov, c.u, c.v, true) });
+  /* v98.835 · a PLACE with a red frame (data.buildings[id].block) is walled by that frame — nothing else: the old plot footprint wall + yellow entrance cells + green cells no longer apply to it (village-town.html skips it via hasRed) */
+  for (const o of locations) { const t = data.buildings[o.id]; if (!t || !t.block) continue; try { const c = center(o); blockList.push(window.PieceGeometry.footprint({ zb: t.zb, blockU: t.blockU, blockV: t.blockV, fw: t.fw, fh: t.fh }, c.u, c.v, true)) } catch (e) { } } }
  const blockBoxes = () => blockList.flatMap(r => r.parts || [r]);   /* v98.499 · free-form red zones are lists of boxes */
  const blockedAt = (u, v) => { for (const r of blockBoxes()) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
  function itemRectAt(k, c) {
@@ -1467,7 +1469,7 @@
   } // empty ground → camera pan as usual
  }, true);
  /* v91.4: the cursor tells you a side of the blue area can be dragged (diagonal arrows along the way it moves) */
- const fpMode = () => !!place && place.tab === 'building';
+ const fpMode = () => false;   /* v98.835 · no more dragging the old blue plot edges */
  function edgeCursor(k, o) {
   if (!k) return '';
   const alongU = k[0] === 'u'; // own-axis u edges move along u: screen diagonal ↘↖ (swapped for SE places)
@@ -2226,6 +2228,7 @@
 
  /* footprint panel: the ground area this place claims on the grid (blue tiles on the map) */
  function fpHtml(o) {
+  return '';   /* v98.835 · the old blue plot footprint panel is retired: it was the wall that blocked walking; a place now uses 🟦 order frame + 🟥 block frame (🔍 แก้ละเอียด) */
   const f = window.VillageFootprint?.fpOf(o);
   if (!f) return '';
   const custom = window.VillageFootprint.isCustom(o), se = o.facing === 'SE';
@@ -3107,6 +3110,7 @@
  const buildingOrder = o => { const t = data.buildings[o.id]; if (!t || !Array.isArray(t.zo) || !t.zo.length) return null; const c = center(o); return window.PieceGeometry.footprint({ zo: t.zo, orderU: t.orderU, orderV: t.orderV }, c.u, c.v, false) };
  window.VillageAssetEdit = {
   buildingOrder,
+  hasRed: id => !!data.buildings[id]?.block,   /* v98.835 · this place is walled by its red frame (village-town.html skips the old footprint wall for it) */
   blockedAt, blocks: () => blockBoxes().map(r => ({ u0: r.u0, u1: r.u1, v0: r.v0, v1: r.v1 })),
   refreshPanel: () => { try { render() } catch (_) {} },
   charScale,
@@ -3118,7 +3122,8 @@
   placeId: () => place?.id || null,
   wkSharpOf: o => { try { return wkSharpOf(o) } catch (_) { return null } },
   wkBlendOf: o => { try { return wkBlendOf(o) } catch (_) { return null } },
-  footprintEditing: () => place ? place.tab === 'building' : null, // false = another tab is open: the blue area hides, a dashed yellow outline stays
+  footprintEditing: () => false,   /* v98.835 · the old blue plot area is not edited / shown any more (dashed outline stays as the placement plot) */
+  _unusedFootprintEditing: () => place ? place.tab === 'building' : null, // false = another tab is open: the blue area hides, a dashed yellow outline stays
   itemKeys: owner => frame.filter(e => e.owner === owner && !e.hidden).map(e => e.key),
   select: ks => { if (place) { place.keys = [...ks]; place.tab = 'items'; render() } },
   pick: key => selectItem(key),
@@ -3126,7 +3131,7 @@
   frameList: () => frame.map(e => ({ key: e.key, art: e.art, label: e.label, own: frOwn(e.ov || {}), block: !!(e.geo || e.ov)?.block })),   /* v98.692 · for tests / tools */
   detail: {
    /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
-   get caps() { return bldDetail ? { rot: false, slant: false, skew: false, block: false, shape: false, zoom: 0.55, note: 'สถานที่: ระบายกรอบฟ้าให้เท่าส่วนที่แตะพื้นจริงของตัวอาคาร (รวมเฉลียง/ปีกยื่น) · ไม่ระบาย = ใช้กรอบแปลงเดิม' } : { skew: false } },
+   get caps() { return bldDetail ? { rot: false, slant: false, skew: false, block: true, shape: false, zoom: 0.55, note: 'สถานที่: 🟦 กรอบฟ้า = การบัง (ระบายให้เท่าส่วนที่แตะพื้นจริง รวมเฉลียง/ปีกยื่น) · 🟥 กรอบแดง = การชน — ติ๊ก "บล็อกเดิน" แล้วตัวละคร/NPC เดินทะลุกรอบแดงไม่ได้ ส่วนที่ไม่ระบายแดง (ทางเข้า ลาน) เดินผ่านได้ · พื้นฟ้าเดิมของแปลง/ช่องเหลือง/ช่องเขียว ยกเลิกแล้ว — ยังไม่ระบายกรอบแดง = เดินทะลุสถานที่ได้' } : { skew: false } },
    item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
    ov: key => { if (String(key).startsWith('bld:')) return data.buildings[key.slice(4)] || {}; const o = data.edit[key] || {}, E = frame.find(e => e.key === key); return E ? geoOv(o, E.art) : o },   /* v98.692 · the window shows the frame the piece really uses (own → picture's template) */
    edit(key, fn, checkpoint) {
@@ -3142,7 +3147,7 @@
       clean(key); UX.persist(); render(); return
      }
     }
-    if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); render(); return }
+    if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall', 'zb', 'fw', 'fh', 'blockU', 'blockV']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!b.block) delete b.block; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); try { rebuildBlocks() } catch (e) { } render(); return }
     fn(ovOf(key)); clean(key); UX.persist(); render()
    },
    check: key => String(key).startsWith('bld:') ? ((data.buildings[key.slice(4)] || {}).chk || {}) : chkEff(frame.find(e => e.key === key)?.art, data.edit[key] || {}),   /* v98.719 · review ticks (see PieceDetail.gauge) */
