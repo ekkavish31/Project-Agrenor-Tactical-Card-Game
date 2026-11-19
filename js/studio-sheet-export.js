@@ -2,7 +2,7 @@
    The reverse of studio-sheet-import.js: one character → PNG sheets to take to an image generator and bring back with "🧩 นำเข้าชีท".
    The frames come from the SAME clip list the studio shows (StudioBrowser.state.model), so an edit already made in the studio is in the sheet.
    Sheets (one file each, chosen one by one — no bundle):
-     • ท่าต่อสู้ 1  = ยืน · เตรียมโจมตี · โจมตี           SW 1 ใบ · NE 1 ใบ
+     • ท่าต่อสู้    = ยืน · เตรียมโจมตี · โจมตี · ป้องกัน · โดนโจมตี · ล้ม (3×2)   SW 1 ใบ · NE 1 ใบ  (v98.826: รวมท่าต่อสู้ 1+2 เป็นใบเดียว)
      • ท่าเดิน     = ทุกเฟรมของท่าเดิน (ฮีโร่ 12 เฟรม)   SW 1 ใบ · NE 1 ใบ
      • ท่าต่อสู้ 2  = ป้องกัน · โดนโจมตี · ล้ม            SW 1 ใบ · NE 1 ใบ
      • NPC          = ยืน SW + NE รวมใบเดียว · เดิน SW / NE ถ้ามีหลายเฟรม
@@ -15,9 +15,8 @@
   const POSE_NAME = { idle: 'ยืน', windup: 'เตรียมโจมตี', strike: 'โจมตี', guard: 'ป้องกัน', hit: 'โดนโจมตี', down: 'ล้ม', walk: 'เดิน' };
   /* kind → what goes in the sheet (poses in order) and which directions get their own file */
   const KINDS = [
-    { id: 'actions', label: 'ท่าต่อสู้ 1', sub: 'ยืน · เตรียมโจมตี · โจมตี', poses: ['idle', 'windup', 'strike'], views: ['SW', 'NE'] },
-    { id: 'walk', label: 'ท่าเดิน', sub: '2 ชีท: เฟรม 1-6 + 7-12 (3×2)', poses: ['walk'], views: ['SW', 'NE'], multi: true },
-    { id: 'defense', label: 'ท่าต่อสู้ 2', sub: 'ป้องกัน · โดนโจมตี · ล้ม', poses: ['guard', 'hit', 'down'], views: ['SW', 'NE'] }
+    { id: 'combat', label: 'ท่าต่อสู้ (1+2)', sub: 'ยืน · เตรียมโจมตี · โจมตี · ป้องกัน · โดนโจมตี · ล้ม (3×2)', poses: ['idle', 'windup', 'strike', 'guard', 'hit', 'down'], views: ['SW', 'NE'], cols: 3 },   /* v98.826 · the two combat sheets are ONE sheet per direction: 6 poses in 3 columns × 2 rows, reading order = the importer's standard order */
+    { id: 'walk', label: 'ท่าเดิน', sub: '2 ชีท: เฟรม 1-6 + 7-12 (3×2)', poses: ['walk'], views: ['SW', 'NE'], multi: true }
   ];
   const isMon = e => e && (e.group === 'monsters' || e.group === 'bosses'), isNpc = e => e && e.group === 'npcs', isPerson = e => e && e.group === 'characters';
   const entityNow = () => { const S = B()?.state; return S && S.model.find(e => e.id === S.entity) };
@@ -76,7 +75,7 @@
       const names = [], dims = []; for (const [i, fr] of chunks) { const cv = compose([{ cvs: fr }], bg, false, 3), name = `${base}_${sh.views[0].toLowerCase()}_walk_${i + 1}-${i + fr.length}.png`; await save(cv, name); names.push(name); dims.push(cv.width + '×' + cv.height); await new Promise(r => setTimeout(r, 350)) }
       toast('ส่งออก ' + chunks.length + ' ชีท (เดิน ' + all.length + ' เฟรม · ชีทละ ≤ 6 เฟรม · 3×2): ' + names.join(' · ')); return { names, dims, frames: all.length };
     }
-    const many = parts.some(p => p.cvs.length > 1) && sh.kind.id !== 'stand', cv = compose(parts, bg, many), name = `${base}_${sh.kind.id === 'stand' ? 'stand-sw-ne' : sh.views[0].toLowerCase() + '_' + sh.kind.id}.png`;
+    const many = parts.some(p => p.cvs.length > 1) && sh.kind.id !== 'stand', cv = compose(parts, bg, many, sh.kind.cols || 0), name = `${base}_${sh.kind.id === 'stand' ? 'stand-sw-ne' : sh.views[0].toLowerCase() + '_' + sh.kind.id}.png`;
     await save(cv, name);
     const note = parts.map(p => (POSE_NAME[p.pose] || p.pose) + (p.cvs.length > 1 ? ' ' + p.cvs.length + ' เฟรม' : '')).join(' · ');
     toast('ส่งออก ' + name + ' · ' + cv.width + '×' + cv.height + ' (' + note + ')'); return { name, w: cv.width, h: cv.height, parts: parts.map(p => [p.pose, p.view, p.cvs.length]) };
