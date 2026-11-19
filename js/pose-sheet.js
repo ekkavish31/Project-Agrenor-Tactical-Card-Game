@@ -242,7 +242,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     let h = `<div class="ps-app"><div class="ps-top" id="psTop"><b class="ps-name">${esc(cur.name)}</b><div class="ps-next" id="psNext"></div><span class="sp" style="flex:1"></span>
         <button type="button" class="act" id="psUndo" ${UNDO.length ? '' : 'disabled'} title="ย้อน (Ctrl+Z)">↶ ย้อน</button><button type="button" class="act" id="psRedo" ${REDO.length ? '' : 'disabled'} title="ทำซ้ำ (Ctrl+Y / Ctrl+Shift+Z)">↷ ทำซ้ำ</button>
         <button type="button" class="act ${SHOW.pts ? 'on' : ''}" id="psShowPts" title="แสดง/ซ่อนจุด datum บนภาพ">● จุด</button><button type="button" class="act ${SHOW.zone ? 'on' : ''}" id="psShowZone" title="โซนสีแบ่งส่วน: หัว · ลำตัว · ขา (ท่าที่มี คาง + เส้นตัดขา แล้ว)">🎨 โซนสี</button>
-        <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button>
+        <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button><button type="button" class="act ${tool === 'dset' ? 'on' : ''}" id="psDset" title="ย้ายจุด datum ทั้งชุดของท่า — ภาพอยู่ที่เดิม ลากในช่องของท่านั้น (ท่าที่ล็อกอยู่ย้ายไม่ได้)">⬚ ย้าย Datum Set</button>
         <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max="2.5" step=".05" value="${Z}"></label>
         <span id="psCartMsg" style="font-size:12.5px;color:#315d46"></span>
         <button type="button" class="act main" id="psCartAll" ${cartPlan().n ? '' : 'disabled'} title="ที่เปลี่ยนทั้งหมด (ปรับสัดส่วนท่าที่เลือก · ตำแหน่งภาพ · ขนาดเข้าเกม · จุด/ติ๊ก/ไม้บรรทัด) → 🛒 Cart รอ Push">${cartPlan().text}</button>
@@ -268,10 +268,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
           <button type="button" data-b="snap" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น" ${ok ? 'disabled' : ''}>⤓ พื้น</button>${ox || oy ? `<span class="mv" title="ย้ายแล้ว ยังไม่บันทึก">ย้าย ${ox},${oy}</span>` : ''}</div>${valsHtml(ck)}</div>`;
       }
     }
-    h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div></div></div>`;
+    h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'dset' ? 'โหมด ⬚: ลากในช่องเพื่อย้ายจุด datum ทั้งชุดของท่านั้น (ภาพอยู่ที่เดิม)' : tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div></div></div>`;
     /* v98.742 · re-drawing the sheet must not move the view: every scroll position (page, the sheet, the zone, the side bar) is put back, so you stay on the pose you are working on */
     const keep = ZOOMKEEP || (ps.querySelector('.ps-app') ? scrollNow(ps) : (SCROLLMEM || scrollNow(ps))); SCROLLMEM = null; ZOOMKEEP = null;
-    ps.innerHTML = h; document.body.classList.toggle('ps-hand', tool === 'hand'); document.body.classList.toggle('ps-sel', selectMode());
+    ps.innerHTML = h; document.body.classList.toggle('ps-hand', tool === 'hand' || tool === 'dset'); document.body.classList.toggle('ps-sel', selectMode());
     const back = () => { for (const [n, t, l] of keep.arr) { n.scrollTop = t; n.scrollLeft = l } scrollTo(keep.wx, keep.wy); const z = $('psZone'); if (z) { z.scrollLeft = keep.zl; z.scrollTop = keep.zt } const g = ps.querySelector('.ps-grid'); if (g) { g.scrollLeft = keep.gl; g.scrollTop = keep.gt } const s = $('psSide'); if (s) s.scrollTop = keep.st };
     back(); paintAll(); wire(ps); back();
   }
@@ -408,6 +408,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (box) box.onclick = qaClick;
     const top = $('psTop'), sd = $('psSide'); if (top && sd) { const hgt = top.offsetHeight, vh = visibleH($('poseSheet')); sd.style.top = hgt + 'px'; sd.style.maxHeight = Math.max(200, vh - hgt - 8) + 'px'
       const gd = $('poseSheet')?.querySelector('.ps-grid'); if (gd) gd.style.maxHeight = gridMaxH($('poseSheet'), gd) + 'px' }   /* v98.753 · the grid scrolls inside the screen: its sideways scroll bar is always visible (it sat below the fold at a high zoom) */
+    if (tool === 'dset') { el.innerHTML = '⬚ โหมดย้าย Datum Set · ลากในช่องของท่า — จุดทั้งชุดเลื่อนตาม ภาพอยู่ที่เดิม'; el._h = ''; return }
     if (tool === 'hand') { el.innerHTML = '✋ โหมดย้ายภาพ · ลากภาพในช่อง'; el._h = ''; return } const s = stepInfo();
     const placed = (act && peek(act)?.p || {})[step] ? ' (วางแล้ว · คลิกใหม่ = ย้าย)' : '';
     const html = `👉 จุดถัดไป <b style="background:#555">${s.n}/${s.all}</b> วาง <b style="background:${s.col}">${esc(s.label)}</b>${placed}`;
@@ -510,6 +511,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!ps._rz) { ps._rz = 1; addEventListener('resize', () => { try { updNext() } catch (e) { } }) }
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
+    $('psDset').onclick = () => { tool = tool === 'dset' ? 'mark' : 'dset'; draw() };
     $('psClear').onclick = () => { if (!act) return; if (isLocked(act)) { flash(LOCKMSG); return } const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status(); reviewSync([act], false) };
     $('psCartAll').onclick = () => cartAll();
     $('psCen').onchange = ev => { RUL.center = ev.target.checked; saveRul(); paintAll() };
@@ -531,6 +533,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         const [sx, sy] = ptr(cv, ev); act = ck; const rec = recOf(ck), P = rec.p;
         const hr = hitRuler(sx, sy); if (hr) { rpick = hr.t + hr.i; drag = { kind: 'rul', h: hr }; cv.setPointerCapture(ev.pointerId); paintAll(); return }
         if (tool === 'hand') { drag = { kind: 'hand', ck, sx, sy, ox: rec.ox || 0, oy: rec.oy || 0 }; cv.setPointerCapture(ev.pointerId); return }
+        /* v98.816 · ⬚ ย้าย Datum Set: the picture stays, every point of the pose moves together */
+        if (tool === 'dset') { const [fx0, fy0] = unsc(sx, sy); drag = { kind: 'dset', ck, from: fromFrame(c, ck, fx0, fy0), orig: JSON.parse(JSON.stringify(P)) }; cv.setPointerCapture(ev.pointerId); return }
         let key = hitPoint(c, ck, P, sx, sy);
         if (!key) {
           let k = pinned && stepsOf(ck).some(s => s[0] === step) ? step : (firstMissing(P, ck) || stepsOf(ck)[0][0]); pinned = false; const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, ck, fx, fy), q = [Math.round(x), Math.round(y)];
@@ -551,12 +555,13 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       if (!drag) return;
       if (drag.kind === 'rul') { const el = ps.querySelector('.ps-c canvas'); const [, sy] = ptr(el, ev), fy = Math.round(unsc(0, sy)[1]), h = drag.h, o = h.t === 'l' ? RUL.lines[h.i] : RUL.meas[h.i]; if (!o) return; if (h.t === 'l') o.y = fy; else o[h.e] = fy; paintAll(); return }
       const el = ps.querySelector(`.ps-c[data-ck="${drag.ck}"]`), cv = el?.querySelector('canvas'); if (!cv) return; const [sx, sy] = ptr(cv, ev), c = cur.cells[drag.ck];
+      if (drag.kind === 'dset') { const [fx1, fy1] = unsc(sx, sy), q1 = fromFrame(c, drag.ck, fx1, fy1), dx = Math.round(q1[0] - drag.from[0]), dy = Math.round(q1[1] - drag.from[1]), mv = v => Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? [v[0] + dx, v[1] + dy] : Array.isArray(v) && Array.isArray(v[0]) ? v.map(q => [q[0] + dx, q[1] + dy]) : v, np = {}; for (const [k, v] of Object.entries(drag.orig)) np[k] = mv(v); const r = recOf(drag.ck); r.p = np; r.fp = c.fp; paint(el); return }
       if (drag.kind === 'hand') { const k = kOf(c), r = peek(drag.ck) || recOf(drag.ck); r.ox = Math.round(drag.ox + (sx - drag.sx) / Z / k); r.oy = Math.round(drag.oy + (sy - drag.sy) / Z / k); paint(el); return }
       const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, drag.ck, fx, fy), q = [Math.round(x), Math.round(y)], R = recOf(drag.ck).p;
       if (holdT) { const last = drag.key.includes('#') && R[LINES[drag.key.split('#')[0]]]?.[+drag.key.split('#')[1]]; if (!last || Math.hypot(last[0] - q[0], last[1] - q[1]) > 4) { clearTimeout(holdT); holdT = 0 } }   /* moving cancels the hold */
       if (drag.key.includes('#')) { const [k, i] = drag.key.split('#'), pts = R[LINES[k]]; if (pts && pts[+i]) { pts[+i] = q; setLine(R, k, pts) } } else R[drag.key] = q; paint(el);
     };
-    ps.onpointerup = () => { clearTimeout(holdT); holdT = 0; if (drag) { if (drag.kind === 'rul') saveRul(); write(KEY, DATA); const hand = drag.kind === 'hand'; drag = null; if (hand) draw() } };
+    ps.onpointerup = () => { clearTimeout(holdT); holdT = 0; if (drag) { if (drag.kind === 'rul') saveRul(); write(KEY, DATA); const hand = drag.kind === 'hand' || drag.kind === 'dset'; drag = null; if (hand) draw() } };
   }
   addEventListener('keydown', ev => {
     if (!document.body.classList.contains('sheet-mode') || $('psAdj') || /INPUT|TEXTAREA|SELECT/.test(ev.target?.tagName || '')) return;
