@@ -367,11 +367,14 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const src = mk(D), sg = src.getContext('2d'); sg.translate(D / 2, D / 2); sg.rotate(th); sg.translate(-SRC / 2, -SRC / 2); if (flip) { sg.translate(SRC, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0, SRC, SRC);
     const P2 = {}; for (const [k, v] of Object.entries(P)) P2[k] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? rotToD(v, th, D) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(q => rotToD(q, th, D)) : v;
     const mm = silS(src, D); if (!mm) return null; const cuts = Array.isArray(P2.neckLine) && P2.neckLine.length >= 2 && Array.isArray(P2.crotchLine) && P2.crotchLine.length >= 2 && (P2.top || (P2.headA && P2.headB)) ? { neck: P2.neckLine, hip: P2.crotchLine, head: P2.top || [(P2.headA[0] + P2.headB[0]) / 2, (P2.headA[1] + P2.headB[1]) / 2] } : null;
-    const r = PA().warp(src, mm, marksFor(P2, mm), qaScale(), { keepHeight: QA.keep, flip: false, grow: Math.round(mm.H * .03), sharpen: 'auto', ...(cuts ? { cuts } : {}) });
-    const wo = mk(D); wo.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]);
-    const out = mk(SRC), og = out.getContext('2d'); og.translate(SRC / 2, SRC / 2); og.rotate(-th); og.translate(-D / 2, -D / 2); og.drawImage(wo, 0, 0); out.res = r; out.rot = th; out.D = D; return out;
+    /* v98.867 · colours are read once from the ORIGINAL picture (pre) and written straight into the final upright frame (post) — no turn-warp-turn back */
+    const nw = img.naturalWidth || img.width || SRC, nh = img.naturalHeight || img.height || SRC;
+    const pre = (x, y) => { const u = rotFromD([x + .5, y + .5], th, D); let ux = u[0]; if (flip) ux = SRC - ux; return [ux * nw / SRC - .5, u[1] * nh / SRC - .5] };
+    const post = (x, y) => { const u = rotFromD([x + .5, y + .5], th, D); return [u[0] - .5, u[1] - .5] };
+    const r = PA().warp(src, mm, marksFor(P2, mm), qaScale(), { keepHeight: QA.keep, flip: false, grow: Math.round(mm.H * .03), sharpen: 'auto', cubic: true, srcImg: img, pre, post, outW: SRC, ...(cuts ? { cuts } : {}) });
+    const out = r.canvas; out.res = r; out.rot = th; out.D = D; return out;
   }
-  function qaRender(img, flip, P, down) { if (down) return qaRenderDown(img, flip, P); const mm = sil(img, flip); if (!mm) return null; const r = PA().warp(img, mm, marksFor(P, mm), qaScale(), { keepHeight: QA.keep, flip, grow: Math.round(mm.H * .03), sharpen: 'auto' }); const o = document.createElement('canvas'); o.width = o.height = SRC; o.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]); o.res = r; return o }
+  function qaRender(img, flip, P, down) { if (down) return qaRenderDown(img, flip, P); const mm = sil(img, flip); if (!mm) return null; const r = PA().warp(img, mm, marksFor(P, mm), qaScale(), { keepHeight: QA.keep, flip, grow: Math.round(mm.H * .03), sharpen: 'auto', cubic: true }); const o = document.createElement('canvas'); o.width = o.height = SRC; o.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]); o.res = r; return o }
   /* where every datum point goes with the picture (PA.mapPoint of the warp, minus the offset the preview is drawn at) */
   function qaMovePoints(P, cv) {
     const r = cv.res, th = cv.rot, D = cv.D, mv = v => { const a = th != null ? rotToD(v, th, D) : v, q = PA().mapPoint(r, a[0], a[1]); let b = [q[0] - r.offset[0], q[1] - r.offset[1]]; if (th != null) b = rotFromD(b, th, D); return [Math.round(b[0] * 10) / 10, Math.round(b[1] * 10) / 10] }, out = {};

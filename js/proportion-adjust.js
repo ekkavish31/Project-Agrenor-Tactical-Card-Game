@@ -150,6 +150,11 @@
     const W = m.w, H = m.h, cv = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c };
     const src = cv(), sg = src.getContext('2d', { willReadFrequently: true }); if (opt.flip) { sg.translate(W, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0); sg.setTransform(1, 0, 0, 1, 0, 0);
     const d = sg.getImageData(0, 0, W, H).data, seg = segments(m, marks), P = plan(seg, scale, opt), K = ['head', 'torso', 'legs'];
+    /* v98.867 · ONE resample: with opt.pre (this picture's pixel → pixel of opt.srcImg) and opt.post (output pixel → final pixel), the colours are read
+       straight from the original picture and written straight into the final frame. The 'down' pose used to be turned, warped and turned back =
+       three resamples (−40% sharpness); now the turned copy is only used to measure (zones, cut lines). */
+    let SD = d, SW = W, SH = H; if (opt.pre && opt.srcImg) { const c0 = document.createElement('canvas'); c0.width = SW = opt.srcImg.naturalWidth || opt.srcImg.width; c0.height = SH = opt.srcImg.naturalHeight || opt.srcImg.height; const g0 = c0.getContext('2d', { willReadFrequently: true }); g0.drawImage(opt.srcImg, 0, 0); SD = g0.getImageData(0, 0, SW, SH).data }
+    const PRE = opt.pre && opt.srcImg ? opt.pre : null, POST = opt.post || null;
     /* v98.402 · kx/ky instead of one shared k, so scale.shoulder can widen/narrow the torso sideways without touching how tall it is */
     const zones = zoneWeights(d, W, H, seg, opt, m.H), WT = zones.weights;
     const T = K.map((k, j) => { let cx = centreX(d, W, seg[k][0], seg[k][1]); if (k === 'head' && opt.points) { let sx = 0, n = 0; for (let i = 0; i < W * H; i++) { const a = WT[j][i] * d[i * 4 + 3]; sx += (i % W) * a; n += a } if (n) cx = sx / n } return { kx: P.kx[k], ky: P.k[k], ax: cx, ay: seg[k][1], bx: cx, by: P[k][1] } });
@@ -159,17 +164,19 @@
     /* Connected forward mesh avoids inverse-iteration tears. Expand the output
        around all transformed opaque pixels, including hair and raised hands. */
     const step = 2, xs = [], ys = []; for (let x = 0; x < W - 1; x += step) xs.push(x); xs.push(W - 1); for (let y = 0; y < H - 1; y += step) ys.push(y); ys.push(H - 1);
-    const vertices = ys.map(y => xs.map(x => { const p = fwd(x, y); return [p[0], p[1], x, y, Math.max(p[2], p[3])] }));
+    const vertices = ys.map(y => xs.map(x => { const p = fwd(x, y), q = POST ? POST(p[0], p[1]) : p; return [q[0], q[1], x, y, Math.max(p[2], p[3])] }));
     let minX = 0, minY = 0, maxX = W - 1, maxY = H - 1; const padding = Math.ceil(Math.max(...Object.values(P.k), ...Object.values(P.kx)) * 3 + step);
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 0) { const p = fwd(x, y); minX = Math.min(minX, Math.floor(p[0] - padding)); minY = Math.min(minY, Math.floor(p[1] - padding)); maxX = Math.max(maxX, Math.ceil(p[0] + padding)); maxY = Math.max(maxY, Math.ceil(p[1] + padding)) }
+    if (opt.outW) { minX = 0; minY = 0; maxX = opt.outW - 1; maxY = (opt.outH || opt.outW) - 1 }   /* a fixed final frame (with POST) */
     const OW = maxX - minX + 1, OH = maxY - minY + 1; if (OW * OH > 32000000) throw new Error('ภาพหลังขยายใหญ่เกินไป กรุณาลดสเกล');
     const out = document.createElement('canvas'); out.width = OW; out.height = OH;
-    const og = out.getContext('2d'), od = og.createImageData(OW, OH), o = od.data, KL = new Float32Array(OW * OH), outputLabels = new Uint8Array(OW * OH);
+    const og = out.getContext('2d'), od = og.createImageData(OW, OH), o = od.data, KL = new Float32Array(OW * OH), RS = new Uint8Array(OW * OH), outputLabels = new Uint8Array(OW * OH);
     const cr = t => { const a = Math.abs(t); return a < 1 ? 1.5 * a * a * a - 2.5 * a * a + 1 : a < 2 ? -.5 * a * a * a + 2.5 * a * a - 4 * a + 2 : 0 };
     const sample = (X, Y, x, y, kl) => {
-      const x0 = Math.floor(x), y0 = Math.floor(y), ax = x - x0, ay = y - y0; let r = 0, g = 0, b = 0, a = 0; const cubic = kl > 1.02 && opt.cubic !== false, lo = cubic ? -1 : 0, hi = cubic ? 2 : 1;
-      for (let j = lo; j <= hi; j++) { const yy = y0 + j, wy = cubic ? cr(j - ay) : j ? ay : 1 - ay; if (yy < 0 || yy >= H || !wy) continue; for (let k = lo; k <= hi; k++) { const xx = x0 + k, w = wy * (cubic ? cr(k - ax) : k ? ax : 1 - ax); if (xx < 0 || xx >= W || !w) continue; const i = (yy * W + xx) * 4, al = d[i + 3] / 255 * w; r += d[i] * al; g += d[i + 1] * al; b += d[i + 2] * al; a += al } }
-      const i = (Y * OW + X) * 4; if (a <= .003 || a * 255 < o[i + 3]) return; o[i] = r / a; o[i + 1] = g / a; o[i + 2] = b / a; o[i + 3] = clamp(a * 255, 0, 255); KL[Y * OW + X] = kl; outputLabels[Y * OW + X] = zones.labels[clamp(Math.round(y), 0, H - 1) * W + clamp(Math.round(x), 0, W - 1)];
+      let sx = x, sy = y; if (PRE) { const q = PRE(x, y); sx = q[0]; sy = q[1] } { const rx = Math.round(sx), ry = Math.round(sy); if (Math.abs(sx - rx) < 1e-3) sx = rx; if (Math.abs(sy - ry) < 1e-3) sy = ry }   /* float noise is not a sub-pixel position */
+      const x0 = Math.floor(sx), y0 = Math.floor(sy), ax = sx - x0, ay = sy - y0; let r = 0, g = 0, b = 0, a = 0; const cubic = (opt.cubic === true || (kl > 1.02 && opt.cubic !== false)) && (ax || ay), lo = cubic ? -1 : 0, hi = cubic ? 2 : 1;
+      for (let j = lo; j <= hi; j++) { const yy = y0 + j, wy = cubic ? cr(j - ay) : j ? ay : 1 - ay; if (yy < 0 || yy >= SH || !wy) continue; for (let k = lo; k <= hi; k++) { const xx = x0 + k, w = wy * (cubic ? cr(k - ax) : k ? ax : 1 - ax); if (xx < 0 || xx >= SW || !w) continue; const i = (yy * SW + xx) * 4, al = SD[i + 3] / 255 * w; r += SD[i] * al; g += SD[i + 1] * al; b += SD[i + 2] * al; a += al } }
+      const i = (Y * OW + X) * 4; if (a <= .003 || a * 255 < o[i + 3]) return; o[i] = r / a; o[i + 1] = g / a; o[i + 2] = b / a; o[i + 3] = clamp(a * 255, 0, 255); KL[Y * OW + X] = kl; RS[Y * OW + X] = ax || ay ? 1 : 0; outputLabels[Y * OW + X] = zones.labels[clamp(Math.round(y), 0, H - 1) * W + clamp(Math.round(x), 0, W - 1)];
     };
     let folds = 0;
     const triangle = (a, b, c) => {
@@ -181,10 +188,10 @@
     /* SHARPEN: unsharp mask (3×3) · amount = opt.sharpen (manual 0…1.5) or 'auto' = (local growth − 1) × 1.6 (max .9) — only where the picture was enlarged */
     const man = typeof opt.sharpen === 'number' ? Math.max(0, Math.min(1.5, opt.sharpen)) : null;
     if (man !== 0) { const src2 = new Uint8ClampedArray(o);
-      for (let Y = 1; Y < OH - 1; Y++) for (let X = 1; X < OW - 1; X++) { const p = Y * OW + X, i = p * 4; if (src2[i + 3] < 20) continue; const amt = man != null ? man : Math.min(.9, Math.max(0, (KL[p] - 1) * 1.6)); if (amt < .01) continue;
+      for (let Y = 1; Y < OH - 1; Y++) for (let X = 1; X < OW - 1; X++) { const p = Y * OW + X, i = p * 4; if (src2[i + 3] < 20) continue; const amt = man != null ? man : Math.max(Math.min(.9, Math.max(0, (KL[p] - 1) * 1.6)), RS[p] ? (opt.resharp ?? (opt.cubic === true ? .15 : .35)) : 0);   /* v98.867 · a pixel read between source pixels is a little soft: gentle compensation */ if (amt < .01) continue;
         for (let c = 0; c < 3; c++) { let sum = 0, n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const q = ((Y + dy) * OW + X + dx) * 4; if (src2[q + 3] < 20) continue; sum += src2[q + c]; n++ } const blur = n ? sum / n : src2[i + c]; o[i + c] = src2[i + c] + amt * (src2[i + c] - blur) } } }
     og.putImageData(od, 0, 0);
-    return { canvas: out, plan: P, seg, weights: WT, labels: zones.labels, outputLabels, src, T, offset: [-minX, -minY], folds, forward: (x, y) => { const p = fwd(x, y); return [p[0] - minX, p[1] - minY, p[2], p[3]] } };
+    return { canvas: out, plan: P, seg, weights: WT, labels: zones.labels, outputLabels, src, T, offset: [-minX, -minY], folds, forward: (x, y) => { const p = fwd(x, y); return POST ? p : [p[0] - minX, p[1] - minY, p[2], p[3]] } };
   }
   const api = { segments, plan, render, warp, weightsOf, lineField, protectArms, autoScale, mapPoint, zoneWeights, zoneCanvas, paintZone, ZONES };
   root.ProportionAdjust = api; if (typeof module === 'object' && module.exports) module.exports = api;
