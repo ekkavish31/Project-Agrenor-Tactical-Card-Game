@@ -93,6 +93,8 @@
     if (cur === c) { draw(); status() }
     /* v98.810 · SHARPNESS of each pose (same number as the "คม" badge of the Animation tiles): the average over the clip's frames (≤ 8) — computed one pose at a time so the page stays responsive */
     (async () => { const S = root.StudioSharp; if (!S?.of) return; for (const x of Object.values(c.cells)) { if (cur !== c) return; try { const fr = x.clip?.frames || [], pick = fr.length > 8 ? Array.from({ length: 8 }, (_, i) => fr[Math.round(i * (fr.length - 1) / 7)]) : fr, vs = []; for (const f of pick) { const im = f.file === x.file && x.img ? x.img : await B().loadImage(f.file); const v = im ? S.of(im) : null; if (v != null) vs.push(v) } x.sharp = vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : null } catch (er) { x.sharp = null } await new Promise(r => setTimeout(r, 0)) } if (cur === c) draw() })();
+    /* v98.817 · once per character: locks ticked before the mirror copy get their twin's datum set too */
+    try { const MK = 'pose-sheet.mirrorSync', md = JSON.parse(localStorage.getItem(MK) || '[]'), k2 = akey(c.id); if (!md.includes(k2) && cur === c) { let n = 0; for (const ck of Object.keys(c.cells).filter(okOf)) if (mirrorToTwin(ck)) n++; md.push(k2); localStorage.setItem(MK, JSON.stringify(md)); if (n) write(KEY, DATA) } } catch (er) { }
     /* v98.805 · once per character: locks that were ticked before this feature are marked "ตรวจแล้ว" in the Animation grid too */
     try { const SK = 'pose-sheet.revSync', done = JSON.parse(localStorage.getItem(SK) || '[]'), k = akey(c.id); if (!done.includes(k) && cur === c) { const oks = Object.keys(c.cells).filter(okOf); done.push(k); localStorage.setItem(SK, JSON.stringify(done)); if (oks.length) await reviewSync(oks, true) } } catch (er) { }
   }
@@ -120,7 +122,15 @@
   const peek = ck => norm(DATA[akey(cur?.id)]?.[ck]);
   const okOf = ck => { const r = peek(ck), c = cur?.cells[ck]; return !!(r?.ok && c && r.fp === c.fp) };
   /* v98.805 · the LOCK = "ตรวจแล้ว" of the Animation grid: ticking 🔒 approves the pose's clip(s) there — the clip of this direction AND of its mirror twin (SW↔SE, NE↔NW) — unticking sends them back to "รอตรวจ" */
-  function clipIdsOf(ck) { const c = cur?.cells[ck]; if (!c) return []; const ids = new Set(); if (c.clip?.id) ids.add(c.clip.id); for (const cl of (entity()?.clips || [])) if (cl.action === c.pose && (cl.view === c.dir || cl.view === MIR[c.dir])) ids.add(cl.id); return [...ids] }
+  /* v98.817 · TWIN = the opposite direction (SW↔SE · NE↔NW) when it is a MIRROR COPY of this pose: its first picture is the very same file as this cell's (the Studio mirror link). Poses whose directions have their own pictures have no twin → nothing is copied or approved for them. */
+  const OPP = { SW: 'SE', SE: 'SW', NE: 'NW', NW: 'NE' };
+  function twinOf(ck) { const c = cur?.cells[ck], o = c && OPP[c.dir]; if (!o) return null; const tw = (entity()?.clips || []).find(cl => cl.action === c.pose && cl.view === o && cl.frames?.length); if (!tw || tw.frames[0].file !== c.file) return null; return { ck: cellKey(c.pose, o), clip: tw } }
+  function clipIdsOf(ck) { const c = cur?.cells[ck]; if (!c) return []; const e = entity(), own = (e?.clips || []).find(cl => cl.action === c.pose && cl.view === c.dir && cl.frames?.length) || c.clip, tw = twinOf(ck), ids = new Set(); if (own?.id) ids.add(own.id); if (tw) ids.add(tw.clip.id); return [...ids] }
+  /* the datum set of a pose, mirrored for its twin: x → 384 − (x + move), y → y + move; the "left / right of the picture" names swap (eyes · shoulders · leg edges · feet), the points of a cut line are listed the other way round */
+  const SWAPLR = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', legL: 'legR', legR: 'legL', footL: 'footR', footR: 'footL' };
+  function mirrorSet(P, ox, oy) { const m = v => [Math.round((SRC - (v[0] + ox)) * 10) / 10, Math.round((v[1] + oy) * 10) / 10], out = {}; for (const [k, v] of Object.entries(P || {})) { const nk = SWAPLR[k] || k; out[nk] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? m(v) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(m).reverse() : v } return out }
+  /* copy the datum set of a pose (locked / just baked) to its twin's record — quietly: the sheet shows only SW and NE rows; the twin's own lock is never overwritten */
+  function mirrorToTwin(ck) { const tw = twinOf(ck), r = peek(ck); if (!tw || !r?.p || !Object.keys(r.p).length) return false; const rec = (DATA[akey(cur.id)] ||= {}), old = rec[tw.ck]; if (old?.ok) return false; const [ox, oy] = off(ck); rec[tw.ck] = { fp: null, p: mirrorSet(r.p, ox, oy), ok: false, ox: 0, oy: 0, from: 'mirror:' + ck }; return true }
   async function reviewSync(cks, on) { const U = root.StudioUnifiedReview; if (!U?.setVerdictMany) return; const ids = [...new Set(cks.flatMap(clipIdsOf))]; if (!ids.length) return; try { await U.setVerdictMany(ids, on ? 'approved' : 'unreviewed') } catch (e) { console.warn('pose-sheet review sync', e) } }
   const changed = ck => { const r = peek(ck), c = cur?.cells[ck]; return !!(r && c && r.fp && r.fp !== c.fp) };
   const off = ck => { const r = peek(ck); return [r?.ox || 0, r?.oy || 0] };
@@ -524,7 +534,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       const ck = el.dataset.ck, c = cur.cells[ck], cv = el.querySelector('canvas');
       el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => setSize(cur.id, c.pose, c.dir, kOf(c) * (1 + (+b.dataset.k) / 100)));
       const inp = el.querySelector('[data-in]'); inp.onchange = () => { const v = +inp.value; if (v >= 30 && v <= 250) setSize(cur.id, c.pose, c.dir, v / 100) };
-      el.querySelector('[data-ok]').onchange = ev => { const r = recOf(ck); r.ok = ev.target.checked; r.fp = c.fp; write(KEY, DATA); draw(); status(); reviewSync([ck], r.ok) };
+      el.querySelector('[data-ok]').onchange = ev => { const r = recOf(ck); r.ok = ev.target.checked; r.fp = c.fp; if (r.ok) mirrorToTwin(ck); write(KEY, DATA); draw(); status(); reviewSync([ck], r.ok) };
       el.querySelector('[data-b="snap"]').onclick = () => { if (snap(ck, true)) { write(KEY, DATA); draw(); msg('เข้าเส้นพื้นแล้ว (ยังไม่บันทึก) — กด 💾 บันทึกตำแหน่งภาพ') } else msg('วางจุดเท้าของท่านี้ก่อน' + (c.pose === 'down' ? ' (ท่านอน: เท้า ซ้าย = จุดแตะพื้นใต้กลางลำตัว)' : ' (เท้า ซ้าย + ขวา)')) };
       cv.ondblclick = ev => { const [sx, sy] = ptr(cv, ev), h = hitRuler(sx, sy); if (h) { (h.t === 'l' ? RUL.lines : RUL.meas).splice(h.i, 1); saveRul(); draw() } };
       cv.onpointerdown = ev => {
@@ -688,7 +698,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       if (qaDirty() && QA.ck) { note('ปรับสัดส่วน…'); const okq = await qaSave(); (okq ? done : fail).push('ปรับสัดส่วน'); if (!okq && QA.msg) why.push(QA.msg) }
       if (movedNow()) { note('ตำแหน่งภาพ…'); const r = await bakeMoves(); if (r.ok) { done.push('ตำแหน่งภาพ' + (r.skipped.length ? ' (ข้าม ' + r.skipped.length + ')' : '')); if (r.skipped.length) why.push('ข้าม: ' + r.skipped.join(' · ')) } else { fail.push('ตำแหน่งภาพ'); why.push(r.err) } }
       if (draftCount()) { note('ขนาด…'); (await saveSizes() ? done : fail).push('ขนาด') }
-      { const rl = relock(); if (rl.length) await reviewSync(rl, true) }   /* the NEW picture's "ตรวจแล้ว" in the Animation grid too */
+      { const rl = relock(); if (rl.length) { for (const ck of rl) mirrorToTwin(ck); write(KEY, DATA); await reviewSync(rl, true) } }   /* the NEW picture's "ตรวจแล้ว" in the Animation grid too */
       if (marksDirty()) { note('จุด/ติ๊ก…'); (await pushMarks() ? done : fail).push('จุด/ติ๊ก') }
     } finally { draw(); const extra = why.length ? ' — ' + why.join(' · ') : ''; note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') + extra : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' + extra : ''); const m = $('psCartMsg'); if (m) { m.style.cssText = 'font-size:12.5px;color:' + (fail.length || why.length ? '#a4341c' : '#315d46') + ';max-width:46ch;white-space:normal;line-height:1.25'; m.title = extra.slice(3) } }
   }
