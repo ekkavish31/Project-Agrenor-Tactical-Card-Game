@@ -130,7 +130,9 @@
   const SWAPLR = { eyeL: 'eyeR', eyeR: 'eyeL', shL: 'shR', shR: 'shL', legL: 'legR', legR: 'legL', footL: 'footR', footR: 'footL' };
   function mirrorSet(P, ox, oy) { const m = v => [Math.round((SRC - (v[0] + ox)) * 10) / 10, Math.round((v[1] + oy) * 10) / 10], out = {}; for (const [k, v] of Object.entries(P || {})) { const nk = SWAPLR[k] || k; out[nk] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? m(v) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(m).reverse() : v } return out }
   /* copy the datum set of a pose (locked / just baked) to its twin's record — quietly: the sheet shows only SW and NE rows; the twin's own lock is never overwritten */
-  function mirrorToTwin(ck) { const tw = twinOf(ck), r = peek(ck); if (!tw || !r?.p || !Object.keys(r.p).length) return false; const rec = (DATA[akey(cur.id)] ||= {}), old = rec[tw.ck]; if (old?.ok) return false; const [ox, oy] = off(ck); rec[tw.ck] = { fp: null, p: mirrorSet(r.p, ox, oy), ok: false, ox: 0, oy: 0, from: 'mirror:' + ck }; return true }
+  function mirrorToTwin(ck, ask) { const tw = twinOf(ck), r = peek(ck); if (!tw || !r?.p || !Object.keys(r.p).length) return false; const rec = (DATA[akey(cur.id)] ||= {}), old = rec[tw.ck];
+    /* v98.818 · a twin that is already locked is never overwritten silently: when the user is acting (lock / Cart) ask first — OK = overwrite (and its lock is taken off, its points changed) · Cancel = keep it; the automatic one-time sync (ask = false) just skips it */
+    if (old?.ok) { if (!ask) return false; if (!confirm('ทิศตรงข้าม (' + tw.ck.replace('@', ' ') + ') ล็อกอยู่แล้ว\n\nเขียนทับจุด datum ของมัน ด้วยค่าที่กลับด้านจากท่า ' + ck.replace('@', ' ') + ' ไหม?\n\nตกลง = เขียนทับ (และปลดล็อกทิศตรงข้าม)\nยกเลิก = ไม่ copy')) return false } const [ox, oy] = off(ck); rec[tw.ck] = { fp: null, p: mirrorSet(r.p, ox, oy), ok: false, ox: 0, oy: 0, from: 'mirror:' + ck }; return true }
   async function reviewSync(cks, on) { const U = root.StudioUnifiedReview; if (!U?.setVerdictMany) return; const ids = [...new Set(cks.flatMap(clipIdsOf))]; if (!ids.length) return; try { await U.setVerdictMany(ids, on ? 'approved' : 'unreviewed') } catch (e) { console.warn('pose-sheet review sync', e) } }
   const changed = ck => { const r = peek(ck), c = cur?.cells[ck]; return !!(r && c && r.fp && r.fp !== c.fp) };
   const off = ck => { const r = peek(ck); return [r?.ox || 0, r?.oy || 0] };
@@ -534,7 +536,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       const ck = el.dataset.ck, c = cur.cells[ck], cv = el.querySelector('canvas');
       el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => setSize(cur.id, c.pose, c.dir, kOf(c) * (1 + (+b.dataset.k) / 100)));
       const inp = el.querySelector('[data-in]'); inp.onchange = () => { const v = +inp.value; if (v >= 30 && v <= 250) setSize(cur.id, c.pose, c.dir, v / 100) };
-      el.querySelector('[data-ok]').onchange = ev => { const r = recOf(ck); r.ok = ev.target.checked; r.fp = c.fp; if (r.ok) mirrorToTwin(ck); write(KEY, DATA); draw(); status(); reviewSync([ck], r.ok) };
+      el.querySelector('[data-ok]').onchange = ev => { const r = recOf(ck); r.ok = ev.target.checked; r.fp = c.fp; if (r.ok) mirrorToTwin(ck, true); write(KEY, DATA); draw(); status(); reviewSync([ck], r.ok) };
       el.querySelector('[data-b="snap"]').onclick = () => { if (snap(ck, true)) { write(KEY, DATA); draw(); msg('เข้าเส้นพื้นแล้ว (ยังไม่บันทึก) — กด 💾 บันทึกตำแหน่งภาพ') } else msg('วางจุดเท้าของท่านี้ก่อน' + (c.pose === 'down' ? ' (ท่านอน: เท้า ซ้าย = จุดแตะพื้นใต้กลางลำตัว)' : ' (เท้า ซ้าย + ขวา)')) };
       cv.ondblclick = ev => { const [sx, sy] = ptr(cv, ev), h = hitRuler(sx, sy); if (h) { (h.t === 'l' ? RUL.lines : RUL.meas).splice(h.i, 1); saveRul(); draw() } };
       cv.onpointerdown = ev => {
@@ -698,7 +700,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       if (qaDirty() && QA.ck) { note('ปรับสัดส่วน…'); const okq = await qaSave(); (okq ? done : fail).push('ปรับสัดส่วน'); if (!okq && QA.msg) why.push(QA.msg) }
       if (movedNow()) { note('ตำแหน่งภาพ…'); const r = await bakeMoves(); if (r.ok) { done.push('ตำแหน่งภาพ' + (r.skipped.length ? ' (ข้าม ' + r.skipped.length + ')' : '')); if (r.skipped.length) why.push('ข้าม: ' + r.skipped.join(' · ')) } else { fail.push('ตำแหน่งภาพ'); why.push(r.err) } }
       if (draftCount()) { note('ขนาด…'); (await saveSizes() ? done : fail).push('ขนาด') }
-      { const rl = relock(); if (rl.length) { for (const ck of rl) mirrorToTwin(ck); write(KEY, DATA); await reviewSync(rl, true) } }   /* the NEW picture's "ตรวจแล้ว" in the Animation grid too */
+      { const rl = relock(); if (rl.length) { for (const ck of rl) mirrorToTwin(ck, true); write(KEY, DATA); await reviewSync(rl, true) } }   /* the NEW picture's "ตรวจแล้ว" in the Animation grid too */
       if (marksDirty()) { note('จุด/ติ๊ก…'); (await pushMarks() ? done : fail).push('จุด/ติ๊ก') }
     } finally { draw(); const extra = why.length ? ' — ' + why.join(' · ') : ''; note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') + extra : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' + extra : ''); const m = $('psCartMsg'); if (m) { m.style.cssText = 'font-size:12.5px;color:' + (fail.length || why.length ? '#a4341c' : '#315d46') + ';max-width:46ch;white-space:normal;line-height:1.25'; m.title = extra.slice(3) } }
   }
