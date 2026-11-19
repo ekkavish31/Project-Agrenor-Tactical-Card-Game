@@ -289,8 +289,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (flip) { g.save(); g.translate(x0 + s, y0); g.scale(-1, 1); g.drawImage(src, 0, 0, s, s); g.restore() } else g.drawImage(src, x0, y0, s, s);
     if (SHOW.pts) { const P = Pof(ck); for (const [key, , col] of stepsOf(ck)) { const lk = LINES[key], pts = lk && P[lk]; for (const v of (pts && pts.length ? pts : (P[key] ? [P[key]] : []))) { const [px, py] = toFrame(c, ck, v[0], v[1]); g.fillStyle = col; g.strokeStyle = '#fff'; g.lineWidth = 1 / LZ * 1.4; g.beginPath(); g.arc(px, py, 3.2 / LZ * 1.6, 0, 7); g.fill(); g.stroke() } } }
     g.restore();
-    /* the cross-hair: the point goes exactly under the centre */
-    const m = LOUPE / 2; g.save(); g.lineWidth = 1.5; g.strokeStyle = s0.col; for (const [a, b, c2, d] of [[m, 0, m, m - 12], [m, m + 12, m, LOUPE], [0, m, m - 12, m], [m + 12, m, LOUPE, m]]) { g.beginPath(); g.moveTo(a, b); g.lineTo(c2, d); g.stroke() } g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(m, m, 12, 0, 7); g.stroke(); g.strokeStyle = s0.col; g.beginPath(); g.arc(m, m, 12.8, 0, 7); g.stroke();
+    /* the cross-hair: the point goes exactly under the centre (v98.799 · ring and gap halved: radius 12 → 6) */
+    const m = LOUPE / 2; g.save(); g.lineWidth = 1.5; g.strokeStyle = s0.col; for (const [a, b, c2, d] of [[m, 0, m, m - 6], [m, m + 6, m, LOUPE], [0, m, m - 6, m], [m + 6, m, LOUPE, m]]) { g.beginPath(); g.moveTo(a, b); g.lineTo(c2, d); g.stroke() } g.strokeStyle = '#fff'; g.lineWidth = 1; g.beginPath(); g.arc(m, m, 6, 0, 7); g.stroke(); g.strokeStyle = s0.col; g.beginPath(); g.arc(m, m, 6.8, 0, 7); g.stroke();
     g.font = '700 11px sans-serif'; g.textAlign = 'left'; g.fillStyle = '#000b'; g.fillRect(0, LOUPE - 17, LOUPE, 17); g.fillStyle = '#fff'; g.fillText(s0.n + '/' + s0.all + ' · ' + s0.short + ' · ' + Math.round(fx) + ',' + Math.round(fy), 6, LOUPE - 5); g.restore();
   }
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
