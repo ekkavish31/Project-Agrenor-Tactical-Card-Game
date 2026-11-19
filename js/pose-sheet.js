@@ -28,7 +28,7 @@
   const STEP = Object.fromEntries(STEPS.map(s => [s[0], s]));
   /* v98.782 · a pose seen from the front (SW row) uses the two EYES for the head size; a pose seen from behind (NE row) has no eyes → two FREE points (A, B) that you choose yourself (e.g. an ear and the crown). Back poses are compared with the STANDING BACK pose (idle NE) only */
   const isBack = ck => /@(NE|NW)$/.test(ck || '');
-  const stepsOf = ck => STEPS.filter(s => isBack(ck) ? s[0] !== 'eyeL' && s[0] !== 'eyeR' : s[0] !== 'headA' && s[0] !== 'headB');
+  const stepsOf = ck => STEPS.filter(s => isBack(ck) ? s[0] !== 'eyeL' && s[0] !== 'eyeR' && s[0] !== 'top' : s[0] !== 'headA' && s[0] !== 'headB');
   const stepsHtml = ck => stepsOf(ck).map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('');
   const SRC = 384, GX = 192, GY = 360, PAD = 96;   /* every character frame: 384 × 384, ground point (192, 360) */
   const RCOL = ['#e03131', '#1971c2', '#2f9e44', '#f08c00', '#9c36b5', '#0c8599', '#c2255c', '#5c940d'];
@@ -126,9 +126,10 @@
   function vals(ck) {
     const P = Pof(ck), an = anchorOf(ck), c = cur?.cells[ck]; if (!c) return null; const d = (a, b) => a && b ? Math.hypot(a[0] - b[0], a[1] - b[1]) : null;
     const back = isBack(ck);
-    if (!an || !P.top || !(back ? P.headA && P.headB : P.eyeL && P.eyeR)) return { need: back ? 'วางจุดเท้า + ยอดกะโหลก + หัว จุด A/B ก่อน' : 'วางจุดเท้า + ยอดกะโหลก + ตาสองข้างก่อน' };
+    if (!an || !(back ? P.headA && P.headB : P.top && P.eyeL && P.eyeR)) return { need: back ? 'วางจุดเท้า + หัว จุด A/B ก่อน' : 'วางจุดเท้า + ยอดกะโหลก + ตาสองข้างก่อน' };
     /* a LYING pose (down): the length is measured along the body axis (skull top → feet), not as a height — the same line whichever way the body lies */
-    const H = c.pose === 'down' ? Math.max(0, ...[P.footL, P.footR].filter(Boolean).map(f => d(P.top, f))) : an[1] - P.top[1]; if (!(H >= 20)) return { need: 'ความสูงตัวผิดปกติ' };
+    /* v98.788 · a BACK pose has no skull-top point: the head is just the distance A–B (px), nothing is measured as a % of the height — back poses are compared in px against the standing back pose */
+    const H = back ? null : c.pose === 'down' ? Math.max(0, ...[P.footL, P.footR].filter(Boolean).map(f => d(P.top, f))) : an[1] - P.top[1]; if (!back && !(H >= 20)) return { need: 'ความสูงตัวผิดปกติ' };
     /* v98.782 · HEAD = (skull top → the EYE LINE) × 2. The eye line = the line through the two eyes; the distance is taken straight to that line (so a tilted or lying head works), twice = the whole head. The jaw / an open mouth does not count.
        The old head (skull top → chin) stays below as "หัว→คาง", for reference only. */
     let topToEyes = 0; if (!back) { const ex = P.eyeR[0] - P.eyeL[0], ey = P.eyeR[1] - P.eyeL[1], el = Math.hypot(ex, ey), tx = P.top[0] - P.eyeL[0], ty = P.top[1] - P.eyeL[1]; topToEyes = el >= 2 ? Math.abs(tx * ey - ty * ex) / el : d(P.top, [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2]) }
@@ -139,8 +140,8 @@
   function valsHtml(ck) {
     const v = vals(ck); if (!v) return ''; if (v.need) return `<div class="vals dim">${v.need}</div>`;
     const bk = 'idle@' + cur.cells[ck].dir, base = (ck === bk || ck === 'idle@SW' ? null : isBack(ck) ? vals(bk) : vals(bk) || vals('idle@SW'));   /* back poses: only against the standing BACK pose */
-    const row = (n, a, bk, dim) => { const p = a == null ? null : a / v.H * 100; let dl = ''; if (base && !base.need && base[bk] != null && p != null) { const q = base[bk] / base.H * 100, x = (p - q) / q * 100; dl = ` <i class="${Math.abs(x) > 5 ? 'bad' : Math.abs(x) > 2 ? 'warn' : 'ok'}">${x > 0 ? '+' : ''}${x.toFixed(1)}%</i>` } return `<tr${dim ? ' style="opacity:.5"' : ''}><td>${n}</td><td>${a == null ? '—' : Math.round(a)}px</td><td>${p == null ? '—' : p.toFixed(1) + '%'}${dl}</td></tr>` };
-    return `<table class="vals"><tr><td>สูงตัว</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>${row(v.headLabel, v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
+    const bkP = v.H == null, row = (n, a, bk, dim) => { const p = a == null ? null : bkP ? a : a / v.H * 100; let dl = ''; if (base && !base.need && base[bk] != null && p != null) { const q = bkP ? base[bk] : base[bk] / base.H * 100, x = (p - q) / q * 100; dl = ` <i class="${Math.abs(x) > 5 ? 'bad' : Math.abs(x) > 2 ? 'warn' : 'ok'}">${x > 0 ? '+' : ''}${x.toFixed(1)}%</i>` } return `<tr${dim ? ' style="opacity:.5"' : ''}><td>${n}</td><td>${a == null ? '—' : Math.round(a)}px</td><td>${p == null || bkP ? '' : p.toFixed(1) + '%'}${dl}</td></tr>` };
+    return `<table class="vals">${bkP ? '' : `<tr><td>สูงตัว</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>`}${row(v.headLabel, v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
   }
 
   /* ---------- UI state ---------- */
@@ -339,13 +340,13 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* the picture is turned on a canvas 1.5× bigger than the frame (a long body turned by an angle that is not 90° sticks out of a 384 × 384 canvas: the ends of the arms / legs were cut off), so nothing is lost; the points turn the same way */
   const rotToD = (p, th, D) => { const c = Math.cos(th), s = Math.sin(th), x = p[0] - SRC / 2, y = p[1] - SRC / 2; return [D / 2 + x * c - y * s, D / 2 + x * s + y * c] };
   const rotFromD = (q, th, D) => { const c = Math.cos(-th), s = Math.sin(-th), x = q[0] - D / 2, y = q[1] - D / 2; return [SRC / 2 + x * c - y * s, SRC / 2 + x * s + y * c] };
-  function bodyAxisAngle(P) { const f = P.footL && P.footR ? [(P.footL[0] + P.footR[0]) / 2, (P.footL[1] + P.footR[1]) / 2] : (P.footL || P.footR); if (!P.top || !f) return null; const vx = f[0] - P.top[0], vy = f[1] - P.top[1]; if (Math.hypot(vx, vy) < 20) return null; return Math.PI / 2 - Math.atan2(vy, vx) }
+  function bodyAxisAngle(P) { const f = P.footL && P.footR ? [(P.footL[0] + P.footR[0]) / 2, (P.footL[1] + P.footR[1]) / 2] : (P.footL || P.footR); const T = P.top || (P.headA && P.headB ? [(P.headA[0] + P.headB[0]) / 2, (P.headA[1] + P.headB[1]) / 2] : null); if (!T || !f) return null; const vx = f[0] - T[0], vy = f[1] - T[1]; if (Math.hypot(vx, vy) < 20) return null; return Math.PI / 2 - Math.atan2(vy, vx) }
   function silS(img, S) { const c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, S, S); const d = g.getImageData(0, 0, S, S).data; let top = S, bot = -1; for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) if (d[(y * S + x) * 4 + 3] > 40) { top = Math.min(top, y); bot = Math.max(bot, y); break } if (bot < 0) return null; return { w: S, h: S, top, bottom: bot, H: bot - top + 1 } }
   function qaRenderDown(img, flip, P) {
     const th = bodyAxisAngle(P); if (th == null) return null; const D = Math.ceil(SRC * 1.5), mk = n => { const c = document.createElement('canvas'); c.width = c.height = n; return c };
     const src = mk(D), sg = src.getContext('2d'); sg.translate(D / 2, D / 2); sg.rotate(th); sg.translate(-SRC / 2, -SRC / 2); if (flip) { sg.translate(SRC, 0); sg.scale(-1, 1) } sg.drawImage(img, 0, 0, SRC, SRC);
     const P2 = {}; for (const [k, v] of Object.entries(P)) P2[k] = Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' ? rotToD(v, th, D) : Array.isArray(v) && Array.isArray(v[0]) ? v.map(q => rotToD(q, th, D)) : v;
-    const mm = silS(src, D); if (!mm) return null; const cuts = Array.isArray(P2.neckLine) && P2.neckLine.length >= 2 && Array.isArray(P2.crotchLine) && P2.crotchLine.length >= 2 && P2.top ? { neck: P2.neckLine, hip: P2.crotchLine, head: P2.top } : null;
+    const mm = silS(src, D); if (!mm) return null; const cuts = Array.isArray(P2.neckLine) && P2.neckLine.length >= 2 && Array.isArray(P2.crotchLine) && P2.crotchLine.length >= 2 && (P2.top || (P2.headA && P2.headB)) ? { neck: P2.neckLine, hip: P2.crotchLine, head: P2.top || [(P2.headA[0] + P2.headB[0]) / 2, (P2.headA[1] + P2.headB[1]) / 2] } : null;
     const r = PA().warp(src, mm, marksFor(P2, mm), qaScale(), { keepHeight: QA.keep, flip: false, grow: Math.round(mm.H * .03), sharpen: 'auto', ...(cuts ? { cuts } : {}) });
     const wo = mk(D); wo.getContext('2d').drawImage(r.canvas, -r.offset[0], -r.offset[1]);
     const out = mk(SRC), og = out.getContext('2d'); og.translate(SRC / 2, SRC / 2); og.rotate(-th); og.translate(-D / 2, -D / 2); og.drawImage(wo, 0, 0); out.res = r; out.rot = th; out.D = D; return out;
