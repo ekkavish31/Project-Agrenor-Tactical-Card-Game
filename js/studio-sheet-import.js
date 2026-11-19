@@ -101,8 +101,8 @@
     dlg.innerHTML = `<h2>🧩 นำเข้าชีทหลายช่อง</h2><p id="shWho" style="margin:0 0 6px"></p>
      <div class="row"><input type="file" id="shFile" accept="image/*"><span style="color:#6b6247">หรือวางภาพ (Ctrl+V) / ลากไฟล์มาวางที่หน้าต่างนี้</span></div>
      <div class="row" id="shCut" hidden>
-      <label>วิธีตัด <select id="shMode"><option value="grid">ตารางเท่าๆ กัน</option><option value="smart" selected>ตารางหาร่องว่างอัตโนมัติ</option><option value="blob">ตามชิ้นภาพ (อัตโนมัติ)</option></select></label>
-      <label>คอลัมน์ <input type="number" id="shCols" min="1" max="12" value="3"></label><label>แถว <input type="number" id="shRows" min="1" max="12" value="2"></label>
+      <label>วิธีตัด <select id="shMode"><option value="grid">ตารางเท่าๆ กัน</option><option value="smart">ตารางหาร่องว่างอัตโนมัติ</option><option value="blob" selected>ตามชิ้นภาพ (อัตโนมัติ)</option></select></label>
+      <label>คอลัมน์ <input type="number" id="shCols" min="1" max="12" value="3" disabled></label><label>แถว <input type="number" id="shRows" min="1" max="12" value="2" disabled></label>
       <label><input type="checkbox" id="shBg" checked> ลบพื้นหลังสีเรียบ</label><label>ความไว <input type="number" id="shTol" min="5" max="120" value="40"></label>
       <button id="shRecut">ตัดใหม่</button></div>
      <div id="shInfo" style="color:#6b6247"></div><div id="shSharp"></div><canvas id="shPrev" hidden></canvas>
