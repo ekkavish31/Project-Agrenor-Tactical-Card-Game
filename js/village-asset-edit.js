@@ -1386,7 +1386,7 @@
    const f = refFeet(o), hs = charScale('hero');
    if (Math.abs(p.x - f.x) < 24 * hs && p.y > f.y - 96 * hs && p.y < f.y + 10 * hs) return start('ref', { ox: f.x, oy: f.y })
   }
-  if (o && o.id !== 'square' && place.tab === 'lead' && o.lead?.mode !== 'custom' && o.lead?.mode !== 'none' && (courtCellsOf(o) || !o.court)) {
+  if (o && o.id !== 'square' && place.tab === 'lead' && o.lead?.mode !== 'custom' && o.lead?.mode !== 'none' && true) {   /* v98.836 · courtyard removed */
    const g0 = gate(o), gq = project(g0.u, g0.v);
    if (nearPx(gq, p, 18)) { UX.checkpoint(); return start('gate', {}) }
   }
@@ -1507,11 +1507,7 @@
   }
   if (drag.type === 'gate') {
    const w = inv(p.x, p.y), q = canonical(o, w.u, w.v), a = center(o);
-   if (courtCellsOf(o)) {
-    let best = null, bd = 1e9;
-    for (const c of courtCellsOf(o)) { const d = Math.hypot(a.u + (c[0] + .5) / 2 - q.u, a.v + (c[1] + .5) / 2 - q.v); if (d < bd) { bd = d; best = c } }
-    if (best) o.court = { ...o.court, exit: [best[0], best[1]] }
-   } else { const e = estate(o); o.cauto = { ...(o.cauto || {}), du: Math.max(-12, Math.min(12, Math.round((q.u - e.u) * 4) / 4)) } }
+   { const e = estate(o); o.cauto = { ...(o.cauto || {}), du: Math.max(-12, Math.min(12, Math.round((q.u - e.u) * 4) / 4)) } }
    terrainDirty = true; UX.refresh();
    return
   }
@@ -2189,12 +2185,11 @@
    framed = hasFrame(o),
    items = frame.filter(e => e.owner === id);
   if (!o && place.tab !== 'items') place.tab = 'items';
-  if (place.tab === 'frame' ||  (place.tab === 'entry' || place.tab === 'lead') && (!o || o.id === 'square')) place.tab = 'building';
+  if (place.tab === 'frame' || place.tab === 'entry' || place.tab === 'lead' && (!o || o.id === 'square')) place.tab = 'building';   /* v98.836 · the 🚪 ทางเข้า tab (yellow / green cells) is gone */
   place.keys = place.keys.filter(k => items.some(e => e.key === k));
   const tabs = [
    ['building', '🏠 อาคาร', !!o],
    ['items', '🪴 ของย่อย ' + items.length, true],
-   ['entry', '🚪 ทางเข้า', !!o && o.id !== 'square'],
    ['lead', '🛣 ถนนทางเข้า', !!o && o.id !== 'square']
   ];
   const changed = snapOf() !== place.before;
@@ -2216,7 +2211,6 @@
    building: tabBuilding,
    frame: tabFrame,
    items: tabItems,
-   entry: tabEntry,
    lead: tabLead
   })[place.tab](body, o, items);
   panel.querySelectorAll('[data-n]').forEach(b => b.onclick = () => {
@@ -2757,45 +2751,7 @@
   return -1
  }
  function leadSnap(o, w) { const q = canonical(o, w.u, w.v), a = center(o), r = x => Math.round(x * 2) / 2; return { du: r(q.u - a.u), dv: r(q.v - a.v) } }
- function tabEntry(body, o) {
-  body.innerHTML = `<p class="sub">ลาก <b style="color:#9ff3f5">หมุดฟ้า</b> บนแผนที่ไปวางที่ประตู · ตัวเอกเดินมาถึงจุดนี้แล้วเข้าใช้บริการ</p>
-  <div class="row"><button id="eReset">คืนจุดเข้าเดิม</button></div><hr>
-  ${o.court?'':`<b class="sec">ถนน/ลานจากทางเข้าไปถึงถนน (อัตโนมัติ)</b>
-  ${slider('cw','ความกว้าง (ช่อง)',o.cauto?.w ?? ((o.id==='home'?2.2:o.w+1.3)*2),1,16,.5,unit)}${slider('cu','ตำแหน่ง ซ้าย ↔ ขวา (ช่อง)',o.cauto?.du??0,-10,10,.5,unit)}
-  <div class="row"><button id="eAutoReset"${o.cauto?'':' disabled'}>คืนขนาด/ตำแหน่งอัตโนมัติ</button></div>
-  <p class="sub">ปรับแถบปูพื้นจากทางเข้าไปถึงถนน และจุดที่ถนนมาเชื่อม · ถ้าอยากกำหนดรายช่องเอง ใช้ “ช่องทางเดิน (สีเหลือง)” ด้านล่าง</p><hr>`}
-  <b class="sec">ช่องทางเดิน (สีเหลือง)</b>
-  ${o.court?.cells?.length ? slider('cwid', 'ความกว้างทางเดิน (ช่องครึ่ง)', courtWidthOf(o.court.cells), 1, 12, 1, x => x) + '<p class="sub">ตั้งให้ทุกแถวของทางเดินกว้างเท่ากัน (ใช้ค่าเดียวกันกับบ้านอื่นให้ทางเข้าขนาดเท่ากัน) · ช่วงที่วิ่งขนานขอบไม่ถูกแตะ</p>' : ''}
-  <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีทางเดิน':o.court?.cells?o.court.cells.length+' ช่องครึ่ง':o.court?.pts?'เส้นเดิมที่วาดไว้':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
-  <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">🟨 ${courtDraw?'กำลังทาสี… คลิก/ลากบนกริด (ช่องที่มีอยู่ = ลบ)':'ทาสีช่องทางเดิน'}</button></div>
-  <div class="row"><button id="cRect" style="${courtRect ? 'background:#e5c06b;color:#1b302a' : ''}">▭ ${courtRect ? 'โหมดกรอบ: ลากเป็นกรอบแล้วถมทั้งกรอบ (เริ่มที่ช่องเหลือง = ลบทั้งกรอบ)' : 'ทาส/ลบแบบกรอบ (ลากกรอบ แล้วถมทั้งกรอบ)'}</button></div>
-  <div class="row"><button id="cFill">เริ่มจากทางตรงประตู→ขอบหน้า</button><button id="cOff">ไม่มีทางเดิน</button><button id="cAuto">กลับเป็นอัตโนมัติ</button></div>
-  <b class="sec">ชั้นของพื้นที่เดิน (layer)</b>
-  <p class="sub">ตั้งต้น = ชั้นเดียวกับพื้นตรงนั้น (ชั้นพื้น ${o.court?.z || 0}) · ของที่ชั้นสูงกว่าจะบังตัวละคร ต่ำกว่าอยู่ใต้ตัวละคร · ชั้นเท่ากัน = เรียงตามความลึก · เลือกบางช่องให้มีชั้นต่างจากพื้นได้</p>
-  ${zRow('cz', 'ชั้นพื้นทั้งหมด', o.court?.z || 0, 'ตัวละครที่ยืนบนพื้นที่เดินนี้')}
-  <div class="row"><button id="cLayer" style="${courtLayer ? 'background:#e5c06b;color:#1b302a' : ''}">🔢 ${courtLayer ? 'กำลังกำหนดชั้นรายช่อง… (ลากบนช่องเหลือง)' : 'กำหนดชั้นเฉพาะบางช่อง'}</button></div>
-  ${courtLayer ? zRow('cl', 'ชั้นที่จะใส่', courtLayerVal, 'ลากทับช่องเหลืองเพื่อใส่ · ใส่ชั้นเท่าพื้น = ล้างค่าพิเศษ') : ''}
-  <b class="sec">ช่องเดินเข้าเอง (สีเขียว)</b>
-  <p class="sub">อยู่ในกรอบฟ้า · เดินเข้าได้เมื่อผู้เล่นคลิกเข้าไปเอง (ไม่ใช้เป็นทางลัด) · ไม่สร้างถนนให้ — ใช้วาดพื้นเองได้ · ตอนนี้: <b>${o.green?.cells?.length ? o.green.cells.length + ' ช่องครึ่ง' : 'ไม่มี'}</b></p>
-  <div class="row"><button id="gDraw" style="${greenDraw ? 'background:#5fd08a;color:#10261a' : ''}">🟩 ${greenDraw ? 'กำลังทาสีเขียว… คลิก/ลากในกรอบฟ้า (ช่องที่มีอยู่ = ลบ)' : 'ทาสีช่องเดินเข้าเอง'}</button><button id="gClear"${o.green?.cells?.length ? '' : ' disabled'}>ลบช่องเขียวทั้งหมด</button></div>
-  <p class="sub">ตัวละครเดินทับช่องสีเหลืองได้ · ช่องต้องต่อกันจากประตูถึงขอบหน้า (ปลายทางที่ถนนมาเชื่อม) · ตัวละครอยู่ในชั้นเดียวกับพื้นตรงนั้น ของที่อยู่ด้านหน้าและชั้นสูงกว่า (เช่น กระถาง) จึงบังตัวละครได้ · Q สลับทาทีละช่อง 1×1 / ครึ่งช่อง 2×2</p>`;
-  act('#eAutoReset', once(() => { delete o.cauto; UX.refresh() }));
-  bindSliders((k, v) => { if (k === 'cwid') { setCourtWidth(o, v); terrainDirty = true; UX.refresh(); return } if (k !== 'cw' && k !== 'cu') return; o.cauto = o.cauto || {}; o.cauto[k === 'cw' ? 'w' : 'du'] = v; terrainDirty = true; UX.refresh() }, () => { if (o.cauto && o.cauto.w == null && !o.cauto.du) delete o.cauto; render() });
-  act('#eReset', once(() => {
-   delete o.entry;
-   UX.refresh()
-  }));
-  act('#gDraw', () => { greenDraw = !greenDraw; if (greenDraw) { courtDraw = false; courtLayer = false } flashStatus(greenDraw ? 'คลิก/ลากในกรอบฟ้าเพื่อทาสีช่องเขียว · ใช้โหมดกรอบได้' : 'หยุดทาสีช่องเขียว'); render() });
-  act('#gClear', once(() => { greenDraw = false; delete o.green; UX.refresh() }));
-  act('#cDraw', () => { greenDraw = false; courtDraw = !courtDraw; flashStatus(courtDraw ? 'ลากบนแผนที่จากประตูไปหาถนน · ปล่อยเมาส์เพื่อจบเส้น' : 'ยกเลิกการวาดทางเข้า'); render() });
-  bindZ('cz', d => { o.court = o.court || {}; o.court.z = clampN((o.court.z || 0) + d, -20, 20); if (!o.court.z) delete o.court.z; UX.refresh() });
-  bindZ('cl', d => { courtLayerVal = clampN(courtLayerVal + d, -20, 20) });
-  act('#cLayer', () => { if (!o.court?.cells?.length) { UX.checkpoint(); o.court = { ...(o.court || {}), cells: autoCells(o) } } courtLayer = !courtLayer; courtDraw = courtLayer; flashStatus(courtLayer ? 'ลากบนช่องเหลืองเพื่อกำหนดชั้น' : 'เลิกกำหนดชั้นรายช่อง'); render() });
-  act('#cRect', () => { courtRect = !courtRect; if (courtRect) courtDraw = true; flashStatus(courtRect ? 'ลากเป็นกรอบ ปล่อยเมาส์เพื่อถมทั้งกรอบ (เริ่มที่ช่องเหลือง = ลบ)' : 'กลับเป็นทาทีละช่อง'); render() });
-  act('#cFill', once(() => { o.court = { cells: autoCells(o) }; courtDraw = false; UX.refresh() }));
-  act('#cOff', once(() => { courtDraw = false; o.court = { off: true }; UX.refresh() }));
-  act('#cAuto', once(() => { courtDraw = false; delete o.court; UX.refresh() }))
- }
+ /* v98.836 · tabEntry (yellow / green walk cells) removed */
 
  /* ---------- overlay: veil + rings, then handles ---------- */
  const baseOverlay = UX.overlay;

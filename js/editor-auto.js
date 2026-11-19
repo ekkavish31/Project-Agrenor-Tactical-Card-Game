@@ -16,11 +16,7 @@
   }
   /* every point where the yellow walk area meets the footprint edge (not only the single gate cell) + the gate itself */
   function edgePts(o) {
-    const out = [gate(o)], cells = o.court?.cells;
-    if (cells?.length) {
-      const fp = VillageFootprint.fpOf(o), a = center(o);
-      for (const [iu, iv] of cells) if (iv + 1 >= 2 * fp.v1 || iv <= -2 * fp.v0 || iu <= -2 * fp.u0 || iu + 1 >= 2 * fp.u1) out.push(canonical(o, a.u + (iu + .5) / 2, a.v + (iv + .5) / 2))
-    }
+    const out = [gate(o)];   /* v98.836 · no yellow cells any more */
     return out
   }
   function paintedNear(p) {
@@ -80,11 +76,6 @@
       if (G.overlaps(a.r, b.r)) rows.push({ id: a.o.id, t: '▭ กรอบฟ้า ' + nameOf(a.o) + ' ทับ ' + nameOf(b.o) })
     }
     for (const o of P) {
-      const cells = o.court?.cells;
-      if (cells?.length) {
-        const fp = FP.fpOf(o), touch = cells.some(([iu, iv]) => iv <= -2 * fp.v0 || iv + 1 >= 2 * fp.v1 || iu <= -2 * fp.u0 || iu + 1 >= 2 * fp.u1);
-        if (!touch) rows.push({ id: o.id, t: '🟨 ช่องเหลืองของ ' + nameOf(o) + ' ไม่แตะขอบกรอบ (ทางเข้าถูกปิด)' })
-      }
       const d = door(o), a = findPath({ u: hero.u, v: hero.v }, d);
       if (!a.length) rows.push({ id: o.id, t: '🚪 เดินไปทางเข้า ' + nameOf(o) + ' ไม่ถึง' });
       if (!connected(o)) rows.push({ id: o.id, t: '🛣 ไม่มีถนนใกล้ทางเข้า ' + nameOf(o) + ' (ใช้ ก) เพื่อต่อให้)' })
