@@ -113411,7 +113411,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261118-194529",
+   "artRevision": "20261119-094406",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -113419,6 +113419,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-guard-mwfkzbt2-dmar-1/20261119-094406.webp",
+     "at": "2026-11-19T02:44:06.679Z",
+     "stamp": "20261119-094406",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-guard-mwfkzbt2-dmar-1/20261118-194527.png",
      "at": "2026-11-18T12:45:29.516Z",
@@ -113474,7 +113481,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261118-194529",
+   "artRevision": "20261119-094711",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -113482,6 +113489,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-hit-mwfkzbt2-dmar-1/20261119-094710.webp",
+     "at": "2026-11-19T02:47:10.568Z",
+     "stamp": "20261119-094710",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-hit-mwfkzbt2-dmar-1/20261118-194527.png",
      "at": "2026-11-18T12:45:29.690Z",
