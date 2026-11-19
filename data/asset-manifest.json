@@ -116472,7 +116472,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261119-230719",
+   "artRevision": "20261120-002551",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -116480,6 +116480,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-idle-mwfm3ei2-6j5a-1/20261120-002550.webp",
+     "at": "2026-11-19T17:25:50.064Z",
+     "stamp": "20261120-002550",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-ne-idle-mwfm3ei2-6j5a-1/20261119-230718.webp",
      "at": "2026-11-19T16:07:18.997Z",
@@ -116535,13 +116542,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfm3ei2-6j5a",
+   "artRevision": "20261120-002953",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-windup-mwfm3ei2-6j5a-1/20261120-002951.webp",
+     "at": "2026-11-19T17:29:51.946Z",
+     "stamp": "20261120-002951",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-windup-mwfm3ei2-6j5a-1",
@@ -134819,7 +134835,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002803",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-1/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.018Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-2",
@@ -134846,7 +134871,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002803",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-2/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.071Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-3",
@@ -134873,7 +134907,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002803",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-3/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.124Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-4",
@@ -134900,7 +134943,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002803",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-4/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.176Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-5",
@@ -134927,7 +134979,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002804",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-5/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.232Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-6",
@@ -134954,7 +135015,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002804",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-6/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.290Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-7",
@@ -134981,7 +135051,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002804",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-7/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.348Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-8",
@@ -135008,7 +135087,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002804",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-8/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.409Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-9",
@@ -135035,7 +135123,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002804",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-9/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.474Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-10",
@@ -135062,7 +135159,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002804",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-10/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.544Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-11",
@@ -135089,7 +135195,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002804",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-11/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.609Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-walk-mwnpt02q-q7d0-12",
@@ -135116,7 +135231,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnpt02q-q7d0"
+   "artRevision": "20261120-002804",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-walk-mwnpt02q-q7d0-12/20261120-002801.webp",
+     "at": "2026-11-19T17:28:02.674Z",
+     "stamp": "20261120-002801",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwnqkjd2-vs3t-1",
@@ -141682,6 +141806,35 @@
    "frames": {},
    "at": 1795108834079,
    "approvedAt": "2026-11-19T17:20:34.005Z"
+  },
+  "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-ne-idle-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/idle-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261119-230719\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "at": 1795109015732
+  },
+  "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-ne-idle-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/idle-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-002551\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T17:26:02.317Z",
+   "at": 1795109162346
+  },
+  "[\"tactics.walk.ne\",\"NE\",true,[[\"studio-hero-ne-walk-mwnpt02q-q7d0-1\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-01.webp\",0,\"20261120-002803\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-2\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-02.webp\",0,\"20261120-002803\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-3\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-03.webp\",0,\"20261120-002803\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-4\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-04.webp\",0,\"20261120-002803\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-5\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-05.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-6\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-06.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-7\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-07.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-8\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-08.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-9\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-09.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-10\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-10.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-11\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-11.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-12\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-12.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T17:28:08.839Z",
+   "at": 1795109288898
+  },
+  "[\"tactics.walk.nw\",\"NW\",true,[[\"studio-hero-ne-walk-mwnpt02q-q7d0-1\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-01.webp\",0,\"20261120-002803\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-2\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-02.webp\",0,\"20261120-002803\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-3\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-03.webp\",0,\"20261120-002803\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-4\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-04.webp\",0,\"20261120-002803\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-5\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-05.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-6\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-06.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-7\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-07.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-8\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-08.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-9\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-09.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-10\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-10.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-11\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-11.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-12\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-12.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795109288898,
+   "approvedAt": "2026-11-19T17:28:08.839Z"
+  },
+  "[\"tactics.windup.ne\",\"NE\",false,[[\"studio-hero-ne-windup-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/windup-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-002953\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T17:29:58.002Z",
+   "at": 1795109398033
   }
  },
  "studioClipHistory": {
