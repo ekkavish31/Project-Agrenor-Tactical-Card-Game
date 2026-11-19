@@ -140,5 +140,7 @@
     html += '<p style="text-align:right"><button data-x>ปิด</button></p>'; dl.innerHTML = html; document.body.append(dl); dl.showModal();
     dl.onclick = async e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.x != null) { dl.close(); dl.remove(); return } if (confirm('กู้คืน ' + b.dataset.k + ' ชุดนี้? (ค่าปัจจุบันจะถูกสำรองก่อน)')) { await restore(b.dataset.k, +b.dataset.i); location.reload() } };
   }
+  /* the pushed settings are seeded the moment js/game-settings.js assigns them — even when that file was written by an older push page (its own old SEED then finds nothing to change) */
+  try { let gs = root.GAME_SETTINGS; Object.defineProperty(root, 'GAME_SETTINGS', { configurable: true, enumerable: true, get: () => gs, set: v => { gs = v; seed(v) } }) } catch (e) { }
   root.EditorStore = { seed, markPushed, drafts, backups, restore, openBackups, merges: () => merges, _diff: diff, _apply: apply };
 })(globalThis);
