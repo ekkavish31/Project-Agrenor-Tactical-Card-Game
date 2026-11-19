@@ -19,7 +19,12 @@
   /* hands atlas (assets/cursor/cursor-atlas.webp, 8 × 3 cells of 48 px as shown) · gold atlas (cursor-gold-atlas.webp, 12 × 8 cells of 128 px → 48 px) */
   const HAND = { pointer: { r: 2, c: 0, hs: [9, 4] }, grab: { r: 0, c: 0, hs: [24, 24] }, grabbing: { r: 0, c: 4, hs: [24, 28] }, zoom: { r: 1, c: 0, hs: [22, 22] }, talk: { r: 0, c: 0, hs: [3, 6], img: 'talk-atlas', loop: 130 }, walk: { r: 0, c: 0, hs: [24, 24], img: 'walk-atlas', loop: 140 } }, GOLD_HS = [9, 9], GOLD_N = 96, GOLD_LOOP = 4000;
   const st = document.createElement('style'); st.id = 'agcCss';
-  st.textContent = `html.agc-hide,html.agc-hide *{cursor:none!important}
+  /* v98.832 · the cursor is drawn by the OS from a still picture of each kind (assets/cursor/os-<kind>.png, 1× + 2×): it moves with no delay and never doubles while the page is busy loading / stuttering.
+     The page-drawn cursor (#agcCur) now only shows for the short animations: the finger tap on a click and the magnifier's glitter. */
+  const OSK = { arrow: [9, 9], pointer: [9, 4], grab: [24, 24], grabbing: [24, 28], zoom: [22, 22], talk: [3, 6], walk: [24, 24] };
+  const osCss = Object.entries(OSK).map(([k, [hx, hy]]) => `html.agc-os-${k},html.agc-os-${k} *{cursor:url(${D}os-${k}.png) ${hx} ${hy},auto!important;cursor:-webkit-image-set(url(${D}os-${k}.png) 1x,url(${D}os-${k}@2x.png) 2x) ${hx} ${hy},auto!important}`).join('\n');
+  st.textContent = `${osCss}
+html.agc-hide,html.agc-hide *{cursor:none!important}
 html.agc-fantasy,html.agc-fantasy *{cursor:url(assets/cursor-fantasy.png) 4 3,default!important}
 html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=button],html.agc-sys .station{cursor:pointer!important}
 #agcCur{position:fixed;left:0;top:0;width:48px;height:48px;pointer-events:none;z-index:2147483647;display:none;will-change:transform;background-repeat:no-repeat}
@@ -37,7 +42,7 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
   const place = () => { const hs = kind === 'arrow' ? GOLD_HS : (HAND[kind]?.hs || [0, 0]); el.style.transform = `translate(${Math.round(x - hs[0])}px,${Math.round(y - hs[1])}px)` };
   /* ---- what is under the pointer? read its authored cursor with our own class lifted ---- */
   const classify = e => {
-    const hid = H.classList.contains('agc-hide'), fan = H.classList.contains('agc-fantasy'); if (hid) H.classList.remove('agc-hide'); if (fan) H.classList.remove('agc-fantasy');
+    const hid = H.classList.contains('agc-hide'), fan = H.classList.contains('agc-fantasy'), osk = [...H.classList].filter(c => c.startsWith('agc-os-')); if (hid) H.classList.remove('agc-hide'); if (fan) H.classList.remove('agc-fantasy'); for (const c of osk) H.classList.remove(c);
     let k = '';
     try {
       if (e && e.nodeType === 1) {
@@ -50,36 +55,34 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
         }
       }
     } catch (er) { }
-    if (hid) H.classList.add('agc-hide'); if (fan) H.classList.add('agc-fantasy');
+    if (hid) H.classList.add('agc-hide'); if (fan) H.classList.add('agc-fantasy'); for (const c of osk) H.classList.add(c);
     if (!O.hands && HAND[k]) k = 'arrow';   /* hands off: the arrow everywhere */
     if (k === 'arrow' && O.arrow === 'system') k = '';
     return k;
   };
   /* ---- apply a kind: which cursor is drawn, whether the OS cursor is hidden ---- */
+  /* ---- apply a kind: the OS draws its still picture (no lag); the page cursor only runs a short animation (tap / glitter) ---- */
+  const osSet = k => { for (const c of [...H.classList]) if (c.startsWith('agc-os-')) H.classList.remove(c); if (k) H.classList.add('agc-os-' + k) };
+  const animEnd = () => { seq = null; el.style.display = 'none'; H.classList.remove('agc-hide') };
   const apply = k => {
     if (k === kind) return; const was = kind; kind = k;
     const drawn = !!HAND[k] || (k === 'arrow' && O.arrow === 'gold');
-    H.classList.toggle('agc-hide', drawn); H.classList.toggle('agc-fantasy', k === 'arrow' && O.arrow === 'fantasy');
-    if (!drawn) { el.style.display = 'none'; seq = null; cancelAnimationFrame(raf); raf = 0; return }
-    mount(); el.className = k === 'arrow' ? 'agc-gold' : HAND[k].img ? 'agc-' + k : 'agc-hand'; el.style.display = seen ? 'block' : 'none'; place(); seq = null;
+    H.classList.toggle('agc-fantasy', k === 'arrow' && O.arrow === 'fantasy'); osSet(drawn ? k : '');
+    if (seq) animEnd(); cancelAnimationFrame(raf); raf = 0;
     if (k === 'zoom' && was !== 'zoom') play(1, [1, 2, 3, 4, 5, 6, 7], 55);
-    if (!raf) raf = requestAnimationFrame(loop);
   };
   const loop = t => {
-    raf = 0; if (!on || !(kind === 'arrow' || HAND[kind])) return;
-    if (kind === 'arrow') { const f = Math.floor(t / (GOLD_LOOP / GOLD_N)) % GOLD_N; el.style.backgroundPosition = `${-(f % 12) * 48}px ${-Math.floor(f / 12) * 48}px`; raf = requestAnimationFrame(loop); return }
-    const h = HAND[kind]; let c = h.c, r = h.r;
-    if (h.loop) { el.style.backgroundPosition = `${-(Math.floor(t / h.loop) % 8) * 48}px 0px`; raf = requestAnimationFrame(loop); return }
-    if (seq) { const i = Math.max(0, Math.floor((Math.max(t, seq.t0) - seq.t0) / seq.ms)); if (i >= seq.frames.length) seq = null; else { r = seq.r; c = seq.frames[i] } }
-    el.style.backgroundPosition = `${-c * 48}px ${-r * 48}px`;
-    if (seq) raf = requestAnimationFrame(loop);
+    raf = 0; if (!on || !seq || !HAND[kind]) { if (seq) animEnd(); return }
+    const i = Math.max(0, Math.floor((Math.max(t, seq.t0) - seq.t0) / seq.ms)); if (i >= seq.frames.length) { animEnd(); return }
+    el.style.backgroundPosition = `${-seq.frames[i] * 48}px ${-seq.r * 48}px`; raf = requestAnimationFrame(loop);
   };
-  function play(r, frames, ms) { seq = { r, frames, ms, t0: performance.now() }; if (!raf) raf = requestAnimationFrame(loop) }
+  /* a short animation: the page cursor shows it (OS cursor hidden meanwhile) and goes away again at its end */
+  function play(r, frames, ms) { if (!HAND[kind] || !seen) return; seq = { r, frames, ms, t0: performance.now() }; mount(); el.className = HAND[kind].img ? 'agc-' + kind : 'agc-hand'; place(); el.style.display = 'block'; H.classList.add('agc-hide'); if (!raf) raf = requestAnimationFrame(loop) }
   /* ---- events ---- */
   const check = () => { pend = false; if (!on) return; let k = classify(target); if (held && k === 'grab') k = 'grabbing'; apply(k) };
   const sched = () => { if (!pend) { pend = true; requestAnimationFrame(check) } };
   const isMouse = e => !e.pointerType || e.pointerType === 'mouse' || e.pointerType === 'pen';
-  addEventListener('pointermove', e => { if (!isMouse(e)) return; x = e.clientX; y = e.clientY; target = e.target; if (!seen) { seen = true; if (kind) el.style.display = 'block' } if (kind) place(); if (target && (target.tagName === 'IFRAME' || target.tagName === 'FRAME') && kind !== 'frame') { pend = false; check() } else sched() }, true);
+  addEventListener('pointermove', e => { if (!isMouse(e)) return; x = e.clientX; y = e.clientY; target = e.target; seen = true; if (seq) place(); if (target && (target.tagName === 'IFRAME' || target.tagName === 'FRAME') && kind !== 'frame') { pend = false; check() } else sched() }, true);
   /* v98.804 · when the pointer enters another element / a frame the kind is decided RIGHT NOW (it used to wait for the next animation frame): while the game was loading or stuttering that frame came late, so the old hand stayed painted next to the OS arrow of the frame / overlay now under the pointer (two cursors at once) */
   addEventListener('pointerover', e => { if (!isMouse(e)) return; target = e.target; x = e.clientX; y = e.clientY; if (on) { pend = false; check() } else sched() }, true);
   addEventListener('pointerdown', e => {
@@ -88,8 +91,8 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
   }, true);
   const up = () => { held = false; sched() };
   addEventListener('pointerup', up, true); addEventListener('pointercancel', up, true);
-  const gone = () => { seen = false; el.style.display = 'none' };
+  const gone = () => { seen = false; if (seq) animEnd() };
   document.addEventListener('mouseleave', gone); addEventListener('blur', gone);
-  document.addEventListener('mouseenter', () => { seen = true; if (kind) el.style.display = 'block' });
+  document.addEventListener('mouseenter', () => { seen = true });
   root.GameCursor = { enable(v) { on = !!v; try { localStorage.setItem('projectA.cursor', on ? '1' : '0') } catch (e) { } if (!on) { apply(''); kind = '' } }, kind: () => kind, debug: () => ({ kind, seq, raf, on, held }) };
 })(globalThis);
