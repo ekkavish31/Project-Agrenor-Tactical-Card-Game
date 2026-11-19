@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-11-19T06:43:28.885Z.
+// Village default layout — saved from the in-game editor 2026-11-19T07:08:02.871Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -2475,7 +2475,8 @@ window.VillageDefaultLayout={
         "dv": 2.453,
         "s": 0.683,
         "z": 1,
-        "f": true
+        "f": true,
+        "del": true
       },
       "inn:6.3,-0.6": {
         "du": -1.762,
@@ -2484,7 +2485,8 @@ window.VillageDefaultLayout={
       },
       "inn:7.2,6.6": {
         "du": 0.665,
-        "dv": -5.415
+        "dv": -5.415,
+        "del": true
       },
       "add:mvly0e8ffhy8": {
         "du": 1.692,
@@ -3239,6 +3241,11 @@ window.VillageDefaultLayout={
         "free": true,
         "du": -0.3699,
         "dv": -2.724
+      },
+      "add:mwn7h13cy9mz": {
+        "s": 1.331,
+        "r": 4,
+        "dv": -4.5
       }
     },
     "added": [
@@ -3724,6 +3731,13 @@ window.VillageDefaultLayout={
         "du": 12.5,
         "dv": 8.5,
         "kind": "prop:0"
+      },
+      {
+        "id": "add:mwn7h13cy9mz",
+        "owner": "inn",
+        "du": 8,
+        "dv": 6.5,
+        "kind": "prop:5"
       }
     ],
     "buildings": {
