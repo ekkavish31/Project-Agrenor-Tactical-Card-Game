@@ -210,11 +210,11 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
     box.querySelectorAll('[data-lt]').forEach(b => b.onclick = () => { const [i, f, d] = b.dataset.lt.split(','), list = lightList(m); if (!list[+i]) return; if (f === 'x') { list.splice(+i, 1); selLight = -1 } else { list[+i][f] = +(list[+i][f] + +d).toFixed(2); selLight = +i } save(list) });
     if (el('pdLtAdd')) el('pdLtAdd').onclick = () => setMode('light'); if (el('pdLtOff')) el('pdLtOff').onclick = () => { selLight = -1; save([]) }; if (el('pdLtDef')) el('pdLtDef').onclick = () => { ArtLights.clear(m.art); selLight = -1; renderLights(); paint() };
   }
-  function open(k) {
+  function open(k, startMode) {
     const d = D(); if (!d || !G() || !DS()) return; const E = d.item(k); if (!E) return;
     key = k; Z = d.caps?.zoom || 1.9; Z0 = Z; S = 28 * Z; T = 14 * Z; fitCanvas(); css(); walker = { u: -.6, v: 3.4 }; points = []; undo = []; mode = 'walk'; gesture = null;
     if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'pieceDetail'; document.body.append(dlg) }
-    build(); if (!dlg.open) dlg.showModal();
+    build(); if (!dlg.open) dlg.showModal(); if (startMode) { try { setMode(startMode) } catch (e) { } }   /* v98.840 · e.g. open(key, 'fit') = straight into 📐 base fit */
   }
   function setMode(m) {
     gesture = null; mode = m; hover = null; if (el('pdBrushBar')) el('pdBrushBar').hidden = !isBrush(m); if ((m === 'block' || m === 'bb') && !D().ov(key).block) { edit(o => { o.block = true }); if (el('pdB')) el('pdB').checked = true }

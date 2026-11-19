@@ -2627,6 +2627,17 @@
   })
  }
 
+ /* v98.840 · "เอียงภาพ (แบบ Asset Studio)": the same four numbers and buttons as the sub-map piece panel (place-build.js slantRows): ix / iy = แกนเฉียง ↗↙ ↖↘ (%) · sky = เอียงฐาน ° · skx = เอียงเสา ° · 📐 วัด/ปรับมุมฐาน (opens the 🔍 detail window in its base-fit mode) · ⟲ คืนค่าเอียง */
+ const SLANT_KEYS = ['ix', 'iy', 'skx', 'sky'];
+ const slantBlock = o => `<b class="sec">เอียงภาพ (แบบ Asset Studio)</b><div class="two2" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px">
+  <label style="display:block;min-width:0;font-size:12px">แกนเฉียง ↗↙ (%)<input style="width:100%;box-sizing:border-box" type="number" data-sl="ix" min="50" max="200" step="1" value="${+((o.ix ?? 1) * 100).toFixed(2)}"></label><label style="display:block;min-width:0;font-size:12px">แกนเฉียง ↖↘ (%)<input style="width:100%;box-sizing:border-box" type="number" data-sl="iy" min="50" max="200" step="1" value="${+((o.iy ?? 1) * 100).toFixed(2)}"></label>
+  <label style="display:block;min-width:0;font-size:12px">เอียงฐาน ° (ยกขอบขวา)<input style="width:100%;box-sizing:border-box" type="number" data-sl="sky" min="-60" max="60" step="0.5" value="${+(o.sky || 0).toFixed(2)}"></label><label style="display:block;min-width:0;font-size:12px">เอียงเสา ° (บิดแนวตั้ง)<input style="width:100%;box-sizing:border-box" type="number" data-sl="skx" min="-60" max="60" step="0.5" value="${+(o.skx || 0).toFixed(2)}"></label></div>
+  <div class="row"><button id="slFit" title="จิ้ม 3 จุดที่ขอบฐานของภาพ แล้วปรับมุมฐานเป็น 2:1">📐 วัด/ปรับมุมฐาน</button><button id="slReset">⟲ คืนค่าเอียง</button></div>`;
+ function bindSlant(body, key) {
+  body.querySelectorAll('[data-sl]').forEach(i => i.onchange = once(() => { const k = i.dataset.sl, v = +i.value, o = ovOf(key); if (!Number.isFinite(v)) return; if (k === 'ix' || k === 'iy') { const r = Math.max(.5, Math.min(2, v / 100)); if (Math.abs(r - 1) < .0005) delete o[k]; else o[k] = +r.toFixed(4) } else if (Math.abs(v) < .005) delete o[k]; else o[k] = +Math.max(-60, Math.min(60, v)).toFixed(2); clean(key) }));
+  act('#slReset', once(() => { const o = ovOf(key); for (const k of SLANT_KEYS) delete o[k]; clean(key) }));
+  act('#slFit', () => window.PieceDetail?.open(key, 'fit'))
+ }
  function itemEditor(body, key, items) {
   const E = items.find(e => e.key === key),
    added = data.added.find(a => a.id === key),
@@ -2634,7 +2645,7 @@
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
   <div class="art">${window.PieceDetail?.gauge?.(chkEff(E?.art, ov))||''}<span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
-  ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
+  ${nudgeHtml}${sec('place','① วาง · ขนาด · เอียง',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slantBlock(ov)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <div class="row"><button id="aeFree" class="${ov.free?'on':''}" title="เปิด = ชิ้นนี้ลาก/ย้ายด้วยลูกศรได้อิสระ ไม่ดูดเข้ากริด ไม่หลบกรอบชิ้นข้างเคียง (ลูกศร = 2px ต่อครั้ง · Shift = 8px)">${ov.free?'✅':'⬜'} ย้ายอิสระ (ไม่แนบกริด)</button></div>
 `,1)}${groupHtml(1)}`;
   body.querySelectorAll('details.aeSec').forEach(d => d.ontoggle = () => secOpen.set(d.dataset.sec, d.open));
@@ -2694,6 +2705,7 @@
     place.keys = [nid]
    })()
   });
+  bindSlant(body, key);
   bindGroup();
   bindZ('iz', d => { const v = ovOf(key); v.z = clampN((v.z || 0) + d, -20, 20); clean(key) });
   act('#aeFree', once(() => { const o2 = ovOf(key); if (o2.free) delete o2.free; else o2.free = true; clean(key) }));
