@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="th"><head><meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Asset Studio · Adventure Card Game</title>
-<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/key-layout.js?v=1"></script><script src="js/game-settings.js?v=v98.829"></script><style>
+<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/key-layout.js?v=1"></script><script src="js/game-settings.js?v=v98.830"></script><style>
 :root{--ink:#493722;--paper:#f7edd8;--panel:#fbf3e2;--line:#c5aa78;--gold:#a67939;--final:#3f7a4a;--temp:#b07a26;--code:#3d6a8a;--missing:#a5442f;--planned:#7a5c9a}
 *{box-sizing:border-box}body{margin:0;background:#efe3c9;color:var(--ink);font:14px/1.45 AgThai,system-ui,"Segoe UI",sans-serif;height:100vh;display:grid;grid-template-rows:auto auto 1fr;overflow:hidden}
 header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 14px;background:var(--paper);border-bottom:2px solid var(--line)}
@@ -80,7 +80,7 @@ dialog{border:2px solid var(--line);border-radius:12px;background:var(--paper);c
 .loose-bar{display:flex;gap:12px;align-items:center;margin:8px 0}.loose-bar input{flex:1;max-width:340px}
 .loose-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}.loose-chips button{font-size:12px;padding:4px 9px;border-radius:999px}.loose-chips button.on{background:#c9a45a;color:#1d1608;border-color:#e6c47c}.loose-chips i,.loose-sec summary i{font-style:normal;opacity:.7;font-size:11px;margin-left:3px}
 .loose-sec{margin:0 0 14px}.loose-sec summary{cursor:pointer;font-weight:700;font-size:14px;color:#5a3d14;padding:6px 2px;border-bottom:1px solid #b99b64;margin-bottom:8px}
-</style><link rel="stylesheet" href="css/asset-animation-review.css"><link rel="stylesheet" href="css/asset-studio-browser.css?v=v98.829"><link rel="stylesheet" href="css/town-font.css"></head><body>
+</style><link rel="stylesheet" href="css/asset-animation-review.css"><link rel="stylesheet" href="css/asset-studio-browser.css?v=v98.830"><link rel="stylesheet" href="css/town-font.css"></head><body>
 <header><h1>Asset Studio <small>v48</small></h1>
 <button id="conn" title="รายการไฟล์ปัจจุบันจาก GitHub">📦 GitHub</button><button id="changeFolder" hidden>เปลี่ยนโฟลเดอร์</button><button id="rescan" title="โหลดรายการไฟล์จาก GitHub ใหม่">↻ รีเฟรช</button><button id="stagedPush" class="primary" disabled title="ส่งภาพ/ข้อมูลที่แก้ในเครื่องนี้ขึ้น GitHub เป็น commit เดียว">⬆ Push ที่แก้ (0)</button><button id="stagedDrop" hidden title="ทิ้งงานที่ยังไม่ push">ทิ้ง</button><span id="folderName" class="muted">ไฟล์จาก GitHub · งานที่แก้เก็บในเบราว์เซอร์นี้จนกด Push</span>
 <span class="grow"></span><span id="ghSlot"></span><button id="howto">วิธีใช้</button><button id="exportBtn" class="primary" hidden>ส่งออก ZIP</button></header>
@@ -106,7 +106,7 @@ const gh=document.getElementById('ghSlot'),grow=h.querySelector('.grow');h.inser
 <li>ภาพที่ไม่มีเจ้าของอยู่ใน Objects → ไฟล์ยังไม่จัดหมวด ไม่ลบภาพต้นฉบับอัตโนมัติ</li></ol>
 <button onclick="this.closest('dialog').close()">ปิด</button></dialog>
 <div class="toast" id="toast"></div>
-<script src="js/asset-manifest.js?v=v98.829"></script><script src="js/character-scale-adjust-data.js?v=v98.829"></script><script src="js/character-scale-adjust.js?v=v98.656"></script><script src="js/studio-variants.js?v=98.85"></script>
+<script src="js/asset-manifest.js?v=v98.830"></script><script src="js/character-scale-adjust-data.js?v=v98.830"></script><script src="js/character-scale-adjust.js?v=v98.656"></script><script src="js/studio-variants.js?v=98.85"></script>
 <script>
 'use strict';
 // Asset Studio v17 — slots (where the game shows art) vs images (files in the library).
@@ -129,7 +129,7 @@ let tab='slots',zone='all',sub='all',filter='all',query='',sel=null,lkind='all',
 const exportedFiles=window.StudioExportedFiles=new Map();
 const pending=new Map(); // id -> {blob,url,status,canvas}  (only when no folder is connected)
 let dir=null,scanned=null;
-let manifestJsonPath='data/asset-manifest.json',manifestJsPath='js/asset-manifest.js?v=v98.829';
+let manifestJsonPath='data/asset-manifest.json',manifestJsPath='js/asset-manifest.js?v=v98.830';
 function toast(t){let e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
 function byId(id){return M.assets.find(a=>a.id===id)}
 const isSlot=a=>a.status!=='unused';
@@ -552,5 +552,5 @@ window.addEventListener('message',async e=>{if((e.source!==$('workshopFrame').co
  });
 
 // Folder restoration is managed by asset-studio-browser.js after all models are ready.
-</script><script src="js/proc-motion.js?v=98.641"></script><script src="js/github-push.js?v=v98.829"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/studio-repo-dir.js?v=v98.387"></script><script src="js/character-scale.js?v=98.264"></script><script src="js/studio-scale.js?v=v98.829"></script><script>document.getElementById("ghSlot").replaceWith(GitHubPush.settingsButton())</script><script src="js/asset-batch.js"></script><script src="js/animation-data.js"></script><script src="js/tactics-sprites.js?v=98.72"></script><script>window.__HERO_VARIANT_NO_AUTO=1</script><script src="js/hero-variant.js?v=98.238"></script><script src="js/hero-motion.js"></script><script src="js/asset-animation-review.js"></script><script src="js/studio-people.js?v=v98.444"></script><script src="js/studio-catalog.js?v=v98.646"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script><script src="js/asset-studio-browser.js?v=v98.829"></script><script src="js/proportion-adjust.js?v=v98.658"></script><script src="js/pose-sheet.js?v=v98.829"></script><script src="js/studio-walk-import.js?v=v98.829"></script><script src="js/studio-unified-review.js?v=v98.471"></script><script src="js/studio-multiselect.js?v=v98.383"></script><script src="js/studio-sheet-import.js?v=v98.829"></script><script src="js/studio-sheet-export.js?v=v98.829"></script>
+</script><script src="js/proc-motion.js?v=98.641"></script><script src="js/github-push.js?v=v98.830"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/studio-repo-dir.js?v=v98.387"></script><script src="js/character-scale.js?v=98.264"></script><script src="js/studio-scale.js?v=v98.830"></script><script>document.getElementById("ghSlot").replaceWith(GitHubPush.settingsButton())</script><script src="js/asset-batch.js"></script><script src="js/animation-data.js"></script><script src="js/tactics-sprites.js?v=98.72"></script><script>window.__HERO_VARIANT_NO_AUTO=1</script><script src="js/hero-variant.js?v=98.238"></script><script src="js/hero-motion.js"></script><script src="js/asset-animation-review.js"></script><script src="js/studio-people.js?v=v98.444"></script><script src="js/studio-catalog.js?v=v98.646"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script><script src="js/asset-studio-browser.js?v=v98.830"></script><script src="js/proportion-adjust.js?v=v98.658"></script><script src="js/pose-sheet.js?v=v98.830"></script><script src="js/studio-walk-import.js?v=v98.830"></script><script src="js/studio-unified-review.js?v=v98.471"></script><script src="js/studio-multiselect.js?v=v98.383"></script><script src="js/studio-sheet-import.js?v=v98.830"></script><script src="js/studio-sheet-export.js?v=v98.830"></script>
 <script>/* v98.551 · the picture index changes with every image added — load it with the live game version so an old copy is never reused from the cache */(function(){var v='';try{var x=new XMLHttpRequest();x.open('GET','js/game-version.js?t='+Date.now(),false);x.send();var m=/v:\s*'([^']+)'/.exec(x.responseText);v=m?m[1]:''}catch(e){}v=encodeURIComponent(v||Date.now());['js/image-catalog.js','data/image-index.js','js/asset-manager.js'].forEach(function(f){document.write('<script src="'+f+'?v='+v+'"><\/script>')})})()</script></body></html>
