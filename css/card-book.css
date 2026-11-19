@@ -111,3 +111,6 @@
 .cb-v2 .cb-pg .gear-card-item .gcard [data-zone=text] .g-it-effects{font-size:.82em;line-height:1.15}
 .cb-v2 .cb-pg .gear-card-item .gcard [data-zone=text]{width:82%!important;left:9%!important}
 .cb-v2 .cb-pg .gear-card-item .cb-price{display:none}   /* the equipment card already prints its price in the title bar */
+
+/* v98.797 · an open book needs no other menu: it sits at the TOP of the screen (the ribbons almost touch the edge) instead of floating in the middle */
+#panel:has(.card-book.cb-v2){margin-top:max(.4vh,3px);margin-bottom:auto}
