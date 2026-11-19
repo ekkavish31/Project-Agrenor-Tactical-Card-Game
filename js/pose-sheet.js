@@ -52,7 +52,7 @@
   const akey = id => { id = String(id || ''); if (id === 'hero') return root.StudioVariants?.active === 'female' ? 'hero-female' : 'hero'; return id.replace(/^(ally|npc):/, '') };
   const cellKey = (pose, dir) => pose + '@' + dir;
   const saveRul = () => write(RKEY, RUL);
-  const ghostKey = ck => RUL.ghostSame && /@NE$/.test(ck) && cur?.cells[ck.replace(/@NE$/, '@SW')] ? ck.replace(/@NE$/, '@SW') : 'idle@SW';
+  const ghostKey = ck => RUL.ghostBack && /@NE$/.test(ck) && cur?.cells['idle@NE'] ? 'idle@NE' : RUL.ghostSame && /@NE$/.test(ck) && cur?.cells[ck.replace(/@NE$/, '@SW')] ? ck.replace(/@NE$/, '@SW') : 'idle@SW';
 
   /* ---------- sizes (± % per pose × direction) ---------- */
   const committed = () => root.CHARACTER_SCALE_ADJUST || {};
@@ -245,7 +245,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         <button type="button" class="act" id="psSnapAll" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น (192,360) ทุกท่าที่มีจุดเท้า">⤓ เข้าเส้นพื้นทุกท่า</button>
         <div class="ps-sh">ไม้บรรทัด</div><label><input type="checkbox" id="psRon" ${RUL.on ? 'checked' : ''}>เปิดไม้บรรทัด</label>
         <div class="ps-row"><button type="button" class="act" id="psRadd" title="เพิ่มเส้นนอน (ลากเพื่อย้าย · ดับเบิลคลิกเพื่อลบ)">＋ เส้น</button><button type="button" class="act" id="psMadd" title="ตัววัด: 2 เส้นขนาน บอกระยะห่าง">＋ ตัววัด 2 เส้น</button><button type="button" class="act" id="psRclr">ล้างไม้บรรทัด</button></div>
-        <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label><label title="แถวล่าง: ใช้ท่าเดียวกันของแถวบนเป็นเงา"><input type="checkbox" id="psGhoSame" ${RUL.ghostSame ? 'checked' : ''}>เงาแถวล่าง = ท่าเดียวกันแถวบน</label><label><input type="checkbox" id="psGhoFlip" ${RUL.ghostFlip ? 'checked' : ''}>⇆ เงาสลับด้าน</label>
+        <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label><label title="แถวล่าง: ใช้ท่าเดียวกันของแถวบนเป็นเงา"><input type="checkbox" id="psGhoSame" ${RUL.ghostSame ? 'checked' : ''}>เงาแถวล่าง = ท่าเดียวกันแถวบน</label><label title="แถวล่าง: ใช้ท่ายืนหันหลัง (idle NE) เป็นเงา"><input type="checkbox" id="psGhoBack" ${RUL.ghostBack ? 'checked' : ''}>เงาแถวล่าง = ท่ายืนหันหลัง</label><label><input type="checkbox" id="psGhoFlip" ${RUL.ghostFlip ? 'checked' : ''}>⇆ เงาสลับด้าน</label>
         <div class="ps-tools" style="margin:2px 0;display:${RUL.on && (RUL.lines.length || RUL.meas.length) ? 'flex' : 'none'}">สี: ${swatches}</div></div>
       <div class="ps-zone" id="psZone">`;
     h += `<div class="ps-grid" style="grid-template-columns:34px repeat(${POSES.length},${W}px)"><div class="ps-h"></div>${POSES.map(([, l]) => `<div class="ps-h">${l}</div>`).join('')}`;
@@ -259,7 +259,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         h += `<div class="ps-c${act === ck ? ' act' : ''}${ok ? ' locked' : ''}" data-ck="${ck}"><canvas width="${W}" height="${W}" aria-label="${pose} ${dir}"></canvas><div class="ctl">
           <button type="button" data-k="-1" title="เล็กลง 1%" ${ok ? 'disabled' : ''}>−1%</button><input data-in type="number" step="0.5" min="30" max="250" value="${(k * 100).toFixed(1)}" aria-label="ขนาด %" ${ok ? 'disabled' : ''}><button type="button" data-k="1" title="ใหญ่ขึ้น 1%" ${ok ? 'disabled' : ''}>+1%</button>
           <label class="${ok ? 'ok' : ''}" title="${ok ? 'ท่านี้ล็อกอยู่ — เอาติ๊กออกเพื่อแก้' : 'ติ๊ก = ตรวจแล้ว และล็อกท่านี้กันแก้พลาด'}"><input type="checkbox" data-ok ${ok ? 'checked' : ''}>${ok ? '🔒 ล็อกแล้ว' : '🔓 ล็อก'}</label>${chg ? '<span class="chg" title="ภาพของท่านี้เปลี่ยนหลังวางจุด/ติ๊ก — ติ๊กหลุดแล้ว">ภาพเปลี่ยน</span>' : ''}
-          <button type="button" data-b="sw" title="ใส่จุดทั้งหมดของท่ายืน ${dir} ทับท่านี้" ${ok ? 'disabled' : ''}>📋 SW</button><button type="button" data-b="snap" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น" ${ok ? 'disabled' : ''}>⤓ พื้น</button><button type="button" data-b="adj" title="เปิดหน้าต่างปรับสัดส่วน (บิดภาพ) — บันทึกเป็นภาพใหม่" ${ok ? 'disabled' : ''}>🛠 ปรับ</button>${dir === 'NE' ? `<button type="button" data-b="gsame" class="${RUL.ghostSame && RUL.ghost ? 'on' : ''}" title="เงา = ท่าเดียวกันของแถวบน (กดอีกครั้ง = กลับเป็นเงาท่ายืน)">👻 เงาแถวบน</button><button type="button" data-b="gflip" class="${RUL.ghostFlip && RUL.ghost ? 'on' : ''}" title="เงาสลับด้านซ้าย-ขวา">⇆ เงา</button>` : ''}${ox || oy ? `<span class="mv" title="ย้ายแล้ว ยังไม่บันทึก">ย้าย ${ox},${oy}</span>` : ''}</div>${valsHtml(ck)}</div>`;
+          <button type="button" data-b="sw" title="ใส่จุดทั้งหมดของท่ายืน ${dir} ทับท่านี้" ${ok ? 'disabled' : ''}>📋 SW</button><button type="button" data-b="snap" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น" ${ok ? 'disabled' : ''}>⤓ พื้น</button><button type="button" data-b="adj" title="เปิดหน้าต่างปรับสัดส่วน (บิดภาพ) — บันทึกเป็นภาพใหม่" ${ok ? 'disabled' : ''}>🛠 ปรับ</button>${dir === 'NE' ? `<button type="button" data-b="gsame" class="${RUL.ghostSame && RUL.ghost && !RUL.ghostBack ? 'on' : ''}" title="เงา = ท่าเดียวกันของแถวบน (กดอีกครั้ง = กลับเป็นเงาท่ายืน)">👻 เงาแถวบน</button><button type="button" data-b="gback" class="${RUL.ghostBack && RUL.ghost ? 'on' : ''}" title="เงา = ท่ายืนหันหลัง (idle NE) · กดอีกครั้ง = ปิด">👻 ยืนหลัง</button><button type="button" data-b="gflip" class="${RUL.ghostFlip && RUL.ghost ? 'on' : ''}" title="เงาสลับด้านซ้าย-ขวา">⇆ เงา</button>` : ''}${ox || oy ? `<span class="mv" title="ย้ายแล้ว ยังไม่บันทึก">ย้าย ${ox},${oy}</span>` : ''}</div>${valsHtml(ck)}</div>`;
       }
     }
     h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div></div></div>`;
@@ -512,7 +512,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     $('psRon').onchange = ev => { RUL.on = ev.target.checked; saveRul(); draw() };
     $('psCen').onchange = ev => { RUL.center = ev.target.checked; saveRul(); paintAll() };
     $('psGho').onchange = ev => { RUL.ghost = ev.target.checked; saveRul(); paintAll() };
-    $('psGhoSame').onchange = ev => { RUL.ghostSame = ev.target.checked; if (RUL.ghostSame) RUL.ghost = true; saveRul(); draw() };
+    $('psGhoSame').onchange = ev => { RUL.ghostSame = ev.target.checked; if (RUL.ghostSame) { RUL.ghost = true; RUL.ghostBack = false } saveRul(); draw() };
+    $('psGhoBack').onchange = ev => { RUL.ghostBack = ev.target.checked; if (RUL.ghostBack) { RUL.ghost = true; RUL.ghostSame = false } saveRul(); draw() };
     $('psGhoFlip').onchange = ev => { RUL.ghostFlip = ev.target.checked; if (RUL.ghostFlip) RUL.ghost = true; saveRul(); draw() };
     $('psRadd').onclick = () => { RUL.on = true; RUL.lines.push({ y: GY - 100 - RUL.lines.length * 40, c: RCOL[(RUL.lines.length + RUL.meas.length) % RCOL.length] }); saveRul(); draw() };
     $('psMadd').onclick = () => { RUL.on = true; RUL.meas.push({ a: 120, b: 240, c: RCOL[(RUL.lines.length + RUL.meas.length + 3) % RCOL.length] }); saveRul(); draw() };
@@ -527,7 +528,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       el.querySelector('[data-b="snap"]').onclick = () => { if (snap(ck, true)) { write(KEY, DATA); draw(); msg('เข้าเส้นพื้นแล้ว (ยังไม่บันทึก) — กด 💾 บันทึกตำแหน่งภาพ') } else msg('วางจุดเท้าของท่านี้ก่อน' + (c.pose === 'down' ? ' (ท่านอน: เท้า ซ้าย = จุดแตะพื้นใต้กลางลำตัว)' : ' (เท้า ซ้าย + ขวา)')) };
       el.querySelector('[data-b="adj"]').onclick = () => openAdjust(ck);
       const gs = el.querySelector('[data-b="gsame"]'), gf = el.querySelector('[data-b="gflip"]');
-      if (gs) gs.onclick = () => { RUL.ghostSame = !(RUL.ghostSame && RUL.ghost); RUL.ghost = RUL.ghostSame ? true : RUL.ghost; saveRul(); draw() };
+      if (gs) gs.onclick = () => { RUL.ghostSame = !(RUL.ghostSame && RUL.ghost && !RUL.ghostBack); RUL.ghostBack = false; RUL.ghost = RUL.ghostSame ? true : RUL.ghost; saveRul(); draw() };
+      const gb = el.querySelector('[data-b="gback"]'); if (gb) gb.onclick = () => { RUL.ghostBack = !(RUL.ghostBack && RUL.ghost); if (RUL.ghostBack) { RUL.ghost = true; RUL.ghostSame = false } saveRul(); draw() };
       if (gf) gf.onclick = () => { RUL.ghostFlip = !(RUL.ghostFlip && RUL.ghost); if (RUL.ghostFlip) RUL.ghost = true; saveRul(); draw() };
       cv.ondblclick = ev => { const [sx, sy] = ptr(cv, ev), h = hitRuler(sx, sy); if (h) { (h.t === 'l' ? RUL.lines : RUL.meas).splice(h.i, 1); saveRul(); draw() } };
       cv.onpointerdown = ev => {
