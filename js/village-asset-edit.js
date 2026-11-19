@@ -470,7 +470,18 @@
   return b
  }
 
+ /* v98.844 · the dark veil + the glowing outline of the place being edited were rebuilt EVERY frame (two full-screen layers + 8 outline blits = ~45 % of a frame inside a place).
+    Their inputs only change when the camera moves, a different place / piece is picked or hovered, the data is edited (render()), or a drag is running — so they are built once and
+    reused while that signature stays the same (ovDecide); a drag, or any change, rebuilds them exactly as before. */
+ let ovHit = null, ovFrameSig = null, ovCache = { sig: null, ok: false, ring: false }, ovVer = 0;
+ function ovSigNow(main) {
+  if (drag) return null;
+  const m = main.getTransform();
+  return [m.a, m.b, m.c, m.d, m.e, m.f, main.canvas.width, main.canvas.height, place?.id || '', place?.tab || '', place ? place.keys.join('|') : '', hoverKey || '', UX.getMode(), litOwner() || '', refChar ? 1 : 0, editing ? 1 : 0, testWalk ? 1 : 0, ovVer].join('~')
+ }
+ function ovDecide(main) { if (ovHit === null) { ovFrameSig = ovSigNow(main); ovHit = ovFrameSig !== null && ovFrameSig === ovCache.sig && ovCache.ok } return ovHit }
  function stamp(n, inner) {
+  if ((n === 'ring' || n === 'hole') && ovDecide(g)) { if (n === 'ring') buf('ring').used = ovCache.ring; return }
   const b = buf(n),
    o = b.cv.getContext('2d'),
    main = g;
@@ -2032,6 +2043,7 @@
  let scrollKey = null;
  let lockRatio = false; try { lockRatio = !!localStorage.getItem('project-a-lock-ratio') } catch (e) {}
  function render() {
+  ovVer++;   /* v98.844 · an edit invalidates the cached veil / outline */
   const b0 = panel.querySelector('.body'), key = place ? 'p:' + place.id + ':' + place.tab + ':' + (place.keys?.length ? 1 : 0) : 'm:' + UX.getMode(), top = b0 && scrollKey === key ? b0.scrollTop : 0;
   renderInner();
   scrollKey = key;
@@ -2801,6 +2813,8 @@
    if (editing && !testWalk) drawOverlay(gg);
    if (editing && !testWalk && place && refChar) drawRefChar(gg, t)
   } finally {
+   if (ovHit === false) ovCache = { sig: ovFrameSig, ok: ovFrameSig !== null, ring: !!bufs.ring?.used };
+   ovHit = null;
    for (const b of Object.values(bufs)) b.used = false
   }
  };
@@ -2915,14 +2929,16 @@
    });
    const V = buf('veil'),
     v = V.cv.getContext('2d');
-   v.setTransform(1, 0, 0, 1, 0, 0);
-   v.globalCompositeOperation = 'source-over';
-   v.clearRect(0, 0, V.cv.width, V.cv.height);
-   v.fillStyle = 'rgba(5,14,11,.6)';
-   v.fillRect(0, 0, V.cv.width, V.cv.height);
-   v.globalCompositeOperation = 'destination-out';
-   v.drawImage(bufs.hole.cv, 0, 0);
-   v.globalCompositeOperation = 'source-over';
+   if (!ovDecide(gg)) {
+    v.setTransform(1, 0, 0, 1, 0, 0);
+    v.globalCompositeOperation = 'source-over';
+    v.clearRect(0, 0, V.cv.width, V.cv.height);
+    v.fillStyle = 'rgba(5,14,11,.6)';
+    v.fillRect(0, 0, V.cv.width, V.cv.height);
+    v.globalCompositeOperation = 'destination-out';
+    v.drawImage(bufs.hole.cv, 0, 0);
+    v.globalCompositeOperation = 'source-over'
+   }
    screenLayer(gg, V.cv)
   }
   if (bufs.ring?.used) {
@@ -2930,6 +2946,7 @@
     O = buf('ringOut'),
     q = O.cv.getContext('2d'),
     d = Math.max(1.5, devicePixelRatio * 1.3);
+   if (!ovDecide(gg)) {
    q.setTransform(1, 0, 0, 1, 0, 0);
    q.globalCompositeOperation = 'source-over';
    q.clearRect(0, 0, O.cv.width, O.cv.height);
@@ -2948,7 +2965,8 @@
    q.fillRect(0, 0, O.cv.width, O.cv.height);
    q.globalCompositeOperation = 'destination-out';
    q.drawImage(R, 0, 0);
-   q.globalCompositeOperation = 'source-over';
+   q.globalCompositeOperation = 'source-over'
+   }
    screenLayer(gg, O.cv, .95)
   }
   if (UX.getMode() === 'chars' && selChar) {
