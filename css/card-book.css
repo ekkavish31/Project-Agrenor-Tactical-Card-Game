@@ -29,10 +29,10 @@
 .card-book .collection-grid{display:grid;grid-template-columns:repeat(auto-fill,156px);gap:14px 10px;justify-content:start;margin:6px 0 14px}
 
 /* v98.665 · the painted open book (js/card-book.js · .card-book.cb-v2). Every size is a fraction of --w (the book's width) so the zones always sit on the paper */
-#panel:has(.card-book.cb-v2){background:transparent;border:0;box-shadow:none;max-width:none;width:min(1580px,99.5vw);max-height:none;padding:0;overflow:visible}
+#panel:has(.card-book.cb-v2){background:transparent;border:0;box-shadow:none;max-width:none;width:99.5vw;max-height:none;padding:0;overflow:visible}
 #panel:has(.card-book.cb-v2) .panelhead{display:none}
-#panel:has(.card-book.cb-v2)::backdrop{background:radial-gradient(70% 60% at 50% 48%,#ffaa5036,#0000 70%),#0a0503d0;backdrop-filter:blur(5px)}
-.card-book.cb-v2{--w:min(1540px,99vw,162vh);--u:calc(var(--w)/100);width:var(--w);margin:0 auto;padding:calc(var(--u)*5.6) 0 0;background:none;border:0;box-shadow:none;border-radius:0;position:relative;color:#3a2a14}
+#panel:has(.card-book.cb-v2)::backdrop{background:radial-gradient(80% 70% at 50% 45%,rgba(255,236,205,.30),rgba(40,28,18,.55) 100%),rgba(60,44,32,.35);backdrop-filter:blur(26px) saturate(.7);-webkit-backdrop-filter:blur(26px) saturate(.7)}
+.card-book.cb-v2{--w:min(99vw,164vh);--u:calc(var(--w)/100);width:var(--w);margin:0 auto;padding:calc(var(--u)*5.6) 0 0;background:none;border:0;box-shadow:none;border-radius:0;position:relative;color:#3a2a14}
 .card-book.cb-v2::before{display:none}
 .cb-v2 .cb-tabs{position:absolute;left:calc(var(--u)*7);top:0;display:flex;gap:calc(var(--u)*.9);align-items:flex-start;padding:0;margin:0;z-index:3;height:calc(var(--u)*9)}
 .cb-v2 .cb-tabs button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;width:calc(var(--u)*6.4);height:calc(var(--u)*8.4);margin-top:calc(var(--u)*-.2);padding:calc(var(--u)*.7) 0 0;border:0;border-radius:0 0 0 0;background:linear-gradient(90deg,#8e1f1c,#b83a2e 45%,#8a1c1a);color:#ffe9b8;clip-path:polygon(0 0,100% 0,100% 100%,50% 86%,0 100%);box-shadow:none;cursor:pointer;font:700 calc(var(--u)*1.05) AgThai,VillageThai,system-ui,sans-serif;transform:translateY(calc(var(--u)*-3.2));transition:transform .18s,filter .15s;filter:drop-shadow(0 calc(var(--u)*.3) calc(var(--u)*.4) #0008)}
@@ -114,3 +114,6 @@
 
 /* v98.797 · an open book needs no other menu: it sits at the TOP of the screen (the ribbons almost touch the edge) instead of floating in the middle */
 #panel:has(.card-book.cb-v2){margin-top:max(.4vh,3px);margin-bottom:auto}
+
+/* v98.805 · the panel sits at the very top (ribbon tips almost touch the screen edge), not under the game bar */
+#panel.under-bar:has(.card-book.cb-v2){top:max(.4vh,3px)}

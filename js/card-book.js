@@ -51,7 +51,7 @@
     const book = document.createElement('div'); book.className = 'card-book cb-v2';
     book.innerHTML = `<nav class="cb-tabs" role="tablist">${tabs.map(t => `<button type="button" role="tab" data-t="${t.id}" title="${esc(t.name + ' · ' + t.tip)}"><img src="${t.icon}" alt="" draggable="false"><em>${count(t.id)}</em><b>${t.name}</b></button>`).join('')}</nav>
       <div class="cb-open">
-        <button type="button" class="cb-close" aria-label="ปิดสมุด" title="ปิดสมุด" onclick="document.getElementById('panel').close()">ปิดสมุด</button>
+        <button type="button" class="cb-close" aria-label="ปิดสมุด" title="ปิดสมุด" onclick="if(!(window.closeTopFirst&&window.closeTopFirst()))document.getElementById('panel').close()">ปิดสมุด</button>
         ${tabs.map(t => `<section class="cb-page" data-p="${t.id}" role="tabpanel" aria-label="${esc(notes[t.id] || t.name)}"><div class="cb-pg L collection-grid"></div><div class="cb-pg R collection-grid"></div><span class="cb-no L"></span><span class="cb-no R"></span></section>`).join('')}
         <div class="cb-nav"><button type="button" class="cb-prev" aria-label="หน้าก่อน">◀</button><span class="cb-count">1/1</span><button type="button" class="cb-next" aria-label="หน้าถัดไป">▶</button></div>
       </div>

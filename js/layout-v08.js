@@ -15,8 +15,10 @@ const nativeShow=panel.showModal.bind(panel),nativeClose=panel.close.bind(panel)
 panel.showModal=function(){syncBar();if(!panel.open)panel.show();shade.hidden=false;panel.classList.add('under-bar')};
 panel.close=function(){shade.hidden=true;panel.classList.remove('under-bar');if(panel.open){nativeClose()}};
 panel.addEventListener('close',()=>{if(!panel.open){shade.hidden=true;panel.classList.remove('under-bar')}});
-shade.addEventListener('click',()=>{if(!busy)panel.close()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.open&&!busy&&!document.body.classList.contains('tactics-open')){panel.close();e.preventDefault()}});
+/* v98.805 · windows stacked on the panel (the card detail over the card book): a USER close (Esc · the shade · the book's close button) closes the TOP window first, the panel only when nothing is above it */
+window.closeTopFirst=()=>{const tops=[...document.querySelectorAll('dialog[open]')].filter(d=>d!==panel&&d.matches(':modal'));const top=tops[tops.length-1];if(top){top.close();return true}return false};
+shade.addEventListener('click',()=>{if(!busy&&!window.closeTopFirst())panel.close()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.open&&!busy&&!document.body.classList.contains('tactics-open')){if(!window.closeTopFirst())panel.close();e.preventDefault();e.stopImmediatePropagation()}},true);
 // switching panels from the bar: only the village map uses the full-screen layout
 const baseDialog=villageDialog;villageDialog=function(title,html){panel.classList.remove('map-panel');mapEditing=false;return baseDialog(title,html)};
 // 3) freshness popup removed — the face keeps its tooltip only
