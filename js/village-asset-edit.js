@@ -288,7 +288,8 @@
    ix = ov.ix ?? 1, iy = ov.iy ?? 1,
    ia = (ix + iy) / 2, ib = (iy - ix) / 2, ic = (iy - ix) / 2, id = (ix + iy) / 2,
    k = ov.kind && KINDS[ov.kind] ? ov.kind : null,
-   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k && !ov.pm && !ov.artX && !ov.artY;
+   tkx = Math.tan((ov.skx || 0) * Math.PI / 180), tky = Math.tan((ov.sky || 0) * Math.PI / 180),   /* v98.838 · เอียงเสา / เอียงฐาน (same matrix as the sub-maps: slant × [[1,tan skx],[tan sky,1]]) */
+   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !ov.skx && !ov.sky && !k && !ov.pm && !ov.artX && !ov.artY;
   /* v98.692 · WALK-THROUGH PLANTS SWAY: a bush / grass / flower / hedge the hero can walk through (no red block frame) leans away from the hero and springs back with a little overshoot (below: swayOf) */
   const swayOn = ov.sway === true || (ov.sway !== false && !ov.block && SWAY_RE.test((label || '') + ' ' + (ov.kind || '')));
   const inner = plain && !swayOn ? draw : gg => {
@@ -299,6 +300,7 @@
    if (r) g.rotate(r);
    g.scale(f ? -s : s, s);
    g.transform(ia, ib, ic, id, 0, 0);
+   if (tkx || tky) g.transform(1, tky, tkx, 1, 0, 0);
    g.translate(-ax, -ay);
    if (k) KINDS[k].draw({
     x: ax,
@@ -1148,7 +1150,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { ...window.PieceGeometry.extra(ov), kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, free: ov.free, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
+  return { ...window.PieceGeometry.extra(ov), kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, free: ov.free, ix: ov.ix, iy: ov.iy, skx: ov.skx, sky: ov.sky, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
  }
  function addRecords(recs, owner, off) {
   const ids = [], gmap = {};
@@ -1157,7 +1159,7 @@
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-   data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
+   data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, skx: r.skx, sky: r.sky, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
    if (r.g) data.edit[nid].grp = gmap[r.g] || (gmap[r.g] = newGid());
    clean(nid);
    ids.push(nid)
@@ -2530,7 +2532,7 @@
    for (const r of a.recs) {
     const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sn = window.VillageGrid.snapOffset({ u: base.u, v: base.v }, !!base.mirror, r.du, r.dv + +base.front.toFixed(2), modeNow());
     data.added.push({ id: nid, owner: place.id, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-    data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
+    data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, skx: r.skx, sky: r.sky, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
     clean(nid);
     ids.push(nid)
    }
@@ -3087,7 +3089,7 @@
   frameList: () => frame.map(e => ({ key: e.key, art: e.art, label: e.label, own: frOwn(e.ov || {}), block: !!(e.geo || e.ov)?.block })),   /* v98.692 · for tests / tools */
   detail: {
    /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
-   get caps() { return bldDetail ? { rot: false, slant: false, skew: false, block: true, shape: false, zoom: 0.55, note: 'สถานที่: 🟦 กรอบฟ้า = การบัง (ระบายให้เท่าส่วนที่แตะพื้นจริง รวมเฉลียง/ปีกยื่น) · 🟥 กรอบแดง = การชน — ติ๊ก "บล็อกเดิน" แล้วตัวละคร/NPC เดินทะลุกรอบแดงไม่ได้ ส่วนที่ไม่ระบายแดง (ทางเข้า ลาน) เดินผ่านได้ · พื้นฟ้าเดิมของแปลง/ช่องเหลือง/ช่องเขียว ยกเลิกแล้ว — ยังไม่ระบายกรอบแดง = เดินทะลุสถานที่ได้' } : { skew: false } },
+   get caps() { return bldDetail ? { rot: false, slant: false, skew: false, block: true, shape: false, zoom: 0.55, note: 'สถานที่: 🟦 กรอบฟ้า = การบัง (ระบายให้เท่าส่วนที่แตะพื้นจริง รวมเฉลียง/ปีกยื่น) · 🟥 กรอบแดง = การชน — ติ๊ก "บล็อกเดิน" แล้วตัวละคร/NPC เดินทะลุกรอบแดงไม่ได้ ส่วนที่ไม่ระบายแดง (ทางเข้า ลาน) เดินผ่านได้ · พื้นฟ้าเดิมของแปลง/ช่องเหลือง/ช่องเขียว ยกเลิกแล้ว — ยังไม่ระบายกรอบแดง = เดินทะลุสถานที่ได้' } : { rot: false, slant: false } },   /* v98.838 · the same piece tools as the sub-maps: size ± · base tilt (เอียงฐาน) · pole tilt (เอียงเสา) · flip — no rotate / no ↗↙↖↘ slant */
    item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
    ov: key => { if (String(key).startsWith('bld:')) return data.buildings[key.slice(4)] || {}; const o = data.edit[key] || {}, E = frame.find(e => e.key === key); return E ? geoOv(o, E.art) : o },   /* v98.692 · the window shows the frame the piece really uses (own → picture's template) */
    edit(key, fn, checkpoint) {
@@ -3121,7 +3123,7 @@
     const main = g, s = ov.s ?? 1, r = (ov.r || 0) * Math.PI / 180, ix = ov.ix ?? 1, iy = ov.iy ?? 1, k = ov.kind && KINDS[ov.kind] ? ov.kind : null;
     g = q;
     try {
-     q.save(); window.PieceGeometry.apply(q, ov); if (r) q.rotate(r); q.scale(ov.f ? -s : s, s); q.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); q.translate(-E.ax, -E.ay);
+     q.save(); window.PieceGeometry.apply(q, ov); if (r) q.rotate(r); q.scale(ov.f ? -s : s, s); q.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); if (ov.skx || ov.sky) q.transform(1, Math.tan((ov.sky || 0) * Math.PI / 180), Math.tan((ov.skx || 0) * Math.PI / 180), 1, 0, 0); q.translate(-E.ax, -E.ay);
      if (k) KINDS[k].draw({ x: E.ax, y: E.ay }); else E.base(q);
      q.restore()
     } catch (e) { } finally { g = main }
