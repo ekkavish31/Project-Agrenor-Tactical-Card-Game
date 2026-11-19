@@ -5,7 +5,7 @@
      (head · shoulder width · torso · leg length · leg thickness, px and % of the body height, and the change against the SW standing pose).
      The FOOT POINT of a pose = the middle of the two ground-contact points (heel when the heel lands, ball when the toe pushes off); for the lying pose ('down') the same: put the two points at the two ENDS of the body's ground contact, the foot point is the middle (v98.782; it used to be foot L alone and ran after it).
    • ✋ MOVE the picture inside its canvas (drag) — "⤓ เข้าเส้นพื้น" puts the foot point on the standard ground point (192, 360). The move is real: 💾 บันทึกตำแหน่งภาพ shifts the pixels of every frame
-     of that pose and stores them as new pictures (🛒 Cart → push as before). The cells show 48 px of margin around the real 384 × 384 frame (red) so a foot outside it stays visible; a save that would cut the picture is refused.
+     of that pose and stores them as new pictures (🛒 Cart → push as before). The cells show 24 px of margin around the real 384 × 384 frame (red) so a foot outside it stays visible; a save that would cut the picture is refused.
    • 🛠 ปรับ: a window with the old head / torso / legs / shoulder / thickness sliders (live preview, "ให้หัวเท่าท่ายืน SW" auto) → saved as new pictures for every frame of the pose.
    • Rulers: horizontal lines across every cell (several, any colour, dragged), two-line measures (distance in px and % of the SW standing height), a dashed centre line per cell,
      and the SW standing silhouette laid over each pose (feet on the ground point).
@@ -30,8 +30,8 @@
   const isBack = ck => /@(NE|NW)$/.test(ck || '');
   const stepsOf = ck => STEPS.filter(s => isBack(ck) ? s[0] !== 'eyeL' && s[0] !== 'eyeR' && s[0] !== 'top' : s[0] !== 'headA' && s[0] !== 'headB');
   const stepsHtml = ck => stepsOf(ck).map(([k, l, col], i) => `<button type="button" data-step="${k}" class="${k === step ? 'on' : ''}"><i style="background:${col}"></i><span class="n">${i + 1}</span>${l.split(' · ')[0]}</button>`).join('');
-  /* v98.800 · margin 96 → 48 px (half) · the numbers box sits at the top-left corner of the real frame */
-  const SRC = 384, GX = 192, GY = 360, PAD = 48;   /* every character frame: 384 × 384, ground point (192, 360) */
+  /* v98.800 · margin 96 → 48 → 24 px (v98.812: halved again) · the numbers box sits at the top-left corner of the real frame */
+  const SRC = 384, GX = 192, GY = 360, PAD = 24;   /* every character frame: 384 × 384, ground point (192, 360) */
   const RCOL = ['#e03131', '#1971c2', '#2f9e44', '#f08c00', '#9c36b5', '#0c8599', '#c2255c', '#5c940d'];
   const $ = id => document.getElementById(id), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || 'null') || d } catch (e) { return d } };
