@@ -391,8 +391,10 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   async function qaSave() {
     const ck = QA.ck, c = cur?.cells[ck], P = peek(ck)?.p; if (!c || !withChin(P || {}).chin || !qaDirty() || QA.busy) return false; QA.busy = true; const say = t => { QA.msg = t; const m = $('qaMsg'); if (m) m.textContent = t };
     try {
-      const items = []; let n = 0; for (const f of c.clip.frames) { say('ปรับ ' + (++n) + '/' + c.clip.frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), cv = qaRender(img, fl, P, c.pose === 'down'); if (!cv) throw new Error('วางยอดกะโหลก + จุดเท้า + เส้นตัดหัว/ขา ให้ครบก่อน'); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(cv) : cv) }); await new Promise(r => setTimeout(r, 0)) }
-      say('กำลังบันทึก…'); const moved = QA.P; await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.P = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · ตรวจจุดอีกครั้ง'; updNext(); return true
+      const items = [], tw = twinOf(ck); let n = 0; for (const f of c.clip.frames) { say('ปรับ ' + (++n) + '/' + c.clip.frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), cv = qaRender(img, fl, P, c.pose === 'down'); if (!cv) throw new Error('วางยอดกะโหลก + จุดเท้า + เส้นตัดหัว/ขา ให้ครบก่อน'); const saved = fl ? mirrorCv(cv) : cv; items.push({ file: f.file, dataUrl: toURL(saved) });
+        /* v98.875 · the opposite direction with its OWN picture follows: SW = SE flipped · NE = NW flipped → its picture is the mirror of what is saved here */
+        { const tf = tw?.own ? tw.clip.frames[n - 1] : null; if (tf && tf.file !== f.file) items.push({ file: tf.file, dataUrl: toURL(mirrorCv(saved)) }) } await new Promise(r => setTimeout(r, 0)) }
+      say('กำลังบันทึก…'); const moved = QA.P; await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } if (tw?.own && r?.p && Object.keys(r.p).length) { const rec = (DATA[akey(cur.id)] ||= {}); if (rec[tw.ck]) rec[tw.ck].ok = false; mirrorToTwin(ck, false) } write(KEY, DATA); QA.S = QD(); QA.canvas = null; QA.P = null; QA.busy = false; await load(); QA.msg = '✔ ใส่ Cart แล้ว (รอ Push) · ตรวจจุดอีกครั้ง'; updNext(); return true
     } catch (e) { QA.busy = false; say('ไม่สำเร็จ: ' + e.message); return false }
   }
   function qaClick(e) {
@@ -674,10 +676,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     $('adjClose').onclick = () => box.remove(); box.onclick = e => { if (e.target === box) box.remove() };
     $('adjSave').onclick = async () => {
       if (busy) return; busy = true; $('adjSave').disabled = true; try {
-        const frames = c.clip.frames, items = []; let n = 0;
-        for (const f of frames) { say('ปรับ ' + (++n) + '/' + frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), { canvas } = render(img, fl); items.push({ file: f.file, dataUrl: toURL(fl ? mirrorCv(canvas) : canvas) }); await new Promise(r => setTimeout(r, 0)) }
+        const frames = c.clip.frames, items = [], tw = twinOf(ck); let n = 0;
+        for (const f of frames) { say('ปรับ ' + (++n) + '/' + frames.length + '…'); const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้'); const fl = flipOf(c, f), { canvas } = render(img, fl), saved = fl ? mirrorCv(canvas) : canvas; items.push({ file: f.file, dataUrl: toURL(saved) });
+          { const tf = tw?.own ? tw.clip.frames[n - 1] : null; if (tf && tf.file !== f.file) items.push({ file: tf.file, dataUrl: toURL(mirrorCv(saved)) }) }   /* v98.875 · SW = SE flipped · NE = NW flipped */
+          await new Promise(r => setTimeout(r, 0)) }
         say('กำลังบันทึก…'); let moved = null; try { const first = render(c.img, c.flip); moved = P && Object.keys(P).length ? qaMovePoints(P, { res: first.res }) : null } catch (e) { moved = null }   /* where the points go with the bent picture (PA.mapPoint) */
-        await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } write(KEY, DATA); say('✔ บันทึกแล้ว · รอกด “Push ที่แก้” / Cart · จุดย้ายตามภาพแล้ว ตรวจอีกครั้งในหน้าเรียงท่า'); setTimeout(async () => { box.remove(); await load() }, 900);
+        await apply(items); const r = peek(ck); if (r) { if (moved) r.p = moved; r.ok = false; r.fp = null } if (tw?.own && r?.p && Object.keys(r.p).length) { const rec = (DATA[akey(cur.id)] ||= {}); if (rec[tw.ck]) rec[tw.ck].ok = false; mirrorToTwin(ck, false) } write(KEY, DATA); say('✔ บันทึกแล้ว · รอกด “Push ที่แก้” / Cart · จุดย้ายตามภาพแล้ว ตรวจอีกครั้งในหน้าเรียงท่า'); setTimeout(async () => { box.remove(); await load() }, 900);
       } catch (e) { say('ไม่สำเร็จ: ' + e.message); busy = false; $('adjSave').disabled = false }
     };
   }
