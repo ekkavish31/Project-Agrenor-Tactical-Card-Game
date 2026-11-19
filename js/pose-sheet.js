@@ -84,12 +84,14 @@
     let mig = false;
     for (const [ck, x] of Object.entries(c.cells)) {
       if (!x.img) continue; const nfp = [x.file, 'px:' + pixHash(x.img), x.flip ? 'm' : ''].join('|'), r = DATA[akey(c.id)]?.[ck];
-      if (r && r.fp && r.fp !== nfp && r.fp.split('|')[0] === x.file && !(r.fp.split('|')[1] || '').startsWith('px:')) { r.fp = nfp; mig = true }
+      if (r && r.fp && r.fp !== nfp && stripExt(r.fp.split('|')[0]) === stripExt(x.file) && !(r.fp.split('|')[1] || '').startsWith('px:')) { r.fp = nfp; mig = true }
       x.fp = nfp;
     }
     if (mig) { try { localStorage.setItem(KEY, JSON.stringify(DATA)) } catch (er) { } HLAST = histSnap() }
     if (cur === c) { draw(); status() }
   }
+  /* v98.788 · a lock saved when the frame was still a .png carries over to the same frame now stored as .webp */
+  const stripExt = f => String(f || '').replace(/\.(png|webp)$/i, '');
   function pixHash(img) { try { const c = document.createElement('canvas'); c.width = c.height = SRC; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, SRC, SRC); const d = g.getImageData(0, 0, SRC, SRC).data; let h = 2166136261; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 8) { h = Math.imul(h ^ d[i], 16777619); h = Math.imul(h ^ d[i + 1], 16777619); h = Math.imul(h ^ d[i + 2], 16777619); h = Math.imul(h ^ (i >> 2), 16777619) } return (h >>> 0).toString(36) } catch (e) { return 'x' } }
   /* the first time a character opens here, its points from the old 📍 Datum tool (proportion-datum-v1, frame 0) become the starting marks */
   function importOld(c) {
