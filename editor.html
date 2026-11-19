@@ -27,12 +27,11 @@ iframe[hidden]{display:none}
  <h1>✎ Project A · Editor</h1>
  <nav id="tabs"></nav><span id="deployStatus">กำลังตรวจสถานะเว็บ…</span>
  <button class="tool" id="stagedPush" disabled title="ส่งภาพ/ไฟล์ที่แก้ค้างไว้ (จาก Asset Studio / Workshop ทุกแท็บ) ขึ้น GitHub เป็น commit เดียว" style="background:#496b3b;border-color:#6f9a5a;font-weight:700">⬆ รอ Push (0)</button><button class="tool" id="stagedDrop" hidden title="ทิ้งงานที่ยังไม่ push ทั้งหมด">ทิ้ง</button>
- <button class="tool" id="reload" title="โหลดแท็บนี้ใหม่">↻ โหลดใหม่</button>
  <a href="index.html" target="_blank" title="เปิดเกมในแท็บใหม่">▶ เปิดเกม</a>
 </header>
 <div class="note" id="note"></div><div id="editorConflict" hidden role="status"></div>
 <main id="frames"></main>
-<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-version.js?v=v98.803"></script><script src="js/game-settings.js?v=v98.803"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.803"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
+<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-version.js?v=v98.803"></script><script src="js/game-settings.js?v=v98.803"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.809"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
@@ -53,7 +52,7 @@ function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replac
  if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=busted(T.src);f.title=T.name;f.allow='fullscreen';f.setAttribute('allowfullscreen','');frames.appendChild(f)}}
 tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}" title="${t.note.replace(/"/g,'&quot;')} · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด">${t.name}</button>`).join('');
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
-document.getElementById('reload').onclick=()=>{let f=frames.querySelector(`[data-id="${cur}"]`),T=TABS.find(t=>t.id===cur);if(f&&T)f.src=busted(T.src)};
+/* v98.815 · the ↻ โหลดใหม่ button is removed — use Ctrl+Shift+R */
 show(TABS.some(t=>t.id===location.hash.slice(1))?location.hash.slice(1):'assets');
 /* v91.55 · ⬆ Push of everything staged by Asset Studio / Object Workshop, from any tab (staged files live in IndexedDB, shared by all frames) */
 (function(){const sp=document.getElementById('stagedPush'),sd=document.getElementById('stagedDrop');let bc=null;try{bc=new BroadcastChannel('project-a-staged')}catch(e){}

@@ -186,17 +186,7 @@
     const paintToggle = () => { const skip = (() => { try { return localStorage.getItem(SKIP_KEY) !== '0' } catch (e) { return true } })(); toggle.textContent = 'บทเปิด: ' + (skip ? 'ปิด' : 'เปิด'); toggle.classList.toggle('off', skip); toggle.title = skip ? 'ตอนนี้ข้ามบทเปิด เปิดเกมมาที่หน้าเมนูเลย · กดเพื่อเล่นบทเปิดทุกครั้ง' : 'ตอนนี้เล่นบทเปิดทุกครั้งที่เปิดเกม · กดเพื่อข้าม (เหมาะกับตอนพัฒนา)' };
     toggle.addEventListener('click', () => { let on = true; try { on = localStorage.getItem(SKIP_KEY) !== '0'; localStorage.setItem(SKIP_KEY, on ? '0' : '1') } catch (e) { } paintToggle() });
     paintToggle(); main.append(toggle);
-    /* v98.689 · Reload Assets: forget the stored pictures (service-worker cache + the "pre-cached" flag), refetch this page past the HTTP cache and reload — for when art was changed and the browser still shows the old picture. Saves are untouched. */
-    const reloadAssets = document.createElement('button');
-    reloadAssets.className = 'ag-replay ag-reloadassets'; reloadAssets.type = 'button'; reloadAssets.textContent = 'Reload Assets'; reloadAssets.title = 'ล้างภาพที่จำไว้ในเบราว์เซอร์แล้วโหลดใหม่ทั้งหมด (เซฟไม่หาย)';
-    reloadAssets.addEventListener('click', async () => {
-      reloadAssets.disabled = true; reloadAssets.textContent = 'กำลังล้างแคช…';
-      try { for (const k of await caches.keys()) if (/^agrenor-/.test(k)) await caches.delete(k) } catch (e) { }
-      try { localStorage.removeItem('projectA.precached') } catch (e) { }
-      try { await fetch(location.pathname + location.search, { cache: 'reload' }) } catch (e) { }
-      location.reload();
-    });
-    main.append(reloadAssets);
+    /* v98.815 · the Reload Assets button is removed (Ctrl+Shift+R does the job) */
     if (skipOn()) {
       /* straight to the menu: the menu's own pictures + font first (so nothing pops in), the intro music file is fetched in the background; the first click/key unlocks sound as always */
       Promise.race([preloadMenu().catch(() => {}), wait(3500)]).then(() => { if (title.isConnected) title.classList.remove('ag-intro-pending'); window.dispatchEvent(new Event('maker-intro-finished')) });   /* the village frame (village-town-bridge.js) waits for this event to start loading */

@@ -53,6 +53,7 @@
   }
   /* v98.270 · a one-line warning under the character's name in the Animation tab: feet not at the standard row (CharSize.FEET_Y) in a standing picture, or a clip whose first frame has a head more than 5 % off the standing picture (same direction). Silent when everything is fine. */
   async function quickCheck(e) {
+    return '';   /* v98.806 · switched off (user: no need to check this any more) — the warning line under the character name stays empty */
     const clips = (e?.clips || []).filter(c => c.frames?.length && !c.frames[0].crop && DIRS.includes(c.view) && !c.frames[0].flip), cache = new Map(), first = async c => { const f = c.frames[0].file; if (!cache.has(f)) cache.set(f, load(f).then(im => im && measure(im))); return cache.get(f) };
     const feet = [], head = []; for (const view of DIRS) { const idle = clips.find(c => c.view === view && c.action === 'idle'); if (!idle) continue; const mi = await first(idle); if (!mi) continue;
       if (Math.abs(mi.bottom - CharSize.FEET_Y) > 3) feet.push(view + ' ' + (CharSize.FEET_Y - mi.bottom > 0 ? '+' : '') + (CharSize.FEET_Y - mi.bottom) + 'px');

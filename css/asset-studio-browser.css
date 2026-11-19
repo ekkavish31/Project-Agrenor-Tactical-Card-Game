@@ -150,3 +150,12 @@ body.anim-mode #lineupDock.edit-fit,body.anim-mode #lineupDock.lineup-fullscreen
 #lineupDock.min:not(.lineup-fullscreen){height:auto!important;display:block}
 #lineupDock.min:not(.lineup-fullscreen) .dock-body{display:none}
 @media(max-width:1000px){#lineupDock .dock-bar small{display:none}}
+
+/* v98.805 · a character whose every set is checked: light-blue row + "Completed" tag */
+nav button.done{background:#dcecf9;border-color:#7fb0d8}nav button.done.on{background:#cbe3f6;border-color:#3f86bd;box-shadow:0 0 0 1px #3f86bd inset}
+nav button .done-tag{display:inline-block;margin-top:2px;padding:0 7px;border-radius:9px;background:#2f7fc0;color:#fff;font:700 10.5px/16px system-ui,AgThai,sans-serif;font-style:normal;letter-spacing:.02em}
+
+/* v98.807 · sharpness badge, top-left of every animation tile (shifts right of the ✔ in multi-select mode) */
+#grid [data-clip-index]{position:relative}
+#grid [data-clip-index] .sharp{position:absolute;top:5px;left:7px;z-index:2;padding:0 6px;border-radius:8px;background:#000a;color:#fff;font:700 10.5px/16px system-ui,AgThai,sans-serif;font-style:normal;pointer-events:none}
+#grid [data-clip-index].ms-on .sharp{left:34px}

@@ -15,7 +15,7 @@
   const MON_TIMING = { idle: [650, 'loop'], walk: [130, 'loop'], windup: [250, ''], strike: [135, ''], hit: [400, ''], down: [300, ''], cast: [250, ''], loot: [1000, 'loop'], run: [90, 'loop'], pant: [500, 'loop'], graze: [450, 'loop'], bleat: [350, ''], sleep: [900, 'loop'], happy: [200, ''] };
   const isMon = e => !!e && (e.group === 'monsters' || e.group === 'bosses'), monKind = e => String(e.id).replace(/^enemy:/, '');
   const VIEWS = ['SW', 'SE', 'NW', 'NE'], MON_VIEWS = ['SE', 'NE'], OPP = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' };
-  const PRESETS = { npc2: ['idle', 'walk'], std: ['idle', 'windup', 'strike', 'guard', 'hit', 'down'], walk: ['walk', 'idle', 'windup', 'strike', 'guard', 'hit', 'down'], mon4: ['windup', 'strike', 'hit', 'down'], mon6: ['idle', 'walk', 'windup', 'strike', 'hit', 'down'] };
+  const PRESETS = { walkonly: null,  npc2: ['idle', 'walk'], std: ['idle', 'windup', 'strike', 'guard', 'hit', 'down'], walk: ['walk', 'idle', 'windup', 'strike', 'guard', 'hit', 'down'], mon4: ['windup', 'strike', 'hit', 'down'], mon6: ['idle', 'walk', 'windup', 'strike', 'hit', 'down'] };
   const $ = id => document.getElementById(id), esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const B = () => window.StudioBrowser, toast = m => { try { window.toast ? window.toast(m) : console.log(m) } catch (e) { } };
 
@@ -91,6 +91,9 @@
     #shPrev{max-width:100%;border:1px solid #b8a870;border-radius:8px;background:repeating-conic-gradient(#e8e2d0 0 25%,#fffdf6 0 50%) 0/16px 16px;display:block}
     #shCells{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
     .shc{border:1px solid #cdbf93;border-radius:10px;padding:6px;background:#fffdf6;font-size:12px}.shc.on{border-color:#2f6fd0;background:#eef4ff}.shc canvas{width:100%;height:120px;object-fit:contain;background:repeating-conic-gradient(#e8e2d0 0 25%,#fffdf6 0 50%) 0/12px 12px;border-radius:6px;display:block}
+    #shMain{display:flex;gap:12px;align-items:flex-start}#shMain #shCells{flex:1;min-width:0}
+    #shAnim{position:sticky;top:0;width:268px;flex:none;border:1px solid #cdbf93;border-radius:12px;background:#fffdf6;padding:8px;text-align:center;font-size:12px}#shAnimCv{width:250px;height:250px;border-radius:8px;background:repeating-conic-gradient(#e8e2d0 0 25%,#fffdf6 0 50%) 0/16px 16px;display:block;margin:4px auto}#shAnim button{margin:0 2px}
+    #shSharp{margin:4px 0;color:#315d46}.shc .shsh{float:right;color:#315d46;font-weight:700}
     .shc select{width:100%;margin-top:4px}.shc label{display:flex;gap:4px;align-items:center;margin-top:3px}#sheetImport .msg{min-height:18px;color:#315d46;margin:6px 0}`; document.head.append(s);
   }
   function build() {
@@ -102,17 +105,17 @@
       <label>คอลัมน์ <input type="number" id="shCols" min="1" max="12" value="3"></label><label>แถว <input type="number" id="shRows" min="1" max="12" value="2"></label>
       <label><input type="checkbox" id="shBg" checked> ลบพื้นหลังสีเรียบ</label><label>ความไว <input type="number" id="shTol" min="5" max="120" value="40"></label>
       <button id="shRecut">ตัดใหม่</button></div>
-     <div id="shInfo" style="color:#6b6247"></div><canvas id="shPrev" hidden></canvas>
+     <div id="shInfo" style="color:#6b6247"></div><div id="shSharp"></div><canvas id="shPrev" hidden></canvas>
      <div class="row" id="shAssign" hidden><b>ใส่ช่อง:</b>
       <label>ลำดับท่ามาตรฐาน <select id="shPreset"><option value="std">ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option><option value="walk">เดิน → ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option></select></label>
       <label>ทิศ <select id="shView"></select></label><button id="shFill">เติมตามลำดับ</button>
       <label><input type="checkbox" id="shMirrorAll"> ↔ ใส่ทิศตรงข้ามกลับด้านทุกช่อง</label>
       <label>ms/เฟรม (ชุดเดิน/หลายเฟรม) <input type="number" id="shMs" min="20" max="2000" value="100"></label>
-      <label title="ทุกช่องใช้สเกลเดียว (เท้าอยู่ล่างกลาง)"><input type="checkbox" id="shCommon" checked> สเกลเดียวทั้งชีท</label><button id="shClear">ล้างการเลือก</button></div>
-     <div id="shCells"></div><div class="msg" id="shMsg"></div>
+      <label title="ทุกช่องใช้สเกลเดียว (เท้าอยู่ล่างกลาง)"><input type="checkbox" id="shCommon" checked> สเกลเดียวทั้งชีท</label><label title="ท่าเดิน / หลายเฟรม: หัวอยู่กึ่งกลางทุกเฟรม และเท้าที่ต่ำสุดแตะเส้นพื้นเดียวกัน (ปิด = จัดกึ่งกลางตามกรอบภาพ)"><input type="checkbox" id="shAlign" checked> จัดหัว-เท้าอัตโนมัติ</label><button id="shClear">ล้างการเลือก</button></div>
+     <div id="shMain"><div id="shCells"></div><aside id="shAnim"><b>▶ ตัวอย่างการเดิน</b><canvas id="shAnimCv" width="250" height="250"></canvas><div id="shAnimInfo" style="color:#6b6247">เลือกช่องเป็น "เดิน" เพื่อดูตัวอย่าง</div><div><button id="shAnimPlay" type="button">⏸ หยุด</button></div></aside></div><div class="msg" id="shMsg"></div>
      <div class="row" style="justify-content:flex-end"><button id="shApply" disabled style="background:#c9893a;border:1px solid #a06c27;color:#fff;padding:6px 14px;border-radius:8px">นำเข้า</button><button id="shClose">ปิด</button></div>`;
     $('shClose').onclick = () => dlg.close(); $('shFile').onchange = e => e.target.files[0] && openFile(e.target.files[0]); $('shRecut').onclick = recut; $('shMode').onchange = () => { $('shCols').disabled = $('shRows').disabled = $('shMode').value === 'blob' };
-    $('shFill').onclick = fill; $('shClear').onclick = () => { cells.forEach(c => { c.target = ''; c.mirror = false }); drawCells() }; $('shApply').onclick = apply;
+    $('shFill').onclick = fill; $('shMs').oninput = refreshPreview; $('shAlign').onchange = refreshPreview; $('shCommon').onchange = drawCells; $('shView').onchange = refreshPreview; $('shAnimPlay').onclick = () => { if (pvT) { stopPv(); $('shAnimPlay').textContent = '▶ เล่น' } else { startPv(); $('shAnimPlay').textContent = '⏸ หยุด' } }; dlg.addEventListener('close', stopPv); $('shClear').onclick = () => { cells.forEach(c => { c.target = ''; c.mirror = false }); drawCells() }; $('shApply').onclick = apply;
     $('shMirrorAll').onchange = () => { const m = $('shMirrorAll').checked; cells.forEach(c => { if (c.target) c.mirror = m }); drawCells() };
     dlg.addEventListener('paste', e => { const f = [...(e.clipboardData?.files || [])].find(f => f.type.startsWith('image/')); if (f) openFile(f) });
     dlg.addEventListener('dragover', e => e.preventDefault()); dlg.addEventListener('drop', e => { e.preventDefault(); const f = [...(e.dataTransfer?.files || [])].find(f => f.type.startsWith('image/')); if (f) openFile(f) });
@@ -130,13 +133,46 @@
     g.lineWidth = 2; g.font = 'bold 14px AgThai,system-ui'; cells.forEach((c, i) => { g.strokeStyle = '#2f6fd0'; g.strokeRect(c.rect.x * k, c.rect.y * k, c.rect.w * k, c.rect.h * k); g.fillStyle = '#2f6fd0'; g.fillText(String(i + 1), c.rect.x * k + 4, c.rect.y * k + 16) });
     $('shAssign').hidden = false; drawCells(); msg(cells.length ? '' : 'ตัดไม่ได้ชิ้นไหนเลย — ลองเปลี่ยนวิธีตัดหรือปิด "ลบพื้นหลัง"');
   }
-  function fill() { const view = $('shView').value, seq = PRESETS[$('shPreset').value], m = $('shMirrorAll').checked; cells.forEach(c => { c.target = ''; c.mirror = false }); cells.slice(0, seq.length).forEach((c, i) => { c.target = seq[i] + '|' + view; c.mirror = m }); drawCells() }
+  function fill() { const view = $('shView').value, seq = PRESETS[$('shPreset').value], m = $('shMirrorAll').checked;
+    if (!seq) { cells.forEach(c => { c.target = 'walk|' + view; c.mirror = m }); drawCells(); return }   /* v98.822 · a sheet of WALK frames only: every piece is a frame of the walk set of this direction, in reading order */ cells.forEach(c => { c.target = ''; c.mirror = false }); cells.slice(0, seq.length).forEach((c, i) => { c.target = seq[i] + '|' + view; c.mirror = m }); drawCells() }
   function drawCells() {
-    const box = $('shCells'), opts = '<option value="">— ไม่นำเข้า —</option>' + actsNow().map(([a, n]) => `<optgroup label="${n}">${viewsNow().map(v => `<option value="${a}|${v}">${n} · ${v}</option>`).join('')}</optgroup>`).join('');
-    box.innerHTML = cells.map((c, i) => `<div class="shc${c.target ? ' on' : ''}" data-i="${i}"><b>ช่อง ${i + 1}</b> <small>${c.trim.width}×${c.trim.height}</small><canvas></canvas><select data-t>${opts}</select><label><input type="checkbox" data-m ${c.mirror ? 'checked' : ''}${c.target ? '' : ' disabled'}> ↔ ทิศตรงข้ามด้วย</label></div>`).join('');
+    const kAll0 = scaleK(), box = $('shCells'), opts = '<option value="">— ไม่นำเข้า —</option>' + actsNow().map(([a, n]) => `<optgroup label="${n}">${viewsNow().map(v => `<option value="${a}|${v}">${n} · ${v}</option>`).join('')}</optgroup>`).join('');
+    box.innerHTML = cells.map((c, i) => `<div class="shc${c.target ? ' on' : ''}" data-i="${i}"><b>ช่อง ${i + 1}</b> <small>${c.trim.width}×${c.trim.height}</small><span class="shsh" title="ความคมของช่องนี้หลังจัดเข้ากรอบเกม (ยิ่งสูงยิ่งคม)">${(() => { const v = sharpOfCell(c, kAll0 ?? undefined); return v == null ? '' : 'คม ' + v.toFixed(1) })()}</span><canvas></canvas><select data-t>${opts}</select><label><input type="checkbox" data-m ${c.mirror ? 'checked' : ''}${c.target ? '' : ' disabled'}> ↔ ทิศตรงข้ามด้วย</label></div>`).join('');
     box.querySelectorAll('.shc').forEach(el => { const i = +el.dataset.i, c = cells[i], cv = el.querySelector('canvas'); cv.width = 240; cv.height = 240; const k = Math.min(230 / c.trim.width, 230 / c.trim.height); cv.getContext('2d').drawImage(c.trim, (240 - c.trim.width * k) / 2, 235 - c.trim.height * k, c.trim.width * k, c.trim.height * k);
       const sel = el.querySelector('[data-t]'); sel.value = c.target; sel.onchange = () => { c.target = sel.value; if (!c.target) c.mirror = false; drawCells() }; el.querySelector('[data-m]').onchange = e => { c.mirror = e.target.checked } });
     const n = cells.filter(c => c.target).length; $('shApply').disabled = !n || busy; $('shApply').textContent = n ? `นำเข้า ${n} ช่อง` : 'นำเข้า';
+    try { sharpSummary(kAll0) } catch (er) { } try { refreshPreview() } catch (er) { }
+  }
+
+  /* ---------------- v98.822 · sharpness numbers + live walk preview ---------------- */
+  /* the common scale of the sheet (null = every piece has its own); for monsters the 512 cell box */
+  const scaleK = () => { if (!cells.length) return 1; const W = Math.max(...cells.map(c => c.trim.width)), H = Math.max(...cells.map(c => c.trim.height)); return monMode ? Math.min(488 / W, 470 / H) : $('shCommon').checked ? Math.min(BOX_W / W, BOX_H / H) : null };
+  const kFor = (c, kAll) => kAll ?? Math.min(BOX_W / c.trim.width, BOX_H / c.trim.height);
+  const placedOf = (c, kAll, headCentre) => monMode ? placeMon(c.trim, kAll) : place(c.trim, kFor(c, kAll), headCentre);
+  /* SHARPNESS ("คม") of each piece as it will look in the game frame (after the scale-to-fit): same number as the badge on the Animation tiles (StudioSharp.of) — higher = crisper, a soft / blurred / over-stretched piece scores low */
+  function sharpOfCell(c, kAll) { const S = window.StudioSharp; if (!S?.of) return null; const key = (kAll ?? 'own') + '|' + monMode; if (c._shk === key) return c._sh; let v = null; try { v = S.of(placedOf(c, kAll, false)) } catch (e) { v = null } c._shk = key; c._sh = v; return v }
+  function sharpSummary(kAll) {
+    const el = $('shSharp'); if (!el) return; const vs = cells.map((c, i) => ({ i, v: sharpOfCell(c, kAll ?? undefined) })).filter(x => x.v != null);
+    if (!vs.length) { el.textContent = ''; return } const avg = a => a.reduce((s, x) => s + x.v, 0) / a.length, sel = vs.filter(x => cells[x.i].target), lo = vs.reduce((a, b) => b.v < a.v ? b : a), hi = vs.reduce((a, b) => b.v > a.v ? b : a);
+    el.innerHTML = `ความคม: เฉลี่ยทั้งชีท <b>${avg(vs).toFixed(1)}</b>` + (sel.length ? ` · เฉพาะที่เลือก (${sel.length} ช่อง) <b>${avg(sel).toFixed(1)}</b>` : '') + ` · ต่ำสุด <b>${lo.v.toFixed(1)}</b> (ช่อง ${lo.i + 1}) · สูงสุด <b>${hi.v.toFixed(1)}</b> (ช่อง ${hi.i + 1}) <small style="color:#6b6247">· ยิ่งสูงยิ่งคม · วัดหลังจัดเข้ากรอบเกม</small>`;
+  }
+  /* live preview of the walk frames exactly as they will be placed (same scale, same head / feet alignment), looped at the ms/เฟรม you set */
+  let pvT = 0, pvI = 0, pvFrames = [];
+  function stopPv() { clearInterval(pvT); pvT = 0 }
+  function pvDraw() {
+    const cv = $('shAnimCv'); if (!cv) return; const g = cv.getContext('2d'), W = cv.width, F = monMode ? MSZ : SIZE, feet = monMode ? MFEET : FEET; g.clearRect(0, 0, W, W);
+    g.strokeStyle = '#2f9e44'; g.lineWidth = 1; g.beginPath(); g.moveTo(0, feet / F * W); g.lineTo(W, feet / F * W); g.stroke();   // ground line
+    g.setLineDash([4, 4]); g.strokeStyle = '#8a8f80'; g.beginPath(); g.moveTo(W / 2, 0); g.lineTo(W / 2, W); g.stroke(); g.setLineDash([]);
+    if (pvFrames.length) g.drawImage(pvFrames[pvI % pvFrames.length], 0, 0, W, W);
+  }
+  function startPv() { stopPv(); if (pvFrames.length < 2) { pvDraw(); return } const ms = Math.max(20, +$('shMs').value || 100); pvDraw(); pvT = setInterval(() => { pvI = (pvI + 1) % pvFrames.length; pvDraw() }, ms) }
+  function refreshPreview() {
+    if (!$('shAnim')) return; stopPv(); const view = $('shView').value, ts = [...new Set(cells.filter(c => /^walk\|/.test(c.target)).map(c => c.target))], tgt = ts.find(x => x === 'walk|' + view) || ts[0], info = $('shAnimInfo');
+    if (!tgt) { pvFrames = []; pvDraw(); info.textContent = 'เลือกช่องเป็น "เดิน" เพื่อดูตัวอย่าง (ใช้ "🚶 ชีทเฟรมเดินอย่างเดียว" ได้เลย)'; return }
+    const list = cells.filter(c => c.target === tgt), kAll = scaleK(), hc = $('shAlign').checked; pvI = 0;
+    try { pvFrames = list.map(c => placedOf(c, kAll ?? undefined, hc)) } catch (e) { pvFrames = [] }
+    info.textContent = `${tgt.replace('|', ' · ')} · ${list.length} เฟรม · ${Math.max(20, +$('shMs').value || 100)} ms/เฟรม` + (list.length < 2 ? ' · ต้องมีอย่างน้อย 2 เฟรมถึงจะขยับ' : '');
+    $('shAnimPlay').textContent = '⏸ หยุด'; startPv();
   }
 
   /* ---------------- writing ---------------- */
@@ -152,7 +188,7 @@
       const kOf = c => kAll ?? Math.min(BOX_W / c.trim.width, BOX_H / c.trim.height), ms = Math.max(20, +$('shMs').value || 100);
       /* group: slot → pieces in reading order; mirrored pieces also feed the opposite slot */
       const groups = new Map(), add = (slot, canvas) => { if (!groups.has(slot)) groups.set(slot, []); groups.get(slot).push(canvas) };
-      for (const c of chosen) { const [a, v] = c.target.split('|'), walkLike = a === 'walk'; const cv = place(c.trim, kOf(c), walkLike || chosen.filter(x => x.target === c.target).length > 1); add(c.target, cv); if (c.mirror) add(a + '|' + OPP[v], flipped(cv)) }
+      for (const c of chosen) { const [a, v] = c.target.split('|'), walkLike = a === 'walk'; const cv = place(c.trim, kOf(c), $('shAlign').checked && (walkLike || chosen.filter(x => x.target === c.target).length > 1)); add(c.target, cv); if (c.mirror) add(a + '|' + OPP[v], flipped(cv)) }
       const out = []; const st = stamp();
       for (const [slot, frames] of groups) { const [a, v] = slot.split('|'); out.push(e.id === 'hero' ? await writeHero(a, v, frames, ms, st) : npcMode ? await writeNpc(e, a, v, frames, ms, st) : await writeAlly(e, a, v, frames, ms, st)) }
       try { window.StudioVariants?.syncStatuses?.(M) } catch (x) { }
@@ -229,7 +265,7 @@
   function open() {
     const e = entityNow(); if (!e || (e.group !== 'characters' && !isMon(e) && !isNpc(e))) return toast('เลือกตัวละคร NPC มอนสเตอร์ หรือบอสก่อน');
     monMode = isMon(e); npcMode = isNpc(e); build();
-    $('shPreset').innerHTML = npcMode ? '<option value="npc2">ยืน → เดิน (ชีท 1 ช่องยืน + หลายช่องเดิน)</option>' : monMode ? '<option value="mon4">เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม (4 ท่า เช่นชีทแพะ)</option><option value="mon6">ยืน → เดิน → เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม</option>' : '<option value="std">ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option><option value="walk">เดิน → ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option>';
+    $('shPreset').innerHTML = npcMode ? '<option value="walkonly">🚶 ชีทเฟรมเดินอย่างเดียว (ทุกช่อง = เฟรมเดิน)</option><option value="npc2">ยืน → เดิน (ชีท 1 ช่องยืน + หลายช่องเดิน)</option>' : monMode ? '<option value="walkonly">🚶 ชีทเฟรมเดินอย่างเดียว (ทุกช่อง = เฟรมเดิน)</option><option value="mon4">เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม (4 ท่า เช่นชีทแพะ)</option><option value="mon6">ยืน → เดิน → เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม</option>' : '<option value="walkonly">🚶 ชีทเฟรมเดินอย่างเดียว (ทุกช่อง = เฟรมเดิน)</option><option value="std">ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option><option value="walk">เดิน → ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option>';
     $('shView').innerHTML = viewsNow().map(v => `<option>${v}</option>`).join(''); $('shMirrorAll').parentElement.hidden = monMode; $('shMirrorAll').checked = false;
     $('shWho').innerHTML = monMode ? 'นำเข้าให้: <b>' + esc(e.name) + '</b> · ทิศ <b>SE</b> (หันหน้า) และ <b>NE</b> (หันหลัง) · SW/NW เกมพลิกให้เอง · ชิ้นหลายชิ้นที่เลือกปลายทางเดียวกัน = เฟรมของท่านั้นตามลำดับการอ่าน · เฟรม 512×512 เท้าที่ 0.95 สเกลเดียวทั้งชีท' : 'นำเข้าให้: <b>' + esc(e.name) + '</b>' + (e.id === 'hero' ? ' (รูปลักษณ์ที่เปิดอยู่)' : '') + (npcMode ? ' · ยืนเก็บ 1 ภาพต่อทิศ · เดินเก็บเป็น walk1…N ต่อทิศ (เลือกหลายชิ้นปลายทางเดียวกัน = เฟรมเดิน)' : '') + ' · ชีทเดียวมีได้หลายท่า/หลายทิศ — แต่ละช่องเลือกปลายทางเองได้'; sheet = null; cells = []; $('shCut').hidden = $('shAssign').hidden = true; $('shPrev').hidden = true; $('shInfo').textContent = ''; $('shCells').innerHTML = ''; msg(''); $('shFile').value = ''; $('shApply').disabled = true; $('shApply').textContent = 'นำเข้า'; dlg.showModal();
   }
