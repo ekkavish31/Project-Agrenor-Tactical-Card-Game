@@ -116472,13 +116472,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfm3ei2-6j5a",
+   "artRevision": "20261119-230719",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-idle-mwfm3ei2-6j5a-1/20261119-230718.webp",
+     "at": "2026-11-19T16:07:18.997Z",
+     "stamp": "20261119-230718",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-idle-mwfm3ei2-6j5a-1",
@@ -135458,7 +135467,16 @@
     "name": "ตัวหลัก · Hero",
     "group": "characters"
    },
-   "artRevision": "mwnql2sp-li7z"
+   "artRevision": "20261119-230535",
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-se-down-mwnql2sp-li7z-1/20261119-230534.png",
+     "at": "2026-11-19T16:05:35.702Z",
+     "stamp": "20261119-230534",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   }
  ],
  "studioReviews": {
@@ -143354,14 +143372,26 @@
   "[\"tactics.down.se\",\"SE\",false,[[\"studio-hero-se-down-mwnql2sp-li7z-1\",\"assets/tactics/imported/down-se-mwnql2sp-li7z/frame-01.webp\",0,\"mwnql2sp-li7z\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "at": 1795104106521,
-   "approvedAt": "2026-11-19T16:01:46.465Z"
+   "at": 1795104331935,
+   "approvedAt": "2026-11-19T16:05:31.881Z"
   },
   "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-se-down-mwnql2sp-li7z-1\",\"assets/tactics/imported/down-se-mwnql2sp-li7z/frame-01.webp\",0,\"mwnql2sp-li7z\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "at": 1795104106521,
-   "approvedAt": "2026-11-19T16:01:46.465Z"
+   "at": 1795104331935,
+   "approvedAt": "2026-11-19T16:05:31.881Z"
+  },
+  "[\"tactics.down.se\",\"SE\",false,[[\"studio-hero-se-down-mwnql2sp-li7z-1\",\"assets/tactics/imported/down-se-mwnql2sp-li7z/frame-01.webp\",0,\"20261119-230535\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T16:05:36.638Z",
+   "at": 1795104336687
+  },
+  "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-se-down-mwnql2sp-li7z-1\",\"assets/tactics/imported/down-se-mwnql2sp-li7z/frame-01.webp\",0,\"20261119-230535\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795104336687,
+   "approvedAt": "2026-11-19T16:05:36.638Z"
   }
  },
  "studioClipHistory": {
