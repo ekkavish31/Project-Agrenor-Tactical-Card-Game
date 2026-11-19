@@ -160,3 +160,14 @@ body.gt-on .card-book.cb-v2{--w:min(86vw,140vh);--pt:2vh}   /* lesson: book at t
 .cb-v2 .cb-tabs.cb-side button[data-t]{position:relative!important;bottom:auto!important;left:auto!important}
 /* close: right of the book's top-right corner */
 .cb-v2 .cb-close{top:calc(var(--u)*.4)!important;right:calc(var(--u)*-8.1)!important;height:auto!important;padding:calc(var(--u)*3.5) 0 0!important;width:calc(var(--u)*7)!important;background:url(../assets/ui/close-x.webp) center top/auto calc(var(--u)*3.2) no-repeat!important;display:flex;align-items:flex-end;justify-content:center;font-size:calc(var(--u)*1.25)!important}
+/* v98.854 · the ribbons lie OVER the leather cover and end exactly at the paper's edge (paper starts 3.1 % in from the book's side) */
+.cb-v2 .cb-tabs.cb-side{z-index:2!important}
+.cb-v2 .cb-tabs.cb-side button{width:calc(var(--u)*10.5)!important;padding:0 calc(var(--u)*.6) 0 calc(var(--u)*1.6)!important}
+.cb-v2 .cb-tabs.cb-side.R button{padding:0 calc(var(--u)*1.6) 0 calc(var(--u)*.6)!important}
+.cb-v2 .cb-tabs.cb-side button::before{inset:calc(var(--u)*.35) calc(var(--u)*.35) calc(var(--u)*.35) calc(var(--u)*1.1)!important}
+.cb-v2 .cb-tabs.cb-side.R button::before{inset:calc(var(--u)*.35) calc(var(--u)*1.1) calc(var(--u)*.35) calc(var(--u)*.35)!important}
+.cb-v2 .cb-tabs.cb-side button em{right:calc(var(--u)*.8)!important}.cb-v2 .cb-tabs.cb-side.R button em{left:calc(var(--u)*.8)!important}
+.cb-v2 .cb-tabs.cb-side button{box-shadow:calc(var(--u)*.15) calc(var(--u)*.25) calc(var(--u)*.4) #0007}
+.cb-v2 .cb-tabs.cb-side.L button.on{transform:translateX(calc(var(--u)*-.9))!important;width:calc(var(--u)*11.4)!important}
+.cb-v2 .cb-tabs.cb-side.L{left:calc(var(--u)*-8.3)!important}.cb-v2 .cb-tabs.cb-side.R{right:calc(var(--u)*-8.3)!important}   /* every ribbon ends at the paper edge (3.1 u); the open one is longer outwards */
+.cb-v2 .cb-tabs.cb-side.L button.on,.cb-v2 .cb-tabs.cb-side.R button.on{transform:none!important;width:calc(var(--u)*11.4)!important}
