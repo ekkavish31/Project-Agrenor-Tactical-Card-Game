@@ -52,7 +52,9 @@
     face: (o, du, dv) => {
       const l = Math.hypot(du, dv), now = typeof performance !== 'undefined' ? performance.now() : Date.now(); if (!l) return animOf(o.raw8 || 'SE');
       const ux = du / l, uy = dv / l, gap = now - (o._ht || 0); o._ht = now;
-      if (!o._hv || gap > 400) { o._hv = [ux, uy]; o._hc = now; o.raw8 = raw8(du, dv, o.raw8); return animOf(o.raw8) }
+      /* v98.829 · a TURN-AROUND (≥ ~110° from the smoothed heading): no smoothing, no hold — the picture follows the walk at once. The filter + 0.3 s hold keep the OLD direction picture while the body already goes backwards = a moon walk. */
+      const turn = o._hv && o._hv[0] * ux + o._hv[1] * uy < -.35;
+      if (!o._hv || gap > 400 || turn) { o._hv = [ux, uy]; o._hc = now; o.raw8 = raw8(du, dv, o.raw8); return animOf(o.raw8) }
       const k = 1 - Math.exp(-Math.min(.1, gap / 1000) / .2); let hx = o._hv[0] + (ux - o._hv[0]) * k, hy = o._hv[1] + (uy - o._hv[1]) * k; const hl = Math.hypot(hx, hy);
       if (hl < .25) { hx = ux; hy = uy } else { hx /= hl; hy /= hl } o._hv = [hx, hy];
       const next = raw8(hx, hy, o.raw8); if (next !== o.raw8) { if (animOf(next) === animOf(o.raw8) || now - o._hc > 300) { o.raw8 = next; o._hc = now } }
