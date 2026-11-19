@@ -2203,12 +2203,12 @@
    framed = hasFrame(o),
    items = frame.filter(e => e.owner === id);
   if (!o && place.tab !== 'items') place.tab = 'items';
-  if (place.tab === 'frame' || place.tab === 'entry' || place.tab === 'lead' && (!o || o.id === 'square')) place.tab = 'building';   /* v98.836 · the 🚪 ทางเข้า tab (yellow / green cells) is gone */
+  if (place.tab === 'frame' || place.tab === 'entry' || place.tab === 'lead') place.tab = 'building';   /* v98.873 · the 🛣 ถนนทางเข้า tab is gone too (its code below is unreachable) */
+     /* v98.836 · the 🚪 ทางเข้า tab (yellow / green cells) is gone */
   place.keys = place.keys.filter(k => items.some(e => e.key === k));
   const tabs = [
    ['building', '🏠 อาคาร', !!o],
-   ['items', '🪴 ของย่อย ' + items.length, true],
-   ['lead', '🛣 ถนนทางเข้า', !!o && o.id !== 'square']
+   ['items', '🪴 ของย่อย ' + items.length, true]
   ];
   const changed = snapOf() !== place.before;
   panel.innerHTML = `<div class="head"><h3>${ownerName(id)}<span class="chip">${changed?'แก้แล้ว':'กำลังแก้'}</span></h3><p class="sub" style="margin:0">ที่อื่นถูกล็อกไว้ · ✓ เสร็จ = เก็บทั้งสถานที่ · ยกเลิก = คืนทั้งสถานที่</p>
@@ -3123,7 +3123,7 @@
   frameList: () => frame.map(e => ({ key: e.key, art: e.art, label: e.label, own: frOwn(e.ov || {}), block: !!(e.geo || e.ov)?.block })),   /* v98.692 · for tests / tools */
   detail: {
    /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
-   get caps() { return bldDetail ? { rot: false, slant: false, block: true, frames: false, zoom: 0.55, note: 'สถานที่: 🟦 กรอบฟ้า = การบัง (ระบายให้เท่าส่วนที่แตะพื้นจริง รวมเฉลียง/ปีกยื่น) · 🟥 กรอบแดง = การชน — ติ๊ก "บล็อกเดิน" แล้วตัวละคร/NPC เดินทะลุกรอบแดงไม่ได้ ส่วนที่ไม่ระบายแดง (ทางเข้า ลาน) เดินผ่านได้ · พื้นฟ้าเดิมของแปลง/ช่องเหลือง/ช่องเขียว ยกเลิกแล้ว — ยังไม่ระบายกรอบแดง = เดินทะลุสถานที่ได้' } : { rot: false, slant: false } },   /* v98.838 · the same piece tools as the sub-maps: size ± · base tilt (เอียงฐาน) · pole tilt (เอียงเสา) · flip — no rotate / no ↗↙↖↘ slant */
+   get caps() { return bldDetail ? { rot: false, slant: false, block: true, entry: true, frames: false, zoom: 0.55, note: 'สถานที่: 🟦 กรอบฟ้า = การบัง (ระบายให้เท่าส่วนที่แตะพื้นจริง รวมเฉลียง/ปีกยื่น) · 🟥 กรอบแดง = การชน — ติ๊ก "บล็อกเดิน" แล้วตัวละคร/NPC เดินทะลุกรอบแดงไม่ได้ ส่วนที่ไม่ระบายแดง (ทางเข้า ลาน) เดินผ่านได้ · พื้นฟ้าเดิมของแปลง/ช่องเหลือง/ช่องเขียว ยกเลิกแล้ว — ยังไม่ระบายกรอบแดง = เดินทะลุสถานที่ได้' } : { rot: false, slant: false } },   /* v98.838 · the same piece tools as the sub-maps: size ± · base tilt (เอียงฐาน) · pole tilt (เอียงเสา) · flip — no rotate / no ↗↙↖↘ slant */
    item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
    ov: key => { if (String(key).startsWith('bld:')) return data.buildings[key.slice(4)] || {}; const o = data.edit[key] || {}, E = frame.find(e => e.key === key); return E ? geoOv(o, E.art) : o },   /* v98.692 · the window shows the frame the piece really uses (own → picture's template) */
    edit(key, fn, checkpoint) {
@@ -3141,6 +3141,13 @@
     }
     if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall', 'zb', 'fw', 'fh', 'blockU', 'blockV', 'artX', 'artY', 'sky', 'skx', 'pm']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!b.block) delete b.block; if (!b.f) delete b.f; if (b.s == null || Math.abs(b.s - 1) < .0005) delete b.s; try { buildingRec(id) } catch (e) { }   /* v98.841 · the place's size next to the hero is stored (asset-hero-ratio) */ if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); try { rebuildBlocks() } catch (e) { } render(); return }
     fn(ovOf(key)); clean(key); UX.persist(); render()
+   },
+   /* v98.873 · 📍 entrance point (o.entry) of a place, in the window's local frame (origin = the place centre) */
+   entry: {
+    get: key => { const o = String(key).startsWith('bld:') && locations.find(x => x.id === key.slice(4)); if (!o) return null; const a = center(o), d = UX.entryOf(o); return { u: d.u - a.u, v: d.v - a.v, custom: !!o.entry } },
+    begin: () => UX.checkpoint(),
+    set: (key, u, v) => { const o = locations.find(x => x.id === String(key).slice(4)); if (!o) return; const a = center(o); UX.setEntry(o, { u: a.u + u, v: a.v + v }, true); UX.persist(); render() },
+    reset: key => { const o = locations.find(x => x.id === String(key).slice(4)); if (!o || !o.entry) return; UX.checkpoint(); delete o.entry; UX.persist(); render() }
    },
    check: key => String(key).startsWith('bld:') ? ((data.buildings[key.slice(4)] || {}).chk || {}) : chkEff(frame.find(e => e.key === key)?.art, data.edit[key] || {}),   /* v98.719 · review ticks (see PieceDetail.gauge) */
    setCheck(key, f, v) { UX.checkpoint(); const bld = String(key).startsWith('bld:'), o = bld ? (data.buildings[key.slice(4)] ||= {}) : ovOf(key), c = { ...(bld ? (o.chk || {}) : chkEff(frame.find(e => e.key === key)?.art, o)) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; if (!bld) clean(key); UX.persist(); render() },
