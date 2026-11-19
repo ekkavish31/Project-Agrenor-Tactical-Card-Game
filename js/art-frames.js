@@ -26,6 +26,8 @@
       if (ch) localStorage.setItem(KEY, JSON.stringify(store))
     } catch (e) { }
   }
+  /* v98.858 · another tab / iframe saved the frames (or js/editor-store.js merged this page's write onto theirs) → read them again, never keep a stale copy */
+  try { addEventListener('storage', e => { if (e.key === KEY || e.key === null) store = null }); addEventListener('editorstore:merged', e => { if (e.detail?.key === KEY) store = null }) } catch (e) { }
   const load = () => { if (store) return store; try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) { store = {} } migrateTicks(); return store };
   const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(load())) } catch (e) { } try { root.dispatchEvent(new Event('art-frames')) } catch (e) { } };
   const nominal = art => { if (!PA) PA = Object.fromEntries((root.PLACEABLE_ART?.items || []).map(i => [i.sub, i])); return PA[art]?.sw || (String(art).startsWith('vt:') ? 400 : 110) };

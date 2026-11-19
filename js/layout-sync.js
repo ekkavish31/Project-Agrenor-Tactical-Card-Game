@@ -83,8 +83,8 @@
     if (!dlg) { dlg = document.createElement('dialog'); dlg.style.cssText = 'max-width:460px;border:1px solid #b9ae93;border-radius:10px;padding:16px;background:#fffdf6;color:#2a2418;font:14px AgThai,system-ui,sans-serif'; document.body.append(dlg) }
     const hasBk = backups().length;
     dlg.innerHTML = `<b>ข้อมูลในเครื่องนี้ vs เว็บ</b>` + Object.entries(units).filter(([, u]) => u.st).map(([id, u]) => `<div style="margin:12px 0;padding:8px 10px;border-left:4px solid ${TXT[u.st][1]};background:#0000000a"><b>${u.name}</b> · ${TXT[u.st][0]}<div style="margin:4px 0 6px;font-size:13px">${MSG[u.st]}</div>${u.st !== 'ok' ? `<button data-take="${id}" style="padding:5px 10px">⬇ ใช้ของเว็บ (สำรองก่อน)</button>` : ''}</div>`).join('')
-      + `<div style="display:flex;gap:8px;flex-wrap:wrap">${hasBk ? '<button id="lsRestore" style="padding:6px 12px">↩ กู้คืนชุดสำรองล่าสุด</button>' : ''}<button id="lsClose" style="padding:6px 12px">ปิด</button></div><p style="color:#7a6e55;font-size:12px;margin:10px 0 0">สำรองไว้ ${hasBk} ชุด (เก็บ 3 ชุดล่าสุด) · ตรวจทุก 1 นาทีและเมื่อกลับมาที่แท็บนี้ · เว็บอาจช้ากว่า GitHub 1–2 นาทีหลัง push</p>`;
-    dlg.querySelector('#lsClose').onclick = () => dlg.close(); dlg.querySelector('#lsRestore')?.addEventListener('click', restore);
+      + `<div style="display:flex;gap:8px;flex-wrap:wrap">${hasBk ? '<button id="lsRestore" style="padding:6px 12px">↩ กู้คืนชุดสำรองล่าสุด</button>' : ''}${window.EditorStore ? '<button id="lsBackups" style="padding:6px 12px">📦 สำรองข้อมูลทั้งหมด</button>' : ''}<button id="lsClose" style="padding:6px 12px">ปิด</button></div><p style="color:#7a6e55;font-size:12px;margin:10px 0 0">สำรองไว้ ${hasBk} ชุด (เก็บ 3 ชุดล่าสุด) · ตรวจทุก 1 นาทีและเมื่อกลับมาที่แท็บนี้ · เว็บอาจช้ากว่า GitHub 1–2 นาทีหลัง push</p>`;
+    dlg.querySelector('#lsClose').onclick = () => dlg.close(); dlg.querySelector('#lsBackups')?.addEventListener('click', () => { dlg.close(); window.EditorStore.openBackups() }); dlg.querySelector('#lsRestore')?.addEventListener('click', restore);
     dlg.querySelectorAll('[data-take]').forEach(b => b.onclick = () => takeWeb(b.dataset.take));
     dlg.showModal();
   }
