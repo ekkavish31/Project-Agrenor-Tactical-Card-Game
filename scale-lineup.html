@@ -451,7 +451,7 @@ function renderRatio(V) {
    for this exact pose/frame/direction, and the target scale always comes from comparing datum SPANS (head/torso/legs) against a
    template — either the team standard (⭐) or another character. Without datum the panel is gated off; nothing to cut without it. */
 function inspectRatio() {
-  /* v98.658 · the old Before/After · 📍 Datum · 🛠 ปรับสัดส่วน panel is retired — proportions are now done per character in Asset Studio → Animation → 📐 เรียงท่า (js/pose-sheet.js?v=v98.868). */
+  /* v98.658 · the old Before/After · 📍 Datum · 🛠 ปรับสัดส่วน panel is retired — proportions are now done per character in Asset Studio → Animation → 📐 เรียงท่า (js/pose-sheet.js?v=v98.872
   if (!window.__oldInspect) { $('insp').innerHTML = ''; return }
   const e = ENTRIES.find(x => x.id === sel); if (!e || isW(e) || !e.ctx.battle) { $('insp').innerHTML = ''; return }
   const c = e.ctx.battle, r = ratioOf(e), med = PT.median(visible().map(ratioOf).filter(x => x.manual).map(x => x.head)), v = PT.verdict(r, STDOBJ()), CH = DOCK ? 400 : 300, PW = DOCK ? 560 : 300, HALF = PW / 2, hasDatum = !!r.datum;
