@@ -171,3 +171,4 @@ body.gt-on .card-book.cb-v2{--w:min(86vw,140vh);--pt:2vh}   /* lesson: book at t
 .cb-v2 .cb-tabs.cb-side.L button.on{transform:translateX(calc(var(--u)*-.9))!important;width:calc(var(--u)*11.4)!important}
 .cb-v2 .cb-tabs.cb-side.L{left:calc(var(--u)*-8.3)!important}.cb-v2 .cb-tabs.cb-side.R{right:calc(var(--u)*-8.3)!important}   /* every ribbon ends at the paper edge (3.1 u); the open one is longer outwards */
 .cb-v2 .cb-tabs.cb-side.L button.on,.cb-v2 .cb-tabs.cb-side.R button.on{transform:none!important;width:calc(var(--u)*11.4)!important}
+.cb-v2 .cb-no{display:none!important}   /* v98.856 · no page numbers in the corners — only the 1/1 counter */
