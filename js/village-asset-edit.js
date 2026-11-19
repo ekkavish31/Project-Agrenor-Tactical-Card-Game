@@ -100,7 +100,7 @@
  /* v98.725 · AssetSize now holds ONE formula itself (no setHero here: the Lineup factor must not move the reference) */
  const decorFile = kind => /^decor:/.test(kind || '') ? 'assets/village-town/decor/' + kind.slice(6) + '.png' : '';
  function sizeStart(nid, kind) { const f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1], r = f && window.AssetSize?.get(f); if (r && w) ovOf(nid).s = +clampN(r * AssetSize.heroPx('village') / w, .2, 4).toFixed(3) }
- function buildingRec(id) { const b = data.buildings[id] || {}, spec = artSpecs[id], f = BUILDINGS[id]; if (spec && f && window.AssetSize) AssetSize.record(f, spec[0] * 2 * (b.sx ?? 1), 'village') }
+ function buildingRec(id) { const b = data.buildings[id] || {}, spec = artSpecs[id], f = BUILDINGS[id]; if (spec && f && window.AssetSize) AssetSize.record(f, spec[0] * 2 * (b.sx ?? 1) * (b.s ?? 1), 'village') }
  function sizeRec(key) { const a = data.added.find(x => x.id === key), ov = data.edit[key] || {}, kind = ov.kind || a?.kind, f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1]; if (f && w && window.AssetSize) AssetSize.record(f, w * (ov.s ?? 1), 'village') }
  const kind = (id, label, group, draw) => KINDS[id] = {
   label,
@@ -524,13 +524,17 @@
 
  function drawB(o) {
   const t = data.buildings[o.id];
-  if (!t || !(t.sx != null || t.sy != null || t.kx || t.lx || t.ky || t.ix != null || t.iy != null || t.dx || t.dy)) {
+  if (!t || !(t.sx != null || t.sy != null || t.kx || t.lx || t.ky || t.ix != null || t.iy != null || t.dx || t.dy || t.s != null || t.f || t.sky || t.skx || t.artX || t.artY || t.pm)) {
    baseBuilding(o);
    return
   }
   const p = anchorOf(o);
   g.save();
   g.translate(p.x + (t.dx || 0), p.y + (t.dy || 0));
+  /* v98.841 · the 🔍 detail window's fields for a PLACE, same as for a prop: art move (artX/artY) · 📐 base fit (pm) · size s · flip f · base tilt sky / pole tilt skx */
+  if (t.artX || t.artY || t.pm) window.PieceGeometry.apply(g, t);
+  { const s = t.s ?? 1; if (s !== 1 || t.f) g.scale(t.f ? -s : s, s) }
+  if (t.skx || t.sky) g.transform(1, Math.tan((t.sky || 0) * Math.PI / 180), Math.tan((t.skx || 0) * Math.PI / 180), 1, 0, 0);
   // Optional user-defined width/height axes. Keep legacy transform when no custom axes exist.
   if (Number.isFinite(t.wx) && Number.isFinite(t.wy) && Number.isFinite(t.hx) && Number.isFinite(t.hy)) {
    const wl=Math.hypot(t.wx,t.wy)||1, hl=Math.hypot(t.hx,t.hy)||1,
@@ -3101,7 +3105,7 @@
   frameList: () => frame.map(e => ({ key: e.key, art: e.art, label: e.label, own: frOwn(e.ov || {}), block: !!(e.geo || e.ov)?.block })),   /* v98.692 · for tests / tools */
   detail: {
    /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
-   get caps() { return bldDetail ? { rot: false, slant: false, skew: false, block: true, shape: false, zoom: 0.55, note: 'สถานที่: 🟦 กรอบฟ้า = การบัง (ระบายให้เท่าส่วนที่แตะพื้นจริง รวมเฉลียง/ปีกยื่น) · 🟥 กรอบแดง = การชน — ติ๊ก "บล็อกเดิน" แล้วตัวละคร/NPC เดินทะลุกรอบแดงไม่ได้ ส่วนที่ไม่ระบายแดง (ทางเข้า ลาน) เดินผ่านได้ · พื้นฟ้าเดิมของแปลง/ช่องเหลือง/ช่องเขียว ยกเลิกแล้ว — ยังไม่ระบายกรอบแดง = เดินทะลุสถานที่ได้' } : { rot: false, slant: false } },   /* v98.838 · the same piece tools as the sub-maps: size ± · base tilt (เอียงฐาน) · pole tilt (เอียงเสา) · flip — no rotate / no ↗↙↖↘ slant */
+   get caps() { return bldDetail ? { rot: false, slant: false, block: true, frames: false, zoom: 0.55, note: 'สถานที่: 🟦 กรอบฟ้า = การบัง (ระบายให้เท่าส่วนที่แตะพื้นจริง รวมเฉลียง/ปีกยื่น) · 🟥 กรอบแดง = การชน — ติ๊ก "บล็อกเดิน" แล้วตัวละคร/NPC เดินทะลุกรอบแดงไม่ได้ ส่วนที่ไม่ระบายแดง (ทางเข้า ลาน) เดินผ่านได้ · พื้นฟ้าเดิมของแปลง/ช่องเหลือง/ช่องเขียว ยกเลิกแล้ว — ยังไม่ระบายกรอบแดง = เดินทะลุสถานที่ได้' } : { rot: false, slant: false } },   /* v98.838 · the same piece tools as the sub-maps: size ± · base tilt (เอียงฐาน) · pole tilt (เอียงเสา) · flip — no rotate / no ↗↙↖↘ slant */
    item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
    ov: key => { if (String(key).startsWith('bld:')) return data.buildings[key.slice(4)] || {}; const o = data.edit[key] || {}, E = frame.find(e => e.key === key); return E ? geoOv(o, E.art) : o },   /* v98.692 · the window shows the frame the piece really uses (own → picture's template) */
    edit(key, fn, checkpoint) {
@@ -3117,7 +3121,7 @@
       clean(key); UX.persist(); render(); return
      }
     }
-    if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall', 'zb', 'fw', 'fh', 'blockU', 'blockV']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!b.block) delete b.block; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); try { rebuildBlocks() } catch (e) { } render(); return }
+    if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall', 'zb', 'fw', 'fh', 'blockU', 'blockV', 'artX', 'artY', 'sky', 'skx', 'pm']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!b.block) delete b.block; if (!b.f) delete b.f; if (b.s == null || Math.abs(b.s - 1) < .0005) delete b.s; try { buildingRec(id) } catch (e) { }   /* v98.841 · the place's size next to the hero is stored (asset-hero-ratio) */ if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); try { rebuildBlocks() } catch (e) { } render(); return }
     fn(ovOf(key)); clean(key); UX.persist(); render()
    },
    check: key => String(key).startsWith('bld:') ? ((data.buildings[key.slice(4)] || {}).chk || {}) : chkEff(frame.find(e => e.key === key)?.art, data.edit[key] || {}),   /* v98.719 · review ticks (see PieceDetail.gauge) */
