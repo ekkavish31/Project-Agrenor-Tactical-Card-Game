@@ -225,7 +225,7 @@ const AK = id => { const l = lookOfId(id); return l ? (l === 'female' ? 'hero-fe
 const isRefId = id => lookOfId(id) === 'male';
 const GROUPOF = {};   /* id → the studio's group (characters / npcs) so the lineup filter matches the left panel */
 async function buildChars() {
-  if (!window.ASSET_MANIFEST) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/asset-manifest.js?v=v98.831' + (window.GAME_VERSION?.v || ''); sc.onload = sc.onerror = r; document.head.append(sc) });   /* v98.530 · the game's real hero pictures (lookPic) */
+  if (!window.ASSET_MANIFEST) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/asset-manifest.js?v=v98.851' + (window.GAME_VERSION?.v || ''); sc.onload = sc.onerror = r; document.head.append(sc) });   /* v98.530 · the game's real hero pictures (lookPic) */
   const list = ST ? ST.lineup.entities().map(e => { const id = e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''); if (e.group) GROUPOF[id] = e.group; return { id, sid: e.id, name: e.name, clips: e.clips } }) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
   for (const c of list) {
     let pic, vp = null;
