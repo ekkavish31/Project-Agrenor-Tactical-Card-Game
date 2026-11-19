@@ -115439,7 +115439,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261119-221946",
+   "artRevision": "20261119-224057",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
@@ -115447,6 +115447,13 @@
     "group": "characters"
    },
    "history": [
+    {
+     "file": "assets/_versions/studio-hero-sw-idle-mwflx0mt-37a0-1/20261119-224057.webp",
+     "at": "2026-11-19T15:40:57.292Z",
+     "stamp": "20261119-224057",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-hero-sw-idle-mwflx0mt-37a0-1/20261119-221946.webp",
      "at": "2026-11-19T15:19:46.750Z",
@@ -140290,9 +140297,10 @@
    "frames": {}
   },
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwflx0mt-37a0-1\",\"assets/tactics/imported/idle-sw-mwflx0mt-37a0/frame-01.webp\",0,\"20261119-221946\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
+   "status": "approved",
    "frames": {},
-   "at": 1795102719793
+   "at": 1795102851113,
+   "approvedAt": "2026-11-19T15:40:51.086Z"
   },
   "[\"tactics.walk.sw\",\"SW\",true,[[\"studio-hero-sw-walk-mwn7vhjr-26b5-1\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-01.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-2\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-02.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-3\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-03.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-4\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-04.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-5\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-05.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-6\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-06.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-7\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-07.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-8\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-08.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-9\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-09.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-10\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-10.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-11\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-11.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn7vhjr-26b5-12\",\"assets/tactics/imported/walk-sw-mwn7vhjr-26b5/frame-12.webp\",0,\"mwn7vhjr-26b5\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
@@ -142749,6 +142757,12 @@
    "status": "unreviewed",
    "frames": {},
    "at": 1795102719850
+  },
+  "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwflx0mt-37a0-1\",\"assets/tactics/imported/idle-sw-mwflx0mt-37a0/frame-01.webp\",0,\"20261119-224057\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T15:40:59.794Z",
+   "at": 1795102859819
   }
  },
  "studioClipHistory": {
