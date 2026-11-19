@@ -91,6 +91,8 @@
     }
     if (mig) { try { localStorage.setItem(KEY, JSON.stringify(DATA)) } catch (er) { } HLAST = histSnap() }
     if (cur === c) { draw(); status() }
+    /* v98.810 · SHARPNESS of each pose (same number as the "คม" badge of the Animation tiles): the average over the clip's frames (≤ 8) — computed one pose at a time so the page stays responsive */
+    (async () => { const S = root.StudioSharp; if (!S?.of) return; for (const x of Object.values(c.cells)) { if (cur !== c) return; try { const fr = x.clip?.frames || [], pick = fr.length > 8 ? Array.from({ length: 8 }, (_, i) => fr[Math.round(i * (fr.length - 1) / 7)]) : fr, vs = []; for (const f of pick) { const im = f.file === x.file && x.img ? x.img : await B().loadImage(f.file); const v = im ? S.of(im) : null; if (v != null) vs.push(v) } x.sharp = vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : null } catch (er) { x.sharp = null } await new Promise(r => setTimeout(r, 0)) } if (cur === c) draw() })();
     /* v98.805 · once per character: locks that were ticked before this feature are marked "ตรวจแล้ว" in the Animation grid too */
     try { const SK = 'pose-sheet.revSync', done = JSON.parse(localStorage.getItem(SK) || '[]'), k = akey(c.id); if (!done.includes(k) && cur === c) { const oks = Object.keys(c.cells).filter(okOf); done.push(k); localStorage.setItem(SK, JSON.stringify(done)); if (oks.length) await reviewSync(oks, true) } } catch (er) { }
   }
@@ -144,7 +146,7 @@
     let topToEyes = 0; if (!back) { const ex = P.eyeR[0] - P.eyeL[0], ey = P.eyeR[1] - P.eyeL[1], el = Math.hypot(ex, ey), tx = P.top[0] - P.eyeL[0], ty = P.top[1] - P.eyeL[1]; topToEyes = el >= 2 ? Math.abs(tx * ey - ty * ex) / el : d(P.top, [(P.eyeL[0] + P.eyeR[0]) / 2, (P.eyeL[1] + P.eyeR[1]) / 2]) }
     /* v98.795 · TOTAL HEIGHT = ground point → head top: the skull-top point on a front pose, point B on a back pose (lying: straight distance to the feet) */
     const tall = back ? (c.pose === 'down' ? d(an, P.headB) : an[1] - P.headB[1]) : H;
-    const o = { H, tall, headLabel: back ? 'หัว (A–B)' : 'หัว (ตา×2)', head: back ? d(P.headA, P.headB) : topToEyes * 2, sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR) };
+    const o = { H, tall, headLabel: back ? 'หัว (A–B)' : 'หัว (ตา×2)', head: back ? d(P.headA, P.headB) : topToEyes * 2, sh: d(P.shL, P.shR), torso: P.neck && P.crotch ? P.crotch[1] - P.neck[1] : null, leg: P.crotch ? an[1] - P.crotch[1] : null, thick: d(P.legL, P.legR), sharp: c.sharp ?? null };
     return o;
   }
   const pct = (v, H) => v == null ? '—' : (v / H * 100).toFixed(1) + '%';
@@ -152,7 +154,7 @@
     const v = vals(ck); if (!v) return ''; if (v.need) return `<div class="vals dim">${v.need}</div>`;
     const bk = 'idle@' + cur.cells[ck].dir, base = (ck === bk || ck === 'idle@SW' ? null : isBack(ck) ? vals(bk) : vals(bk) || vals('idle@SW'));   /* back poses: only against the standing BACK pose */
     const bkP = v.H == null, row = (n, a, bk, dim) => { const p = a == null ? null : bkP ? a : a / v.H * 100; let dl = ''; if (base && !base.need && base[bk] != null && p != null) { const q = bkP ? base[bk] : base[bk] / base.H * 100, x = (p - q) / q * 100; dl = ` <i class="${Math.abs(x) > 5 ? 'bad' : Math.abs(x) > 2 ? 'warn' : 'ok'}">${x > 0 ? '+' : ''}${x.toFixed(1)}%</i>` } return `<tr${dim ? ' style="opacity:.5"' : ''}><td>${n}</td><td>${a == null ? '—' : Math.round(a)}px</td><td>${p == null || bkP ? '' : p.toFixed(1) + '%'}${dl}</td></tr>` };
-    return `<table class="vals">${bkP ? row('สูงรวม', v.tall, 'tall') : `<tr><td>สูงรวม</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>`}${row(v.headLabel, v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}</table>`;
+    return `<table class="vals">${bkP ? row('สูงรวม', v.tall, 'tall') : `<tr><td>สูงรวม</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>`}${row(v.headLabel, v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}${v.sharp == null ? '' : `<tr title="ความคมของภาพ (ยิ่งสูงยิ่งคม · เฉลี่ยทุกเฟรมของท่า) — ไม่ใช่ DPI"><td>ความคม</td><td>${v.sharp.toFixed(1)}</td><td></td></tr>`}</table>`;
   }
 
   /* ---------- UI state ---------- */
