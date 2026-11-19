@@ -101,7 +101,7 @@
 .cb-v2 .cb-pg .gear-card-item,.cb-v2 .cb-pg .gear-card-item.equipped{background:none!important;outline:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 .cb-v2 .cb-pg .collection-tile>button:not(.card-thumb),.cb-v2 .cb-pg .bag-item-card>button:not(.card-thumb),.cb-v2 .cb-pg .gear-card-item>button:not(.card-thumb){position:static!important;top:auto!important;left:auto!important;margin:calc(var(--u)*.3) auto 0!important;height:calc(var(--u)*1.8)!important;padding:0 calc(var(--u)*.8)!important;font-size:calc(var(--u)*.95)!important;border-radius:calc(var(--u)*.45)!important;box-shadow:0 1px 2px #0006!important}
 .cb-v2 .cb-pg .gear-instance,.cb-v2 .cb-pg .collection-tile>p,.cb-v2 .cb-pg .bag-item-card small,.cb-v2 .cb-pg .bag-item-card>p{display:none!important}
-.cb-v2 .cb-pg .cb-price{position:absolute;top:calc(var(--u)*15.9 - var(--u)*2.4);left:50%;transform:translateX(calc(var(--u)*5.3 - 100% - var(--u)*.5));display:flex;align-items:center;gap:calc(var(--u)*.25);padding:calc(var(--u)*.15) calc(var(--u)*.5) calc(var(--u)*.15) calc(var(--u)*.6);border-radius:calc(var(--u)*1);background:#2a1a0ae0;color:#ffe08a;font:700 calc(var(--u)*1.15)/1.2 AgThai,VillageThai,system-ui,sans-serif;z-index:4;pointer-events:none;box-shadow:0 1px 2px #0008}
+.cb-v2 .cb-pg .cb-price{position:absolute;top:calc(var(--u)*15.9 - var(--u)*2.4);left:50%;transform:translateX(calc(var(--u)*5.3 - 100% - var(--u)*.5)) translateY(50%);display:flex;align-items:center;gap:calc(var(--u)*.25);padding:calc(var(--u)*.15) calc(var(--u)*.5) calc(var(--u)*.15) calc(var(--u)*.6);border-radius:calc(var(--u)*1);background:#2a1a0ae0;color:#ffe08a;font:700 calc(var(--u)*1.15)/1.2 AgThai,VillageThai,system-ui,sans-serif;z-index:4;pointer-events:none;box-shadow:0 1px 2px #0008}
 .cb-v2 .cb-pg .cb-price i{display:block;width:calc(var(--u)*1.5);height:calc(var(--u)*1.5);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23c8901f' stroke='%237a4f0c' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='10.5' fill='%23f6cf55' stroke='%23e0a62a' stroke-width='1.5'/%3E%3Cpath d='M12 11.5h8M12 16h8M12 20.5h8' stroke='%23b87a14' stroke-width='1.6' stroke-linecap='round'/%3E%3Cellipse cx='11.5' cy='10.5' rx='3' ry='1.6' fill='%23fff3b0' opacity='.7' transform='rotate(-30 11.5 10.5)'/%3E%3C/svg%3E") center/contain no-repeat}
 /* v98.788 · the ability line on the small card: 4.4cqw (≈5px) was unreadable → 6.6cqw (≈8px); the lines are short now (js/bag.js CARD_SHORT) */
 .cb-v2 .cb-pg .gcard [data-zone=text]{font-size:6.6cqw!important;line-height:1.18;gap:0!important}
@@ -117,3 +117,13 @@
 
 /* v98.805 · the panel sits at the very top (ribbon tips almost touch the screen edge), not under the game bar */
 #panel.under-bar:has(.card-book.cb-v2){top:max(.4vh,3px)}
+/* v98.831 · one look and one row for the buttons under every card (ใช้ · ขาย · สวมใส่ · ถอด): gold, side by side */
+.cb-v2 .cb-pg .collection-tile,.cb-v2 .cb-pg .bag-item-card{flex-flow:row wrap!important;justify-content:center;column-gap:calc(var(--u)*.4)}
+.cb-v2 .cb-pg .collection-tile>.card-thumb,.cb-v2 .cb-pg .bag-item-card>.card-thumb{margin-inline:calc((100% - var(--u)*10.6)/2)!important}
+.cb-v2 .cb-pg .collection-tile>button:not(.card-thumb),.cb-v2 .cb-pg .bag-item-card>button:not(.card-thumb){margin:calc(var(--u)*.3) 0 0!important;background:linear-gradient(#f0c560,#c99a38)!important;border:1px solid #7a4b06!important;color:#3a2a14!important;font-weight:700!important}
+.cb-v2 .cb-pg .collection-count{top:calc(var(--u)*-.55)!important}   /* the row-wrap layout moved its static spot: pin it to the card top-right */
+/* v98.831 · during the guided lesson (body.gt-on) the book is a little smaller so the dialogue box at the bottom never covers it (book + ribbons ≈ 83 % of the screen height) */
+body.gt-on .card-book.cb-v2{--w:min(99vw,138vh)}
+body.gt-on dialog#collectionFocus.grim{--gw:min(99vw,138vh)}
+/* v98.831 · the card book is a NON-modal panel (js/layout-v08.js): its fog is the panel shade, stretched over the whole screen (the game bar too) */
+body:has(#panel[open] .card-book.cb-v2) #panelShade{top:0;z-index:249;background:radial-gradient(80% 70% at 50% 45%,rgba(255,236,205,.30),rgba(40,28,18,.55) 100%),rgba(60,44,32,.35);backdrop-filter:blur(26px) saturate(.7);-webkit-backdrop-filter:blur(26px) saturate(.7)}

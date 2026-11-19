@@ -42,7 +42,8 @@
     }
     if (!found) return;
     /* v98.758 · the selling price (when a card has one) → a number + gold coin badge on the card's bottom-right corner; the text it is read from is hidden by the CSS */
-    const priceOf = el => { const t = (el.querySelector('.gear-instance') || el.querySelector('button[data-sellg]') || el.querySelector('small.muted') || {}).textContent || ''; const m = t.match(/◉\s*([\d,]+)/); if (m) return m[1];
+    const priceOf = el => { const t = (el.querySelector('.gear-instance') || el.querySelector('button[data-sellg]') || el.querySelector('small.muted') || {}).textContent || ''; try { const k = (el.querySelector('.card-thumb')?.getAttribute('onclick') || '').match(/openCollectionCard\('(\w+)','([^']+)'\)/), S = window.SellCards; if (k && S) { const p = S.price(k[1], k[2]); return p > 0 ? String(p) : null } } catch (e) { }   /* v98.831 · one price for badge and sell button */
+      const m = t.match(/◉\s*([\d,]+)/); if (m) return m[1];
       /* v98.830 · consumables / materials have no price text: read the card's key and use the market's selling value (price × VENDOR_RATE, min 1) */
       try { const k = (el.querySelector('.card-thumb')?.getAttribute('onclick') || '').match(/openCollectionCard\('(\w+)','([^']+)'\)/); if (!k) return null; const rate = typeof VENDOR_RATE === 'number' ? VENDOR_RATE : .65, AD = window.ADVENTURE_DATA || {};
         const p = k[1] === 'item' ? (AD.CONSUMABLES?.[k[2]]?.price ?? AD.GOODS?.[k[2]]?.price) : k[1] === 'material' ? (typeof MATERIALS !== 'undefined' ? MATERIALS[k[2]]?.price : null) : null;

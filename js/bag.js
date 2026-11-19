@@ -71,11 +71,11 @@ function runEvent(key,src={}){let E=EVENTS[key],D=AD.EVENT_CARDS[key],adv=state(
  if(E.shop)return shop(D,head,spend,src);
  modal(D.name,head,E.choices.map(ch=>({label:ch.label,disabled:ch.disabled?.()||'',run:()=>done(ch.run({adv,area:adv?.area}))})),{onClose:src.node?()=>src.after?.():null,noClose:!!src.node})}
 function shop(D,head,spend,src){let used=false;const stock=Object.entries(AD.CONSUMABLES).filter(([,x])=>!x.gift&&(x.rarity!=='rare'||Math.random()<.4)).map(([k,x])=>[k,x.price]);
- const draw=msg=>{let sell=Object.entries(bag()).filter(([k,n])=>n>0&&AD.GOODS[k]);modal(D.name,head+`${msg?`<p class="adv-note">${esc(msg)}</p>`:''}<div class="currency-banner">◉ <strong>${s.village.coins} เหรียญ</strong></div>
+ const draw=msg=>{let sell=[...Object.entries(bag()).filter(([k,n])=>n>0&&SellCards.price('item',k)).map(([k,n])=>['item',k,n,nameHtml(k)]),...Object.entries(s.village.materials||{}).filter(([k,n])=>n>0&&SellCards.price('material',k)).map(([k,n])=>['material',k,n,esc(MATERIALS[k]?.name||k)])];modal(D.name,head+`${msg?`<p class="adv-note">${esc(msg)}</p>`:''}<div class="currency-banner">◉ <strong>${s.village.coins} เหรียญ</strong></div>
   <h4>ซื้อ</h4><div class="adv-shop">${stock.map(([k,p])=>`<button data-buy="${k}" data-p="${p}" ${s.village.coins<p?'disabled':''}>${nameHtml(k)}<small>◉ ${p}</small></button>`).join('')}</div>
-  <h4>ขายของ</h4><div class="adv-shop">${sell.map(([k,n])=>`<button data-sell="${k}">${nameHtml(k)} ×${n}<small>◉ ${vendorGoods(k)}</small></button>`).join('')||'<p class="muted small">ไม่มีของให้ขาย</p>'}</div>`,[{label:'จบการซื้อขาย',primary:true,run:()=>{closeModal();src.after?.()}}],{onClose:()=>src.after?.()});
+  <h4>ขายของ</h4><div class="adv-shop">${sell.map(([kd,k,n,nm])=>`<button data-sell="${kd}:${k}">${nm} ×${n}<small>◉ ${SellCards.price(kd,k)}</small></button>`).join('')||'<p class="muted small">ไม่มีของให้ขาย</p>'}</div>`,[{label:'จบการซื้อขาย',primary:true,run:()=>{closeModal();src.after?.()}}],{onClose:()=>src.after?.()});
   modalEl.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{let p=+b.dataset.p;if(s.village.coins<p)return;if(!used){spend();used=true}s.village.coins-=p;addItem(b.dataset.buy,1);save();render();draw('ซื้อ '+nameOf(b.dataset.buy)+' แล้ว')});
-  modalEl.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{let k=b.dataset.sell;if(!hasItem(k))return;if(!used){spend();used=true}addItem(k,-1);s.village.coins+=vendorGoods(k);save();render();draw('ขาย '+nameOf(k)+' แล้ว')})};
+  modalEl.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const [kd,k]=b.dataset.sell.split(':');if(!used){spend();used=true}const m=SellCards.sell(kd,k,true);render();draw(m)})};
  draw('')}
 // v94.02: the old area adventure (node maps, quests, map fights) was deleted — journeys use the world map (world-map.html).
 const state=()=>null,refreshMap=()=>{},checkQuest=()=>'';
@@ -99,17 +99,31 @@ const CARD_SHORT={smallPumpkin:'ฟื้น HP 30 · แรง 30',momWater:'�
  treasureMap:'ตามแผนที่หาของซ่อน',oldShrine:'ศาลสงบ พักและอธิษฐาน',merchant:'เรียกพ่อค้าเร่',howl:'ตามเสียงไปหาฝูงศัตรู',lostMiner:'ช่วยคนงานในอุโมงค์',hotSpring:'น้ำพุร้อนกลางหิมะ',shipwreck:'เรืออับปาง อาจมีของ',cursedIdol:'รูปปั้นที่จ้องมอง',wanderingKnight:'อัศวินท้าประลอง',fallenCart:'เกวียนล้มขวางทาง',willowisp:'ดวงไฟเรียกให้ตาม',strangeRune:'รูนลึกลับ ให้คุณหรือโทษ'};
 function bagCardHTML(info,n){let S=window.CardStudio,base=S?.cardById(info.card);if(!base)return '';let c=JSON.parse(JSON.stringify(base)),d=info.def||{};if(!c.main?.value){c.main=info.cat==='goods'?{value:'',label:''}:info.cat==='event'?{value:'✉',label:'การ์ดเหตุการณ์'}:{value:'×'+n,label:'ในสมุด'}}if(d.text){const t=String(d.text);const sh=CARD_SHORT[info.card.replace(/^(c|g|ev)-/,'')];c.effects=info.cat==='goods'?[d.text||'']:[sh||(info.cat==='consumable'?t.split(' · ')[0]:t)]}   /* v98.671 · the card face carries only what the card DOES (consumables: the part before ' · '; goods: just the sell price) — the story-like rest of the text lives on the detail page */
  return S.cardHTML(c,S.design())}   /* v98.669 · same full card face as the materials: ability text + effects are printed on the card (the mini face left the body empty) */
+/* v98.831 · ONE selling rule for every card (ของใช้ · วัตถุดิบ · ของทั่วไป · อุปกรณ์): price = the card's value × VENDOR_RATE (65 %, at least 1) · sold at the MARKET (and to a travelling merchant) ·
+   not sellable: event cards, gifts (gift:true — mother's water …), equipped gear. The price badge on the card (js/card-book.js) and every sell button read the same number from here. */
+const SellCards=(()=>{const rate=()=>typeof VENDOR_RATE==='number'?VENDOR_RATE:.65,r=p=>p>0?Math.max(1,Math.round(p*rate())):0;
+ const price=(kind,key)=>{if(kind==='item'){const d=AD.CONSUMABLES[key]||AD.GOODS[key];return d&&!d.gift?r(d.price||0):0}if(kind==='material'){const m=typeof MATERIALS!=='undefined'&&MATERIALS[key];return m?r(m.price||0):0}if(kind==='gear'){const x=s.inventory.find(x=>x.id===Number(key));return x?vendorValue(x):0}return 0};
+ const name=(kind,key)=>kind==='item'?nameOf(key):kind==='material'?(MATERIALS[key]?.name||key):(()=>{const x=s.inventory.find(x=>x.id===Number(key));return x?(RECIPES[itemRecipe(x)]?.name||'อุปกรณ์'):'อุปกรณ์'})();
+ const atMarket=()=>s.village?.location==='market'&&s.mode!=='battle';
+ /* sell one card · force = a merchant on the road (no market needed) → message text */
+ function sell(kind,key,force){if(!force&&!atMarket())return 'ขายได้ที่ตลาด';const p=price(kind,key);if(!p)return 'การ์ดนี้ขายไม่ได้';const nm=name(kind,key);
+  if(kind==='item'){if(!hasItem(key))return 'ไม่มีการ์ดนี้แล้ว';addItem(key,-1)}
+  else if(kind==='material'){if(!(s.village.materials[key]>0))return 'ไม่มีการ์ดนี้แล้ว';s.village.materials[key]--}
+  else if(kind==='gear'){const x=s.inventory.find(x=>x.id===Number(key));if(!x)return 'ไม่มีการ์ดนี้แล้ว';if(s.equipped===x.id)return 'ถอดอุปกรณ์ก่อนขาย';s.inventory.splice(s.inventory.indexOf(x),1)}
+  s.village.coins+=p;save();return 'ขาย '+nm+' ได้ ◉ '+p}
+ const button=(kind,key)=>{const p=price(kind,key);return p&&atMarket()?`<button type="button" data-sellc="${kind}:${key}">ขาย</button>`:''};
+ return {price,sell,button,atMarket}})();window.SellCards=SellCards;
 const baseBag=renderBag;
 renderBag=function(){baseBag();let host=$('panelContent');if(!host)return;let b=bag(),atMarket=s.village.location==='market'&&!state();
  const tile=(k,n,btns)=>{let info=itemInfo(k);return `<div class="bag-item-card"><button type="button" class="card-thumb bag-thumb" aria-label="ดูการ์ด ${esc(info.def.name)}" onclick="openCollectionCard('item','${k}')" style="all:unset;cursor:pointer;display:block"><div class="adv-card mini">${bagCardHTML(info,n)||''}</div></button><span class="collection-count">×${n}</span>${btns}</div>`};   /* v98.669 · the count sits at the card's top-right like the materials; name + ability are on the card itself */
  let sec=(title,cat,btns)=>{let list=Object.entries(b).filter(([k,n])=>n>0&&itemInfo(k)?.cat===cat);return `<h3>${title}</h3><div class="bag-item-grid">${list.map(([k,n])=>tile(k,n,btns(k))).join('')||'<p class="muted small">ยังไม่มี</p>'}</div>`};
- host.insertAdjacentHTML('afterbegin',`<div class="bag-v11">${sec('ของใช้ · ใช้แล้วหมดไป','consumable',k=>AD.CONSUMABLES[k].use==='ต่อสู้'?'<small class="muted">ใช้ระหว่างต่อสู้</small>':`<button data-use="${k}">ใช้</button>`)}
+ host.insertAdjacentHTML('afterbegin',`<div class="bag-v11">${sec('ของใช้ · ใช้แล้วหมดไป','consumable',k=>(AD.CONSUMABLES[k].use==='ต่อสู้'?'<small class="muted">ใช้ระหว่างต่อสู้</small>':`<button data-use="${k}">ใช้</button>`)+SellCards.button('item',k))}
  ${sec('การ์ดเหตุการณ์ · ใช้แล้วจะเกิดเรื่องราว','event',k=>`<button data-event="${k}">ใช้การ์ด</button>`)}
- ${sec('ไอเทมทั่วไป · ขายได้ที่ตลาด'+(atMarket?'':' (ไปตลาดเพื่อขาย)'),'goods',k=>atMarket?`<button data-sellg="${k}">ขาย ◉ ${vendorGoods(k)}</button>`:`<small class="muted">◉ ${vendorGoods(k)}</small>`)}<p id="bagMsg" class="small" role="status"></p></div>`);
+ ${sec('ไอเทมทั่วไป · ขายได้ที่ตลาด'+(atMarket?'':' (ไปตลาดเพื่อขาย)'),'goods',k=>SellCards.button('item',k))}<p id="bagMsg" class="small" role="status"></p></div>`);
  window.CardStudio?.fit(host);
  host.querySelectorAll('[data-use]').forEach(x=>x.onclick=()=>{let m=useConsumable(x.dataset.use);renderBag();$('bagMsg')&&($('bagMsg').textContent=m);refreshMap()});
  host.querySelectorAll('[data-event]').forEach(x=>x.onclick=()=>{$('panel').close();runEvent(x.dataset.event,{card:x.dataset.event})});
- host.querySelectorAll('[data-sellg]').forEach(x=>x.onclick=()=>{let k=x.dataset.sellg;if(!hasItem(k))return;addItem(k,-1);s.village.coins+=vendorGoods(k);save();render();renderBag();$('bagMsg')&&($('bagMsg').textContent='ขาย '+nameOf(k)+' แล้ว')})};
+ host.querySelectorAll('[data-sellc]').forEach(x=>x.onclick=()=>{const [kd,k]=x.dataset.sellc.split(':');const m=SellCards.sell(kd,k);render();renderBag();$('bagMsg')&&($('bagMsg').textContent=m);window.toast?.(m)})};
 window.addEventListener('load',()=>{if(s.village?.adventure){s.village.adventure=null;save()}});   // a save from the old area maps simply comes home
 window.Adventure={state,runEvent,bag,addItem,hasItem,EVENTS,itemInfo,cardHTML:bagCardHTML,enter:()=>window.VillageTown?.openWorld?.()};
 window.BattleItems=BattleItems;
