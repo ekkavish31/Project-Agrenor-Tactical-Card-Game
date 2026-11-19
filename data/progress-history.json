@@ -1102,5 +1102,21 @@
    "art": 38.8,
    "release": 15.6
   }
+ },
+ {
+  "v": "v98.634",
+  "date": "2026-11-18",
+  "overall": 40.2,
+  "gameOverall": 39,
+  "phases": {
+   "foundation": 47.2,
+   "story": 47,
+   "village": 44.1,
+   "combat": 66.1,
+   "world": 22.2,
+   "systems": 36,
+   "art": 38.8,
+   "release": 15.6
+  }
  }
 ]
