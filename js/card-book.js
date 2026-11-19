@@ -42,7 +42,11 @@
     }
     if (!found) return;
     /* v98.758 · the selling price (when a card has one) → a number + gold coin badge on the card's bottom-right corner; the text it is read from is hidden by the CSS */
-    const priceOf = el => { const t = (el.querySelector('.gear-instance') || el.querySelector('button[data-sellg]') || el.querySelector('small.muted') || {}).textContent || ''; const m = t.match(/◉\s*([\d,]+)/); return m ? m[1] : null };
+    const priceOf = el => { const t = (el.querySelector('.gear-instance') || el.querySelector('button[data-sellg]') || el.querySelector('small.muted') || {}).textContent || ''; const m = t.match(/◉\s*([\d,]+)/); if (m) return m[1];
+      /* v98.830 · consumables / materials have no price text: read the card's key and use the market's selling value (price × VENDOR_RATE, min 1) */
+      try { const k = (el.querySelector('.card-thumb')?.getAttribute('onclick') || '').match(/openCollectionCard\('(\w+)','([^']+)'\)/); if (!k) return null; const rate = typeof VENDOR_RATE === 'number' ? VENDOR_RATE : .65, AD = window.ADVENTURE_DATA || {};
+        const p = k[1] === 'item' ? (AD.CONSUMABLES?.[k[2]]?.price ?? AD.GOODS?.[k[2]]?.price) : k[1] === 'material' ? (typeof MATERIALS !== 'undefined' ? MATERIALS[k[2]]?.price : null) : null;
+        return p > 0 ? String(Math.max(1, Math.round(p * rate))) : null } catch (e) { return null } };
     for (const list of Object.values(items)) for (const el of list) { if (el.querySelector('.cb-price')) continue; const v = priceOf(el); if (v) el.insertAdjacentHTML('beforeend', `<span class="cb-price" title="ราคาขาย">${v}<i></i></span>`) }
     const count = id => (items[id] || []).length;
     const tabs = TABS.filter(t => t.id !== 'event' || count('event') > 0);
