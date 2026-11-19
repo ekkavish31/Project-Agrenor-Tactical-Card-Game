@@ -79,8 +79,9 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
   const check = () => { pend = false; if (!on) return; let k = classify(target); if (held && k === 'grab') k = 'grabbing'; apply(k) };
   const sched = () => { if (!pend) { pend = true; requestAnimationFrame(check) } };
   const isMouse = e => !e.pointerType || e.pointerType === 'mouse' || e.pointerType === 'pen';
-  addEventListener('pointermove', e => { if (!isMouse(e)) return; x = e.clientX; y = e.clientY; target = e.target; if (!seen) { seen = true; if (kind) el.style.display = 'block' } if (kind) place(); sched() }, true);
-  addEventListener('pointerover', e => { if (!isMouse(e)) return; target = e.target; x = e.clientX; y = e.clientY; sched() }, true);
+  addEventListener('pointermove', e => { if (!isMouse(e)) return; x = e.clientX; y = e.clientY; target = e.target; if (!seen) { seen = true; if (kind) el.style.display = 'block' } if (kind) place(); if (target && (target.tagName === 'IFRAME' || target.tagName === 'FRAME') && kind !== 'frame') { pend = false; check() } else sched() }, true);
+  /* v98.804 · when the pointer enters another element / a frame the kind is decided RIGHT NOW (it used to wait for the next animation frame): while the game was loading or stuttering that frame came late, so the old hand stayed painted next to the OS arrow of the frame / overlay now under the pointer (two cursors at once) */
+  addEventListener('pointerover', e => { if (!isMouse(e)) return; target = e.target; x = e.clientX; y = e.clientY; if (on) { pend = false; check() } else sched() }, true);
   addEventListener('pointerdown', e => {
     if (!on || e.button !== 0 || !isMouse(e)) return; x = e.clientX; y = e.clientY; target = e.target; mount(); const k = classify(target);
     if (k === 'grab') { held = true; apply('grabbing') } else if (k === 'pointer') { apply('pointer'); play(2, [1, 2, 3, 4, 5, 6, 7], 50) }
