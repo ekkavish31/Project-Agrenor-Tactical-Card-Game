@@ -116605,13 +116605,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfm3ei2-6j5a",
+   "artRevision": "20261120-060434",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-strike-mwfm3ei2-6j5a-1/20261120-060430.webp",
+     "at": "2026-11-19T23:04:31.855Z",
+     "stamp": "20261120-060430",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-strike-mwfm3ei2-6j5a-1",
@@ -116659,13 +116668,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfm3ei2-6j5a",
+   "artRevision": "20261120-060741",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-guard-mwfm3ei2-6j5a-1/20261120-060629.webp",
+     "at": "2026-11-19T23:06:29.943Z",
+     "stamp": "20261120-060629",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-guard-mwfm3ei2-6j5a-1",
@@ -116713,13 +116731,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfm3ei2-6j5a",
+   "artRevision": "20261120-060741",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-hit-mwfm3ei2-6j5a-1/20261120-060740.webp",
+     "at": "2026-11-19T23:07:40.642Z",
+     "stamp": "20261120-060740",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-hit-mwfm3ei2-6j5a-1",
@@ -116767,13 +116794,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfm3ei2-6j5a",
+   "artRevision": "20261120-061013",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-ne-down-mwfm3ei2-6j5a-1/20261120-061012.webp",
+     "at": "2026-11-19T23:10:12.390Z",
+     "stamp": "20261120-061012",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-nw-down-mwfm3ei2-6j5a-1",
@@ -141835,6 +141871,36 @@
    "frames": {},
    "approvedAt": "2026-11-19T17:29:58.002Z",
    "at": 1795109398033
+  },
+  "[\"tactics.strike.ne\",\"NE\",false,[[\"studio-hero-ne-strike-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/strike-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-060434\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T23:04:37.732Z",
+   "at": 1795129477763
+  },
+  "[\"tactics.guard.ne\",\"NE\",false,[[\"studio-hero-ne-guard-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/guard-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-060631\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T23:06:36.825Z",
+   "at": 1795129596853
+  },
+  "[\"tactics.guard.ne\",\"NE\",false,[[\"studio-hero-ne-guard-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/guard-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-060741\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T23:07:42.733Z",
+   "at": 1795129662783
+  },
+  "[\"tactics.hit.ne\",\"NE\",false,[[\"studio-hero-ne-hit-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/hit-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-060741\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T23:07:45.222Z",
+   "at": 1795129665249
+  },
+  "[\"tactics.down.ne\",\"NE\",false,[[\"studio-hero-ne-down-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/down-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-061013\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T23:10:17.838Z",
+   "at": 1795129817869
   }
  },
  "studioClipHistory": {
