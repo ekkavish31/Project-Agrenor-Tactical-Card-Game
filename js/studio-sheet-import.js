@@ -76,7 +76,7 @@
   const flipped = cv => { const o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height; const g = o.getContext('2d'); g.translate(cv.width, 0); g.scale(-1, 1); g.drawImage(cv, 0, 0); return o };
 
   /* ---------------- state + UI ---------------- */
-  let sheet = null, cells = [], dlg = null, busy = false;   // cells: [{rect, trim, target:'idle|SW'|'', mirror:false}]
+  let sheets = [], cells = [], dlg = null, busy = false;   /* v98.825 · several sheets at once: the pieces of every sheet are joined in the order the sheets were added (e.g. a walk split into two sheets of 6 frames) */   // cells: [{rect, trim, target:'idle|SW'|'', mirror:false}]
   let monMode = false, npcMode = false;   /* v98.376 · npcMode: village NPCs (group 'npcs') — stand + walk in 4 directions */
   const NPC_ACTIONS = [['idle', 'ยืน'], ['walk', 'เดิน (หลายเฟรม)']], isNpc = e => !!e && e.group === 'npcs';
   const actsNow = () => monMode ? MON_ACTIONS : npcMode ? NPC_ACTIONS : ACTIONS, viewsNow = () => monMode ? MON_VIEWS : VIEWS;
@@ -99,10 +99,10 @@
   function build() {
     css(); if (dlg) return dlg; dlg = document.createElement('dialog'); dlg.id = 'sheetImport'; document.body.append(dlg);
     dlg.innerHTML = `<h2>🧩 นำเข้าชีทหลายช่อง</h2><p id="shWho" style="margin:0 0 6px"></p>
-     <div class="row"><input type="file" id="shFile" accept="image/*"><span style="color:#6b6247">หรือวางภาพ (Ctrl+V) / ลากไฟล์มาวางที่หน้าต่างนี้</span></div>
+     <div class="row"><input type="file" id="shFile" accept="image/*" multiple><button type="button" id="shAdd" title="เพิ่มชีทต่อท้าย (เลือกได้หลายไฟล์) — ช่องของชีทใหม่ต่อจากชีทเดิม">＋ เพิ่มชีทต่อท้าย</button><button type="button" id="shDrop" title="เอาชีททั้งหมดออก" hidden>✕ ล้างชีท</button><input type="file" id="shFile2" accept="image/*" multiple hidden><span style="color:#6b6247">หรือวางภาพ (Ctrl+V) / ลากไฟล์มาวางที่หน้าต่างนี้ · วาง/ลากเพิ่ม = ต่อท้ายชีทเดิม · เลือกหลายไฟล์พร้อมกันได้</span></div>
      <div class="row" id="shCut" hidden>
-      <label>วิธีตัด <select id="shMode"><option value="grid">ตารางเท่าๆ กัน</option><option value="smart" selected>ตารางหาร่องว่างอัตโนมัติ</option><option value="blob">ตามชิ้นภาพ (อัตโนมัติ)</option></select></label>
-      <label>คอลัมน์ <input type="number" id="shCols" min="1" max="12" value="3"></label><label>แถว <input type="number" id="shRows" min="1" max="12" value="2"></label>
+      <label>วิธีตัด <select id="shMode"><option value="grid">ตารางเท่าๆ กัน</option><option value="smart">ตารางหาร่องว่างอัตโนมัติ</option><option value="blob" selected>ตามชิ้นภาพ (อัตโนมัติ)</option></select></label>
+      <label>คอลัมน์ <input type="number" id="shCols" min="1" max="12" value="3" disabled></label><label>แถว <input type="number" id="shRows" min="1" max="12" value="2" disabled></label>
       <label><input type="checkbox" id="shBg" checked> ลบพื้นหลังสีเรียบ</label><label>ความไว <input type="number" id="shTol" min="5" max="120" value="40"></label>
       <button id="shRecut">ตัดใหม่</button></div>
      <div id="shInfo" style="color:#6b6247"></div><div id="shSharp"></div><canvas id="shPrev" hidden></canvas>
@@ -114,25 +114,32 @@
       <label title="ทุกช่องใช้สเกลเดียว (เท้าอยู่ล่างกลาง)"><input type="checkbox" id="shCommon" checked> สเกลเดียวทั้งชีท</label><label title="ท่าเดิน / หลายเฟรม: หัวอยู่กึ่งกลางทุกเฟรม และเท้าที่ต่ำสุดแตะเส้นพื้นเดียวกัน (ปิด = จัดกึ่งกลางตามกรอบภาพ)"><input type="checkbox" id="shAlign" checked> จัดหัว-เท้าอัตโนมัติ</label><button id="shClear">ล้างการเลือก</button></div>
      <div id="shMain"><div id="shCells"></div><aside id="shAnim"><b>▶ ตัวอย่างการเดิน</b><canvas id="shAnimCv" width="250" height="250"></canvas><div id="shAnimInfo" style="color:#6b6247">เลือกช่องเป็น "เดิน" เพื่อดูตัวอย่าง</div><div><button id="shAnimPlay" type="button">⏸ หยุด</button></div></aside></div><div class="msg" id="shMsg"></div>
      <div class="row" style="justify-content:flex-end"><button id="shApply" disabled style="background:#c9893a;border:1px solid #a06c27;color:#fff;padding:6px 14px;border-radius:8px">นำเข้า</button><button id="shClose">ปิด</button></div>`;
-    $('shClose').onclick = () => dlg.close(); $('shFile').onchange = e => e.target.files[0] && openFile(e.target.files[0]); $('shRecut').onclick = recut; $('shMode').onchange = () => { $('shCols').disabled = $('shRows').disabled = $('shMode').value === 'blob' };
+    $('shClose').onclick = () => dlg.close(); $('shFile').onchange = e => { openFiles(e.target.files, false); e.target.value = '' }; $('shAdd').onclick = () => $('shFile2').click(); $('shFile2').onchange = e => { openFiles(e.target.files, true); e.target.value = '' }; $('shDrop').onclick = () => { sheets = []; cells = []; $('shCut').hidden = true; $('shPrev').hidden = true; $('shAssign').hidden = true; $('shInfo').textContent = ''; $('shSharp').textContent = ''; $('shDrop').hidden = true; drawCells() }; $('shRecut').onclick = recut; $('shMode').onchange = () => { $('shCols').disabled = $('shRows').disabled = $('shMode').value === 'blob' };
     $('shFill').onclick = fill; $('shMs').oninput = refreshPreview; $('shAlign').onchange = refreshPreview; $('shCommon').onchange = drawCells; $('shView').onchange = refreshPreview; $('shAnimPlay').onclick = () => { if (pvT) { stopPv(); $('shAnimPlay').textContent = '▶ เล่น' } else { startPv(); $('shAnimPlay').textContent = '⏸ หยุด' } }; dlg.addEventListener('close', stopPv); $('shClear').onclick = () => { cells.forEach(c => { c.target = ''; c.mirror = false }); drawCells() }; $('shApply').onclick = apply;
     $('shMirrorAll').onchange = () => { const m = $('shMirrorAll').checked; cells.forEach(c => { if (c.target) c.mirror = m }); drawCells() };
-    dlg.addEventListener('paste', e => { const f = [...(e.clipboardData?.files || [])].find(f => f.type.startsWith('image/')); if (f) openFile(f) });
-    dlg.addEventListener('dragover', e => e.preventDefault()); dlg.addEventListener('drop', e => { e.preventDefault(); const f = [...(e.dataTransfer?.files || [])].find(f => f.type.startsWith('image/')); if (f) openFile(f) });
+    dlg.addEventListener('paste', e => { const fs = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith('image/')); if (fs.length) openFiles(fs, true) });
+    dlg.addEventListener('dragover', e => e.preventDefault()); dlg.addEventListener('drop', e => { e.preventDefault(); const fs = [...(e.dataTransfer?.files || [])].filter(f => f.type.startsWith('image/')); if (fs.length) openFiles(fs, true) });
     return dlg;
   }
   const msg = t => { $('shMsg').textContent = t };
-  async function openFile(file) { try { const im = await loadBlob(file); sheet = { cv: toCanvas(im), name: file.name }; $('shCut').hidden = false; recut() } catch (e) { msg(e.message) } }
+  async function openFiles(files, append) { const list = [...files].filter(f => f.type.startsWith('image/')); if (!list.length) return; try { const add = []; for (const f of list) { const im = await loadBlob(f); add.push({ cv: toCanvas(im), name: f.name }) } sheets = append ? sheets.concat(add) : add; $('shCut').hidden = false; $('shDrop').hidden = false; recut() } catch (e) { msg(e.message) } }
   function recut() {
-    if (!sheet) return; const src = toCanvas(sheet.cv), mode = $('shMode').value; let bgDone = false;
-    if ($('shBg').checked) bgDone = removeBackground(src, +$('shTol').value || 40);
-    sheet.work = src; const rects = mode === 'blob' ? blobRects(src) : gridRects(src, Math.max(1, +$('shCols').value | 0), Math.max(1, +$('shRows').value | 0), mode === 'smart');
-    cells = rects.map(r => ({ rect: r, trim: cropTrim(src, r), target: '', mirror: false })).filter(c => c.trim);
-    $('shInfo').textContent = `${sheet.name} · ${src.width}×${src.height} · ${cells.length} ช่อง${bgDone ? ' · ลบพื้นหลังแล้ว' : ''}`;
-    const pv = $('shPrev'); pv.hidden = false; const k = Math.min(1, 1100 / src.width, 340 / src.height); pv.width = Math.round(src.width * k); pv.height = Math.round(src.height * k); const g = pv.getContext('2d'); g.clearRect(0, 0, pv.width, pv.height); g.drawImage(src, 0, 0, pv.width, pv.height);
-    g.lineWidth = 2; g.font = 'bold 14px AgThai,system-ui'; cells.forEach((c, i) => { g.strokeStyle = '#2f6fd0'; g.strokeRect(c.rect.x * k, c.rect.y * k, c.rect.w * k, c.rect.h * k); g.fillStyle = '#2f6fd0'; g.fillText(String(i + 1), c.rect.x * k + 4, c.rect.y * k + 16) });
+    if (!sheets.length) return; const mode = $('shMode').value, tol = +$('shTol').value || 40, bgOn = $('shBg').checked; let bgDone = false; cells = []; const srcs = [];
+    /* every sheet is cut the same way; its pieces follow the pieces of the sheets before it */
+    sheets.forEach((s, si) => {
+      const src = toCanvas(s.cv); if (bgOn && removeBackground(src, tol)) bgDone = true; s.work = src; srcs.push(src);
+      const rects = mode === 'blob' ? blobRects(src) : gridRects(src, Math.max(1, +$('shCols').value | 0), Math.max(1, +$('shRows').value | 0), mode === 'smart');
+      for (const r of rects) { const trim = cropTrim(src, r); if (trim) cells.push({ rect: r, trim, target: '', mirror: false, sheet: si }) }
+    });
+    $('shInfo').textContent = sheets.map((s, i) => `ชีท ${i + 1}: ${s.name} (${srcs[i].width}×${srcs[i].height} · ${cells.filter(c => c.sheet === i).length} ช่อง)`).join(' · ') + ` — รวม ${cells.length} ช่อง` + (bgDone ? ' · ลบพื้นหลังแล้ว' : '');
+    /* preview: the sheets stacked top → bottom (cell numbers run on from one sheet to the next) */
+    const pv = $('shPrev'); pv.hidden = false; const k = Math.min(1, 1100 / Math.max(...srcs.map(s => s.width)), 300 / Math.max(...srcs.map(s => s.height))), LAB = sheets.length > 1 ? 18 : 0, ys = []; let y0 = 0; srcs.forEach(s => { ys.push(y0 + LAB); y0 += Math.round(s.height * k) + LAB + 6 });
+    pv.width = Math.round(Math.max(...srcs.map(s => s.width)) * k); pv.height = Math.max(1, y0); const g = pv.getContext('2d'); g.clearRect(0, 0, pv.width, pv.height); g.font = 'bold 14px AgThai,system-ui'; g.lineWidth = 2;
+    srcs.forEach((s, i) => { if (LAB) { g.fillStyle = '#6b6247'; g.fillText('ชีท ' + (i + 1) + ' · ' + sheets[i].name, 2, ys[i] - 5) } g.drawImage(s, 0, ys[i], Math.round(s.width * k), Math.round(s.height * k)) });
+    cells.forEach((c, i) => { const oy = ys[c.sheet]; g.strokeStyle = '#2f6fd0'; g.strokeRect(c.rect.x * k, oy + c.rect.y * k, c.rect.w * k, c.rect.h * k); g.fillStyle = '#2f6fd0'; g.fillText(String(i + 1), c.rect.x * k + 4, oy + c.rect.y * k + 16) });
     $('shAssign').hidden = false; drawCells(); msg(cells.length ? '' : 'ตัดไม่ได้ชิ้นไหนเลย — ลองเปลี่ยนวิธีตัดหรือปิด "ลบพื้นหลัง"');
   }
+
   function fill() { const view = $('shView').value, seq = PRESETS[$('shPreset').value], m = $('shMirrorAll').checked;
     if (!seq) { cells.forEach(c => { c.target = 'walk|' + view; c.mirror = m }); drawCells(); return }   /* v98.822 · a sheet of WALK frames only: every piece is a frame of the walk set of this direction, in reading order */ cells.forEach(c => { c.target = ''; c.mirror = false }); cells.slice(0, seq.length).forEach((c, i) => { c.target = seq[i] + '|' + view; c.mirror = m }); drawCells() }
   function drawCells() {
@@ -267,9 +274,9 @@
     monMode = isMon(e); npcMode = isNpc(e); build();
     $('shPreset').innerHTML = npcMode ? '<option value="walkonly">🚶 ชีทเฟรมเดินอย่างเดียว (ทุกช่อง = เฟรมเดิน)</option><option value="npc2">ยืน → เดิน (ชีท 1 ช่องยืน + หลายช่องเดิน)</option>' : monMode ? '<option value="walkonly">🚶 ชีทเฟรมเดินอย่างเดียว (ทุกช่อง = เฟรมเดิน)</option><option value="mon4">เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม (4 ท่า เช่นชีทแพะ)</option><option value="mon6">ยืน → เดิน → เตรียมโจมตี → โจมตี → โดนโจมตี → ล้ม</option>' : '<option value="walkonly">🚶 ชีทเฟรมเดินอย่างเดียว (ทุกช่อง = เฟรมเดิน)</option><option value="std">ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option><option value="walk">เดิน → ยืน → เตรียมโจมตี → โจมตี → ป้องกัน → โดนโจมตี → ตาย</option>';
     $('shView').innerHTML = viewsNow().map(v => `<option>${v}</option>`).join(''); $('shMirrorAll').parentElement.hidden = monMode; $('shMirrorAll').checked = false;
-    $('shWho').innerHTML = monMode ? 'นำเข้าให้: <b>' + esc(e.name) + '</b> · ทิศ <b>SE</b> (หันหน้า) และ <b>NE</b> (หันหลัง) · SW/NW เกมพลิกให้เอง · ชิ้นหลายชิ้นที่เลือกปลายทางเดียวกัน = เฟรมของท่านั้นตามลำดับการอ่าน · เฟรม 512×512 เท้าที่ 0.95 สเกลเดียวทั้งชีท' : 'นำเข้าให้: <b>' + esc(e.name) + '</b>' + (e.id === 'hero' ? ' (รูปลักษณ์ที่เปิดอยู่)' : '') + (npcMode ? ' · ยืนเก็บ 1 ภาพต่อทิศ · เดินเก็บเป็น walk1…N ต่อทิศ (เลือกหลายชิ้นปลายทางเดียวกัน = เฟรมเดิน)' : '') + ' · ชีทเดียวมีได้หลายท่า/หลายทิศ — แต่ละช่องเลือกปลายทางเองได้'; sheet = null; cells = []; $('shCut').hidden = $('shAssign').hidden = true; $('shPrev').hidden = true; $('shInfo').textContent = ''; $('shCells').innerHTML = ''; msg(''); $('shFile').value = ''; $('shApply').disabled = true; $('shApply').textContent = 'นำเข้า'; dlg.showModal();
+    $('shWho').innerHTML = monMode ? 'นำเข้าให้: <b>' + esc(e.name) + '</b> · ทิศ <b>SE</b> (หันหน้า) และ <b>NE</b> (หันหลัง) · SW/NW เกมพลิกให้เอง · ชิ้นหลายชิ้นที่เลือกปลายทางเดียวกัน = เฟรมของท่านั้นตามลำดับการอ่าน · เฟรม 512×512 เท้าที่ 0.95 สเกลเดียวทั้งชีท' : 'นำเข้าให้: <b>' + esc(e.name) + '</b>' + (e.id === 'hero' ? ' (รูปลักษณ์ที่เปิดอยู่)' : '') + (npcMode ? ' · ยืนเก็บ 1 ภาพต่อทิศ · เดินเก็บเป็น walk1…N ต่อทิศ (เลือกหลายชิ้นปลายทางเดียวกัน = เฟรมเดิน)' : '') + ' · ชีทเดียวมีได้หลายท่า/หลายทิศ — แต่ละช่องเลือกปลายทางเองได้'; sheets = []; cells = []; if ($('shDrop')) $('shDrop').hidden = true; if ($('shSharp')) $('shSharp').textContent = ''; $('shCut').hidden = $('shAssign').hidden = true; $('shPrev').hidden = true; $('shInfo').textContent = ''; $('shCells').innerHTML = ''; msg(''); $('shFile').value = ''; $('shApply').disabled = true; $('shApply').textContent = 'นำเข้า'; dlg.showModal();
   }
   function inject() { const grid = $('grid'), ctl = grid && grid.querySelector('.entity-controls'); if (!ctl || ctl.querySelector('#shImpBtn')) return; const e = entityNow(); if (!e || (e.group !== 'characters' && !isMon(e) && !isNpc(e))) return; const b = document.createElement('button'); b.id = 'shImpBtn'; b.type = 'button'; b.textContent = '🧩 นำเข้าชีท'; b.title = 'ตัดชีทเดียวเป็นหลายช่อง แล้วนำเข้าหลายท่า/หลายทิศพร้อมกัน'; b.onclick = open; (ctl.querySelector('.tb-group[data-g=edit] .tb-items') || ctl).prepend(b) }
-  window.StudioSheetImport = { _mon: () => monMode, _npc: () => npcMode, _entity: () => entityNow()?.id, open, removeBackground, gridRects, blobRects, cropTrim, place, placeMon, _cells: () => cells, _state: () => ({ sheet }) };
+  window.StudioSheetImport = { _mon: () => monMode, _npc: () => npcMode, _entity: () => entityNow()?.id, open, removeBackground, gridRects, blobRects, cropTrim, place, placeMon, _cells: () => cells, _state: () => ({ sheet: sheets[0] || null, sheets }) };
   const g = $('grid'); if (g) { new MutationObserver(inject).observe(g, { childList: true }); inject() }
 })();
