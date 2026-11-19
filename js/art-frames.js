@@ -35,11 +35,15 @@
     un('sw', 'sh'); un('sh', 'sw'); un('fw', 'fh'); un('fh', 'fw'); un('orderU', 'orderV'); un('orderV', 'orderU'); un('blockU', 'blockV'); un('blockV', 'blockU');
     if (e.zo) t.zo = f ? swapCells(e.zo) : e.zo; if (e.zb) t.zb = f ? swapCells(e.zb) : e.zb; if (e.block) t.block = true;
     for (const x of Object.keys(t)) if (t[x] == null) delete t[x];
+    /* v98.832 · the 3 review ticks (กรอบฟ้า · กรอบแดง · สัดส่วน) travel with the picture too: the piece's own ticks become the template's; with none of its own, the template keeps the ticks it already had */
+    const own = o.chk && Object.keys(o.chk).length ? o.chk : (load()[o.art] || {}).chk; if (own && Object.keys(own).length) t.chk = { ...own };
     load()[o.art] = t; persist(); return t;
   }
+  /* the ticks a piece shows: its own (a piece that was ticked by hand) · else — when it follows the picture's frame (own = isOwn) — the picture's saved ticks */
+  const chkOf = (o, own) => { if (!o) return {}; if (o.chk && Object.keys(o.chk).length) return o.chk; if (own != null ? own : isOwn(o)) return {}; const t = get(o.art); return (t && t.chk) || {} };
   const clear = art => { delete load()[art]; persist() };
   const strip = o => { for (const k of [...FIELDS, 'fo']) delete o[k]; return o };
   const useTemplate = o => strip(o);
   const materialize = o => { const e = effective(o); for (const k of FIELDS) if (e[k] != null) o[k] = e[k]; return o };
-  root.ArtFrames = { setWidthHook: fn => { widthHook = fn }, nominal, KEY, FIELDS, get, has, effective, isOwn, saveFrom, clear, useTemplate, materialize, strip, auto, all: () => ({ ...load() }), reload: () => { store = null } };
+  root.ArtFrames = { setWidthHook: fn => { widthHook = fn }, nominal, KEY, FIELDS, get, has, effective, isOwn, chkOf, saveFrom, clear, useTemplate, materialize, strip, auto, all: () => ({ ...load() }), reload: () => { store = null } };
 })(typeof window !== 'undefined' ? window : globalThis);

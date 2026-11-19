@@ -247,6 +247,8 @@
     A piece with its own frame fields (or ov.fo) keeps them ("แก้เฉพาะชิ้นนี้"); a piece without follows the template of its picture (scaled by its size, mirrored when flipped); no template = nothing changes. */
  const FR_FIELDS = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'zb', 'fw', 'fh', 'block', 'blockU', 'blockV', 'cmp'];
  const frOwn = ov => !!ov.fo || FR_FIELDS.some(k => ov[k] != null && ov[k] !== false && !(Array.isArray(ov[k]) && !ov[k].length));
+ /* v98.832 · the review ticks (ฟ้า · แดง · สัดส่วน) follow the picture's saved template when the piece has none of its own and follows the template's frame */
+ const chkEff = (art, ov) => window.ArtFrames?.chkOf ? window.ArtFrames.chkOf({ ...ov, art }, frOwn(ov)) : (ov.chk || {});
  const geoOv = (ov, art) => { const AF = window.ArtFrames; if (!AF || !art || !AF.has(art) || frOwn(ov)) return ov; return AF.effective({ ...ov, art, width: 100 }) };
  const artOfSrc = (src, ov, label, key) => 'v:' + (ov.kind || src?.name || label || key);
  /* v98.692 · sway physics: one damped spring per plant (angle a, velocity v) driven by how close the hero's feet are; the target leans AWAY from the hero (up to ~13°) and the spring overshoots a little when the hero has passed */
@@ -2632,7 +2634,7 @@
    ov = data.edit[key] || {},
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
-  <div class="art">${window.PieceDetail?.gauge?.(ov.chk)||''}<span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
+  <div class="art">${window.PieceDetail?.gauge?.(chkEff(E?.art, ov))||''}<span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
   ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <div class="row"><button id="aeFree" class="${ov.free?'on':''}" title="เปิด = ชิ้นนี้ลาก/ย้ายด้วยลูกศรได้อิสระ ไม่ดูดเข้ากริด ไม่หลบกรอบชิ้นข้างเคียง (ลูกศร = 2px ต่อครั้ง · Shift = 8px)">${ov.free?'✅':'⬜'} ย้ายอิสระ (ไม่แนบกริด)</button></div>
 `,1)}${groupHtml(1)}`;
@@ -3143,14 +3145,14 @@
     if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); render(); return }
     fn(ovOf(key)); clean(key); UX.persist(); render()
    },
-   check: key => String(key).startsWith('bld:') ? ((data.buildings[key.slice(4)] || {}).chk || {}) : ((data.edit[key] || {}).chk || {}),   /* v98.719 · review ticks (see PieceDetail.gauge) */
-   setCheck(key, f, v) { UX.checkpoint(); const bld = String(key).startsWith('bld:'), o = bld ? (data.buildings[key.slice(4)] ||= {}) : ovOf(key), c = { ...(o.chk || {}) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; if (!bld) clean(key); UX.persist(); render() },
+   check: key => String(key).startsWith('bld:') ? ((data.buildings[key.slice(4)] || {}).chk || {}) : chkEff(frame.find(e => e.key === key)?.art, data.edit[key] || {}),   /* v98.719 · review ticks (see PieceDetail.gauge) */
+   setCheck(key, f, v) { UX.checkpoint(); const bld = String(key).startsWith('bld:'), o = bld ? (data.buildings[key.slice(4)] ||= {}) : ovOf(key), c = { ...(bld ? (o.chk || {}) : chkEff(frame.find(e => e.key === key)?.art, o)) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; if (!bld) clean(key); UX.persist(); render() },
    frames: window.ArtFrames ? {
     autoNote: 'ยังไม่มีค่าของภาพนี้ (ชิ้นนี้ยังไม่มีกรอบ ให้วางกรอบฟ้า/แดงก่อน)',
     state: key => { const E = frame.find(e => e.key === key); if (!E) return null; const AF = window.ArtFrames, o = data.edit[key] || {}, own = frOwn(o); return { own, tpl: AF.has(E.art), uses: frame.filter(e => e.art === E.art && !e.hidden && !frOwn(e.ov || {})).length } },
-    saveToArt: key => { const E = frame.find(e => e.key === key); if (!E) return; const o = ovOf(key), AF = window.ArtFrames; if (!frOwn(o) && !AF.has(E.art)) { flashStatus('วางกรอบฟ้า/แดงของชิ้นนี้ก่อน แล้วค่อยบันทึกลงภาพ'); return } UX.checkpoint(); try { sizeRec(key) } catch (e) { }   /* v98.718 · and the size next to the hero */ AF.saveFrom({ ...o, ...window.ArtFrames.effective({ ...o, art: E.art, width: 100 }), art: E.art, width: 100, s: o.s, f: o.f }); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() },
-    applyAll: key => { const E = frame.find(e => e.key === key); if (!E) return 0; UX.checkpoint(); let n = 0; for (const e of frame) if (e.art === E.art) { const o = data.edit[e.key]; if (o && frOwn(o)) { for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(e.key); n++ } } UX.persist(); render(); return n },
-    useArt: key => { const o = data.edit[key]; if (!o) return; UX.checkpoint(); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() }
+    saveToArt: key => { const E = frame.find(e => e.key === key); if (!E) return; const o = ovOf(key), AF = window.ArtFrames; if (!frOwn(o) && !AF.has(E.art)) { flashStatus('วางกรอบฟ้า/แดงของชิ้นนี้ก่อน แล้วค่อยบันทึกลงภาพ'); return } UX.checkpoint(); try { sizeRec(key) } catch (e) { }   /* v98.718 · and the size next to the hero */ AF.saveFrom({ ...o, ...window.ArtFrames.effective({ ...o, art: E.art, width: 100 }), art: E.art, width: 100, s: o.s, f: o.f, chk: chkEff(E.art, o) }); for (const k of [...FR_FIELDS, 'fo', 'chk']) delete o[k]; clean(key); UX.persist(); render() },
+    applyAll: key => { const E = frame.find(e => e.key === key); if (!E) return 0; UX.checkpoint(); let n = 0; const tc = window.ArtFrames?.get?.(E.art)?.chk; for (const e of frame) if (e.art === E.art) { const o = data.edit[e.key]; if (o && frOwn(o)) { for (const k of [...FR_FIELDS, 'fo']) delete o[k]; if (tc) delete o.chk; clean(e.key); n++ } else if (o && tc && o.chk) { delete o.chk; clean(e.key) } } UX.persist(); render(); return n },
+    useArt: key => { const o = data.edit[key]; if (!o) return; UX.checkpoint(); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; if (window.ArtFrames?.get?.(frame.find(e => e.key === key)?.art)?.chk) delete o.chk; clean(key); UX.persist(); render() }
    } : null,
    /* draws the piece, with its own edit (size, turn, flip, slant, swapped picture) but WITHOUT the map offset, at (0,0) of the context q */
    drawTo(q, E, ov) {

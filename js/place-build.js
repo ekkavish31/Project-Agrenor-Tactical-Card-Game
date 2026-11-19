@@ -1334,7 +1334,7 @@ const PB_ART = (() => {
    const i = sel[0],
     o = M.props[i];
    body.innerHTML = `<div class="row" style="margin-top:0"><button id="pBack">← ของประดับทั้งหมด</button></div><b class="sec">${propName(o)}</b>
-   <div class="art">${window.PieceDetail?.gauge?.(o.chk) || ''}<span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button> <button id="pDetail">🔍 แก้ละเอียด…</button></div></div>
+   <div class="art">${window.PieceDetail?.gauge?.(window.ArtFrames?.chkOf ? window.ArtFrames.chkOf(o, window.ArtFrames.isOwn(o)) : o.chk) || ''}<span class="th" id="pTh"></span><div><button id="pSwap">เปลี่ยนภาพ…</button> <button id="pDetail">🔍 แก้ละเอียด…</button></div></div>
    ${sl('width','ความกว้างภาพ',o.width||110,30,700,5)}${sl('s','ขนาด',o.s||1,.2,4,.05,pct)}${slantRows(o)}${zRow('pz1','ชั้นของชิ้นนี้',o.z||0,o.owner?'ในจุดทำงานนี้ · จุดทำงาน = '+(stOf(o.owner)?.z||0):'ของประดับทั่วไป (ไม่อยู่ในชุดจุดทำงาน)')}
    <label class="chk"><input type="checkbox" id="pFlip" ${o.f?'checked':''}> กลับด้าน</label>${groupHtml(1)}
    <div class="row"><button id="pDup">ทำสำเนา</button><button id="pDel">ลบ (Delete)</button></div><div class="row"><button id="pSavePrefab">บันทึกเป็นชุด</button><button id="pUsePrefab">วางชุดที่บันทึก</button></div><p class="sub">ลากบนแผนที่เพื่อย้าย · ลูกศร = ขยับทีละ ¼ ช่อง · R หมุน · F กลับด้าน</p>`;
@@ -1456,10 +1456,10 @@ const PB_ART = (() => {
     },
     frames: {
      state: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return null; return { own: AF.isOwn(o), tpl: AF.has(o.art) } },
-     saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom(o); recSize(o); /* v98.718 · also the picture's size next to the hero (new pieces of it start at this size) */ AF.strip(o); propDetail.frames.applyAll(key); dirty = true; save(); render() },
+     saveToArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.saveFrom({ ...o, chk: AF.chkOf ? AF.chkOf(o, AF.isOwn(o)) : o.chk }); recSize(o); /* v98.718 · also the picture's size next to the hero (new pieces of it start at this size) */ AF.strip(o); delete o.chk; propDetail.frames.applyAll(key); dirty = true; save(); render() },
      /* v98.727 · every other piece of this picture drops its own frame and follows the template — on this map and on the other saved sub-maps (the lamp saved once = all lamps, placed before or after) */
-     applyAll: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return 0; let n = 0; const art = o.art; checkpoint(); for (const p of M.props) if (p.art === art && AF.isOwn(p)) { AF.strip(p); for (const k of ['sw', 'sh', 'orderU', 'orderV', 'zo', 'cmp']) delete p[k]; n++ }
-      try { const all = JSON.parse(localStorage.getItem('place-maps-v1') || '{}'), me = window.PLACE_ID || new URLSearchParams(location.search).get('place') || 'market'; let ch = false; for (const [id, m] of Object.entries(all)) { if (id === me || !m?.props) continue; for (const p of m.props) if (p.art === art && AF.isOwn(p)) { AF.strip(p); for (const k of ['sw', 'sh', 'orderU', 'orderV', 'zo', 'cmp']) delete p[k]; n++; ch = true } } if (ch) localStorage.setItem('place-maps-v1', JSON.stringify(all)) } catch (e) { }
+     applyAll: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return 0; let n = 0; const art = o.art; checkpoint(); const tc = AF.get?.(art)?.chk; for (const p of M.props) if (p.art === art && (AF.isOwn(p) || (tc && p.chk))) { const own = AF.isOwn(p); AF.strip(p); for (const k of ['sw', 'sh', 'orderU', 'orderV', 'zo', 'cmp']) delete p[k]; if (tc) delete p.chk; if (own) n++ }   /* v98.832 · the picture's ticks come along */
+      try { const all = JSON.parse(localStorage.getItem('place-maps-v1') || '{}'), me = window.PLACE_ID || new URLSearchParams(location.search).get('place') || 'market'; let ch = false; for (const [id, m] of Object.entries(all)) { if (id === me || !m?.props) continue; for (const p of m.props) if (p.art === art && (AF.isOwn(p) || (tc && p.chk))) { const own = AF.isOwn(p); AF.strip(p); for (const k of ['sw', 'sh', 'orderU', 'orderV', 'zo', 'cmp']) delete p[k]; if (tc) delete p.chk; if (own) n++; ch = true } } if (ch) localStorage.setItem('place-maps-v1', JSON.stringify(all)) } catch (e) { }
       dirty = true; save(); return n },
      useArt: key => { const o = M.props[+key], AF = window.ArtFrames; if (!o || !AF) return; checkpoint(); AF.strip(o); dirty = true; save(); render() }
     }
@@ -1476,8 +1476,8 @@ const PB_ART = (() => {
      dirty = true; save(); render()
     },
     get frameFields() { return STF },
-    check: key => { const o = isSt(key) ? stOfKey(key) : M.props[+key]; return o?.chk || {} },
-    setCheck(key, f, v) { const o = isSt(key) ? stOfKey(key) : M.props[+key]; if (!o) return; const c = { ...(o.chk || {}) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; dirty = true; save(); render() },
+    check: key => { const o = isSt(key) ? stOfKey(key) : M.props[+key]; if (!o) return {}; const AF = window.ArtFrames; return !isSt(key) && AF?.chkOf ? AF.chkOf(o, AF.isOwn(o)) : (o.chk || {}) },   /* v98.832 · a prop with no ticks of its own shows its picture's */
+    setCheck(key, f, v) { const o = isSt(key) ? stOfKey(key) : M.props[+key]; if (!o) return; const AF = window.ArtFrames, c = { ...(!isSt(key) && AF?.chkOf ? AF.chkOf(o, AF.isOwn(o)) : (o.chk || {})) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; dirty = true; save(); render() },
     /* v98.736 · where the picture's light points (js/art-lights.js) are inside the piece window: picture fraction ⇄ the window's local pixels (same geometry as drawTo) */
     lightMap(key) {
      const st = isSt(key), s = st ? stOfKey(key) : M.props[+key]; if (!s || !s.art || /^code:/.test(s.art) || typeof artLightMap !== 'function') return null;
