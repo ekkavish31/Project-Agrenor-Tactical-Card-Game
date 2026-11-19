@@ -91,6 +91,8 @@
     }
     if (mig) { try { localStorage.setItem(KEY, JSON.stringify(DATA)) } catch (er) { } HLAST = histSnap() }
     if (cur === c) { draw(); status() }
+    /* v98.805 · once per character: locks that were ticked before this feature are marked "ตรวจแล้ว" in the Animation grid too */
+    try { const SK = 'pose-sheet.revSync', done = JSON.parse(localStorage.getItem(SK) || '[]'), k = akey(c.id); if (!done.includes(k) && cur === c) { const oks = Object.keys(c.cells).filter(okOf); done.push(k); localStorage.setItem(SK, JSON.stringify(done)); if (oks.length) await reviewSync(oks, true) } } catch (er) { }
   }
   /* v98.788 · a lock saved when the frame was still a .png carries over to the same frame now stored as .webp */
   const stripExt = f => String(f || '').replace(/\.(png|webp)$/i, '');
@@ -115,6 +117,9 @@
   const recOf = ck => norm((DATA[akey(cur?.id)] ||= {})[ck] ||= { fp: cur.cells[ck]?.fp, p: {}, ok: false });
   const peek = ck => norm(DATA[akey(cur?.id)]?.[ck]);
   const okOf = ck => { const r = peek(ck), c = cur?.cells[ck]; return !!(r?.ok && c && r.fp === c.fp) };
+  /* v98.805 · the LOCK = "ตรวจแล้ว" of the Animation grid: ticking 🔒 approves the pose's clip(s) there — the clip of this direction AND of its mirror twin (SW↔SE, NE↔NW) — unticking sends them back to "รอตรวจ" */
+  function clipIdsOf(ck) { const c = cur?.cells[ck]; if (!c) return []; const ids = new Set(); if (c.clip?.id) ids.add(c.clip.id); for (const cl of (entity()?.clips || [])) if (cl.action === c.pose && (cl.view === c.dir || cl.view === MIR[c.dir])) ids.add(cl.id); return [...ids] }
+  async function reviewSync(cks, on) { const U = root.StudioUnifiedReview; if (!U?.setVerdictMany) return; const ids = [...new Set(cks.flatMap(clipIdsOf))]; if (!ids.length) return; try { await U.setVerdictMany(ids, on ? 'approved' : 'unreviewed') } catch (e) { console.warn('pose-sheet review sync', e) } }
   const changed = ck => { const r = peek(ck), c = cur?.cells[ck]; return !!(r && c && r.fp && r.fp !== c.fp) };
   const off = ck => { const r = peek(ck); return [r?.ox || 0, r?.oy || 0] };
   function counts() { if (!cur) return { ok: 0, all: 0 }; const ks = Object.keys(cur.cells); return { ok: ks.filter(okOf).length, all: ks.length } }
@@ -503,7 +508,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!ps._rz) { ps._rz = 1; addEventListener('resize', () => { try { updNext() } catch (e) { } }) }
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
-    $('psClear').onclick = () => { if (!act) return; if (isLocked(act)) { flash(LOCKMSG); return } const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status() };
+    $('psClear').onclick = () => { if (!act) return; if (isLocked(act)) { flash(LOCKMSG); return } const r = peek(act); if (r) { r.p = {}; r.ok = false; write(KEY, DATA) } pick = null; draw(); status(); reviewSync([act], false) };
     $('psCartAll').onclick = () => cartAll();
     $('psCen').onchange = ev => { RUL.center = ev.target.checked; saveRul(); paintAll() };
     $('psGho').onchange = ev => { RUL.ghost = ev.target.checked; saveRul(); paintAll() };
@@ -515,7 +520,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
       const ck = el.dataset.ck, c = cur.cells[ck], cv = el.querySelector('canvas');
       el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => setSize(cur.id, c.pose, c.dir, kOf(c) * (1 + (+b.dataset.k) / 100)));
       const inp = el.querySelector('[data-in]'); inp.onchange = () => { const v = +inp.value; if (v >= 30 && v <= 250) setSize(cur.id, c.pose, c.dir, v / 100) };
-      el.querySelector('[data-ok]').onchange = ev => { const r = recOf(ck); r.ok = ev.target.checked; r.fp = c.fp; write(KEY, DATA); draw(); status() };
+      el.querySelector('[data-ok]').onchange = ev => { const r = recOf(ck); r.ok = ev.target.checked; r.fp = c.fp; write(KEY, DATA); draw(); status(); reviewSync([ck], r.ok) };
       el.querySelector('[data-b="snap"]').onclick = () => { if (snap(ck, true)) { write(KEY, DATA); draw(); msg('เข้าเส้นพื้นแล้ว (ยังไม่บันทึก) — กด 💾 บันทึกตำแหน่งภาพ') } else msg('วางจุดเท้าของท่านี้ก่อน' + (c.pose === 'down' ? ' (ท่านอน: เท้า ซ้าย = จุดแตะพื้นใต้กลางลำตัว)' : ' (เท้า ซ้าย + ขวา)')) };
       cv.ondblclick = ev => { const [sx, sy] = ptr(cv, ev), h = hitRuler(sx, sy); if (h) { (h.t === 'l' ? RUL.lines : RUL.meas).splice(h.i, 1); saveRul(); draw() } };
       cv.onpointerdown = ev => {
@@ -671,12 +676,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const btn = $('psCartAll'); if (btn) btn.disabled = true; const done = [], fail = [], why = [], note = t => { const m = $('psCartMsg'); if (m) m.textContent = t };
     const movedNow = () => Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length;
     /* v98.802 · saving a rebuilt / moved picture drops that pose's lock (its pixels changed) — but a pose that was ticked 🔒 when the Cart button was pressed stays locked: re-tick it on the NEW picture before the marks are pushed, so one press does it all */
-    const wasOk = Object.keys(cur?.cells || {}).filter(okOf), relock = () => { let n = 0; for (const ck of wasOk) { const r = peek(ck), c = cur?.cells[ck]; if (r && c?.fp && !(r.ok && r.fp === c.fp)) { r.ok = true; r.fp = c.fp; n++ } } if (n) write(KEY, DATA); return n };
+    const wasOk = Object.keys(cur?.cells || {}).filter(okOf), relock = () => { const list = []; for (const ck of wasOk) { const r = peek(ck), c = cur?.cells[ck]; if (r && c?.fp && !(r.ok && r.fp === c.fp)) { r.ok = true; r.fp = c.fp; list.push(ck) } } if (list.length) write(KEY, DATA); return list };
     try {
       if (qaDirty() && QA.ck) { note('ปรับสัดส่วน…'); const okq = await qaSave(); (okq ? done : fail).push('ปรับสัดส่วน'); if (!okq && QA.msg) why.push(QA.msg) }
       if (movedNow()) { note('ตำแหน่งภาพ…'); const r = await bakeMoves(); if (r.ok) { done.push('ตำแหน่งภาพ' + (r.skipped.length ? ' (ข้าม ' + r.skipped.length + ')' : '')); if (r.skipped.length) why.push('ข้าม: ' + r.skipped.join(' · ')) } else { fail.push('ตำแหน่งภาพ'); why.push(r.err) } }
       if (draftCount()) { note('ขนาด…'); (await saveSizes() ? done : fail).push('ขนาด') }
-      relock();
+      { const rl = relock(); if (rl.length) await reviewSync(rl, true) }   /* the NEW picture's "ตรวจแล้ว" in the Animation grid too */
       if (marksDirty()) { note('จุด/ติ๊ก…'); (await pushMarks() ? done : fail).push('จุด/ติ๊ก') }
     } finally { draw(); const extra = why.length ? ' — ' + why.join(' · ') : ''; note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') + extra : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' + extra : ''); const m = $('psCartMsg'); if (m) { m.style.cssText = 'font-size:12.5px;color:' + (fail.length || why.length ? '#a4341c' : '#315d46') + ';max-width:46ch;white-space:normal;line-height:1.25'; m.title = extra.slice(3) } }
   }
