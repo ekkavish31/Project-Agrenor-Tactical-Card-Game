@@ -1,4 +1,4 @@
-/* v98.575 · asset cache that SURVIVES version bumps.
+/* v98.866 · a stored picture is re-checked BEFORE it is shown the first time under a new version (see fetch) · v98.575 · asset cache that SURVIVES version bumps.
    Before (v91.94): the cache was named after the game version, so every push threw ALL pictures away and the next visit downloaded hundreds of MB again
    (and every picture was then a cold first draw = stutter). Now one permanent cache + stale-while-revalidate:
    • a picture already stored is served at once (no network wait);
@@ -29,7 +29,9 @@ self.addEventListener('fetch', e => {
   if (u.origin !== self.location.origin || !IMG.test(u.pathname)) return;
   e.respondWith((async () => {
     const c = await caches.open(CACHE), hit = r.cache === 'reload' ? null : await c.match(r.url);   // keyed by URL only (a "?v=" on a picture is ignored by the match key below)
-    if (hit) { if (hit.headers.get('x-sw-v') !== V) e.waitUntil(refresh(c, r)); return hit }
+    /* v98.866 · first ask under a NEW version: wait a moment for the re-check (usually a tiny 304) so a picture edited on another computer shows
+       on THIS load, not the next one · slow network → the stored copy after 1.2 s (the re-check still finishes in the background) */
+    if (hit) { if (hit.headers.get('x-sw-v') === V) return hit; const p = refresh(c, r); e.waitUntil(p); const fresh = await Promise.race([p, new Promise(ok => setTimeout(() => ok(null), 1200))]); return fresh || hit }
     const res = await fetch(r);
     if (res.ok && res.status === 200) e.waitUntil(stamp(res.clone()).then(s => c.put(r.url, s)).catch(() => {}));
     return res

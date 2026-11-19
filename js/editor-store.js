@@ -93,39 +93,97 @@
 
   /* ---- 2 · loading: pushed value + drafts ---- */
   const seenMap = () => { try { return JSON.parse(nGet.call(LS, SEEN) || '{}') || {} } catch (e) { return {} } };
+  /* one key: the pushed value `web` + this browser's copy + the version both started from (es-base:<key>) */
+  function seedKey(k, web, seen, first, firstRun) {
+    const cur = nGet.call(LS, k), base = nGet.call(LS, BASE + k);
+    if (first && cur != null) backup(k, cur, 'before EditorStore');
+    if (cur === null) nSet.call(LS, k, web);
+    if (cur === null || cur === web || same(cur, web)) { nSet.call(LS, BASE + k, web); seen[k] = hash(web); return 'web' }
+    /* the version this browser last took from the web: stored in full (new) · or known by its hash (old SEED) */
+    let baseVal = base; if (baseVal == null && seen[k] && hash(cur) === seen[k]) baseVal = cur;
+    if (baseVal == null && firstRun) baseVal = firstRun(cur);            // a unit with its own older record (village layout: js/layout-sync.js)
+    if (baseVal === web || (baseVal != null && same(baseVal, web))) return 'draft';   // the web did not change → the draft stays
+    if (baseVal == null || baseVal === cur || same(baseVal, cur)) {      // no draft (or unknown) → take the web
+      if (baseVal == null && (seen[k] ? hash(cur) !== seen[k] : !!firstRun)) {   // a copy that WAS edited, base unknown: keep it as a draft on top of the web
+        const W = parse(web), C = parse(cur);
+        if (isJ(web) && W !== undefined && C !== undefined) { backup(k, cur, 'load: merged onto newer push'); nSet.call(LS, k, JSON.stringify(apply(W, noDel(diff(W, C))))) }   /* no base known: keep everything of both (the draft wins where both differ, nothing is deleted) */
+        nSet.call(LS, BASE + k, web); seen[k] = hash(web); return 'merged';
+      }
+      backup(k, cur, 'load: newer push'); nSet.call(LS, k, web); nSet.call(LS, BASE + k, web); seen[k] = hash(web); return 'web';
+    }
+    /* both changed: the draft's own changes go onto the newer pushed value */
+    const W = parse(web), B = parse(baseVal), C = parse(cur);
+    backup(k, cur, 'load: both changed');
+    if (isJ(web) && W !== undefined && B !== undefined && C !== undefined) nSet.call(LS, k, JSON.stringify(apply(W, diff(B, C))));
+    else nSet.call(LS, k, cur);
+    nSet.call(LS, BASE + k, web); seen[k] = hash(web); return 'merged';
+  }
   function seed(GS) {
     if (!GS || typeof GS !== 'object') return;
     const seen = seenMap(), first = nGet.call(LS, 'es-first-backup') == null;
-    for (const [k, web] of Object.entries(GS)) {
-      try {
-        const cur = nGet.call(LS, k), base = nGet.call(LS, BASE + k);
-        if (first && cur != null) backup(k, cur, 'before EditorStore');
-        if (cur === null || cur === web) { nSet.call(LS, k, web); nSet.call(LS, BASE + k, web); seen[k] = hash(web); continue }
-        /* the version this browser last took from the web: stored in full (new) · or known by its hash (old SEED) */
-        let baseVal = base; if (baseVal == null && seen[k] && hash(cur) === seen[k]) baseVal = cur;
-        if (baseVal === web) continue;                                      // the web did not change → the draft stays
-        if (baseVal == null || baseVal === cur) {                           // no draft (or unknown) → take the web
-          if (baseVal == null && seen[k] && hash(cur) !== seen[k]) {          // old browser copy that WAS edited, base unknown: keep it as a draft on top of the web
-            const W = parse(web), C = parse(cur);
-            if (isJ(web) && W !== undefined && C !== undefined) { backup(k, cur, 'load: merged onto newer push'); nSet.call(LS, k, JSON.stringify(apply(W, noDel(diff(W, C))))) }   /* no base known: keep everything of both (the draft wins where both differ, nothing is deleted) */
-            nSet.call(LS, BASE + k, web); seen[k] = hash(web); continue;
-          }
-          backup(k, cur, 'load: newer push'); nSet.call(LS, k, web); nSet.call(LS, BASE + k, web); seen[k] = hash(web); continue;
-        }
-        /* both changed: the draft's own changes go onto the newer pushed value */
-        const W = parse(web), B = parse(baseVal), C = parse(cur);
-        backup(k, cur, 'load: both changed');
-        if (isJ(web) && W !== undefined && B !== undefined && C !== undefined) nSet.call(LS, k, JSON.stringify(apply(W, diff(B, C))));
-        nSet.call(LS, BASE + k, web); seen[k] = hash(web);
-      } catch (e) { }
-    }
+    for (const [k, web] of Object.entries(GS)) { try { seedKey(k, web, seen, first) } catch (e) { } }
     nSet.call(LS, SEEN, JSON.stringify(seen));
     if (first) nSet.call(LS, 'es-first-backup', String(Date.now()));
   }
+  /* v98.866 · the VILLAGE LAYOUT follows the same rule. Its pushed value is the file js/village-layout-v67.js (window.VillageDefaultLayout);
+     the browser copy is localStorage 'project-a-village-editor-v67' (+ place positions 'project-a-village-main-v1', rebuilt from the layout).
+     Before: a browser copy, once it existed, won over every later push for ever (only the sync pill's "use the web copy" button replaced it). */
+  const LAYOUT = 'project-a-village-editor-v67', LAYOUT_POS = 'project-a-village-main-v1';
+  const canon = v => JSON.stringify(v, (k, x) => x && typeof x === 'object' && !Array.isArray(x) ? Object.fromEntries(Object.keys(x).sort().map(i => [i, x[i]])) : x);
+  function seedLayout(v) {
+    if (!v || typeof v !== 'object') return;
+    try {
+      const web = JSON.stringify(v), seen = seenMap(), before = nGet.call(LS, LAYOUT);
+      /* first run: the sync pill remembers whether this copy was in step with the web when it last looked (then it holds no edits) */
+      const firstRun = cur => { try { const L = (JSON.parse(nGet.call(LS, 'project-a-layout-sync-v1') || '{}') || {}).layout, h = hash(canon(JSON.parse(cur))); return L && L.loc === h && L.loc === L.rem ? cur : null } catch (e) { return null } };
+      if (before === null) { nSet.call(LS, BASE + LAYOUT, web); seen[LAYOUT] = hash(web) }   /* nothing here: the page uses the file itself */
+      else if (seedKey(LAYOUT, web, seen, false, firstRun) !== 'draft' && nGet.call(LS, LAYOUT) !== before) nSet.call(LS, LAYOUT_POS, '{}');   // positions come from the layout again
+      nSet.call(LS, SEEN, JSON.stringify(seen));
+    } catch (e) { }
+  }
   /* after a Cart push: what was pushed is the new base (so later pushes from elsewhere load again) */
   function markPushed(k, v) { if (v == null) return; const seen = seenMap(); nSet.call(LS, BASE + k, v); seen[k] = hash(v); nSet.call(LS, SEEN, JSON.stringify(seen)) }
-  /* keys with edits that are not pushed yet */
-  function drafts() { const GS = root.GAME_SETTINGS || {}, out = []; for (const k of Object.keys(GS)) { const cur = nGet.call(LS, k), base = nGet.call(LS, BASE + k); if (cur != null && base != null && cur !== base) out.push(k) } return out }
+  /* v98.866 · called by js/github-push.js after EVERY successful commit with the files it wrote: the pushed settings and layout become the base */
+  function afterPush(files) {
+    for (const f of files || []) {
+      if (f.remove || typeof f.content !== 'string') continue;
+      try {
+        if (f.path === 'js/game-settings.js') { const i = f.content.indexOf('window.GAME_SETTINGS='), a = f.content.indexOf('{', i), b = f.content.indexOf('\n};', a); if (i < 0 || a < 0 || b < 0) continue; for (const [k, v] of Object.entries(JSON.parse(f.content.slice(a, b + 2)))) markPushed(k, v) }
+        if (f.path === 'js/village-layout-v67.js') { const i = f.content.indexOf('window.VillageDefaultLayout='), a = f.content.indexOf('{', i), b = f.content.lastIndexOf('};'); if (i < 0 || a < 0 || b < 0) continue; markPushed(LAYOUT, JSON.stringify(JSON.parse(f.content.slice(a, b + 1)))) }
+      } catch (e) { }
+    }
+  }
+  /* v98.866 · editor DATA kept in this browser that must follow the repo (pushed into js/game-settings.js by the Cart even when the page that edits it
+     has no push button of its own). Preferences of one browser (zoom, open panels, filters, token) and game saves are NOT listed. */
+  const SYNC = ['art-lights-v1', 'depth-style-v1', 'portrait-facing-v1', 'progress-review-v1', 'project-a-char-scale-v1', 'project-a-place-prefabs-v1', 'project-a-village-prefabs-v1',
+    'set-piece-edits-v1', 'proportion-rulers-v1', 'proportion-datum-v1', 'proportion-done-v1', 'proportion-girth-v1', 'proportion-master-v1', 'proportion-standard-v1', 'proportion-templates-v1',
+    'pose-sheet.rulers', 'project-a-uploaded-decor-v1', 'project-a-village-asset-lib-v1', 'card-studio-v1',
+    'battleground-v1', 'object-asset-preset-v1', 'storyMapPos', 'storyMapGeo'];
+  const BIG = 400 * 1024;   /* a value larger than this is not put into js/game-settings.js (every page loads that file) */
+  function same(a, b) { if (a === b) return true; const A = parse(a), B = parse(b); return A !== undefined && B !== undefined && canon(A) === canon(B) }
+  /* settings keys with edits that are not pushed yet: pushed keys whose copy differs from the base · listed data keys never pushed at all */
+  function drafts(opt = {}) {
+    const GS = root.GAME_SETTINGS || {}, out = [];
+    for (const k of new Set([...Object.keys(GS), ...SYNC])) {
+      const cur = nGet.call(LS, k); if (cur == null || cur === '' || cur === '{}' || cur === '[]') continue;
+      const base = nGet.call(LS, BASE + k) ?? GS[k];
+      if (base != null && same(cur, base)) continue;
+      if (!opt.all && cur.length > BIG) continue;
+      out.push(k);
+    }
+    return out;
+  }
+  /* the village layout differs from what was pushed */
+  function layoutDraft() { const cur = nGet.call(LS, LAYOUT); if (cur == null) return false; const base = nGet.call(LS, BASE + LAYOUT) ?? (root.VillageDefaultLayout ? JSON.stringify(root.VillageDefaultLayout) : null); return base != null && !same(cur, base) }
+  /* throw this browser's draft away: back to the pushed value (the draft is backed up first) */
+  async function discard(k) {
+    const cur = nGet.call(LS, k); if (cur == null) return;
+    const base = nGet.call(LS, BASE + k) ?? (k === LAYOUT ? (root.VillageDefaultLayout ? JSON.stringify(root.VillageDefaultLayout) : null) : (root.GAME_SETTINGS || {})[k]);
+    await backup(k, cur, 'discard draft');
+    if (base == null) LS.removeItem(k); else nSet.call(LS, k, base);   /* a key never pushed: removed (the page uses its defaults · the backup keeps it) */
+    if (k === LAYOUT) nSet.call(LS, LAYOUT_POS, '{}');
+  }
+  const bigDrafts = () => drafts({ all: true }).filter(k => (nGet.call(LS, k) || '').length > BIG);
 
   /* ---- 3 · backups UI ---- */
   async function backups(k) { return idbGet(k) }
@@ -142,5 +200,6 @@
   }
   /* the pushed settings are seeded the moment js/game-settings.js assigns them — even when that file was written by an older push page (its own old SEED then finds nothing to change) */
   try { let gs = root.GAME_SETTINGS; Object.defineProperty(root, 'GAME_SETTINGS', { configurable: true, enumerable: true, get: () => gs, set: v => { gs = v; seed(v) } }) } catch (e) { }
-  root.EditorStore = { seed, markPushed, drafts, backups, restore, openBackups, merges: () => merges, _diff: diff, _apply: apply };
+  try { let vl = root.VillageDefaultLayout; Object.defineProperty(root, 'VillageDefaultLayout', { configurable: true, enumerable: true, get: () => vl, set: v => { vl = v; seedLayout(v) } }) } catch (e) { }
+  root.EditorStore = { seed, seedLayout, markPushed, afterPush, drafts, layoutDraft, discard, bigDrafts, SYNC, LAYOUT, backups, restore, openBackups, merges: () => merges, _diff: diff, _apply: apply };
 })(globalThis);
