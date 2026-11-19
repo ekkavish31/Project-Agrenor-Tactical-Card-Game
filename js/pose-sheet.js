@@ -670,10 +670,13 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   async function cartAll() {
     const btn = $('psCartAll'); if (btn) btn.disabled = true; const done = [], fail = [], why = [], note = t => { const m = $('psCartMsg'); if (m) m.textContent = t };
     const movedNow = () => Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length;
+    /* v98.802 · saving a rebuilt / moved picture drops that pose's lock (its pixels changed) — but a pose that was ticked 🔒 when the Cart button was pressed stays locked: re-tick it on the NEW picture before the marks are pushed, so one press does it all */
+    const wasOk = Object.keys(cur?.cells || {}).filter(okOf), relock = () => { let n = 0; for (const ck of wasOk) { const r = peek(ck), c = cur?.cells[ck]; if (r && c?.fp && !(r.ok && r.fp === c.fp)) { r.ok = true; r.fp = c.fp; n++ } } if (n) write(KEY, DATA); return n };
     try {
       if (qaDirty() && QA.ck) { note('ปรับสัดส่วน…'); const okq = await qaSave(); (okq ? done : fail).push('ปรับสัดส่วน'); if (!okq && QA.msg) why.push(QA.msg) }
       if (movedNow()) { note('ตำแหน่งภาพ…'); const r = await bakeMoves(); if (r.ok) { done.push('ตำแหน่งภาพ' + (r.skipped.length ? ' (ข้าม ' + r.skipped.length + ')' : '')); if (r.skipped.length) why.push('ข้าม: ' + r.skipped.join(' · ')) } else { fail.push('ตำแหน่งภาพ'); why.push(r.err) } }
       if (draftCount()) { note('ขนาด…'); (await saveSizes() ? done : fail).push('ขนาด') }
+      relock();
       if (marksDirty()) { note('จุด/ติ๊ก…'); (await pushMarks() ? done : fail).push('จุด/ติ๊ก') }
     } finally { draw(); const extra = why.length ? ' — ' + why.join(' · ') : ''; note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') + extra : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' + extra : ''); const m = $('psCartMsg'); if (m) { m.style.cssText = 'font-size:12.5px;color:' + (fail.length || why.length ? '#a4341c' : '#315d46') + ';max-width:46ch;white-space:normal;line-height:1.25'; m.title = extra.slice(3) } }
   }
