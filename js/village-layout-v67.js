@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-11-19T06:29:26.142Z.
+// Village default layout — saved from the in-game editor 2026-11-19T06:43:28.885Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -2501,27 +2501,25 @@ window.VillageDefaultLayout={
       "add:mvly1x3idfi": {
         "s": 1.331,
         "r": 4,
-        "du": 0.494,
-        "dv": -0.556,
-        "chk": {
-          "b": 1,
-          "r": 1,
-          "s": 1
-        },
+        "du": 0.7295,
+        "dv": -0.6345,
         "art": "v:prop:0",
-        "width": 100
+        "width": 100,
+        "free": true
       },
       "add:mvly29x7my6j": {
         "s": 1.331,
         "r": 4,
-        "du": 3.494,
-        "dv": -0.556
+        "du": 3.0332,
+        "dv": -0.6345,
+        "free": true
       },
       "add:mvly29x7qqjy": {
         "s": 1.331,
         "r": 4,
-        "du": 3.22,
-        "dv": -0.508
+        "du": 3.0434,
+        "dv": -0.6061,
+        "free": true
       },
       "add:mvly2lu1qifh": {
         "s": 1.331,
@@ -2551,8 +2549,9 @@ window.VillageDefaultLayout={
         "s": 1.32,
         "r": -1,
         "f": true,
-        "du": 0.714,
-        "dv": -1.921
+        "du": 0.1355,
+        "dv": -2.0219,
+        "free": true
       },
       "add:mvly3hoovqw2": {
         "s": 1.331,
@@ -3232,6 +3231,14 @@ window.VillageDefaultLayout={
       },
       "inn:front:mead-cask": {
         "del": true
+      },
+      "add:mwn6osc4pwf5": {
+        "s": 1.32,
+        "r": -1,
+        "f": true,
+        "free": true,
+        "du": -0.3699,
+        "dv": -2.724
       }
     },
     "added": [
@@ -3710,6 +3717,13 @@ window.VillageDefaultLayout={
         "du": -5.5,
         "dv": 8,
         "kind": "lamp"
+      },
+      {
+        "id": "add:mwn6osc4pwf5",
+        "owner": "inn",
+        "du": 12.5,
+        "dv": 8.5,
+        "kind": "prop:0"
       }
     ],
     "buildings": {
