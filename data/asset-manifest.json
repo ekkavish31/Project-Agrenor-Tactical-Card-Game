@@ -113251,13 +113251,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzbt2-dmar",
+   "artRevision": "20261119-110136",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-nw-idle-mwfkzbt2-dmar-1/20261119-110136.webp",
+     "at": "2026-11-19T04:01:36.525Z",
+     "stamp": "20261119-110136",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-windup-mwfkzbt2-dmar-1",
@@ -113314,13 +113323,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzbt2-dmar",
+   "artRevision": "20261119-110136",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-nw-windup-mwfkzbt2-dmar-1/20261119-110136.webp",
+     "at": "2026-11-19T04:01:36.685Z",
+     "stamp": "20261119-110136",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-strike-mwfkzbt2-dmar-1",
@@ -113384,13 +113402,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzbt2-dmar",
+   "artRevision": "20261119-110136",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-nw-strike-mwfkzbt2-dmar-1/20261119-110136.webp",
+     "at": "2026-11-19T04:01:36.860Z",
+     "stamp": "20261119-110136",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-guard-mwfkzbt2-dmar-1",
@@ -113524,13 +113551,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzbt2-dmar",
+   "artRevision": "20261119-110136",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-nw-hit-mwfkzbt2-dmar-1/20261119-110136.webp",
+     "at": "2026-11-19T04:01:36.940Z",
+     "stamp": "20261119-110136",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-ne-down-mwfkzbt2-dmar-1",
@@ -113601,13 +113637,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzbt2-dmar",
+   "artRevision": "20261119-110137",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-nw-down-mwfkzbt2-dmar-1/20261119-110136.webp",
+     "at": "2026-11-19T04:01:37.109Z",
+     "stamp": "20261119-110136",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-idle-mwfkzn64-62zu-1",
@@ -113755,13 +113800,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261119-110136",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-se-windup-mwfkzn64-62zu-1/20261119-110136.webp",
+     "at": "2026-11-19T04:01:36.607Z",
+     "stamp": "20261119-110136",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-strike-mwfkzn64-62zu-1",
@@ -113832,13 +113886,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261119-110136",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-se-strike-mwfkzn64-62zu-1/20261119-110136.webp",
+     "at": "2026-11-19T04:01:36.760Z",
+     "stamp": "20261119-110136",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-guard-mwfkzn64-62zu-1",
@@ -114056,13 +114119,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwfkzn64-62zu",
+   "artRevision": "20261119-110137",
    "studioImportedPose": true,
    "studioOwner": {
     "id": "hero",
     "name": "ตัวหลัก · Hero",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-hero-se-down-mwfkzn64-62zu-1/20261119-110136.webp",
+     "at": "2026-11-19T04:01:37.027Z",
+     "stamp": "20261119-110136",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-hero-sw-walk-mwflg344-fhf4-1",
@@ -134562,24 +134634,29 @@
    "approvedAt": "2026-11-19T03:33:13.513Z"
   },
   "[\"tactics.windup.se\",\"SE\",false,[[\"studio-hero-se-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T03:58:58.248Z"
   },
   "[\"tactics.strike.se\",\"SE\",false,[[\"studio-hero-se-strike-mwfkzn64-62zu-1\",\"assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T03:59:24.025Z"
   },
   "[\"tactics.guard.se\",\"SE\",false,[[\"studio-hero-se-guard-mwfkzn64-62zu-1\",\"assets/tactics/imported/guard-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.hit.se\",\"SE\",false,[[\"studio-hero-se-hit-mwfkzn64-62zu-1\",\"assets/tactics/imported/hit-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.down.se\",\"SE\",false,[[\"studio-hero-se-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T03:59:44.578Z"
   },
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwfkzn64-62zu-1\",\"assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -134642,28 +134719,34 @@
    "approvedAt": "2026-11-13T23:34:42.490Z"
   },
   "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-nw-idle-mwfkzbt2-dmar-1\",\"assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:00:03.757Z"
   },
   "[\"tactics.windup.nw\",\"NW\",false,[[\"studio-hero-nw-windup-mwfkzbt2-dmar-1\",\"assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:00:27.938Z"
   },
   "[\"tactics.strike.nw\",\"NW\",false,[[\"studio-hero-nw-strike-mwfkzbt2-dmar-1\",\"assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:00:42.130Z"
   },
   "[\"tactics.guard.nw\",\"NW\",false,[[\"studio-hero-nw-guard-mwfkzbt2-dmar-1\",\"assets/tactics/imported/guard-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.hit.nw\",\"NW\",false,[[\"studio-hero-nw-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:00:59.781Z"
   },
   "[\"tactics.down.nw\",\"NW\",false,[[\"studio-hero-nw-down-mwfkzbt2-dmar-1\",\"assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:01:30.815Z"
   },
   "[\"tactics.walk.nw\",\"NW\",true,[[\"studio-hero-nw-walk-mwh3qo3b-gj5r-1\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-01.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-2\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-02.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-3\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-03.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-4\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-04.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-5\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-05.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-6\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-06.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-7\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-07.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-8\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-08.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-9\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-09.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-10\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-10.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-11\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-11.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3qo3b-gj5r-12\",\"assets/tactics/imported/walk-nw-mwh3qo3b-gj5r/frame-12.webp\",0,\"mwh3qo3b-gj5r\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -134679,8 +134762,9 @@
    "frames": {}
   },
   "[\"tactics.walk.nw\",\"NW\",true,[[\"studio-hero-nw-walk-mwh3reel-1je7-1\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-01.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-2\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-02.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-3\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-03.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-4\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-04.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-5\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-05.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-6\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-06.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-7\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-07.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-8\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-08.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-9\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-09.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-10\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-10.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-11\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-11.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwh3reel-1je7-12\",\"assets/tactics/imported/walk-nw-mwh3reel-1je7/frame-12.webp\",0,\"mwh3reel-1je7\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics-mil-sw-windup\",\"SW\",true,[[\"tactics-mil-sw-windup\",\"assets/tactics/mil_sw_windup.webp\",0,\"mwd9ea9c\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "unreviewed",
@@ -135102,17 +135186,17 @@
   "[\"tactics.walk.se\",\"SE\",true,[[\"studio-hero-sw-walk-mwflg344-fhf4-1\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-01.webp\",0,\"20261118-200219\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-2\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-02.webp\",0,\"20261118-200220\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-3\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-03.webp\",0,\"20261118-200222\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-4\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-04.webp\",0,\"20261118-200224\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-5\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-05.webp\",0,\"20261118-200225\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-6\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-06.webp\",0,\"20261118-200226\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-7\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-07.webp\",0,\"20261118-200228\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-8\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-08.webp\",0,\"20261118-200229\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-9\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-09.webp\",0,\"20261118-200231\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-10\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-10.webp\",0,\"20261118-200232\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-11\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-11.webp\",0,\"20261118-200234\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-12\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-12.webp\",0,\"20261118-200235\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T03:38:01.078Z"
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.walk.sw\",\"SW\",true,[[\"studio-hero-sw-walk-mwflg344-fhf4-1\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-01.webp\",0,\"20261118-200219\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-2\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-02.webp\",0,\"20261118-200220\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-3\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-03.webp\",0,\"20261118-200222\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-4\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-04.webp\",0,\"20261118-200224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-5\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-05.webp\",0,\"20261118-200225\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-6\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-06.webp\",0,\"20261118-200226\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-7\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-07.webp\",0,\"20261118-200228\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-8\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-08.webp\",0,\"20261118-200229\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-9\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-09.webp\",0,\"20261118-200231\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-10\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-10.webp\",0,\"20261118-200232\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-11\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-11.webp\",0,\"20261118-200234\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwflg344-fhf4-12\",\"assets/tactics/imported/walk-sw-mwflg344-fhf4/frame-12.webp\",0,\"20261118-200235\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T03:38:01.078Z"
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwfkzn64-62zu-1\",\"assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-200027\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T03:37:36.682Z"
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.windup.sw\",\"SW\",false,[[\"studio-hero-sw-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-205049\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -135125,12 +135209,14 @@
    "approvedAt": "2026-11-19T03:33:13.513Z"
   },
   "[\"tactics.guard.sw\",\"SW\",false,[[\"studio-hero-sw-guard-mwfkzn64-62zu-1\",\"assets/tactics/imported/guard-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-210353\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.hit.sw\",\"SW\",false,[[\"studio-hero-sw-hit-mwfkzn64-62zu-1\",\"assets/tactics/imported/hit-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-202148\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-sw-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-211737\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -135143,8 +135229,9 @@
    "approvedAt": "2026-11-19T03:33:13.513Z"
   },
   "[\"tactics.walk.ne\",\"NE\",true,[[\"studio-hero-ne-walk-mwflkft4-xy8p-1\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-01.webp\",0,\"20261119-091248\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-2\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-02.webp\",0,\"20261119-091248\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-3\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-03.webp\",0,\"20261119-091248\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-4\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-04.webp\",0,\"20261119-091248\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-5\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-05.webp\",0,\"20261119-091249\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-6\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-06.webp\",0,\"20261119-091249\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-7\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-07.webp\",0,\"20261119-091249\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-8\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-08.webp\",0,\"20261119-091249\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-9\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-09.webp\",0,\"20261119-091249\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-10\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-10.webp\",0,\"20261119-091249\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-11\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-11.webp\",0,\"20261119-091249\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwflkft4-xy8p-12\",\"assets/tactics/imported/walk-ne-mwflkft4-xy8p/frame-12.webp\",0,\"20261119-091249\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.windup.ne\",\"NE\",false,[[\"studio-hero-ne-windup-mwfkzbt2-dmar-1\",\"assets/tactics/imported/windup-ne-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-093042\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -135157,8 +135244,9 @@
    "approvedAt": "2026-11-19T03:33:13.513Z"
   },
   "[\"tactics.guard.ne\",\"NE\",false,[[\"studio-hero-ne-guard-mwfkzbt2-dmar-1\",\"assets/tactics/imported/guard-ne-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-094406\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
   "[\"tactics.hit.ne\",\"NE\",false,[[\"studio-hero-ne-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-ne-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-094711\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -135169,6 +135257,71 @@
    "status": "approved",
    "frames": {},
    "approvedAt": "2026-11-19T03:33:13.513Z"
+  },
+  "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-se-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T03:59:44.578Z"
+  },
+  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwfkzn64-62zu-1\",\"assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-200027\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
+  },
+  "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-nw-idle-mwfkzbt2-dmar-1\",\"assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:00:03.757Z"
+  },
+  "[\"tactics.windup.sw\",\"SW\",false,[[\"studio-hero-se-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T03:58:58.248Z"
+  },
+  "[\"tactics.windup.ne\",\"NE\",false,[[\"studio-hero-nw-windup-mwfkzbt2-dmar-1\",\"assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:00:27.938Z"
+  },
+  "[\"tactics.strike.sw\",\"SW\",false,[[\"studio-hero-se-strike-mwfkzn64-62zu-1\",\"assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T03:59:24.025Z"
+  },
+  "[\"tactics.strike.ne\",\"NE\",false,[[\"studio-hero-nw-strike-mwfkzbt2-dmar-1\",\"assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:00:42.130Z"
+  },
+  "[\"tactics-kier-se-windup\",\"SE\",true,[[\"tactics-kier-se-windup\",\"assets/tactics/kier_se_windup.webp\",0,\"20261112-132932\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-kier-sw-windup\",\"SW\",true,[[\"tactics-kier-sw-windup\",\"assets/tactics/kier_sw_windup.webp\",0,\"20261112-132932\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-bram-se-windup\",\"SE\",true,[[\"tactics-bram-se-windup\",\"assets/tactics/bram_se_windup.webp\",0,\"20261112-102707\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-bram-sw-windup\",\"SW\",true,[[\"tactics-bram-sw-windup\",\"assets/tactics/bram_sw_windup.webp\",0,\"20261112-102707\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics-mil-se-windup\",\"SE\",true,[[\"tactics-mil-se-windup\",\"assets/tactics/mil_se_windup.webp\",0,\"20261112-145209\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"tactics.hit.ne\",\"NE\",false,[[\"studio-hero-nw-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:00:59.781Z"
+  },
+  "[\"tactics.down.ne\",\"NE\",false,[[\"studio-hero-nw-down-mwfkzbt2-dmar-1\",\"assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:01:30.815Z"
   },
   "[\"tactics.walk.nw\",\"NW\",true,[[\"studio-hero-nw-walk-mvkbarnc-hy77-1\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-01.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-2\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-02.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-3\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-03.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-4\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-04.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-5\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-05.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-6\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-06.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-7\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-07.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-8\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-08.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-9\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-09.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-10\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-10.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-11\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-11.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mvkbarnc-hy77-12\",\"assets/tactics/imported/walk-nw-mvkbarnc-hy77/frame-12.webp\",0,\"mvkbarnc-hy77\",null,80,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
@@ -137572,62 +137725,85 @@
    "status": "unreviewed",
    "frames": {}
   },
-  "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-se-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
-  },
-  "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwfkzn64-62zu-1\",\"assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-200027\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+  "[\"tactics.windup.se\",\"SE\",false,[[\"studio-hero-se-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T03:37:36.682Z"
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-nw-idle-mwfkzbt2-dmar-1\",\"assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.windup.sw\",\"SW\",false,[[\"studio-hero-se-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics.windup.sw\",\"SW\",false,[[\"studio-hero-se-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.strike.se\",\"SE\",false,[[\"studio-hero-se-strike-mwfkzn64-62zu-1\",\"assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics.windup.ne\",\"NE\",false,[[\"studio-hero-nw-windup-mwfkzbt2-dmar-1\",\"assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.strike.sw\",\"SW\",false,[[\"studio-hero-se-strike-mwfkzn64-62zu-1\",\"assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics.strike.sw\",\"SW\",false,[[\"studio-hero-se-strike-mwfkzn64-62zu-1\",\"assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp\",0,\"mwfkzn64-62zu\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.down.se\",\"SE\",false,[[\"studio-hero-se-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110137\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics.strike.ne\",\"NE\",false,[[\"studio-hero-nw-strike-mwfkzbt2-dmar-1\",\"assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-se-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110137\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics-kier-se-windup\",\"SE\",true,[[\"tactics-kier-se-windup\",\"assets/tactics/kier_se_windup.webp\",0,\"20261112-132932\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-nw-idle-mwfkzbt2-dmar-1\",\"assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics-kier-sw-windup\",\"SW\",true,[[\"tactics-kier-sw-windup\",\"assets/tactics/kier_sw_windup.webp\",0,\"20261112-132932\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-nw-idle-mwfkzbt2-dmar-1\",\"assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics-bram-se-windup\",\"SE\",true,[[\"tactics-bram-se-windup\",\"assets/tactics/bram_se_windup.webp\",0,\"20261112-102707\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.windup.ne\",\"NE\",false,[[\"studio-hero-nw-windup-mwfkzbt2-dmar-1\",\"assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics-bram-sw-windup\",\"SW\",true,[[\"tactics-bram-sw-windup\",\"assets/tactics/bram_sw_windup.webp\",0,\"20261112-102707\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.windup.nw\",\"NW\",false,[[\"studio-hero-nw-windup-mwfkzbt2-dmar-1\",\"assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics-mil-se-windup\",\"SE\",true,[[\"tactics-mil-se-windup\",\"assets/tactics/mil_se_windup.webp\",0,\"20261112-145209\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.strike.ne\",\"NE\",false,[[\"studio-hero-nw-strike-mwfkzbt2-dmar-1\",\"assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics.hit.ne\",\"NE\",false,[[\"studio-hero-nw-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.strike.nw\",\"NW\",false,[[\"studio-hero-nw-strike-mwfkzbt2-dmar-1\",\"assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   },
-  "[\"tactics.down.ne\",\"NE\",false,[[\"studio-hero-nw-down-mwfkzbt2-dmar-1\",\"assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
-   "frames": {}
+  "[\"tactics.hit.ne\",\"NE\",false,[[\"studio-hero-nw-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
+  },
+  "[\"tactics.hit.nw\",\"NW\",false,[[\"studio-hero-nw-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
+  },
+  "[\"tactics.down.ne\",\"NE\",false,[[\"studio-hero-nw-down-mwfkzbt2-dmar-1\",\"assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110137\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
+  },
+  "[\"tactics.down.nw\",\"NW\",false,[[\"studio-hero-nw-down-mwfkzbt2-dmar-1\",\"assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110137\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-19T04:02:05.430Z"
   }
  },
  "studioClipHistory": {
