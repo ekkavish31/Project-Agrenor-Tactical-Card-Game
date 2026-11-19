@@ -10,7 +10,23 @@
   const KEY = 'place-art-frames-v1', FIELDS = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'zb', 'fw', 'fh', 'block', 'blockU', 'blockV'];
   const OWN_HINT = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'cmp'];
   let store = null, PA = null;
-  const load = () => { if (store) return store; try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) { store = {} } return store };
+  /* v98.838 · ONE picture = ONE template in every editor: the village map names its decor pictures 'v:decor:<name>', the sub-maps 'decor:<name>' — same picture, so both ids share the same template (a frame / ticks saved in either appear in the other) */
+  const norm = a => typeof a === 'string' && a.startsWith('v:decor:') ? a.slice(2) : a;
+  let migrated = false;
+  /* once: review ticks (🟦 🟥 📐) that were ticked piece by piece in the sub-maps (before the ticks travelled with the picture) → the picture's template, when the template has none yet and that piece follows it */
+  function migrateTicks() {
+    if (migrated) return; migrated = true;
+    try {
+      const maps = JSON.parse(localStorage.getItem('place-maps-v1') || '{}'); let ch = false;
+      for (const m of Object.values(maps || {})) for (const p of (m && m.props) || []) {
+        if (!p || !p.chk || !Object.keys(p.chk).length || !p.art) continue;
+        const tp = store[norm(p.art)]; if (!tp || tp.chk || isOwn(p)) continue;
+        tp.chk = { ...p.chk }; ch = true
+      }
+      if (ch) localStorage.setItem(KEY, JSON.stringify(store))
+    } catch (e) { }
+  }
+  const load = () => { if (store) return store; try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) { store = {} } migrateTicks(); return store };
   const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(load())) } catch (e) { } try { root.dispatchEvent(new Event('art-frames')) } catch (e) { } };
   const nominal = art => { if (!PA) PA = Object.fromEntries((root.PLACEABLE_ART?.items || []).map(i => [i.sub, i])); return PA[art]?.sw || (String(art).startsWith('vt:') ? 400 : 110) };
   const wRaw = o => (o.width || nominal(o.art)) * (o.s || 1);
@@ -19,7 +35,7 @@
   const wOf = o => { if (widthHook) { try { const h = widthHook(o); if (h > 0) return h } catch (e) { } } return wRaw(o) };
   const swapCells = a => root.PieceGeometry ? root.PieceGeometry.swapCells(a) : a;
   const auto = o => { const w = nominal(o.art), c = Math.max(.5, Math.min(4, Math.round(w / 90 * .8 * 2) / 2)); return { sw: c, sh: c, ref: w, auto: true } };
-  const get = art => load()[art] || null, has = art => !!load()[art];
+  const get = art => load()[norm(art)] || null, has = art => !!load()[norm(art)];
   const isOwn = o => !!o.fo || OWN_HINT.some(k => o[k] != null && o[k] !== false && !(Array.isArray(o[k]) && !o[k].length));
   /* template → the numbers of this piece (size scale · flip) */
   function derive(tpl, o) {
@@ -35,11 +51,15 @@
     un('sw', 'sh'); un('sh', 'sw'); un('fw', 'fh'); un('fh', 'fw'); un('orderU', 'orderV'); un('orderV', 'orderU'); un('blockU', 'blockV'); un('blockV', 'blockU');
     if (e.zo) t.zo = f ? swapCells(e.zo) : e.zo; if (e.zb) t.zb = f ? swapCells(e.zb) : e.zb; if (e.block) t.block = true;
     for (const x of Object.keys(t)) if (t[x] == null) delete t[x];
-    load()[o.art] = t; persist(); return t;
+    /* v98.832 · the 3 review ticks (กรอบฟ้า · กรอบแดง · สัดส่วน) travel with the picture too: the piece's own ticks become the template's; with none of its own, the template keeps the ticks it already had */
+    const own = o.chk && Object.keys(o.chk).length ? o.chk : (load()[norm(o.art)] || {}).chk; if (own && Object.keys(own).length) t.chk = { ...own };
+    load()[norm(o.art)] = t; persist(); return t;
   }
-  const clear = art => { delete load()[art]; persist() };
+  /* the ticks a piece shows: its own (a piece that was ticked by hand) · else — when it follows the picture's frame (own = isOwn) — the picture's saved ticks */
+  const chkOf = (o, own) => { if (!o) return {}; if (o.chk && Object.keys(o.chk).length) return o.chk; if (own != null ? own : isOwn(o)) return {}; const t = get(o.art); return (t && t.chk) || {} };
+  const clear = art => { delete load()[norm(art)]; persist() };
   const strip = o => { for (const k of [...FIELDS, 'fo']) delete o[k]; return o };
   const useTemplate = o => strip(o);
   const materialize = o => { const e = effective(o); for (const k of FIELDS) if (e[k] != null) o[k] = e[k]; return o };
-  root.ArtFrames = { setWidthHook: fn => { widthHook = fn }, nominal, KEY, FIELDS, get, has, effective, isOwn, saveFrom, clear, useTemplate, materialize, strip, auto, all: () => ({ ...load() }), reload: () => { store = null } };
+  root.ArtFrames = { setWidthHook: fn => { widthHook = fn }, nominal, KEY, FIELDS, get, has, effective, isOwn, chkOf, saveFrom, clear, useTemplate, materialize, strip, auto, all: () => ({ ...load() }), reload: () => { store = null } };
 })(typeof window !== 'undefined' ? window : globalThis);

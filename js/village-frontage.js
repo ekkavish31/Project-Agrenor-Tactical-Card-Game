@@ -7,7 +7,7 @@
  function paved(x,y){
   if(roadHit(x,y,16))return true;
   if([plazaPath,junctionPath].some(p=>p&&probe.isPointInPath(p,x,y*2)))return true;
-  return locations.some(o=>estate(o)&&probe.isPointInPath(courtPath(o),x,y*2));
+  return false;   /* v98.836 · no courtyard paving any more */
  }
  // Shop thresholds use the same door-to-gate path that actors follow.
  const shops = {
@@ -15,40 +15,10 @@
   market: { stones: ['#b49971','#ccaf84'], props: [['fruit-crate',68],['basket',48]] },
   inn: { stones: ['#aa9076','#c8b397'], props: [['pack-rack',75],['mead-cask',55]] }
  };
- function ground(ctx) {
-  for (const o of locations) {
-   const style = shops[o.id];
-   if (!style || o.court?.off) continue;
-   const path = courtWalk(o);
-   ctx.save();
-   ctx.scale(1,.5);
-   ctx.clip(courtPath(o));
-   let next = .24, index = 0;
-   for (let i=1; i<path.length; i++) {
-    const a=path[i-1], b=path[i], du=b.u-a.u, dv=b.v-a.v, length=Math.hypot(du,dv);
-    if (!length) continue;
-    const u=du/length, v=dv/length;
-    for (;next<length;next+=.77) {
-     const x=a.u+next*u, y=a.v+next*v;
-     // Paired worn pavers break up the seam without painting over grass.
-     for (const side of [-1,1]) {
-      const cu=x-side*v*.25, cv=y+side*u*.25;
-      ctx.beginPath();
-      for (const [j,[f,w]] of [[-.21,-.21],[.22,-.19],[.20,.21],[-.19,.22]].entries()) {
-       const p=project(cu+u*f-v*w,cv+v*f+u*w);
-       if(j) ctx.lineTo(p.x,p.y*2); else ctx.moveTo(p.x,p.y*2);
-      }
-      ctx.closePath(); ctx.fillStyle=style.stones[index++%2]; ctx.fill();
-      ctx.strokeStyle='rgba(69,53,39,.38)'; ctx.lineWidth=1.2; ctx.stroke();
-     }
-    }
-    next-=length;
-   }
-   ctx.restore();
-  }
- }
+ /* v98.836 · the shop threshold stones followed the courtyard path — gone with the courtyard */
+ function ground(ctx) { }
  function shopObjects(o) {
-  if (!shops[o.id] || o.court?.off) return [];
+  if (!shops[o.id]) return [];
   const c=center(o), worldGate=gate(o), se=o.facing==='SE';
   const gu=se?worldGate.v-c.v:worldGate.u-c.u, gv=se?worldGate.u-c.u:worldGate.v-c.v;
   const fp=window.VillageFootprint?.fpOf(o), result=[];
@@ -78,7 +48,7 @@
   return result;
  }
  estateObjects=function(){
-  const key=locations.map(o=>[o.x,o.y,o.facing,o.flipArt].join(',')).join(';')+(window.VillageAssetEdit?.frameSig?.()||'')+JSON.stringify(window.VillageFence?.get()||0)+locations.map(o=>(o.court?.cells?.length||0)+':'+(o.entry?o.entry.du+','+o.entry.dv:'')).join(';'); // v91.23: fence settings, walk cells and entrances also invalidate the cached list
+  const key=locations.map(o=>[o.x,o.y,o.facing,o.flipArt].join(',')).join(';')+(window.VillageAssetEdit?.frameSig?.()||'')+JSON.stringify(window.VillageFence?.get()||0)+locations.map(o=>('0')+':'+(o.entry?o.entry.du+','+o.entry.dv:'')).join(';'); // v91.23: fence settings, walk cells and entrances also invalidate the cached list
   if(items&&main===roadMain&&lane===roadLane&&key===layout)return items;
   main=roadMain;lane=roadLane;layout=key;
   items=original().filter(o=>!o.owner||![[0,0],[-32,0],[32,0],[0,-16],[0,16]].some(([dx,dy])=>paved(o.x+dx,o.y+dy)));

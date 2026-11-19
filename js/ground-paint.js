@@ -76,7 +76,7 @@ function create(o){
  /* v92.07 · which painted material (id) covers each world point — for terrain kinds in battle; null = nothing painted */
  function matsAt(pts){const out=pts.map(()=>null),best=pts.map(()=>127);for(const id of Object.keys(masks)){const d=masks[id].getContext('2d',{willReadFrequently:true}).getImageData(0,0,MW,MH).data;pts.forEach((p,i)=>{const ix=Math.floor(p.x*res),iy=Math.floor(p.y*res);if(ix<0||iy<0||ix>=MW||iy>=MH)return;const a=d[(iy*MW+ix)*4+3];if(a>best[i]){best[i]=a;out[i]=id}})}return out}
  function hasPath(){for(const k in alphas)if(BY[k]?.walk===true)return true;return false}
- return {smooth,hasPath,setClip:p=>{clipPolys=p&&p.length?p:null},get clip(){return clipPolys},matsAt,unit,draw,walkMask,blockMask,dab,cellDab,cellIdx,rectDab,rectPts,cellPoly,cellKey:(p,sz)=>{const q=cellPoly(p.x,p.y,sz)[0];return q.x+','+q.y},endStroke,walk,save,load,clear,ui,onChange:f=>listeners.push(f),get version(){return version},squash,W,H};
+ return {smooth,hasPath,setClip:p=>{clipPolys=p&&p.length?p:null},get clip(){return clipPolys},matsAt,unit,draw,walkMask,blockMask,dab,cellDab,cellIdx,rectDab,rectPts,cellPoly,cellKey:(p,sz)=>{const q=cellPoly(p.x,p.y,sz)[0];return q.x+','+q.y},endStroke,walk,save,load,clear,ui,onChange:f=>listeners.push(f),get version(){return version},squash,W,H,compCanvas:()=>comp,hasMasks:()=>Object.keys(masks).length>0};   /* v98.844 · the editor's merged ground layer (village-town.html drawMergedGround) */
 }
 
 /* ---------- brush panel + toolbar button ----------

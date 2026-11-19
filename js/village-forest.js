@@ -60,7 +60,10 @@
   }
   function objects() {
     if (!items) { items = build(); }
-    return items.filter(q => img[q.n]?.complete && img[q.n].naturalWidth).map(q => ({ x: q.x, y: q.y, draw: g => { const im = img[q.n], h = q.w * im.naturalHeight / im.naturalWidth; g.save(); g.translate(q.x, q.y); if (q.flip) g.scale(-1, 1); TownArt.draw(g, im, null, [-q.w / 2, -h * .93, q.w, h], null); g.restore() } }));
+    return items.filter(q => img[q.n]?.complete && img[q.n].naturalWidth).map(q => ({ x: q.x, y: q.y, draw: g => { const im = img[q.n], h = q.w * im.naturalHeight / im.naturalWidth;
+    /* v98.844 · 950 forest pieces were drawn every frame; a piece completely off the screen is skipped (same picture — it could not be seen anyway) */
+    { const m = g.getTransform(), s = Math.hypot(m.a, m.b) || 1, sx = m.a * q.x + m.c * q.y + m.e, sy = m.b * q.x + m.d * q.y + m.f, hw = q.w * s * .6 + 60, top = h * .93 * s + 60, bot = h * .07 * s + 60; if (sx + hw < 0 || sx - hw > g.canvas.width || sy + bot < 0 || sy - top > g.canvas.height) return }
+    g.save(); g.translate(q.x, q.y); if (q.flip) g.scale(-1, 1); TownArt.draw(g, im, null, [-q.w / 2, -h * .93, q.w, h], null); g.restore() } }));
   }
   /* walking: the forest belt is closed (only the exit corridors lead out) */
   /* v98.199 · walking asks "is this forest?" for thousands of points per click (A* + line-of-sight samples at 1/48 cell). The old cache was keyed by the exact

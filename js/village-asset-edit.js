@@ -100,7 +100,7 @@
  /* v98.725 · AssetSize now holds ONE formula itself (no setHero here: the Lineup factor must not move the reference) */
  const decorFile = kind => /^decor:/.test(kind || '') ? 'assets/village-town/decor/' + kind.slice(6) + '.png' : '';
  function sizeStart(nid, kind) { const f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1], r = f && window.AssetSize?.get(f); if (r && w) ovOf(nid).s = +clampN(r * AssetSize.heroPx('village') / w, .2, 4).toFixed(3) }
- function buildingRec(id) { const b = data.buildings[id] || {}, spec = artSpecs[id], f = BUILDINGS[id]; if (spec && f && window.AssetSize) AssetSize.record(f, spec[0] * 2 * (b.sx ?? 1), 'village') }
+ function buildingRec(id) { const b = data.buildings[id] || {}, spec = artSpecs[id], f = BUILDINGS[id]; if (spec && f && window.AssetSize) AssetSize.record(f, spec[0] * 2 * (b.sx ?? 1) * (b.s ?? 1), 'village') }
  function sizeRec(key) { const a = data.added.find(x => x.id === key), ov = data.edit[key] || {}, kind = ov.kind || a?.kind, f = decorFile(kind), w = DECOR_W[(kind || '').slice(6)]?.[1]; if (f && w && window.AssetSize) AssetSize.record(f, w * (ov.s ?? 1), 'village') }
  const kind = (id, label, group, draw) => KINDS[id] = {
   label,
@@ -247,6 +247,8 @@
     A piece with its own frame fields (or ov.fo) keeps them ("แก้เฉพาะชิ้นนี้"); a piece without follows the template of its picture (scaled by its size, mirrored when flipped); no template = nothing changes. */
  const FR_FIELDS = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'zb', 'fw', 'fh', 'block', 'blockU', 'blockV', 'cmp'];
  const frOwn = ov => !!ov.fo || FR_FIELDS.some(k => ov[k] != null && ov[k] !== false && !(Array.isArray(ov[k]) && !ov[k].length));
+ /* v98.832 · the review ticks (ฟ้า · แดง · สัดส่วน) follow the picture's saved template when the piece has none of its own and follows the template's frame */
+ const chkEff = (art, ov) => window.ArtFrames?.chkOf ? window.ArtFrames.chkOf({ ...ov, art }, frOwn(ov)) : (ov.chk || {});
  const geoOv = (ov, art) => { const AF = window.ArtFrames; if (!AF || !art || !AF.has(art) || frOwn(ov)) return ov; return AF.effective({ ...ov, art, width: 100 }) };
  const artOfSrc = (src, ov, label, key) => 'v:' + (ov.kind || src?.name || label || key);
  /* v98.692 · sway physics: one damped spring per plant (angle a, velocity v) driven by how close the hero's feet are; the target leans AWAY from the hero (up to ~13°) and the spring overshoots a little when the hero has passed */
@@ -286,7 +288,8 @@
    ix = ov.ix ?? 1, iy = ov.iy ?? 1,
    ia = (ix + iy) / 2, ib = (iy - ix) / 2, ic = (iy - ix) / 2, id = (ix + iy) / 2,
    k = ov.kind && KINDS[ov.kind] ? ov.kind : null,
-   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !k && !ov.pm && !ov.artX && !ov.artY;
+   tkx = Math.tan((ov.skx || 0) * Math.PI / 180), tky = Math.tan((ov.sky || 0) * Math.PI / 180),   /* v98.838 · เอียงเสา / เอียงฐาน (same matrix as the sub-maps: slant × [[1,tan skx],[tan sky,1]]) */
+   plain = !d.x && !d.y && s === 1 && !r && !f && ix === 1 && iy === 1 && !ov.skx && !ov.sky && !k && !ov.pm && !ov.artX && !ov.artY;
   /* v98.692 · WALK-THROUGH PLANTS SWAY: a bush / grass / flower / hedge the hero can walk through (no red block frame) leans away from the hero and springs back with a little overshoot (below: swayOf) */
   const swayOn = ov.sway === true || (ov.sway !== false && !ov.block && SWAY_RE.test((label || '') + ' ' + (ov.kind || '')));
   const inner = plain && !swayOn ? draw : gg => {
@@ -297,6 +300,7 @@
    if (r) g.rotate(r);
    g.scale(f ? -s : s, s);
    g.transform(ia, ib, ic, id, 0, 0);
+   if (tkx || tky) g.transform(1, tky, tkx, 1, 0, 0);
    g.translate(-ax, -ay);
    if (k) KINDS[k].draw({
     x: ax,
@@ -466,7 +470,18 @@
   return b
  }
 
+ /* v98.844 · the dark veil + the glowing outline of the place being edited were rebuilt EVERY frame (two full-screen layers + 8 outline blits = ~45 % of a frame inside a place).
+    Their inputs only change when the camera moves, a different place / piece is picked or hovered, the data is edited (render()), or a drag is running — so they are built once and
+    reused while that signature stays the same (ovDecide); a drag, or any change, rebuilds them exactly as before. */
+ let ovHit = null, ovFrameSig = null, ovCache = { sig: null, ok: false, ring: false }, ovVer = 0;
+ function ovSigNow(main) {
+  if (drag) return null;
+  const m = main.getTransform();
+  return [m.a, m.b, m.c, m.d, m.e, m.f, main.canvas.width, main.canvas.height, place?.id || '', place?.tab || '', place ? place.keys.join('|') : '', hoverKey || '', UX.getMode(), litOwner() || '', refChar ? 1 : 0, editing ? 1 : 0, testWalk ? 1 : 0, ovVer].join('~')
+ }
+ function ovDecide(main) { if (ovHit === null) { ovFrameSig = ovSigNow(main); ovHit = ovFrameSig !== null && ovFrameSig === ovCache.sig && ovCache.ok } return ovHit }
  function stamp(n, inner) {
+  if ((n === 'ring' || n === 'hole') && ovDecide(g)) { if (n === 'ring') buf('ring').used = ovCache.ring; return }
   const b = buf(n),
    o = b.cv.getContext('2d'),
    main = g;
@@ -520,13 +535,17 @@
 
  function drawB(o) {
   const t = data.buildings[o.id];
-  if (!t || !(t.sx != null || t.sy != null || t.kx || t.lx || t.ky || t.ix != null || t.iy != null || t.dx || t.dy)) {
+  if (!t || !(t.sx != null || t.sy != null || t.kx || t.lx || t.ky || t.ix != null || t.iy != null || t.dx || t.dy || t.s != null || t.f || t.sky || t.skx || t.artX || t.artY || t.pm)) {
    baseBuilding(o);
    return
   }
   const p = anchorOf(o);
   g.save();
   g.translate(p.x + (t.dx || 0), p.y + (t.dy || 0));
+  /* v98.841 · the 🔍 detail window's fields for a PLACE, same as for a prop: art move (artX/artY) · 📐 base fit (pm) · size s · flip f · base tilt sky / pole tilt skx */
+  if (t.artX || t.artY || t.pm) window.PieceGeometry.apply(g, t);
+  { const s = t.s ?? 1; if (s !== 1 || t.f) g.scale(t.f ? -s : s, s) }
+  if (t.skx || t.sky) g.transform(1, Math.tan((t.sky || 0) * Math.PI / 180), Math.tan((t.skx || 0) * Math.PI / 180), 1, 0, 0);
   // Optional user-defined width/height axes. Keep legacy transform when no custom axes exist.
   if (Number.isFinite(t.wx) && Number.isFinite(t.wy) && Number.isFinite(t.hx) && Number.isFinite(t.hy)) {
    const wl=Math.hypot(t.wx,t.wy)||1, hl=Math.hypot(t.hx,t.hy)||1,
@@ -1031,7 +1050,9 @@
  /* v97.47 · a first guess of the blocking frame (cells) from the item's name; adjusted with กว้าง/ลึก ± */
  function guessBlock(label) { const t = String(label || ''); return /ต้นไม้|ต้นโอ๊ก|ต้นสน|tree|oak|pine/i.test(t) ? [1, 1] : /เกวียน|รถ|cart|wagon/i.test(t) ? [1.5, 1] : /บ่อ|well|น้ำพุ|รูปปั้น|statue/i.test(t) ? [1.5, 1.5] : /โคม|lamp|ถัง|barrel|ลัง|crate|ป้าย|sign/i.test(t) ? [.5, .5] : /หิน|rock/i.test(t) ? [1, 1] : [1, 1] }
  let blockList = [];
- function rebuildBlocks() { blockList = frame.filter(e => (e.geo || e.ov)?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.geo || e.ov, c.u, c.v, true) }) }
+ function rebuildBlocks() { blockList = frame.filter(e => (e.geo || e.ov)?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.geo || e.ov, c.u, c.v, true) });
+  /* v98.835 · a PLACE with a red frame (data.buildings[id].block) is walled by that frame — nothing else: the old plot footprint wall + yellow entrance cells + green cells no longer apply to it (village-town.html skips it via hasRed) */
+  for (const o of locations) { const t = data.buildings[o.id]; if (!t || !t.block) continue; try { const c = center(o); blockList.push(window.PieceGeometry.footprint({ zb: t.zb, blockU: t.blockU, blockV: t.blockV, fw: t.fw, fh: t.fh }, c.u, c.v, true)) } catch (e) { } } }
  const blockBoxes = () => blockList.flatMap(r => r.parts || [r]);   /* v98.499 · free-form red zones are lists of boxes */
  const blockedAt = (u, v) => { for (const r of blockBoxes()) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
  function itemRectAt(k, c) {
@@ -1144,7 +1165,7 @@
   const b = baseOf(E.owner);
   if (!b) return null;
   const w = inv(b.mirror ? b.cx * 2 - E.x : E.x, E.y);
-  return { ...window.PieceGeometry.extra(ov), kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, free: ov.free, ix: ov.ix, iy: ov.iy, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
+  return { ...window.PieceGeometry.extra(ov), kind, du: +(w.u - b.u).toFixed(3), dv: +(w.v - b.v).toFixed(3), s: ov.s, r: ov.r, f: ov.f, free: ov.free, ix: ov.ix, iy: ov.iy, skx: ov.skx, sky: ov.sky, sx: ov.sx, sy: ov.sy, kx: ov.kx, ky: ov.ky, z: ov.z, layer: ov.layer, fw: ov.fw, fh: ov.fh, sw: ov.sw, sh: ov.sh, tall: ov.tall, cmp: ov.cmp, g: ov.grp }
  }
  function addRecords(recs, owner, off) {
   const ids = [], gmap = {};
@@ -1153,7 +1174,7 @@
    const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
    const G = window.VillageGrid, bs = baseOf(owner), sn = !G ? { du: r.du + off, dv: r.dv + off } : recs.length === 1 ? placeNewItem(owner, nid, r.du + off, r.dv + off) : G.snapOffset({ u: bs.u, v: bs.v }, !!bs.mirror, r.du + off, r.dv + off, modeNow());
    data.added.push({ id: nid, owner, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-   data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
+   data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, skx: r.skx, sky: r.sky, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp };
    if (r.g) data.edit[nid].grp = gmap[r.g] || (gmap[r.g] = newGid());
    clean(nid);
    ids.push(nid)
@@ -1382,7 +1403,7 @@
    const f = refFeet(o), hs = charScale('hero');
    if (Math.abs(p.x - f.x) < 24 * hs && p.y > f.y - 96 * hs && p.y < f.y + 10 * hs) return start('ref', { ox: f.x, oy: f.y })
   }
-  if (o && o.id !== 'square' && place.tab === 'lead' && o.lead?.mode !== 'custom' && o.lead?.mode !== 'none' && (courtCellsOf(o) || !o.court)) {
+  if (o && o.id !== 'square' && place.tab === 'lead' && o.lead?.mode !== 'custom' && o.lead?.mode !== 'none' && true) {   /* v98.836 · courtyard removed */
    const g0 = gate(o), gq = project(g0.u, g0.v);
    if (nearPx(gq, p, 18)) { UX.checkpoint(); return start('gate', {}) }
   }
@@ -1465,7 +1486,7 @@
   } // empty ground → camera pan as usual
  }, true);
  /* v91.4: the cursor tells you a side of the blue area can be dragged (diagonal arrows along the way it moves) */
- const fpMode = () => !!place && place.tab === 'building';
+ const fpMode = () => false;   /* v98.835 · no more dragging the old blue plot edges */
  function edgeCursor(k, o) {
   if (!k) return '';
   const alongU = k[0] === 'u'; // own-axis u edges move along u: screen diagonal ↘↖ (swapped for SE places)
@@ -1503,11 +1524,7 @@
   }
   if (drag.type === 'gate') {
    const w = inv(p.x, p.y), q = canonical(o, w.u, w.v), a = center(o);
-   if (courtCellsOf(o)) {
-    let best = null, bd = 1e9;
-    for (const c of courtCellsOf(o)) { const d = Math.hypot(a.u + (c[0] + .5) / 2 - q.u, a.v + (c[1] + .5) / 2 - q.v); if (d < bd) { bd = d; best = c } }
-    if (best) o.court = { ...o.court, exit: [best[0], best[1]] }
-   } else { const e = estate(o); o.cauto = { ...(o.cauto || {}), du: Math.max(-12, Math.min(12, Math.round((q.u - e.u) * 4) / 4)) } }
+   { const e = estate(o); o.cauto = { ...(o.cauto || {}), du: Math.max(-12, Math.min(12, Math.round((q.u - e.u) * 4) / 4)) } }
    terrainDirty = true; UX.refresh();
    return
   }
@@ -2026,6 +2043,7 @@
  let scrollKey = null;
  let lockRatio = false; try { lockRatio = !!localStorage.getItem('project-a-lock-ratio') } catch (e) {}
  function render() {
+  ovVer++;   /* v98.844 · an edit invalidates the cached veil / outline */
   const b0 = panel.querySelector('.body'), key = place ? 'p:' + place.id + ':' + place.tab + ':' + (place.keys?.length ? 1 : 0) : 'm:' + UX.getMode(), top = b0 && scrollKey === key ? b0.scrollTop : 0;
   renderInner();
   scrollKey = key;
@@ -2185,12 +2203,11 @@
    framed = hasFrame(o),
    items = frame.filter(e => e.owner === id);
   if (!o && place.tab !== 'items') place.tab = 'items';
-  if (place.tab === 'frame' ||  (place.tab === 'entry' || place.tab === 'lead') && (!o || o.id === 'square')) place.tab = 'building';
+  if (place.tab === 'frame' || place.tab === 'entry' || place.tab === 'lead' && (!o || o.id === 'square')) place.tab = 'building';   /* v98.836 · the 🚪 ทางเข้า tab (yellow / green cells) is gone */
   place.keys = place.keys.filter(k => items.some(e => e.key === k));
   const tabs = [
    ['building', '🏠 อาคาร', !!o],
    ['items', '🪴 ของย่อย ' + items.length, true],
-   ['entry', '🚪 ทางเข้า', !!o && o.id !== 'square'],
    ['lead', '🛣 ถนนทางเข้า', !!o && o.id !== 'square']
   ];
   const changed = snapOf() !== place.before;
@@ -2212,7 +2229,6 @@
    building: tabBuilding,
    frame: tabFrame,
    items: tabItems,
-   entry: tabEntry,
    lead: tabLead
   })[place.tab](body, o, items);
   panel.querySelectorAll('[data-n]').forEach(b => b.onclick = () => {
@@ -2224,6 +2240,7 @@
 
  /* footprint panel: the ground area this place claims on the grid (blue tiles on the map) */
  function fpHtml(o) {
+  return '';   /* v98.835 · the old blue plot footprint panel is retired: it was the wall that blocked walking; a place now uses 🟦 order frame + 🟥 block frame (🔍 แก้ละเอียด) */
   const f = window.VillageFootprint?.fpOf(o);
   if (!f) return '';
   const custom = window.VillageFootprint.isCustom(o), se = o.facing === 'SE';
@@ -2531,7 +2548,7 @@
    for (const r of a.recs) {
     const nid = 'add:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), sn = window.VillageGrid.snapOffset({ u: base.u, v: base.v }, !!base.mirror, r.du, r.dv + +base.front.toFixed(2), modeNow());
     data.added.push({ id: nid, owner: place.id, du: +sn.du.toFixed(4), dv: +sn.dv.toFixed(4), kind: r.kind });
-    data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
+    data.edit[nid] = { ...window.PieceGeometry.extra(r), s: r.s, r: r.r, f: r.f, free: r.free, ix: r.ix, iy: r.iy, skx: r.skx, sky: r.sky, sx: r.sx, sy: r.sy, kx: r.kx, ky: r.ky, z: r.z, layer: r.layer, fw: r.fw, fh: r.fh, sw: r.sw, sh: r.sh, tall: r.tall, cmp: r.cmp, grp: g };
     clean(nid);
     ids.push(nid)
    }
@@ -2626,14 +2643,25 @@
   })
  }
 
+ /* v98.840 · "เอียงภาพ (แบบ Asset Studio)": the same four numbers and buttons as the sub-map piece panel (place-build.js slantRows): ix / iy = แกนเฉียง ↗↙ ↖↘ (%) · sky = เอียงฐาน ° · skx = เอียงเสา ° · 📐 วัด/ปรับมุมฐาน (opens the 🔍 detail window in its base-fit mode) · ⟲ คืนค่าเอียง */
+ const SLANT_KEYS = ['ix', 'iy', 'skx', 'sky'];
+ const slantBlock = o => `<b class="sec">เอียงภาพ (แบบ Asset Studio)</b><div class="two2" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px">
+  <label style="display:block;min-width:0;font-size:12px">แกนเฉียง ↗↙ (%)<input style="width:100%;box-sizing:border-box" type="number" data-sl="ix" min="50" max="200" step="1" value="${+((o.ix ?? 1) * 100).toFixed(2)}"></label><label style="display:block;min-width:0;font-size:12px">แกนเฉียง ↖↘ (%)<input style="width:100%;box-sizing:border-box" type="number" data-sl="iy" min="50" max="200" step="1" value="${+((o.iy ?? 1) * 100).toFixed(2)}"></label>
+  <label style="display:block;min-width:0;font-size:12px">เอียงฐาน ° (ยกขอบขวา)<input style="width:100%;box-sizing:border-box" type="number" data-sl="sky" min="-60" max="60" step="0.5" value="${+(o.sky || 0).toFixed(2)}"></label><label style="display:block;min-width:0;font-size:12px">เอียงเสา ° (บิดแนวตั้ง)<input style="width:100%;box-sizing:border-box" type="number" data-sl="skx" min="-60" max="60" step="0.5" value="${+(o.skx || 0).toFixed(2)}"></label></div>
+  <div class="row"><button id="slFit" title="จิ้ม 3 จุดที่ขอบฐานของภาพ แล้วปรับมุมฐานเป็น 2:1">📐 วัด/ปรับมุมฐาน</button><button id="slReset">⟲ คืนค่าเอียง</button></div>`;
+ function bindSlant(body, key) {
+  body.querySelectorAll('[data-sl]').forEach(i => i.onchange = once(() => { const k = i.dataset.sl, v = +i.value, o = ovOf(key); if (!Number.isFinite(v)) return; if (k === 'ix' || k === 'iy') { const r = Math.max(.5, Math.min(2, v / 100)); if (Math.abs(r - 1) < .0005) delete o[k]; else o[k] = +r.toFixed(4) } else if (Math.abs(v) < .005) delete o[k]; else o[k] = +Math.max(-60, Math.min(60, v)).toFixed(2); clean(key) }));
+  act('#slReset', once(() => { const o = ovOf(key); for (const k of SLANT_KEYS) delete o[k]; clean(key) }));
+  act('#slFit', () => window.PieceDetail?.open(key, 'fit'))
+ }
  function itemEditor(body, key, items) {
   const E = items.find(e => e.key === key),
    added = data.added.find(a => a.id === key),
    ov = data.edit[key] || {},
    label = ov.kind && KINDS[ov.kind] ? KINDS[ov.kind].label : E?.label || KINDS[added?.kind]?.label || 'ของประดับ';
   body.innerHTML = `<div class="row" style="margin-top:0"><button id="iBack">← ของย่อยทั้งหมด</button></div><b class="sec">${label}${ov.hide?' <span class="chip">ซ่อนอยู่</span>':''}</b>
-  <div class="art">${window.PieceDetail?.gauge?.(ov.chk)||''}<span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
-  ${nudgeHtml}${sec('place','① วาง · ขนาด · หมุน',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slider('r','หมุน',ov.r||0,-180,180,1,FMT.r)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
+  <div class="art">${window.PieceDetail?.gauge?.(chkEff(E?.art, ov))||''}<span class="th" id="aeThumb"></span><div><div class="row" style="margin:0 0 6px"><button id="aeSwap">เปลี่ยนภาพ…</button> <button id="aeDetail">🔍 แก้ละเอียด…</button></div>${ov.kind&&!added?'<button id="aeOrig">ใช้ภาพเดิม</button>':''}</div></div>
+  ${nudgeHtml}${sec('place','① วาง · ขนาด · เอียง',`${slider('s','ขนาด',ov.s??1,.3,2.5,.01,FMT.s)}${slantBlock(ov)}${zRow('iz','ชั้นของชิ้นนี้',ov.z||0,'ในสถานที่นี้ · อาคาร = '+layerOf(place.id).z)}
   <div class="row"><button id="aeFree" class="${ov.free?'on':''}" title="เปิด = ชิ้นนี้ลาก/ย้ายด้วยลูกศรได้อิสระ ไม่ดูดเข้ากริด ไม่หลบกรอบชิ้นข้างเคียง (ลูกศร = 2px ต่อครั้ง · Shift = 8px)">${ov.free?'✅':'⬜'} ย้ายอิสระ (ไม่แนบกริด)</button></div>
 `,1)}${groupHtml(1)}`;
   body.querySelectorAll('details.aeSec').forEach(d => d.ontoggle = () => secOpen.set(d.dataset.sec, d.open));
@@ -2693,6 +2721,7 @@
     place.keys = [nid]
    })()
   });
+  bindSlant(body, key);
   bindGroup();
   bindZ('iz', d => { const v = ovOf(key); v.z = clampN((v.z || 0) + d, -20, 20); clean(key) });
   act('#aeFree', once(() => { const o2 = ovOf(key); if (o2.free) delete o2.free; else o2.free = true; clean(key) }));
@@ -2752,45 +2781,7 @@
   return -1
  }
  function leadSnap(o, w) { const q = canonical(o, w.u, w.v), a = center(o), r = x => Math.round(x * 2) / 2; return { du: r(q.u - a.u), dv: r(q.v - a.v) } }
- function tabEntry(body, o) {
-  body.innerHTML = `<p class="sub">ลาก <b style="color:#9ff3f5">หมุดฟ้า</b> บนแผนที่ไปวางที่ประตู · ตัวเอกเดินมาถึงจุดนี้แล้วเข้าใช้บริการ</p>
-  <div class="row"><button id="eReset">คืนจุดเข้าเดิม</button></div><hr>
-  ${o.court?'':`<b class="sec">ถนน/ลานจากทางเข้าไปถึงถนน (อัตโนมัติ)</b>
-  ${slider('cw','ความกว้าง (ช่อง)',o.cauto?.w ?? ((o.id==='home'?2.2:o.w+1.3)*2),1,16,.5,unit)}${slider('cu','ตำแหน่ง ซ้าย ↔ ขวา (ช่อง)',o.cauto?.du??0,-10,10,.5,unit)}
-  <div class="row"><button id="eAutoReset"${o.cauto?'':' disabled'}>คืนขนาด/ตำแหน่งอัตโนมัติ</button></div>
-  <p class="sub">ปรับแถบปูพื้นจากทางเข้าไปถึงถนน และจุดที่ถนนมาเชื่อม · ถ้าอยากกำหนดรายช่องเอง ใช้ “ช่องทางเดิน (สีเหลือง)” ด้านล่าง</p><hr>`}
-  <b class="sec">ช่องทางเดิน (สีเหลือง)</b>
-  ${o.court?.cells?.length ? slider('cwid', 'ความกว้างทางเดิน (ช่องครึ่ง)', courtWidthOf(o.court.cells), 1, 12, 1, x => x) + '<p class="sub">ตั้งให้ทุกแถวของทางเดินกว้างเท่ากัน (ใช้ค่าเดียวกันกับบ้านอื่นให้ทางเข้าขนาดเท่ากัน) · ช่วงที่วิ่งขนานขอบไม่ถูกแตะ</p>' : ''}
-  <p class="sub">ตอนนี้: <b>${o.court?.off?'ไม่มีทางเดิน':o.court?.cells?o.court.cells.length+' ช่องครึ่ง':o.court?.pts?'เส้นเดิมที่วาดไว้':'อัตโนมัติ (ลานหน้าประตู + ทางถึงถนน)'}</b></p>
-  <div class="row"><button id="cDraw" class="${courtDraw?'on':''}" style="${courtDraw?'background:#e5c06b;color:#1b302a':''}">🟨 ${courtDraw?'กำลังทาสี… คลิก/ลากบนกริด (ช่องที่มีอยู่ = ลบ)':'ทาสีช่องทางเดิน'}</button></div>
-  <div class="row"><button id="cRect" style="${courtRect ? 'background:#e5c06b;color:#1b302a' : ''}">▭ ${courtRect ? 'โหมดกรอบ: ลากเป็นกรอบแล้วถมทั้งกรอบ (เริ่มที่ช่องเหลือง = ลบทั้งกรอบ)' : 'ทาส/ลบแบบกรอบ (ลากกรอบ แล้วถมทั้งกรอบ)'}</button></div>
-  <div class="row"><button id="cFill">เริ่มจากทางตรงประตู→ขอบหน้า</button><button id="cOff">ไม่มีทางเดิน</button><button id="cAuto">กลับเป็นอัตโนมัติ</button></div>
-  <b class="sec">ชั้นของพื้นที่เดิน (layer)</b>
-  <p class="sub">ตั้งต้น = ชั้นเดียวกับพื้นตรงนั้น (ชั้นพื้น ${o.court?.z || 0}) · ของที่ชั้นสูงกว่าจะบังตัวละคร ต่ำกว่าอยู่ใต้ตัวละคร · ชั้นเท่ากัน = เรียงตามความลึก · เลือกบางช่องให้มีชั้นต่างจากพื้นได้</p>
-  ${zRow('cz', 'ชั้นพื้นทั้งหมด', o.court?.z || 0, 'ตัวละครที่ยืนบนพื้นที่เดินนี้')}
-  <div class="row"><button id="cLayer" style="${courtLayer ? 'background:#e5c06b;color:#1b302a' : ''}">🔢 ${courtLayer ? 'กำลังกำหนดชั้นรายช่อง… (ลากบนช่องเหลือง)' : 'กำหนดชั้นเฉพาะบางช่อง'}</button></div>
-  ${courtLayer ? zRow('cl', 'ชั้นที่จะใส่', courtLayerVal, 'ลากทับช่องเหลืองเพื่อใส่ · ใส่ชั้นเท่าพื้น = ล้างค่าพิเศษ') : ''}
-  <b class="sec">ช่องเดินเข้าเอง (สีเขียว)</b>
-  <p class="sub">อยู่ในกรอบฟ้า · เดินเข้าได้เมื่อผู้เล่นคลิกเข้าไปเอง (ไม่ใช้เป็นทางลัด) · ไม่สร้างถนนให้ — ใช้วาดพื้นเองได้ · ตอนนี้: <b>${o.green?.cells?.length ? o.green.cells.length + ' ช่องครึ่ง' : 'ไม่มี'}</b></p>
-  <div class="row"><button id="gDraw" style="${greenDraw ? 'background:#5fd08a;color:#10261a' : ''}">🟩 ${greenDraw ? 'กำลังทาสีเขียว… คลิก/ลากในกรอบฟ้า (ช่องที่มีอยู่ = ลบ)' : 'ทาสีช่องเดินเข้าเอง'}</button><button id="gClear"${o.green?.cells?.length ? '' : ' disabled'}>ลบช่องเขียวทั้งหมด</button></div>
-  <p class="sub">ตัวละครเดินทับช่องสีเหลืองได้ · ช่องต้องต่อกันจากประตูถึงขอบหน้า (ปลายทางที่ถนนมาเชื่อม) · ตัวละครอยู่ในชั้นเดียวกับพื้นตรงนั้น ของที่อยู่ด้านหน้าและชั้นสูงกว่า (เช่น กระถาง) จึงบังตัวละครได้ · Q สลับทาทีละช่อง 1×1 / ครึ่งช่อง 2×2</p>`;
-  act('#eAutoReset', once(() => { delete o.cauto; UX.refresh() }));
-  bindSliders((k, v) => { if (k === 'cwid') { setCourtWidth(o, v); terrainDirty = true; UX.refresh(); return } if (k !== 'cw' && k !== 'cu') return; o.cauto = o.cauto || {}; o.cauto[k === 'cw' ? 'w' : 'du'] = v; terrainDirty = true; UX.refresh() }, () => { if (o.cauto && o.cauto.w == null && !o.cauto.du) delete o.cauto; render() });
-  act('#eReset', once(() => {
-   delete o.entry;
-   UX.refresh()
-  }));
-  act('#gDraw', () => { greenDraw = !greenDraw; if (greenDraw) { courtDraw = false; courtLayer = false } flashStatus(greenDraw ? 'คลิก/ลากในกรอบฟ้าเพื่อทาสีช่องเขียว · ใช้โหมดกรอบได้' : 'หยุดทาสีช่องเขียว'); render() });
-  act('#gClear', once(() => { greenDraw = false; delete o.green; UX.refresh() }));
-  act('#cDraw', () => { greenDraw = false; courtDraw = !courtDraw; flashStatus(courtDraw ? 'ลากบนแผนที่จากประตูไปหาถนน · ปล่อยเมาส์เพื่อจบเส้น' : 'ยกเลิกการวาดทางเข้า'); render() });
-  bindZ('cz', d => { o.court = o.court || {}; o.court.z = clampN((o.court.z || 0) + d, -20, 20); if (!o.court.z) delete o.court.z; UX.refresh() });
-  bindZ('cl', d => { courtLayerVal = clampN(courtLayerVal + d, -20, 20) });
-  act('#cLayer', () => { if (!o.court?.cells?.length) { UX.checkpoint(); o.court = { ...(o.court || {}), cells: autoCells(o) } } courtLayer = !courtLayer; courtDraw = courtLayer; flashStatus(courtLayer ? 'ลากบนช่องเหลืองเพื่อกำหนดชั้น' : 'เลิกกำหนดชั้นรายช่อง'); render() });
-  act('#cRect', () => { courtRect = !courtRect; if (courtRect) courtDraw = true; flashStatus(courtRect ? 'ลากเป็นกรอบ ปล่อยเมาส์เพื่อถมทั้งกรอบ (เริ่มที่ช่องเหลือง = ลบ)' : 'กลับเป็นทาทีละช่อง'); render() });
-  act('#cFill', once(() => { o.court = { cells: autoCells(o) }; courtDraw = false; UX.refresh() }));
-  act('#cOff', once(() => { courtDraw = false; o.court = { off: true }; UX.refresh() }));
-  act('#cAuto', once(() => { courtDraw = false; delete o.court; UX.refresh() }))
- }
+ /* v98.836 · tabEntry (yellow / green walk cells) removed */
 
  /* ---------- overlay: veil + rings, then handles ---------- */
  const baseOverlay = UX.overlay;
@@ -2822,6 +2813,8 @@
    if (editing && !testWalk) drawOverlay(gg);
    if (editing && !testWalk && place && refChar) drawRefChar(gg, t)
   } finally {
+   if (ovHit === false) ovCache = { sig: ovFrameSig, ok: ovFrameSig !== null, ring: !!bufs.ring?.used };
+   ovHit = null;
    for (const b of Object.values(bufs)) b.used = false
   }
  };
@@ -2936,14 +2929,16 @@
    });
    const V = buf('veil'),
     v = V.cv.getContext('2d');
-   v.setTransform(1, 0, 0, 1, 0, 0);
-   v.globalCompositeOperation = 'source-over';
-   v.clearRect(0, 0, V.cv.width, V.cv.height);
-   v.fillStyle = 'rgba(5,14,11,.6)';
-   v.fillRect(0, 0, V.cv.width, V.cv.height);
-   v.globalCompositeOperation = 'destination-out';
-   v.drawImage(bufs.hole.cv, 0, 0);
-   v.globalCompositeOperation = 'source-over';
+   if (!ovDecide(gg)) {
+    v.setTransform(1, 0, 0, 1, 0, 0);
+    v.globalCompositeOperation = 'source-over';
+    v.clearRect(0, 0, V.cv.width, V.cv.height);
+    v.fillStyle = 'rgba(5,14,11,.6)';
+    v.fillRect(0, 0, V.cv.width, V.cv.height);
+    v.globalCompositeOperation = 'destination-out';
+    v.drawImage(bufs.hole.cv, 0, 0);
+    v.globalCompositeOperation = 'source-over'
+   }
    screenLayer(gg, V.cv)
   }
   if (bufs.ring?.used) {
@@ -2951,6 +2946,7 @@
     O = buf('ringOut'),
     q = O.cv.getContext('2d'),
     d = Math.max(1.5, devicePixelRatio * 1.3);
+   if (!ovDecide(gg)) {
    q.setTransform(1, 0, 0, 1, 0, 0);
    q.globalCompositeOperation = 'source-over';
    q.clearRect(0, 0, O.cv.width, O.cv.height);
@@ -2969,7 +2965,8 @@
    q.fillRect(0, 0, O.cv.width, O.cv.height);
    q.globalCompositeOperation = 'destination-out';
    q.drawImage(R, 0, 0);
-   q.globalCompositeOperation = 'source-over';
+   q.globalCompositeOperation = 'source-over'
+   }
    screenLayer(gg, O.cv, .95)
   }
   if (UX.getMode() === 'chars' && selChar) {
@@ -3105,6 +3102,7 @@
  const buildingOrder = o => { const t = data.buildings[o.id]; if (!t || !Array.isArray(t.zo) || !t.zo.length) return null; const c = center(o); return window.PieceGeometry.footprint({ zo: t.zo, orderU: t.orderU, orderV: t.orderV }, c.u, c.v, false) };
  window.VillageAssetEdit = {
   buildingOrder,
+  hasRed: id => !!data.buildings[id]?.block,   /* v98.835 · this place is walled by its red frame (village-town.html skips the old footprint wall for it) */
   blockedAt, blocks: () => blockBoxes().map(r => ({ u0: r.u0, u1: r.u1, v0: r.v0, v1: r.v1 })),
   refreshPanel: () => { try { render() } catch (_) {} },
   charScale,
@@ -3116,7 +3114,8 @@
   placeId: () => place?.id || null,
   wkSharpOf: o => { try { return wkSharpOf(o) } catch (_) { return null } },
   wkBlendOf: o => { try { return wkBlendOf(o) } catch (_) { return null } },
-  footprintEditing: () => place ? place.tab === 'building' : null, // false = another tab is open: the blue area hides, a dashed yellow outline stays
+  footprintEditing: () => false,   /* v98.835 · the old blue plot area is not edited / shown any more (dashed outline stays as the placement plot) */
+  _unusedFootprintEditing: () => place ? place.tab === 'building' : null, // false = another tab is open: the blue area hides, a dashed yellow outline stays
   itemKeys: owner => frame.filter(e => e.owner === owner && !e.hidden).map(e => e.key),
   select: ks => { if (place) { place.keys = [...ks]; place.tab = 'items'; render() } },
   pick: key => selectItem(key),
@@ -3124,7 +3123,7 @@
   frameList: () => frame.map(e => ({ key: e.key, art: e.art, label: e.label, own: frOwn(e.ov || {}), block: !!(e.geo || e.ov)?.block })),   /* v98.692 · for tests / tools */
   detail: {
    /* v98.522 · key 'bld:<placeId>' = the PLACE itself (its order frame zo / orderU / orderV live in data.buildings[id]); no red frame, no art transforms */
-   get caps() { return bldDetail ? { rot: false, slant: false, skew: false, block: false, shape: false, zoom: 0.55, note: 'สถานที่: ระบายกรอบฟ้าให้เท่าส่วนที่แตะพื้นจริงของตัวอาคาร (รวมเฉลียง/ปีกยื่น) · ไม่ระบาย = ใช้กรอบแปลงเดิม' } : { skew: false } },
+   get caps() { return bldDetail ? { rot: false, slant: false, block: true, frames: false, zoom: 0.55, note: 'สถานที่: 🟦 กรอบฟ้า = การบัง (ระบายให้เท่าส่วนที่แตะพื้นจริง รวมเฉลียง/ปีกยื่น) · 🟥 กรอบแดง = การชน — ติ๊ก "บล็อกเดิน" แล้วตัวละคร/NPC เดินทะลุกรอบแดงไม่ได้ ส่วนที่ไม่ระบายแดง (ทางเข้า ลาน) เดินผ่านได้ · พื้นฟ้าเดิมของแปลง/ช่องเหลือง/ช่องเขียว ยกเลิกแล้ว — ยังไม่ระบายกรอบแดง = เดินทะลุสถานที่ได้' } : { rot: false, slant: false } },   /* v98.838 · the same piece tools as the sub-maps: size ± · base tilt (เอียงฐาน) · pole tilt (เอียงเสา) · flip — no rotate / no ↗↙↖↘ slant */
    item: key => { if (String(key).startsWith('bld:')) { const o = locations.find(x => x.id === key.slice(4)); bldDetail = !!o; return o ? { key, label: bldName[o.id] || o.name || o.id, ax: 0, ay: 0, bld: o } : null } bldDetail = false; return frame.find(e => e.key === key) || null },
    ov: key => { if (String(key).startsWith('bld:')) return data.buildings[key.slice(4)] || {}; const o = data.edit[key] || {}, E = frame.find(e => e.key === key); return E ? geoOv(o, E.art) : o },   /* v98.692 · the window shows the frame the piece really uses (own → picture's template) */
    edit(key, fn, checkpoint) {
@@ -3140,17 +3139,17 @@
       clean(key); UX.persist(); render(); return
      }
     }
-    if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); render(); return }
+    if (String(key).startsWith('bld:')) { const id = key.slice(4), b = data.buildings[id] || (data.buildings[id] = {}); fn(b); for (const k of ['zo', 'orderU', 'orderV', 'sw', 'sh', 'tall', 'zb', 'fw', 'fh', 'blockU', 'blockV', 'artX', 'artY', 'sky', 'skx', 'pm']) if (b[k] == null || b[k] === 0 || b[k] === '' || (Array.isArray(b[k]) && !b[k].length)) delete b[k]; if (!b.block) delete b.block; if (!b.f) delete b.f; if (b.s == null || Math.abs(b.s - 1) < .0005) delete b.s; try { buildingRec(id) } catch (e) { }   /* v98.841 · the place's size next to the hero is stored (asset-hero-ratio) */ if (!Object.keys(b).length) delete data.buildings[id]; UX.persist(); try { rebuildBlocks() } catch (e) { } render(); return }
     fn(ovOf(key)); clean(key); UX.persist(); render()
    },
-   check: key => String(key).startsWith('bld:') ? ((data.buildings[key.slice(4)] || {}).chk || {}) : ((data.edit[key] || {}).chk || {}),   /* v98.719 · review ticks (see PieceDetail.gauge) */
-   setCheck(key, f, v) { UX.checkpoint(); const bld = String(key).startsWith('bld:'), o = bld ? (data.buildings[key.slice(4)] ||= {}) : ovOf(key), c = { ...(o.chk || {}) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; if (!bld) clean(key); UX.persist(); render() },
+   check: key => String(key).startsWith('bld:') ? ((data.buildings[key.slice(4)] || {}).chk || {}) : chkEff(frame.find(e => e.key === key)?.art, data.edit[key] || {}),   /* v98.719 · review ticks (see PieceDetail.gauge) */
+   setCheck(key, f, v) { UX.checkpoint(); const bld = String(key).startsWith('bld:'), o = bld ? (data.buildings[key.slice(4)] ||= {}) : ovOf(key), c = { ...(bld ? (o.chk || {}) : chkEff(frame.find(e => e.key === key)?.art, o)) }; if (v) c[f] = 1; else delete c[f]; if (Object.keys(c).length) o.chk = c; else delete o.chk; if (!bld) clean(key); UX.persist(); render() },
    frames: window.ArtFrames ? {
     autoNote: 'ยังไม่มีค่าของภาพนี้ (ชิ้นนี้ยังไม่มีกรอบ ให้วางกรอบฟ้า/แดงก่อน)',
     state: key => { const E = frame.find(e => e.key === key); if (!E) return null; const AF = window.ArtFrames, o = data.edit[key] || {}, own = frOwn(o); return { own, tpl: AF.has(E.art), uses: frame.filter(e => e.art === E.art && !e.hidden && !frOwn(e.ov || {})).length } },
-    saveToArt: key => { const E = frame.find(e => e.key === key); if (!E) return; const o = ovOf(key), AF = window.ArtFrames; if (!frOwn(o) && !AF.has(E.art)) { flashStatus('วางกรอบฟ้า/แดงของชิ้นนี้ก่อน แล้วค่อยบันทึกลงภาพ'); return } UX.checkpoint(); try { sizeRec(key) } catch (e) { }   /* v98.718 · and the size next to the hero */ AF.saveFrom({ ...o, ...window.ArtFrames.effective({ ...o, art: E.art, width: 100 }), art: E.art, width: 100, s: o.s, f: o.f }); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() },
-    applyAll: key => { const E = frame.find(e => e.key === key); if (!E) return 0; UX.checkpoint(); let n = 0; for (const e of frame) if (e.art === E.art) { const o = data.edit[e.key]; if (o && frOwn(o)) { for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(e.key); n++ } } UX.persist(); render(); return n },
-    useArt: key => { const o = data.edit[key]; if (!o) return; UX.checkpoint(); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; clean(key); UX.persist(); render() }
+    saveToArt: key => { const E = frame.find(e => e.key === key); if (!E) return; const o = ovOf(key), AF = window.ArtFrames; if (!frOwn(o) && !AF.has(E.art)) { flashStatus('วางกรอบฟ้า/แดงของชิ้นนี้ก่อน แล้วค่อยบันทึกลงภาพ'); return } UX.checkpoint(); try { sizeRec(key) } catch (e) { }   /* v98.718 · and the size next to the hero */ AF.saveFrom({ ...o, ...window.ArtFrames.effective({ ...o, art: E.art, width: 100 }), art: E.art, width: 100, s: o.s, f: o.f, chk: chkEff(E.art, o) }); for (const k of [...FR_FIELDS, 'fo', 'chk']) delete o[k]; clean(key); UX.persist(); render() },
+    applyAll: key => { const E = frame.find(e => e.key === key); if (!E) return 0; UX.checkpoint(); let n = 0; const tc = window.ArtFrames?.get?.(E.art)?.chk; for (const e of frame) if (e.art === E.art) { const o = data.edit[e.key]; if (o && frOwn(o)) { for (const k of [...FR_FIELDS, 'fo']) delete o[k]; if (tc) delete o.chk; clean(e.key); n++ } else if (o && tc && o.chk) { delete o.chk; clean(e.key) } } UX.persist(); render(); return n },
+    useArt: key => { const o = data.edit[key]; if (!o) return; UX.checkpoint(); for (const k of [...FR_FIELDS, 'fo']) delete o[k]; if (window.ArtFrames?.get?.(frame.find(e => e.key === key)?.art)?.chk) delete o.chk; clean(key); UX.persist(); render() }
    } : null,
    /* draws the piece, with its own edit (size, turn, flip, slant, swapped picture) but WITHOUT the map offset, at (0,0) of the context q */
    drawTo(q, E, ov) {
@@ -3158,7 +3157,7 @@
     const main = g, s = ov.s ?? 1, r = (ov.r || 0) * Math.PI / 180, ix = ov.ix ?? 1, iy = ov.iy ?? 1, k = ov.kind && KINDS[ov.kind] ? ov.kind : null;
     g = q;
     try {
-     q.save(); window.PieceGeometry.apply(q, ov); if (r) q.rotate(r); q.scale(ov.f ? -s : s, s); q.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); q.translate(-E.ax, -E.ay);
+     q.save(); window.PieceGeometry.apply(q, ov); if (r) q.rotate(r); q.scale(ov.f ? -s : s, s); q.transform((ix + iy) / 2, (iy - ix) / 2, (iy - ix) / 2, (ix + iy) / 2, 0, 0); if (ov.skx || ov.sky) q.transform(1, Math.tan((ov.sky || 0) * Math.PI / 180), Math.tan((ov.skx || 0) * Math.PI / 180), 1, 0, 0); q.translate(-E.ax, -E.ay);
      if (k) KINDS[k].draw({ x: E.ax, y: E.ay }); else E.base(q);
      q.restore()
     } catch (e) { } finally { g = main }

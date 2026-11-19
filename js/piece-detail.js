@@ -162,7 +162,7 @@ ${caps().block === false ? '' : `<button id="pdSzReset" title="กรอบแ�
 <h4>การบัง</h4><label class="pdc">ความสูง <select id="pdT"><option value="">อัตโนมัติ (จากชื่อ)</option><option value="tall"${ov.tall === 'tall' ? ' selected' : ''}>สูง</option><option value="low"${ov.tall === 'low' ? ' selected' : ''}>เตี้ย</option></select></label><p id="pdState" class="pdst"></p>
 ${D().lightMap && window.ArtLights ? '<h4>💡 จุดสว่าง</h4><div id="pdLights"></div>' : ''}
 ${D().check ? (() => { const c = D().check(key) || {}; const row = (f, col, t) => `<label class="pdc"><input type="checkbox" data-chk="${f}" ${c[f] ? 'checked' : ''}> <span style="color:${col}">■</span> ${t}</label>`; return `<h4>✔ ตรวจสอบแล้ว <small style="opacity:.7">(ติ๊กเองทีละข้อ · แสดงเป็นหลอดที่มุมบนขวาของแผงภาพ)</small></h4><button type="button" id="pdChkAll">${c.b && c.r && c.s ? '↺ ล้างการตรวจสอบทั้ง 3' : '✔ ตรวจสอบครบทั้ง 3 (คลิกเดียว)'}</button>${row('b', '#3c82ff', 'กรอบฟ้า ตรวจสอบแล้ว')}${row('r', '#e0435f', 'กรอบแดง ตรวจสอบแล้ว')}${row('s', '#f2c200', 'สัดส่วนเทียบตัวหลัก ตรวจสอบแล้ว')}` })() : ''}
-${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint" id="pdFrState"></p><div class="pdr" style="display:flex;gap:6px;flex-wrap:wrap"><button id="pdFrSave" title="บันทึกกรอบฟ้า/แดง + ขนาดของภาพเทียบตัวเอก เป็นค่าของภาพนี้ — ทุกแมพที่ใช้ภาพนี้และไม่ได้แก้กรอบเองจะตามทันที · ชิ้นใหม่ของภาพนี้เริ่มที่ขนาดนี้">💾 บันทึกลงภาพนี้ (ทุกแมพ)</button><button id="pdFrUse" title="ทิ้งกรอบที่แก้เฉพาะชิ้นนี้ แล้วตามค่าของภาพ">↩ ใช้ค่าของภาพ</button>${D().frames.applyAll ? '<button id="pdFrAll" title="ชิ้นอื่นบนแมพนี้ที่ใช้ภาพเดียวกันแต่เคยแก้เฉพาะชิ้นไว้ จะทิ้งกรอบเดิมแล้วตามค่าของภาพทั้งหมด">⤵ ให้ทุกชิ้นของภาพนี้ตามค่าของภาพ</button>' : ''}</div>` : ''}</div></div>`;   /* v98.723 · order at the bottom: … การบัง · ✔ ตรวจสอบแล้ว (3 colours) · กรอบติดตัวภาพ (save to the picture) LAST */
+${D().frames && caps().frames !== false ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint" id="pdFrState"></p><div class="pdr" style="display:flex;gap:6px;flex-wrap:wrap"><button id="pdFrSave" title="บันทึกกรอบฟ้า/แดง + ขนาดของภาพเทียบตัวเอก เป็นค่าของภาพนี้ — ทุกแมพที่ใช้ภาพนี้และไม่ได้แก้กรอบเองจะตามทันที · ชิ้นใหม่ของภาพนี้เริ่มที่ขนาดนี้">💾 บันทึกลงภาพนี้ (ทุกแมพ)</button><button id="pdFrUse" title="ทิ้งกรอบที่แก้เฉพาะชิ้นนี้ แล้วตามค่าของภาพ">↩ ใช้ค่าของภาพ</button>${D().frames.applyAll ? '<button id="pdFrAll" title="ชิ้นอื่นบนแมพนี้ที่ใช้ภาพเดียวกันแต่เคยแก้เฉพาะชิ้นไว้ จะทิ้งกรอบเดิมแล้วตามค่าของภาพทั้งหมด">⤵ ให้ทุกชิ้นของภาพนี้ตามค่าของภาพ</button>' : ''}</div>` : ''}</div></div>`;   /* v98.723 · order at the bottom: … การบัง · ✔ ตรวจสอบแล้ว (3 colours) · กรอบติดตัวภาพ (save to the picture) LAST */
   }
   function css() {
     if (document.getElementById('pdCss')) return; const s = document.createElement('style'); s.id = 'pdCss';
@@ -210,11 +210,11 @@ ${D().frames ? `<h4>กรอบติดตัวภาพ</h4><p class="pdhint
     box.querySelectorAll('[data-lt]').forEach(b => b.onclick = () => { const [i, f, d] = b.dataset.lt.split(','), list = lightList(m); if (!list[+i]) return; if (f === 'x') { list.splice(+i, 1); selLight = -1 } else { list[+i][f] = +(list[+i][f] + +d).toFixed(2); selLight = +i } save(list) });
     if (el('pdLtAdd')) el('pdLtAdd').onclick = () => setMode('light'); if (el('pdLtOff')) el('pdLtOff').onclick = () => { selLight = -1; save([]) }; if (el('pdLtDef')) el('pdLtDef').onclick = () => { ArtLights.clear(m.art); selLight = -1; renderLights(); paint() };
   }
-  function open(k) {
+  function open(k, startMode) {
     const d = D(); if (!d || !G() || !DS()) return; const E = d.item(k); if (!E) return;
     key = k; Z = d.caps?.zoom || 1.9; Z0 = Z; S = 28 * Z; T = 14 * Z; fitCanvas(); css(); walker = { u: -.6, v: 3.4 }; points = []; undo = []; mode = 'walk'; gesture = null;
     if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'pieceDetail'; document.body.append(dlg) }
-    build(); if (!dlg.open) dlg.showModal();
+    build(); if (!dlg.open) dlg.showModal(); if (startMode) { try { setMode(startMode) } catch (e) { } }   /* v98.840 · e.g. open(key, 'fit') = straight into 📐 base fit */
   }
   function setMode(m) {
     gesture = null; mode = m; hover = null; if (el('pdBrushBar')) el('pdBrushBar').hidden = !isBrush(m); if ((m === 'block' || m === 'bb') && !D().ov(key).block) { edit(o => { o.block = true }); if (el('pdB')) el('pdB').checked = true }
