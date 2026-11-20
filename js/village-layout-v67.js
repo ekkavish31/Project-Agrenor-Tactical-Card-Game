@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-11-19T23:40:44.625Z.
+// Village default layout — saved from the in-game editor 2026-11-20T02:46:39.041Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -191,8 +191,8 @@ window.VillageDefaultLayout={
       }
     },
     "npc8": {
-      "x": 30,
-      "y": 50.666667,
+      "x": 31.5625,
+      "y": 54.277778,
       "facing": "SE",
       "entry": {
         "du": -1.502,
@@ -309,8 +309,8 @@ window.VillageDefaultLayout={
         "v1": 1.5
       },
       "entry": {
-        "du": -0.5,
-        "dv": 0.5,
+        "du": -0.75,
+        "dv": 0.25,
         "deep": true
       },
       "sharp": {
@@ -322,8 +322,8 @@ window.VillageDefaultLayout={
       }
     },
     "custom-mvqg7qer": {
-      "x": 50.9375,
-      "y": 26.166667,
+      "x": 26.5625,
+      "y": 47.277778,
       "facing": "SW",
       "flipArt": true,
       "fp": {
@@ -1349,18 +1349,20 @@ window.VillageDefaultLayout={
         "dv": -0.8
       },
       "add:mwh8ddxlm3a": {
-        "du": -6,
-        "dv": 2.5,
-        "s": 1.03
+        "du": -6.5579,
+        "dv": 2.6612,
+        "s": 1.03,
+        "free": true
       },
       "add:mwh8eon6rpa": {
         "s": 1.03,
-        "du": 13.7,
-        "dv": -0.8
+        "du": 14.0263,
+        "dv": -0.6379,
+        "free": true
       },
       "add:mwh8f6jjdy0": {
-        "du": -10.9334,
-        "dv": -0.4334,
+        "du": -11.4913,
+        "dv": -0.2226,
         "s": 0.764,
         "f": true,
         "free": true
@@ -1368,8 +1370,9 @@ window.VillageDefaultLayout={
       "add:mwh8hby2wpy": {
         "s": 0.84,
         "f": true,
-        "du": 21.7,
-        "dv": -0.8
+        "du": 22.0883,
+        "dv": -0.7445,
+        "free": true
       },
       "add:mwo6xvi97ch": {
         "s": 0.67,
@@ -1377,6 +1380,100 @@ window.VillageDefaultLayout={
         "dv": 1.4976,
         "free": true,
         "z": 1
+      },
+      "add:mwod58jv6ck": {
+        "du": -20,
+        "dv": 1.5,
+        "art": "v:decor:stone-wall-low",
+        "width": 100,
+        "sky": 2,
+        "z": 2,
+        "grp": "g:mwod8eucz1h",
+        "free": true
+      },
+      "add:mwod7ctda8ox": {
+        "sky": 2,
+        "du": -3.699,
+        "dv": -0.9133,
+        "free": true,
+        "grp": "g:mwod8eucz1h"
+      },
+      "add:mwod7mz918oz": {
+        "free": true,
+        "sky": 2,
+        "du": -3.8989,
+        "dv": -0.8856,
+        "grp": "g:mwod8eucz1h"
+      },
+      "add:mwod8fdtl8yx": {
+        "free": true,
+        "sky": 2,
+        "du": -1.727,
+        "dv": -7.0053,
+        "f": true,
+        "z": -1,
+        "grp": "g:mwodazn82fl"
+      },
+      "add:mwod8fdtttzt": {
+        "free": true,
+        "sky": 2,
+        "du": -4.3541,
+        "dv": -4.4735,
+        "f": true,
+        "z": -1,
+        "grp": "g:mwodazn82fl"
+      },
+      "add:mwod8fdtbfp4": {
+        "sky": 2,
+        "du": -7.4171,
+        "dv": -1.833,
+        "f": true,
+        "free": true,
+        "grp": "g:mwodazn82fl"
+      },
+      "add:mwodah8p57o5": {
+        "f": true,
+        "free": true,
+        "sky": 2,
+        "z": -2,
+        "grp": "g:mwodazn82fl",
+        "du": -0.7232,
+        "dv": -8.6813
+      },
+      "add:mwodah8pwmco": {
+        "f": true,
+        "free": true,
+        "sky": 2,
+        "grp": "g:mwodazn82fl",
+        "du": -0.7232,
+        "dv": -8.6813,
+        "z": -1
+      },
+      "add:mwodah8pe2a9": {
+        "f": true,
+        "free": true,
+        "sky": 2,
+        "z": -2,
+        "grp": "g:mwodazn82fl",
+        "du": -0.7232,
+        "dv": -8.6813
+      },
+      "add:mwodblsm4f3": {
+        "du": -21.5,
+        "dv": -1.5,
+        "s": 1.15
+      },
+      "add:mwodf2x7tf8": {
+        "s": 0.7,
+        "du": -25,
+        "dv": -0.5
+      },
+      "add:mwodmxix4qm2": {
+        "s": 0.764,
+        "f": true,
+        "free": true,
+        "du": -0.9347,
+        "dv": -4.9281
       }
     },
     "added": [
@@ -1687,6 +1784,90 @@ window.VillageDefaultLayout={
         "du": 0,
         "dv": 0,
         "kind": "decor:hedge-row"
+      },
+      {
+        "id": "add:mwod58jv6ck",
+        "owner": "custom-mvq8veu1",
+        "du": 0,
+        "dv": -1.5,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwod7ctda8ox",
+        "owner": "custom-mvq8veu1",
+        "du": -19,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwod7mz918oz",
+        "owner": "custom-mvq8veu1",
+        "du": -21.5,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwod8fdtl8yx",
+        "owner": "custom-mvq8veu1",
+        "du": -24.5,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwod8fdtttzt",
+        "owner": "custom-mvq8veu1",
+        "du": -22,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwod8fdtbfp4",
+        "owner": "custom-mvq8veu1",
+        "du": -19,
+        "dv": 1,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwodah8p57o5",
+        "owner": "custom-mvq8veu1",
+        "du": -25.5,
+        "dv": -2.5,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwodah8pwmco",
+        "owner": "custom-mvq8veu1",
+        "du": -25.5,
+        "dv": 0,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwodah8pe2a9",
+        "owner": "custom-mvq8veu1",
+        "du": -25.5,
+        "dv": -5,
+        "kind": "decor:stone-wall-low"
+      },
+      {
+        "id": "add:mwodblsm4f3",
+        "owner": "custom-mvq8veu1",
+        "du": 0,
+        "dv": -1.5,
+        "kind": "pic:assets/village-town/nature/w1-oak-tree.webp"
+      },
+      {
+        "id": "add:mwodf2x7tf8",
+        "owner": "custom-mvq8veu1",
+        "du": 0,
+        "dv": -1.5,
+        "kind": "decor:well"
+      },
+      {
+        "id": "add:mwodmxix4qm2",
+        "owner": "inn",
+        "du": -10.5,
+        "dv": 8,
+        "kind": "pic:assets/objects/iron-fence2.webp"
       }
     ],
     "buildings": {
@@ -15225,10 +15406,6 @@ window.VillageDefaultLayout={
         ],
         "block": true,
         "zb": [
-          [
-            0,
-            0
-          ],
           [
             -14,
             -10
