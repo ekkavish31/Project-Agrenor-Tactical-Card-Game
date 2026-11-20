@@ -4,7 +4,7 @@
 <meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Project A Editor</title>
-<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/editor-store.js?v=v98.881"></script><script src="js/key-layout.js?v=1"></script><style>
+<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/editor-store.js?v=v98.889"></script><script src="js/key-layout.js?v=1"></script><style>
 :root{--bg:#1a1510;--bar:#241d15;--line:#4a3b29;--text:#f3e7cf;--muted:#bba57f;--gold:#f6d79b;--accent:#c9893a}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.4 AgThai,system-ui,"Noto Sans Thai",sans-serif;overflow:hidden}
@@ -46,14 +46,14 @@ const TABS=[
 /* v98.861 · every (re)load of a tab asks for a URL nobody has cached: the old reload button reused the same URL (f.src=f.src) so the browser handed back the OLD page */
 const busted=src=>src.replace(/([?&])build=[^&]*&?/,'$1').replace(/[?&]$/,'')+(src.includes('?')?'&':'?')+'build='+encodeURIComponent((window.GAME_VERSION?.v||'')+'-'+Date.now().toString(36));
 const tabs=document.getElementById('tabs'),frames=document.getElementById('frames'),note=document.getElementById('note');let cur=null;
-function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);
+function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);try{localStorage.setItem('editor-last-tab',T.id)}catch(e){}   /* v98.887 · the editor reopens on the tab that was open last (also with Ctrl+Shift+R / a link without #) */
  tabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===T.id));
  for(let f of frames.children)f.hidden=f.dataset.id!==T.id;
  if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=busted(T.src);f.title=T.name;f.allow='fullscreen';f.setAttribute('allowfullscreen','');frames.appendChild(f)}}
 tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}" title="${t.note.replace(/"/g,'&quot;')} · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด">${t.name}</button>`).join('');
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
 /* v98.861 · the ↻ โหลดใหม่ button is removed — use Ctrl+Shift+R */
-show(TABS.some(t=>t.id===location.hash.slice(1))?location.hash.slice(1):'assets');
+show((()=>{const h=location.hash.slice(1);if(TABS.some(t=>t.id===h))return h;try{const s=localStorage.getItem('editor-last-tab');if(TABS.some(t=>t.id===s))return s}catch(e){}return'assets'})());
 /* v91.55 · ⬆ Push of everything staged by Asset Studio / Object Workshop, from any tab (staged files live in IndexedDB, shared by all frames) */
 (function(){const sp=document.getElementById('stagedPush'),sd=document.getElementById('stagedDrop');let bc=null;try{bc=new BroadcastChannel('project-a-staged')}catch(e){}
  const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('asset-studio',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
