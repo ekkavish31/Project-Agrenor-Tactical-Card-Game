@@ -109375,7 +109375,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.434",
+   "artRevision": "20261120-120329",
    "usedIn": "NPC เกรเวน · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:graven",
@@ -109391,7 +109391,17 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk1/mwoik7iz-5slt.webp",
+     "at": "2026-11-20T05:03:29.094Z",
+     "stamp": "mwoik7iz-5slt",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk1",
@@ -109410,7 +109420,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.434",
+   "artRevision": "20261120-120329",
    "usedIn": "NPC เกรเวน · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:graven",
@@ -109427,7 +109437,17 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-graven-sw-walk1"
+   "mirroredFrom": "npc-graven-sw-walk1",
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk1/mwoik7iz-5slt.webp",
+     "at": "2026-11-20T05:03:29.485Z",
+     "stamp": "mwoik7iz-5slt",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "npc-tess-sw-walk1",
@@ -109748,7 +109768,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.434",
+   "artRevision": "20261120-120354",
    "usedIn": "NPC เกรเวน · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:graven",
@@ -109764,7 +109784,17 @@
     "baseline": 360,
     "sharedAcross": "standing and short-step poses, both views"
    },
-   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน"
+   "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk1/mwoikraq-dk53.webp",
+     "at": "2026-11-20T05:03:54.747Z",
+     "stamp": "mwoikraq-dk53",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "npc-graven-nw-walk1",
@@ -109783,7 +109813,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.434",
+   "artRevision": "20261120-120355",
    "usedIn": "NPC เกรเวน · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:graven",
@@ -109800,7 +109830,17 @@
     "sharedAcross": "standing and short-step poses, both views"
    },
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
-   "mirroredFrom": "npc-graven-ne-walk1"
+   "mirroredFrom": "npc-graven-ne-walk1",
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk1/mwoikraq-dk53.webp",
+     "at": "2026-11-20T05:03:55.746Z",
+     "stamp": "mwoikraq-dk53",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "npc-tess-ne-walk1",
@@ -136285,6 +136325,1150 @@
     "group": "characters"
    },
    "artRevision": "20261120-002023"
+  },
+  {
+   "id": "npc-graven-sw-walk2",
+   "file": "assets/village-town/npc/graven/sw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk3",
+   "file": "assets/village-town/npc/graven/sw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk4",
+   "file": "assets/village-town/npc/graven/sw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk5",
+   "file": "assets/village-town/npc/graven/sw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk6",
+   "file": "assets/village-town/npc/graven/sw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk7",
+   "file": "assets/village-town/npc/graven/sw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk8",
+   "file": "assets/village-town/npc/graven/sw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk9",
+   "file": "assets/village-town/npc/graven/sw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk10",
+   "file": "assets/village-town/npc/graven/sw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk11",
+   "file": "assets/village-town/npc/graven/sw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-sw-walk12",
+   "file": "assets/village-town/npc/graven/sw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk2",
+   "file": "assets/village-town/npc/graven/se-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk3",
+   "file": "assets/village-town/npc/graven/se-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk4",
+   "file": "assets/village-town/npc/graven/se-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk5",
+   "file": "assets/village-town/npc/graven/se-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk6",
+   "file": "assets/village-town/npc/graven/se-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk7",
+   "file": "assets/village-town/npc/graven/se-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk8",
+   "file": "assets/village-town/npc/graven/se-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk9",
+   "file": "assets/village-town/npc/graven/se-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk10",
+   "file": "assets/village-town/npc/graven/se-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk11",
+   "file": "assets/village-town/npc/graven/se-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-se-walk12",
+   "file": "assets/village-town/npc/graven/se-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261120-120329"
+  },
+  {
+   "id": "npc-graven-ne-walk2",
+   "file": "assets/village-town/npc/graven/ne-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261120-120354"
+  },
+  {
+   "id": "npc-graven-ne-walk3",
+   "file": "assets/village-town/npc/graven/ne-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261120-120354"
+  },
+  {
+   "id": "npc-graven-ne-walk4",
+   "file": "assets/village-town/npc/graven/ne-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-ne-walk5",
+   "file": "assets/village-town/npc/graven/ne-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-ne-walk6",
+   "file": "assets/village-town/npc/graven/ne-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-ne-walk7",
+   "file": "assets/village-town/npc/graven/ne-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-ne-walk8",
+   "file": "assets/village-town/npc/graven/ne-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-ne-walk9",
+   "file": "assets/village-town/npc/graven/ne-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-ne-walk10",
+   "file": "assets/village-town/npc/graven/ne-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-ne-walk11",
+   "file": "assets/village-town/npc/graven/ne-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-ne-walk12",
+   "file": "assets/village-town/npc/graven/ne-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-nw-walk2",
+   "file": "assets/village-town/npc/graven/nw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-nw-walk3",
+   "file": "assets/village-town/npc/graven/nw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261120-120355"
+  },
+  {
+   "id": "npc-graven-nw-walk4",
+   "file": "assets/village-town/npc/graven/nw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261120-120356"
+  },
+  {
+   "id": "npc-graven-nw-walk5",
+   "file": "assets/village-town/npc/graven/nw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261120-120356"
+  },
+  {
+   "id": "npc-graven-nw-walk6",
+   "file": "assets/village-town/npc/graven/nw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261120-120356"
+  },
+  {
+   "id": "npc-graven-nw-walk7",
+   "file": "assets/village-town/npc/graven/nw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261120-120356"
+  },
+  {
+   "id": "npc-graven-nw-walk8",
+   "file": "assets/village-town/npc/graven/nw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261120-120356"
+  },
+  {
+   "id": "npc-graven-nw-walk9",
+   "file": "assets/village-town/npc/graven/nw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261120-120356"
+  },
+  {
+   "id": "npc-graven-nw-walk10",
+   "file": "assets/village-town/npc/graven/nw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261120-120356"
+  },
+  {
+   "id": "npc-graven-nw-walk11",
+   "file": "assets/village-town/npc/graven/nw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261120-120356"
+  },
+  {
+   "id": "npc-graven-nw-walk12",
+   "file": "assets/village-town/npc/graven/nw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เกรเวน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:graven",
+    "name": "เกรเวน",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261120-120356"
   }
  ],
  "studioReviews": {
@@ -144453,1480 +145637,6 @@
   ]
  },
  "heroVariants": {
-  "male": {
-   "studioWalks": {
-    "SW": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-19T05:17:55.367Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-1",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-01.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-2",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-02.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-3",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-03.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-4",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-04.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-5",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-05.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-6",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-06.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-7",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-07.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-8",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-08.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-9",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-09.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-10",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-10.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-11",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-11.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-12",
-       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-12.webp",
-       "ms": 100
-      }
-     ]
-    },
-    "NE": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-19T05:17:07.598Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-1",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-01.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-2",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-02.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-3",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-03.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-4",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-04.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-5",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-05.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-6",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-06.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-7",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-07.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-8",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-08.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-9",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-09.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-10",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-10.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-11",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-11.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-12",
-       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-12.webp",
-       "ms": 100
-      }
-     ]
-    },
-    "NW": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-19T05:18:20.302Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-1",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-01.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-2",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-02.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-3",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-03.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-4",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-04.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-5",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-05.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-6",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-06.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-7",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-07.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-8",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-08.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-9",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-09.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-10",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-10.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-11",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-11.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-12",
-       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-12.webp",
-       "ms": 100
-      }
-     ]
-    },
-    "SE": {
-     "version": 1,
-     "canvas": [
-      384,
-      384
-     ],
-     "anchor": [
-      0.5,
-      0.9375
-     ],
-     "loop": true,
-     "createdAt": "2026-11-19T05:16:30.619Z",
-     "frames": [
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-1",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-01.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-2",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-02.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-3",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-03.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-4",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-04.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-5",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-05.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-6",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-06.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-7",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-07.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-8",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-08.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-9",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-09.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-10",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-10.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-11",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-11.webp",
-       "ms": 100
-      },
-      {
-       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-12",
-       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-12.webp",
-       "ms": 100
-      }
-     ]
-    }
-   },
-   "studioWalkMirrors": {
-    "SE": "SW",
-    "NE": "NW"
-   },
-   "studioWalkHistory": {
-    "SW": [
-     {
-      "at": "2026-11-13T23:14:20.439Z",
-      "config": {
-       "version": 1,
-       "canvas": [
-        384,
-        384
-       ],
-       "anchor": [
-        0.5,
-        0.9375
-       ],
-       "loop": true,
-       "createdAt": "2026-11-13T22:09:23.799Z",
-       "frames": [
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-1",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-01.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-2",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-02.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-3",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-03.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-4",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-04.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-5",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-05.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-6",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-06.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-7",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-07.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-8",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-08.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-9",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-09.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-10",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-10.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-11",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-11.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-12",
-         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-12.webp",
-         "ms": 100
-        }
-       ]
-      },
-      "mirrors": {
-       "SW": null,
-       "SE": "SW"
-      },
-      "frames": 12
-     },
-     {
-      "at": "2026-11-13T22:09:24.269Z",
-      "config": {
-       "version": 1,
-       "canvas": [
-        384,
-        384
-       ],
-       "anchor": [
-        0.5,
-        0.9375
-       ],
-       "loop": true,
-       "createdAt": "2026-11-13T21:49:35.400Z",
-       "frames": [
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-1",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-01.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-2",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-02.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-3",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-03.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-4",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-04.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-5",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-05.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-6",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-06.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-7",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-07.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-8",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-08.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-9",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-09.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-10",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-10.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-11",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-11.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-12",
-         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-12.webp",
-         "ms": 100
-        }
-       ]
-      },
-      "mirrors": {
-       "SW": null,
-       "SE": "SW"
-      },
-      "frames": 12
-     },
-     {
-      "at": "2026-11-13T21:49:36.135Z",
-      "config": {
-       "version": 1,
-       "canvas": [
-        384,
-        384
-       ],
-       "anchor": [
-        0.5,
-        0.9375
-       ],
-       "loop": true,
-       "createdAt": "2026-11-05T02:20:28.697Z",
-       "frames": [
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-1",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-01.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-2",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-02.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-3",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-03.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-4",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-04.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-5",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-05.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-6",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-06.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-7",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-07.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-8",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-08.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-9",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-09.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-10",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-10.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-11",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-11.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-12",
-         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-12.webp",
-         "ms": 100
-        }
-       ]
-      },
-      "mirrors": {
-       "SW": null,
-       "SE": "SW"
-      },
-      "frames": 12
-     },
-     {
-      "at": "2026-11-05T02:20:28.980Z",
-      "config": {
-       "version": 1,
-       "canvas": [
-        384,
-        384
-       ],
-       "anchor": [
-        0.5,
-        0.9375
-       ],
-       "loop": true,
-       "createdAt": "2026-11-04T12:12:57.233Z",
-       "frames": [
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-1",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-01.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-2",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-02.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-3",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-03.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-4",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-04.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-5",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-05.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-6",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-06.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-7",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-07.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-8",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-08.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-9",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-09.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-10",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-10.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-11",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-11.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-sw-walk-mwwalk12-m-12",
-         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-12.webp",
-         "ms": 100
-        }
-       ]
-      },
-      "mirrors": {
-       "SW": null,
-       "SE": "SW"
-      },
-      "frames": 12
-     },
-     {
-      "at": "2026-11-03T01:49:31.214Z",
-      "config": null,
-      "mirrors": {
-       "SW": null,
-       "SE": null
-      },
-      "frames": 12
-     }
-    ],
-    "SE": [
-     {
-      "at": "2026-11-03T01:50:38.105Z",
-      "config": null,
-      "mirrors": {
-       "SE": null,
-       "SW": "SE"
-      },
-      "frames": 12
-     }
-    ],
-    "NW": [
-     {
-      "at": "2026-11-15T00:34:16.906Z",
-      "config": null,
-      "mirrors": {
-       "NW": "NE",
-       "NE": null
-      },
-      "frames": 12
-     },
-     {
-      "at": "2026-11-03T01:52:39.517Z",
-      "config": null,
-      "mirrors": {
-       "NW": null,
-       "NE": null
-      },
-      "frames": 12
-     }
-    ],
-    "NE": [
-     {
-      "at": "2026-11-13T23:15:15.120Z",
-      "config": {
-       "version": 1,
-       "canvas": [
-        384,
-        384
-       ],
-       "anchor": [
-        0.5,
-        0.9375
-       ],
-       "loop": true,
-       "createdAt": "2026-11-13T22:09:31.464Z",
-       "frames": [
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-1",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-01.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-2",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-02.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-3",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-03.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-4",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-04.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-5",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-05.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-6",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-06.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-7",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-07.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-8",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-08.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-9",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-09.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-10",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-10.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-11",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-11.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-12",
-         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-12.webp",
-         "ms": 100
-        }
-       ]
-      },
-      "mirrors": {
-       "NE": null,
-       "NW": "NE"
-      },
-      "frames": 12
-     },
-     {
-      "at": "2026-11-13T22:07:50.429Z",
-      "config": {
-       "version": 1,
-       "canvas": [
-        384,
-        384
-       ],
-       "anchor": [
-        0.5,
-        0.9375
-       ],
-       "loop": true,
-       "createdAt": "2026-11-05T02:20:33.549Z",
-       "frames": [
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-1",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-01.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-2",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-02.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-3",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-03.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-4",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-04.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-5",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-05.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-6",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-06.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-7",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-07.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-8",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-08.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-9",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-09.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-10",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-10.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-11",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-11.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-12",
-         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-12.webp",
-         "ms": 100
-        }
-       ]
-      },
-      "mirrors": {
-       "NE": null,
-       "NW": "NE"
-      },
-      "frames": 12
-     },
-     {
-      "at": "2026-11-05T02:20:33.950Z",
-      "config": {
-       "version": 1,
-       "canvas": [
-        384,
-        384
-       ],
-       "anchor": [
-        0.5,
-        0.9375
-       ],
-       "loop": true,
-       "createdAt": "2026-11-05T01:29:52.716Z",
-       "frames": [
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-1",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-01.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-2",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-02.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-3",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-03.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-4",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-04.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-5",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-05.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-6",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-06.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-7",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-07.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-8",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-08.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-9",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-09.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-10",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-10.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-11",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-11.webp",
-         "ms": 100
-        },
-        {
-         "assetId": "studio-hero-ne-walk-mwwalk12e-m-12",
-         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-12.webp",
-         "ms": 100
-        }
-       ]
-      },
-      "mirrors": {
-       "NE": null,
-       "NW": "NE"
-      },
-      "frames": 12
-     }
-    ]
-   },
-   "studioPoses": {
-    "idle": {
-     "SW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:32.812Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-sw-idle-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.087Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-ne-idle-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/idle-ne-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "SE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:32.871Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-se-idle-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/idle-se-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.116Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-nw-idle-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     }
-    },
-    "windup": {
-     "SW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:32.915Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-sw-windup-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "SE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:32.953Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-se-windup-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.169Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-ne-windup-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/windup-ne-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.215Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-nw-windup-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     }
-    },
-    "strike": {
-     "SW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:32.985Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-sw-strike-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/strike-sw-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "SE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:33.037Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-se-strike-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.261Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-ne-strike-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/strike-ne-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.307Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-nw-strike-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     }
-    },
-    "guard": {
-     "SW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:33.076Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-sw-guard-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/guard-sw-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "SE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:33.118Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-se-guard-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/guard-se-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.347Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-ne-guard-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/guard-ne-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.397Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-nw-guard-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/guard-nw-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     }
-    },
-    "hit": {
-     "SW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:33.169Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-sw-hit-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/hit-sw-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "SE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:33.209Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-se-hit-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/hit-se-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.436Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-ne-hit-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/hit-ne-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.470Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-nw-hit-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     }
-    },
-    "down": {
-     "SW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:33.247Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-sw-down-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/down-sw-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "SE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:33.301Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-se-down-mwfkzn64-62zu-1",
-        "src": "assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NE": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.507Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-ne-down-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/down-ne-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     },
-     "NW": {
-      "version": 1,
-      "canvas": [
-       384,
-       384
-      ],
-      "anchor": [
-       0.5,
-       0.9375
-      ],
-      "loop": true,
-      "createdAt": "2026-11-13T23:01:18.556Z",
-      "frames": [
-       {
-        "assetId": "studio-hero-nw-down-mwfkzbt2-dmar-1",
-        "src": "assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp",
-        "ms": 120
-       }
-      ]
-     }
-    }
-   },
-   "studioPoseMirrors": {
-    "idle": {
-     "SE": "SW",
-     "NE": "NW"
-    },
-    "windup": {
-     "SW": "SE",
-     "NE": "NW"
-    },
-    "strike": {
-     "SW": "SE",
-     "NE": "NW"
-    },
-    "guard": {},
-    "hit": {
-     "NE": "NW"
-    },
-    "down": {
-     "SW": "SE",
-     "NE": "NW"
-    }
-   },
-   "studioPoseHistory": {
-    "idle:SW": [
-     {
-      "at": "2026-11-03T01:47:45.057Z",
-      "config": null,
-      "mirror": null
-     }
-    ],
-    "idle:NW": [
-     {
-      "at": "2026-11-03T01:48:09.190Z",
-      "config": null,
-      "mirror": null
-     }
-    ],
-    "idle:NE": [
-     {
-      "at": "2026-11-03T01:48:14.108Z",
-      "config": null,
-      "mirror": null
-     }
-    ]
-   }
-  },
   "female": {
    "studioWalks": {
     "SW": {
@@ -147731,6 +147441,1480 @@
         }
        ]
       },
+      "mirror": null
+     }
+    ]
+   }
+  },
+  "male": {
+   "studioWalks": {
+    "SW": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-19T05:17:55.367Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-1",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-01.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-2",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-02.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-3",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-03.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-4",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-04.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-5",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-05.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-6",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-06.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-7",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-07.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-8",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-08.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-9",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-09.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-10",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-10.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-11",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-11.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-sw-walk-mwn3mxbb-70c7-12",
+       "src": "assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-12.webp",
+       "ms": 100
+      }
+     ]
+    },
+    "NE": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-19T05:17:07.598Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-1",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-01.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-2",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-02.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-3",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-03.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-4",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-04.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-5",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-05.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-6",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-06.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-7",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-07.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-8",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-08.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-9",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-09.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-10",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-10.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-11",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-11.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-ne-walk-mwn3lwge-0d9w-12",
+       "src": "assets/tactics/imported/walk-ne-mwn3lwge-0d9w/frame-12.webp",
+       "ms": 100
+      }
+     ]
+    },
+    "NW": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-19T05:18:20.302Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-1",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-01.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-2",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-02.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-3",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-03.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-4",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-04.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-5",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-05.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-6",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-06.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-7",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-07.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-8",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-08.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-9",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-09.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-10",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-10.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-11",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-11.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-nw-walk-mwn3ngjy-pn54-12",
+       "src": "assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-12.webp",
+       "ms": 100
+      }
+     ]
+    },
+    "SE": {
+     "version": 1,
+     "canvas": [
+      384,
+      384
+     ],
+     "anchor": [
+      0.5,
+      0.9375
+     ],
+     "loop": true,
+     "createdAt": "2026-11-19T05:16:30.619Z",
+     "frames": [
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-1",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-01.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-2",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-02.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-3",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-03.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-4",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-04.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-5",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-05.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-6",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-06.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-7",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-07.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-8",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-08.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-9",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-09.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-10",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-10.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-11",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-11.webp",
+       "ms": 100
+      },
+      {
+       "assetId": "studio-hero-se-walk-mwn3l3p2-5yf6-12",
+       "src": "assets/tactics/imported/walk-se-mwn3l3p2-5yf6/frame-12.webp",
+       "ms": 100
+      }
+     ]
+    }
+   },
+   "studioWalkMirrors": {
+    "SE": "SW",
+    "NE": "NW"
+   },
+   "studioWalkHistory": {
+    "SW": [
+     {
+      "at": "2026-11-13T23:14:20.439Z",
+      "config": {
+       "version": 1,
+       "canvas": [
+        384,
+        384
+       ],
+       "anchor": [
+        0.5,
+        0.9375
+       ],
+       "loop": true,
+       "createdAt": "2026-11-13T22:09:23.799Z",
+       "frames": [
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-1",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-01.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-2",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-02.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-3",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-03.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-4",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-04.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-5",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-05.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-6",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-06.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-7",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-07.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-8",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-08.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-9",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-09.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-10",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-10.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-11",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-11.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfj4kt3-wg60-12",
+         "src": "assets/tactics/imported/walk-sw-mwfj4kt3-wg60/frame-12.webp",
+         "ms": 100
+        }
+       ]
+      },
+      "mirrors": {
+       "SW": null,
+       "SE": "SW"
+      },
+      "frames": 12
+     },
+     {
+      "at": "2026-11-13T22:09:24.269Z",
+      "config": {
+       "version": 1,
+       "canvas": [
+        384,
+        384
+       ],
+       "anchor": [
+        0.5,
+        0.9375
+       ],
+       "loop": true,
+       "createdAt": "2026-11-13T21:49:35.400Z",
+       "frames": [
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-1",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-01.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-2",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-02.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-3",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-03.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-4",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-04.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-5",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-05.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-6",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-06.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-7",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-07.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-8",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-08.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-9",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-09.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-10",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-10.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-11",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-11.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwfif3u0-s7b0-12",
+         "src": "assets/tactics/imported/walk-sw-mwfif3u0-s7b0/frame-12.webp",
+         "ms": 100
+        }
+       ]
+      },
+      "mirrors": {
+       "SW": null,
+       "SE": "SW"
+      },
+      "frames": 12
+     },
+     {
+      "at": "2026-11-13T21:49:36.135Z",
+      "config": {
+       "version": 1,
+       "canvas": [
+        384,
+        384
+       ],
+       "anchor": [
+        0.5,
+        0.9375
+       ],
+       "loop": true,
+       "createdAt": "2026-11-05T02:20:28.697Z",
+       "frames": [
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-1",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-01.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-2",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-02.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-3",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-03.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-4",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-04.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-5",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-05.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-6",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-06.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-7",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-07.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-8",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-08.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-9",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-09.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-10",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-10.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-11",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-11.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mw2x4syh-mwjn-12",
+         "src": "assets/tactics/imported/walk-sw-mw2x4syh-mwjn/frame-12.webp",
+         "ms": 100
+        }
+       ]
+      },
+      "mirrors": {
+       "SW": null,
+       "SE": "SW"
+      },
+      "frames": 12
+     },
+     {
+      "at": "2026-11-05T02:20:28.980Z",
+      "config": {
+       "version": 1,
+       "canvas": [
+        384,
+        384
+       ],
+       "anchor": [
+        0.5,
+        0.9375
+       ],
+       "loop": true,
+       "createdAt": "2026-11-04T12:12:57.233Z",
+       "frames": [
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-1",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-01.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-2",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-02.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-3",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-03.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-4",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-04.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-5",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-05.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-6",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-06.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-7",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-07.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-8",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-08.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-9",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-09.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-10",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-10.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-11",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-11.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-sw-walk-mwwalk12-m-12",
+         "src": "assets/tactics/imported/walk-sw-mwwalk12-m/frame-12.webp",
+         "ms": 100
+        }
+       ]
+      },
+      "mirrors": {
+       "SW": null,
+       "SE": "SW"
+      },
+      "frames": 12
+     },
+     {
+      "at": "2026-11-03T01:49:31.214Z",
+      "config": null,
+      "mirrors": {
+       "SW": null,
+       "SE": null
+      },
+      "frames": 12
+     }
+    ],
+    "SE": [
+     {
+      "at": "2026-11-03T01:50:38.105Z",
+      "config": null,
+      "mirrors": {
+       "SE": null,
+       "SW": "SE"
+      },
+      "frames": 12
+     }
+    ],
+    "NW": [
+     {
+      "at": "2026-11-15T00:34:16.906Z",
+      "config": null,
+      "mirrors": {
+       "NW": "NE",
+       "NE": null
+      },
+      "frames": 12
+     },
+     {
+      "at": "2026-11-03T01:52:39.517Z",
+      "config": null,
+      "mirrors": {
+       "NW": null,
+       "NE": null
+      },
+      "frames": 12
+     }
+    ],
+    "NE": [
+     {
+      "at": "2026-11-13T23:15:15.120Z",
+      "config": {
+       "version": 1,
+       "canvas": [
+        384,
+        384
+       ],
+       "anchor": [
+        0.5,
+        0.9375
+       ],
+       "loop": true,
+       "createdAt": "2026-11-13T22:09:31.464Z",
+       "frames": [
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-1",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-01.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-2",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-02.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-3",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-03.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-4",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-04.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-5",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-05.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-6",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-06.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-7",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-07.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-8",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-08.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-9",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-09.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-10",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-10.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-11",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-11.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwfj4qq0-vi13-12",
+         "src": "assets/tactics/imported/walk-ne-mwfj4qq0-vi13/frame-12.webp",
+         "ms": 100
+        }
+       ]
+      },
+      "mirrors": {
+       "NE": null,
+       "NW": "NE"
+      },
+      "frames": 12
+     },
+     {
+      "at": "2026-11-13T22:07:50.429Z",
+      "config": {
+       "version": 1,
+       "canvas": [
+        384,
+        384
+       ],
+       "anchor": [
+        0.5,
+        0.9375
+       ],
+       "loop": true,
+       "createdAt": "2026-11-05T02:20:33.549Z",
+       "frames": [
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-1",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-01.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-2",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-02.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-3",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-03.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-4",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-04.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-5",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-05.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-6",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-06.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-7",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-07.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-8",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-08.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-9",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-09.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-10",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-10.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-11",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-11.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mw2x4wp9-kwq8-12",
+         "src": "assets/tactics/imported/walk-ne-mw2x4wp9-kwq8/frame-12.webp",
+         "ms": 100
+        }
+       ]
+      },
+      "mirrors": {
+       "NE": null,
+       "NW": "NE"
+      },
+      "frames": 12
+     },
+     {
+      "at": "2026-11-05T02:20:33.950Z",
+      "config": {
+       "version": 1,
+       "canvas": [
+        384,
+        384
+       ],
+       "anchor": [
+        0.5,
+        0.9375
+       ],
+       "loop": true,
+       "createdAt": "2026-11-05T01:29:52.716Z",
+       "frames": [
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-1",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-01.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-2",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-02.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-3",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-03.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-4",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-04.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-5",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-05.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-6",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-06.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-7",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-07.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-8",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-08.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-9",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-09.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-10",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-10.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-11",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-11.webp",
+         "ms": 100
+        },
+        {
+         "assetId": "studio-hero-ne-walk-mwwalk12e-m-12",
+         "src": "assets/tactics/imported/walk-ne-mwwalk12e-m/frame-12.webp",
+         "ms": 100
+        }
+       ]
+      },
+      "mirrors": {
+       "NE": null,
+       "NW": "NE"
+      },
+      "frames": 12
+     }
+    ]
+   },
+   "studioPoses": {
+    "idle": {
+     "SW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:32.812Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-sw-idle-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.087Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-ne-idle-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/idle-ne-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "SE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:32.871Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-se-idle-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/idle-se-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.116Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-nw-idle-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     }
+    },
+    "windup": {
+     "SW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:32.915Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-sw-windup-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "SE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:32.953Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-se-windup-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.169Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-ne-windup-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/windup-ne-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.215Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-nw-windup-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     }
+    },
+    "strike": {
+     "SW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:32.985Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-sw-strike-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/strike-sw-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "SE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:33.037Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-se-strike-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.261Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-ne-strike-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/strike-ne-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.307Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-nw-strike-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     }
+    },
+    "guard": {
+     "SW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:33.076Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-sw-guard-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/guard-sw-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "SE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:33.118Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-se-guard-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/guard-se-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.347Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-ne-guard-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/guard-ne-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.397Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-nw-guard-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/guard-nw-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     }
+    },
+    "hit": {
+     "SW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:33.169Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-sw-hit-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/hit-sw-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "SE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:33.209Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-se-hit-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/hit-se-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.436Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-ne-hit-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/hit-ne-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.470Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-nw-hit-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     }
+    },
+    "down": {
+     "SW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:33.247Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-sw-down-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/down-sw-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "SE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:33.301Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-se-down-mwfkzn64-62zu-1",
+        "src": "assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NE": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.507Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-ne-down-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/down-ne-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     },
+     "NW": {
+      "version": 1,
+      "canvas": [
+       384,
+       384
+      ],
+      "anchor": [
+       0.5,
+       0.9375
+      ],
+      "loop": true,
+      "createdAt": "2026-11-13T23:01:18.556Z",
+      "frames": [
+       {
+        "assetId": "studio-hero-nw-down-mwfkzbt2-dmar-1",
+        "src": "assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp",
+        "ms": 120
+       }
+      ]
+     }
+    }
+   },
+   "studioPoseMirrors": {
+    "idle": {
+     "SE": "SW",
+     "NE": "NW"
+    },
+    "windup": {
+     "SW": "SE",
+     "NE": "NW"
+    },
+    "strike": {
+     "SW": "SE",
+     "NE": "NW"
+    },
+    "guard": {},
+    "hit": {
+     "NE": "NW"
+    },
+    "down": {
+     "SW": "SE",
+     "NE": "NW"
+    }
+   },
+   "studioPoseHistory": {
+    "idle:SW": [
+     {
+      "at": "2026-11-03T01:47:45.057Z",
+      "config": null,
+      "mirror": null
+     }
+    ],
+    "idle:NW": [
+     {
+      "at": "2026-11-03T01:48:09.190Z",
+      "config": null,
+      "mirror": null
+     }
+    ],
+    "idle:NE": [
+     {
+      "at": "2026-11-03T01:48:14.108Z",
+      "config": null,
       "mirror": null
      }
     ]
@@ -150758,308 +151942,7 @@
     ]
    }
   },
-  "graven": {
-   "SW": {
-    "version": 1,
-    "canvas": [
-     384,
-     384
-    ],
-    "anchor": [
-     0.5,
-     0.9375
-    ],
-    "loop": true,
-    "createdAt": "2026-11-17T07:09:54.830Z",
-    "frames": [
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-1",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-01.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-2",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-02.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-3",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-03.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-4",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-04.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-5",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-05.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-6",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-06.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-7",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-07.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-8",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-08.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-9",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-09.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-10",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-10.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-11",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-11.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-sw-walk-mwkcr8r2-12",
-      "src": "assets/tactics/imported/ally-graven-walk-sw-mwkcr8r2/frame-12.webp",
-      "ms": 100
-     }
-    ]
-   },
-   "SE": {
-    "version": 1,
-    "canvas": [
-     384,
-     384
-    ],
-    "anchor": [
-     0.5,
-     0.9375
-    ],
-    "loop": true,
-    "createdAt": "2026-11-17T07:10:03.081Z",
-    "frames": [
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-1",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-01.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-2",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-02.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-3",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-03.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-4",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-04.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-5",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-05.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-6",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-06.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-7",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-07.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-8",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-08.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-9",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-09.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-10",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-10.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-11",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-11.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-se-walk-mwkcrf49-12",
-      "src": "assets/tactics/imported/ally-graven-walk-se-mwkcrf49/frame-12.webp",
-      "ms": 100
-     }
-    ]
-   },
-   "NE": {
-    "version": 1,
-    "canvas": [
-     384,
-     384
-    ],
-    "anchor": [
-     0.5,
-     0.9375
-    ],
-    "loop": true,
-    "createdAt": "2026-11-17T07:12:05.774Z",
-    "frames": [
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-1",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-01.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-2",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-02.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-3",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-03.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-4",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-04.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-5",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-05.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-6",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-06.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-7",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-07.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-8",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-08.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-9",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-09.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-10",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-10.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-11",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-11.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-ne-walk-mwkcu1se-12",
-      "src": "assets/tactics/imported/ally-graven-walk-ne-mwkcu1se/frame-12.webp",
-      "ms": 100
-     }
-    ]
-   },
-   "NW": {
-    "version": 1,
-    "canvas": [
-     384,
-     384
-    ],
-    "anchor": [
-     0.5,
-     0.9375
-    ],
-    "loop": true,
-    "createdAt": "2026-11-17T07:12:11.728Z",
-    "frames": [
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-1",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-01.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-2",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-02.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-3",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-03.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-4",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-04.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-5",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-05.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-6",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-06.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-7",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-07.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-8",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-08.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-9",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-09.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-10",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-10.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-11",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-11.webp",
-      "ms": 100
-     },
-     {
-      "assetId": "studio-ally-graven-nw-walk-mwkcu6ds-12",
-      "src": "assets/tactics/imported/ally-graven-walk-nw-mwkcu6ds/frame-12.webp",
-      "ms": 100
-     }
-    ]
-   }
-  },
+  "graven": {},
   "mira": {
    "SW": {
     "version": 1,
