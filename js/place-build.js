@@ -881,7 +881,7 @@ const PB_ART = (() => {
  bar.innerHTML = `<select id="pbMap" title="เลือกแผนที่ย่อย · แบ่งตามเมือง · ✔ มีแมพแล้ว · ＋ ยังไม่มี (เลือกแล้วสร้างห้องว่างให้)">${mapOptions()}</select><i></i>
  <button data-t="select"><b>👆</b><span>เลือก / ย้าย</span><kbd>1</kbd></button><button data-t="chars"><b>👤</b><span>ตัวละคร</span><kbd>2</kbd></button><i></i>
  <button data-a="undo"><b>↶</b><span>ย้อน</span></button><button data-a="redo"><b>↷</b><span>ทำซ้ำ</span></button><button data-a="fit"><b>⤢</b><span>ดูทั้งหมด</span></button><i></i>
- <button data-a="test"><b>▶</b><span>ทดสอบ</span><kbd>T</kbd></button><button data-a="push" class="pp"><b>⬆</b><span>push</span></button>`;
+ <button data-a="test"><b>▶</b><span>ทดสอบ</span><kbd>T</kbd></button><button data-a="push" class="pp" title="บันทึกลง Cart (ยังไม่ push ขึ้นเกม — กด Cart to Push ที่แถบบนเพื่อส่งจริง)"><b>🛒</b><span>To Cart</span></button>`;
  document.body.append(bar);
  if (window.GitHubPush) {
   const s = GitHubPush.settingsButton();
