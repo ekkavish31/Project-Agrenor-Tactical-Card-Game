@@ -107674,7 +107674,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.423",
+   "artRevision": "20261120-120727",
    "usedIn": "NPC เกรเวน · ยืน",
    "studioOwner": {
     "id": "npc:graven",
@@ -107687,7 +107687,16 @@
     "sharedAcross": "whole sheet, both views"
    },
    "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
-   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา"
+   "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-stand/20261120-120727.webp",
+     "at": "2026-11-20T05:07:27.370Z",
+     "stamp": "20261120-120727",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-stand",
@@ -109375,7 +109384,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261120-120329",
+   "artRevision": "20261120-121059",
    "usedIn": "NPC เกรเวน · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:graven",
@@ -109394,6 +109403,13 @@
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "ms": 100,
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk1/20261120-121023.webp",
+     "at": "2026-11-20T05:10:23.689Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-sw-walk1/mwoik7iz-5slt.webp",
      "at": "2026-11-20T05:03:29.094Z",
@@ -109420,7 +109436,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261120-120329",
+   "artRevision": "20261120-121025",
    "usedIn": "NPC เกรเวน · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:graven",
@@ -109440,6 +109456,13 @@
    "mirroredFrom": "npc-graven-sw-walk1",
    "ms": 100,
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk1/20261120-121023.webp",
+     "at": "2026-11-20T05:10:25.216Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-se-walk1/mwoik7iz-5slt.webp",
      "at": "2026-11-20T05:03:29.485Z",
@@ -136350,7 +136373,16 @@
    },
    "frame": 2,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121059",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk2/20261120-121023.webp",
+     "at": "2026-11-20T05:10:26.517Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk3",
@@ -136376,7 +136408,16 @@
    },
    "frame": 3,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk3/20261120-121023.webp",
+     "at": "2026-11-20T05:10:29.367Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk4",
@@ -136402,7 +136443,16 @@
    },
    "frame": 4,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk4/20261120-121023.webp",
+     "at": "2026-11-20T05:10:32.557Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk5",
@@ -136428,7 +136478,16 @@
    },
    "frame": 5,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk5/20261120-121023.webp",
+     "at": "2026-11-20T05:10:35.707Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk6",
@@ -136454,7 +136513,16 @@
    },
    "frame": 6,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk6/20261120-121023.webp",
+     "at": "2026-11-20T05:10:38.471Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk7",
@@ -136480,7 +136548,16 @@
    },
    "frame": 7,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk7/20261120-121023.webp",
+     "at": "2026-11-20T05:10:41.572Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk8",
@@ -136506,7 +136583,16 @@
    },
    "frame": 8,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk8/20261120-121023.webp",
+     "at": "2026-11-20T05:10:44.556Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk9",
@@ -136532,7 +136618,16 @@
    },
    "frame": 9,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk9/20261120-121023.webp",
+     "at": "2026-11-20T05:10:47.586Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk10",
@@ -136558,7 +136653,16 @@
    },
    "frame": 10,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk10/20261120-121023.webp",
+     "at": "2026-11-20T05:10:50.495Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk11",
@@ -136584,7 +136688,16 @@
    },
    "frame": 11,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk11/20261120-121023.webp",
+     "at": "2026-11-20T05:10:53.279Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-sw-walk12",
@@ -136610,7 +136723,16 @@
    },
    "frame": 12,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121100",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-walk12/20261120-121023.webp",
+     "at": "2026-11-20T05:10:56.446Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk2",
@@ -136636,7 +136758,16 @@
    },
    "frame": 2,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121028",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk2/20261120-121023.webp",
+     "at": "2026-11-20T05:10:28.045Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk3",
@@ -136662,7 +136793,16 @@
    },
    "frame": 3,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121031",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk3/20261120-121023.webp",
+     "at": "2026-11-20T05:10:30.988Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk4",
@@ -136688,7 +136828,16 @@
    },
    "frame": 4,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121034",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk4/20261120-121023.webp",
+     "at": "2026-11-20T05:10:34.166Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk5",
@@ -136714,7 +136863,16 @@
    },
    "frame": 5,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121037",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk5/20261120-121023.webp",
+     "at": "2026-11-20T05:10:37.069Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk6",
@@ -136740,7 +136898,16 @@
    },
    "frame": 6,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121040",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk6/20261120-121023.webp",
+     "at": "2026-11-20T05:10:40.035Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk7",
@@ -136766,7 +136933,16 @@
    },
    "frame": 7,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121042",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk7/20261120-121023.webp",
+     "at": "2026-11-20T05:10:42.860Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk8",
@@ -136792,7 +136968,16 @@
    },
    "frame": 8,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121046",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk8/20261120-121023.webp",
+     "at": "2026-11-20T05:10:46.195Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk9",
@@ -136818,7 +137003,16 @@
    },
    "frame": 9,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121048",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk9/20261120-121023.webp",
+     "at": "2026-11-20T05:10:48.955Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk10",
@@ -136844,7 +137038,16 @@
    },
    "frame": 10,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121051",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk10/20261120-121023.webp",
+     "at": "2026-11-20T05:10:51.910Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk11",
@@ -136870,7 +137073,16 @@
    },
    "frame": 11,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121054",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk11/20261120-121023.webp",
+     "at": "2026-11-20T05:10:54.869Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-se-walk12",
@@ -136896,7 +137108,16 @@
    },
    "frame": 12,
    "ms": 100,
-   "artRevision": "20261120-120329"
+   "artRevision": "20261120-121058",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-walk12/20261120-121023.webp",
+     "at": "2026-11-20T05:10:58.267Z",
+     "stamp": "20261120-121023",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-graven-ne-walk2",
@@ -142525,7 +142746,8 @@
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwfkzn64-62zu-1\",\"assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-200027\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142913999
   },
   "[\"tactics.windup.sw\",\"SW\",false,[[\"studio-hero-sw-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-205049\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -142540,12 +142762,14 @@
   "[\"tactics.guard.sw\",\"SW\",false,[[\"studio-hero-sw-guard-mwfkzn64-62zu-1\",\"assets/tactics/imported/guard-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-210353\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914143
   },
   "[\"tactics.hit.sw\",\"SW\",false,[[\"studio-hero-sw-hit-mwfkzn64-62zu-1\",\"assets/tactics/imported/hit-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-202148\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914143
   },
   "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-sw-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-211737\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -142575,7 +142799,8 @@
   "[\"tactics.guard.ne\",\"NE\",false,[[\"studio-hero-ne-guard-mwfkzbt2-dmar-1\",\"assets/tactics/imported/guard-ne-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-094406\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914278
   },
   "[\"tactics.hit.ne\",\"NE\",false,[[\"studio-hero-ne-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-ne-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-094711\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -142595,7 +142820,8 @@
   "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwfkzn64-62zu-1\",\"assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261118-200027\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142913999
   },
   "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-nw-idle-mwfkzbt2-dmar-1\",\"assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"mwfkzbt2-dmar\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -142660,82 +142886,98 @@
   "[\"tactics.windup.se\",\"SE\",false,[[\"studio-hero-se-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914072
   },
   "[\"tactics.windup.sw\",\"SW\",false,[[\"studio-hero-se-windup-mwfkzn64-62zu-1\",\"assets/tactics/imported/windup-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914072
   },
   "[\"tactics.strike.se\",\"SE\",false,[[\"studio-hero-se-strike-mwfkzn64-62zu-1\",\"assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914107
   },
   "[\"tactics.strike.sw\",\"SW\",false,[[\"studio-hero-se-strike-mwfkzn64-62zu-1\",\"assets/tactics/imported/strike-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914107
   },
   "[\"tactics.down.se\",\"SE\",false,[[\"studio-hero-se-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110137\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914143
   },
   "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-se-down-mwfkzn64-62zu-1\",\"assets/tactics/imported/down-se-mwfkzn64-62zu/frame-01.webp\",0,\"20261119-110137\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914143
   },
   "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-nw-idle-mwfkzbt2-dmar-1\",\"assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914348
   },
   "[\"tactics.idle.nw\",\"NW\",true,[[\"studio-hero-nw-idle-mwfkzbt2-dmar-1\",\"assets/tactics/imported/idle-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914348
   },
   "[\"tactics.windup.ne\",\"NE\",false,[[\"studio-hero-nw-windup-mwfkzbt2-dmar-1\",\"assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914376
   },
   "[\"tactics.windup.nw\",\"NW\",false,[[\"studio-hero-nw-windup-mwfkzbt2-dmar-1\",\"assets/tactics/imported/windup-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914376
   },
   "[\"tactics.strike.ne\",\"NE\",false,[[\"studio-hero-nw-strike-mwfkzbt2-dmar-1\",\"assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914408
   },
   "[\"tactics.strike.nw\",\"NW\",false,[[\"studio-hero-nw-strike-mwfkzbt2-dmar-1\",\"assets/tactics/imported/strike-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914408
   },
   "[\"tactics.hit.ne\",\"NE\",false,[[\"studio-hero-nw-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914444
   },
   "[\"tactics.hit.nw\",\"NW\",false,[[\"studio-hero-nw-hit-mwfkzbt2-dmar-1\",\"assets/tactics/imported/hit-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110136\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914444
   },
   "[\"tactics.down.ne\",\"NE\",false,[[\"studio-hero-nw-down-mwfkzbt2-dmar-1\",\"assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110137\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914473
   },
   "[\"tactics.down.nw\",\"NW\",false,[[\"studio-hero-nw-down-mwfkzbt2-dmar-1\",\"assets/tactics/imported/down-nw-mwfkzbt2-dmar/frame-01.webp\",0,\"20261119-110137\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T04:02:05.430Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914473
   },
   "[\"tactics.walk.sw\",\"SW\",true,[[\"studio-hero-sw-walk-mwn3l3p2-5yf6-1\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-01.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-2\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-02.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-3\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-03.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-4\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-04.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-5\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-05.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-6\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-06.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-7\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-07.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-8\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-08.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-9\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-09.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-10\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-10.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-11\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-11.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3l3p2-5yf6-12\",\"assets/tactics/imported/walk-sw-mwn3l3p2-5yf6/frame-12.webp\",0,\"mwn3l3p2-5yf6\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
@@ -142788,12 +143030,14 @@
   "[\"tactics.walk.se\",\"SE\",true,[[\"studio-hero-sw-walk-mwn3mxbb-70c7-1\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-01.webp\",0,\"20261119-122344\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-2\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-02.webp\",0,\"20261119-122344\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-3\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-03.webp\",0,\"20261119-122344\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-4\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-04.webp\",0,\"20261119-122344\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-5\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-05.webp\",0,\"20261119-122344\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-6\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-06.webp\",0,\"20261119-122344\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-7\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-07.webp\",0,\"20261119-122344\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-8\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-08.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-9\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-09.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-10\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-10.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-11\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-11.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-12\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-12.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T05:23:48.175Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914036
   },
   "[\"tactics.walk.sw\",\"SW\",true,[[\"studio-hero-sw-walk-mwn3mxbb-70c7-1\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-01.webp\",0,\"20261119-122344\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-2\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-02.webp\",0,\"20261119-122344\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-3\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-03.webp\",0,\"20261119-122344\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-4\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-04.webp\",0,\"20261119-122344\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-5\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-05.webp\",0,\"20261119-122344\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-6\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-06.webp\",0,\"20261119-122344\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-7\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-07.webp\",0,\"20261119-122344\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-8\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-08.webp\",0,\"20261119-122345\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-9\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-09.webp\",0,\"20261119-122345\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-10\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-10.webp\",0,\"20261119-122345\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-11\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-11.webp\",0,\"20261119-122345\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwn3mxbb-70c7-12\",\"assets/tactics/imported/walk-sw-mwn3mxbb-70c7/frame-12.webp\",0,\"20261119-122345\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T05:23:48.175Z"
+   "approvedAt": "2026-11-20T02:48:33.822Z",
+   "at": 1795142914036
   },
   "[\"tactics.walk.ne\",\"NE\",true,[[\"studio-hero-nw-walk-mwn3ngjy-pn54-1\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-01.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-2\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-02.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-3\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-03.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-4\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-04.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-5\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-05.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-6\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-06.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-7\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-07.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-8\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-08.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-9\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-09.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-10\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-10.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-11\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-11.webp\",0,\"20261119-122345\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-nw-walk-mwn3ngjy-pn54-12\",\"assets/tactics/imported/walk-nw-mwn3ngjy-pn54/frame-12.webp\",0,\"20261119-122346\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -142874,8 +143118,8 @@
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwflx0mt-37a0-1\",\"assets/tactics/imported/idle-sw-mwflx0mt-37a0/frame-01.webp\",0,\"20261119-224057\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T15:40:59.794Z",
-   "at": 1795102859819
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922197
   },
   "[\"tactics.walk.se\",\"SE\",true,[[\"studio-hero-sw-walk-mwnpsnlh-pr0b-1\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-01.webp\",0,\"20261119-224841\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-2\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-02.webp\",0,\"20261119-224843\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-3\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-03.webp\",0,\"20261119-224845\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-4\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-04.webp\",0,\"20261119-224847\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-5\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-05.webp\",0,\"20261119-224849\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-6\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-06.webp\",0,\"mwnpsnlh-pr0b\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-7\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-07.webp\",0,\"mwnpsnlh-pr0b\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-8\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-08.webp\",0,\"mwnpsnlh-pr0b\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-9\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-09.webp\",0,\"mwnpsnlh-pr0b\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-10\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-10.webp\",0,\"mwnpsnlh-pr0b\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-11\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-11.webp\",0,\"mwnpsnlh-pr0b\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwnpsnlh-pr0b-12\",\"assets/tactics/imported/walk-sw-mwnpsnlh-pr0b/frame-12.webp\",0,\"mwnpsnlh-pr0b\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -142916,26 +143160,26 @@
   "[\"tactics.windup.sw\",\"SW\",false,[[\"studio-hero-sw-windup-mwflx0mt-37a0-1\",\"assets/tactics/imported/windup-sw-mwflx0mt-37a0/frame-01.webp\",0,\"20261119-224946\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T15:49:55.126Z",
-   "at": 1795103395150
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922197
   },
   "[\"tactics.strike.sw\",\"SW\",false,[[\"studio-hero-sw-strike-mwflx0mt-37a0-1\",\"assets/tactics/imported/strike-sw-mwflx0mt-37a0/frame-01.webp\",0,\"20261119-225044\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T15:50:50.279Z",
-   "at": 1795103450304
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922197
   },
   "[\"tactics.guard.sw\",\"SW\",false,[[\"studio-hero-sw-guard-mwflx0mt-37a0-1\",\"assets/tactics/imported/guard-sw-mwflx0mt-37a0/frame-01.webp\",0,\"20261119-225325\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T15:53:30.118Z",
-   "at": 1795103610145
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922197
   },
   "[\"tactics.hit.sw\",\"SW\",false,[[\"studio-hero-sw-hit-mwflx0mt-37a0-1\",\"assets/tactics/imported/hit-sw-mwflx0mt-37a0/frame-01.webp\",0,\"20261119-225531\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T15:55:35.304Z",
-   "at": 1795103735327
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922197
   },
   "[\"tactics.down.sw\",\"SW\",false,[[\"studio-hero-sw-down-mwflx0mt-37a0-1\",\"assets/tactics/imported/down-sw-mwflx0mt-37a0/frame-01.webp\",0,\"20261119-225750\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -143035,32 +143279,32 @@
   "[\"tactics.idle.ne\",\"NE\",true,[[\"studio-hero-ne-idle-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/idle-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-002551\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T17:26:02.317Z",
-   "at": 1795109162346
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922226
   },
   "[\"tactics.walk.ne\",\"NE\",true,[[\"studio-hero-ne-walk-mwnpt02q-q7d0-1\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-01.webp\",0,\"20261120-002803\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-2\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-02.webp\",0,\"20261120-002803\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-3\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-03.webp\",0,\"20261120-002803\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-4\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-04.webp\",0,\"20261120-002803\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-5\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-05.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-6\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-06.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-7\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-07.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-8\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-08.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-9\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-09.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-10\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-10.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-11\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-11.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-12\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-12.webp\",0,\"20261120-002804\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T17:28:08.839Z",
-   "at": 1795109288898
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922253
   },
   "[\"tactics.walk.nw\",\"NW\",true,[[\"studio-hero-ne-walk-mwnpt02q-q7d0-1\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-01.webp\",0,\"20261120-002803\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-2\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-02.webp\",0,\"20261120-002803\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-3\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-03.webp\",0,\"20261120-002803\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-4\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-04.webp\",0,\"20261120-002803\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-5\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-05.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-6\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-06.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-7\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-07.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-8\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-08.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-9\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-09.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-10\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-10.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-11\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-11.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwnpt02q-q7d0-12\",\"assets/tactics/imported/walk-ne-mwnpt02q-q7d0/frame-12.webp\",0,\"20261120-002804\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "at": 1795109288898,
-   "approvedAt": "2026-11-19T17:28:08.839Z"
+   "at": 1795142922253,
+   "approvedAt": "2026-11-20T02:48:42.145Z"
   },
   "[\"tactics.windup.ne\",\"NE\",false,[[\"studio-hero-ne-windup-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/windup-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-002953\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T17:29:58.002Z",
-   "at": 1795109398033
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922252
   },
   "[\"tactics.strike.ne\",\"NE\",false,[[\"studio-hero-ne-strike-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/strike-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-060434\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T23:04:37.732Z",
-   "at": 1795129477763
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922252
   },
   "[\"tactics.guard.ne\",\"NE\",false,[[\"studio-hero-ne-guard-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/guard-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-060631\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -143071,20 +143315,76 @@
   "[\"tactics.guard.ne\",\"NE\",false,[[\"studio-hero-ne-guard-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/guard-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-060741\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T23:07:42.733Z",
-   "at": 1795129662783
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922252
   },
   "[\"tactics.hit.ne\",\"NE\",false,[[\"studio-hero-ne-hit-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/hit-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-060741\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T23:07:45.222Z",
-   "at": 1795129665249
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922252
   },
   "[\"tactics.down.ne\",\"NE\",false,[[\"studio-hero-ne-down-mwfm3ei2-6j5a-1\",\"assets/tactics/imported/down-ne-mwfm3ei2-6j5a/frame-01.webp\",0,\"20261120-061013\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-19T23:10:17.838Z",
-   "at": 1795129817869
+   "approvedAt": "2026-11-20T02:48:42.145Z",
+   "at": 1795142922252
+  },
+  "[\"npcwalk:npc:graven:SW\",\"SW\",true,[[\"npc-graven-sw-walk1\",\"assets/village-town/npc/graven/sw-walk1.webp\",0,\"20261120-102809\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk2\",\"assets/village-town/npc/graven/sw-walk2.webp\",0,\"20261120-102809\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk3\",\"assets/village-town/npc/graven/sw-walk3.webp\",0,\"20261120-102809\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk4\",\"assets/village-town/npc/graven/sw-walk4.webp\",0,\"20261120-102809\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk5\",\"assets/village-town/npc/graven/sw-walk5.webp\",0,\"20261120-102809\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk6\",\"assets/village-town/npc/graven/sw-walk6.webp\",0,\"20261120-102809\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk7\",\"assets/village-town/npc/graven/sw-walk7.webp\",0,\"20261120-102809\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk8\",\"assets/village-town/npc/graven/sw-walk8.webp\",0,\"20261120-102809\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk9\",\"assets/village-town/npc/graven/sw-walk9.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk10\",\"assets/village-town/npc/graven/sw-walk10.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk11\",\"assets/village-town/npc/graven/sw-walk11.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk12\",\"assets/village-town/npc/graven/sw-walk12.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795145484444,
+   "approvedAt": "2026-11-20T03:31:24.444Z"
+  },
+  "[\"allywalk:graven:SW\",\"SW\",true,[[\"studio-ally-graven-sw-walk-1\",\"assets/tactics/imported/ally-graven-walk-sw/frame-01.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-2\",\"assets/tactics/imported/ally-graven-walk-sw/frame-02.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-3\",\"assets/tactics/imported/ally-graven-walk-sw/frame-03.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-4\",\"assets/tactics/imported/ally-graven-walk-sw/frame-04.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-5\",\"assets/tactics/imported/ally-graven-walk-sw/frame-05.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-6\",\"assets/tactics/imported/ally-graven-walk-sw/frame-06.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-7\",\"assets/tactics/imported/ally-graven-walk-sw/frame-07.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-8\",\"assets/tactics/imported/ally-graven-walk-sw/frame-08.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-9\",\"assets/tactics/imported/ally-graven-walk-sw/frame-09.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-10\",\"assets/tactics/imported/ally-graven-walk-sw/frame-10.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-11\",\"assets/tactics/imported/ally-graven-walk-sw/frame-11.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-12\",\"assets/tactics/imported/ally-graven-walk-sw/frame-12.webp\",0,\"mwof84kn\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:graven:SW\",\"SW\",true,[[\"studio-ally-graven-sw-walk-1\",\"assets/tactics/imported/ally-graven-walk-sw/frame-01.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-2\",\"assets/tactics/imported/ally-graven-walk-sw/frame-02.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-3\",\"assets/tactics/imported/ally-graven-walk-sw/frame-03.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-4\",\"assets/tactics/imported/ally-graven-walk-sw/frame-04.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-5\",\"assets/tactics/imported/ally-graven-walk-sw/frame-05.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-6\",\"assets/tactics/imported/ally-graven-walk-sw/frame-06.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-7\",\"assets/tactics/imported/ally-graven-walk-sw/frame-07.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-8\",\"assets/tactics/imported/ally-graven-walk-sw/frame-08.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-9\",\"assets/tactics/imported/ally-graven-walk-sw/frame-09.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-10\",\"assets/tactics/imported/ally-graven-walk-sw/frame-10.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-11\",\"assets/tactics/imported/ally-graven-walk-sw/frame-11.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-12\",\"assets/tactics/imported/ally-graven-walk-sw/frame-12.webp\",0,\"mwof8yez\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795145448895,
+   "approvedAt": "2026-11-20T03:30:48.895Z"
+  },
+  "[\"allywalk:graven:SW\",\"SW\",true,[[\"studio-ally-graven-sw-walk-1\",\"assets/tactics/imported/ally-graven-walk-sw/frame-01.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-2\",\"assets/tactics/imported/ally-graven-walk-sw/frame-02.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-3\",\"assets/tactics/imported/ally-graven-walk-sw/frame-03.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-4\",\"assets/tactics/imported/ally-graven-walk-sw/frame-04.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-5\",\"assets/tactics/imported/ally-graven-walk-sw/frame-05.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-6\",\"assets/tactics/imported/ally-graven-walk-sw/frame-06.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-7\",\"assets/tactics/imported/ally-graven-walk-sw/frame-07.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-8\",\"assets/tactics/imported/ally-graven-walk-sw/frame-08.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-9\",\"assets/tactics/imported/ally-graven-walk-sw/frame-09.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-10\",\"assets/tactics/imported/ally-graven-walk-sw/frame-10.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-11\",\"assets/tactics/imported/ally-graven-walk-sw/frame-11.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-graven-sw-walk-12\",\"assets/tactics/imported/ally-graven-walk-sw/frame-12.webp\",0,\"mwof9psh\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npcwalk:npc:graven:SE\",\"SE\",true,[[\"npc-graven-se-walk1\",\"assets/village-town/npc/graven/se-walk1.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk2\",\"assets/village-town/npc/graven/se-walk2.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk3\",\"assets/village-town/npc/graven/se-walk3.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk4\",\"assets/village-town/npc/graven/se-walk4.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk5\",\"assets/village-town/npc/graven/se-walk5.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk6\",\"assets/village-town/npc/graven/se-walk6.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk7\",\"assets/village-town/npc/graven/se-walk7.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk8\",\"assets/village-town/npc/graven/se-walk8.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk9\",\"assets/village-town/npc/graven/se-walk9.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk10\",\"assets/village-town/npc/graven/se-walk10.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk11\",\"assets/village-town/npc/graven/se-walk11.webp\",0,\"20261120-102810\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk12\",\"assets/village-town/npc/graven/se-walk12.webp\",0,\"20261120-102811\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795145515489,
+   "approvedAt": "2026-11-20T03:31:55.489Z"
+  },
+  "[\"npc-graven-sw-stand\",\"SW\",true,[[\"npc-graven-sw-stand\",\"assets/village-town/npc/graven/sw-stand.webp\",0,\"v98.423\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-20T05:07:24.077Z",
+   "at": 1795151244106
+  },
+  "[\"npc-graven-se-stand\",\"SE\",true,[[\"npc-graven-se-stand\",\"assets/village-town/npc/graven/se-stand.webp\",0,\"v98.423\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-20T05:07:28.084Z",
+   "at": 1795151248110
+  },
+  "[\"npc-graven-sw-stand\",\"SW\",true,[[\"npc-graven-sw-stand\",\"assets/village-town/npc/graven/sw-stand.webp\",0,\"20261120-120727\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-20T05:07:28.084Z",
+   "at": 1795151248110
+  },
+  "[\"npcwalk:npc:graven:SW\",\"SW\",true,[[\"npc-graven-sw-walk1\",\"assets/village-town/npc/graven/sw-walk1.webp\",0,\"20261120-121059\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk2\",\"assets/village-town/npc/graven/sw-walk2.webp\",0,\"20261120-121059\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk3\",\"assets/village-town/npc/graven/sw-walk3.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk4\",\"assets/village-town/npc/graven/sw-walk4.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk5\",\"assets/village-town/npc/graven/sw-walk5.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk6\",\"assets/village-town/npc/graven/sw-walk6.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk7\",\"assets/village-town/npc/graven/sw-walk7.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk8\",\"assets/village-town/npc/graven/sw-walk8.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk9\",\"assets/village-town/npc/graven/sw-walk9.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk10\",\"assets/village-town/npc/graven/sw-walk10.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk11\",\"assets/village-town/npc/graven/sw-walk11.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk12\",\"assets/village-town/npc/graven/sw-walk12.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-20T05:11:09.874Z",
+   "at": 1795151469898
+  },
+  "[\"npcwalk:npc:graven:SE\",\"SE\",true,[[\"npc-graven-se-walk1\",\"assets/village-town/npc/graven/se-walk1.webp\",0,\"20261120-121025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk2\",\"assets/village-town/npc/graven/se-walk2.webp\",0,\"20261120-121028\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk3\",\"assets/village-town/npc/graven/se-walk3.webp\",0,\"20261120-121031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk4\",\"assets/village-town/npc/graven/se-walk4.webp\",0,\"20261120-121034\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk5\",\"assets/village-town/npc/graven/se-walk5.webp\",0,\"20261120-121037\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk6\",\"assets/village-town/npc/graven/se-walk6.webp\",0,\"20261120-121040\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk7\",\"assets/village-town/npc/graven/se-walk7.webp\",0,\"20261120-121042\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk8\",\"assets/village-town/npc/graven/se-walk8.webp\",0,\"20261120-121046\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk9\",\"assets/village-town/npc/graven/se-walk9.webp\",0,\"20261120-121048\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk10\",\"assets/village-town/npc/graven/se-walk10.webp\",0,\"20261120-121051\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk11\",\"assets/village-town/npc/graven/se-walk11.webp\",0,\"20261120-121054\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk12\",\"assets/village-town/npc/graven/se-walk12.webp\",0,\"20261120-121058\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-20T05:11:09.874Z",
+   "at": 1795151469898
   }
  },
  "studioClipHistory": {
