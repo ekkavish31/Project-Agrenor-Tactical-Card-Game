@@ -106820,7 +106820,7 @@
    "id": "npc-berg-sw-stand",
    "file": "assets/village-town/npc/berg/sw-stand.webp",
    "category": "allies",
-   "status": "final",
+   "status": "missing",
    "size": [
     384,
     384
@@ -106832,7 +106832,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261114-074953",
+   "artRevision": "mwp2mng4",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -106860,7 +106860,7 @@
    "id": "npc-berg-se-stand",
    "file": "assets/village-town/npc/berg/se-stand.webp",
    "category": "allies",
-   "status": "final",
+   "status": "missing",
    "size": [
     384,
     384
@@ -106872,7 +106872,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261114-074953",
+   "artRevision": "mwp2mngp",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -107153,7 +107153,7 @@
    "id": "npc-berg-ne-stand",
    "file": "assets/village-town/npc/berg/ne-stand.webp",
    "category": "allies",
-   "status": "final",
+   "status": "missing",
    "size": [
     384,
     384
@@ -107165,7 +107165,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261115-214855",
+   "artRevision": "mwp2mnhg",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -107200,7 +107200,7 @@
    "id": "npc-berg-nw-stand",
    "file": "assets/village-town/npc/berg/nw-stand.webp",
    "category": "allies",
-   "status": "final",
+   "status": "missing",
    "size": [
     384,
     384
@@ -107212,7 +107212,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261115-214855",
+   "artRevision": "mwp2mni3",
    "usedIn": "NPC เบิร์ก · ยืน",
    "studioOwner": {
     "id": "npc:berg",
@@ -125236,8 +125236,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-windup/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.013Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-windup/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.137Z",
@@ -125264,8 +125271,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-windup/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.054Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-windup/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.175Z",
@@ -125292,8 +125306,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-strike/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.096Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-strike/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.215Z",
@@ -125320,8 +125341,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-strike/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.139Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-strike/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.259Z",
@@ -125348,8 +125376,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-guard/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.186Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-guard/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.303Z",
@@ -125376,8 +125411,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-guard/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.236Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-guard/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.352Z",
@@ -125404,8 +125446,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-hit/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.290Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-hit/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.403Z",
@@ -125432,8 +125481,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-hit/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.342Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-hit/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.453Z",
@@ -125460,8 +125516,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-down/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.392Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-down/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.507Z",
@@ -125488,8 +125551,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746",
+   "artRevision": "20261120-212529",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-down/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:40.445Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-down/mwp2d0rf-abh8.webp",
      "at": "2026-11-20T14:17:46.560Z",
@@ -126650,7 +126720,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212607",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-ne-windup/mwp2dhry-z3ac.webp",
@@ -126678,7 +126748,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212607",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-nw-windup/mwp2dhry-z3ac.webp",
@@ -126706,7 +126776,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212607",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-ne-strike/mwp2dhry-z3ac.webp",
@@ -126734,7 +126804,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212607",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-nw-strike/mwp2dhry-z3ac.webp",
@@ -126762,7 +126832,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212607",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-ne-guard/mwp2dhry-z3ac.webp",
@@ -126790,7 +126860,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212608",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-nw-guard/mwp2dhry-z3ac.webp",
@@ -126818,7 +126888,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212608",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-ne-hit/mwp2dhry-z3ac.webp",
@@ -126846,7 +126916,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212608",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-nw-hit/mwp2dhry-z3ac.webp",
@@ -126874,7 +126944,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212608",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-ne-down/mwp2dhry-z3ac.webp",
@@ -126902,7 +126972,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808",
+   "artRevision": "20261120-212608",
    "history": [
     {
      "file": "assets/_versions/tactics-berg-nw-down/mwp2dhry-z3ac.webp",
@@ -140602,7 +140672,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746"
+   "artRevision": "20261120-212529",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-idle/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:39.941Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-se-idle",
@@ -140621,7 +140700,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211746"
+   "artRevision": "20261120-212529",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-idle/mwp2kltc-50s8.webp",
+     "at": "2026-11-20T14:23:39.976Z",
+     "stamp": "mwp2kltc-50s8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-ne-idle",
@@ -140640,7 +140728,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808"
+   "artRevision": "20261120-212607"
   },
   {
    "id": "tactics-berg-nw-idle",
@@ -140659,7 +140747,7 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-211808"
+   "artRevision": "20261120-212607"
   }
  ],
  "studioReviews": {
