@@ -239,7 +239,9 @@ function roadStyleGet(){return{...ROAD_STYLE}}
 const lineW=L=>{for(const p of L)if(p&&p.w)return p.w;return 1};
 let scaleGroupCache=new WeakMap();
 /* v98.879 · the road's OUTER edge (dark rim of the curb) always lands on a grid line: its full width is a whole number of cells (centre lines are on whole cells, so each side is a multiple of half a cell). Before, a road 3.76 cells wide left every NW–SE / NE–SW edge a quarter cell off the grid — a flat strip of ground showed between the road and a grid-aligned lawn / lot. All layers of that road (rim · curb · pavement · walk corridor) are scaled by the same factor. */
-const snapK=(k,lines)=>{const R=lines===roadLaneLines?ROAD.lane:ROAD.main,outer=(R.curb+2*RIM_DARK)*k,cells=outer/(28*Math.SQRT2),n=Math.max(1,Math.round(cells));return k*n*(28*Math.SQRT2)/outer};
+const lineTag=new WeakMap();   /* v98.883 · arrays made by splitDir() remember which road kind they came from */
+const kindOfLines=lines=>lines===roadLaneLines?'lane':lines===roadExitLines?'exit':lineTag.get(lines)||'main';
+const snapK=(k,lines)=>{const R=kindOfLines(lines)==='lane'?ROAD.lane:ROAD.main,outer=(R.curb+2*RIM_DARK)*k,cells=outer/(28*Math.SQRT2),n=Math.max(1,Math.round(cells));return k*n*(28*Math.SQRT2)/outer};
 function byScale(lines){let g=scaleGroupCache.get(lines);if(g)return g;const m=new Map();for(const L of lines){const k=snapK(lineW(L),lines);if(!m.has(k))m.set(k,[]);m.get(k).push(L)}g=m.size<=1?[[m.size?[...m.keys()][0]:1,lines]]:[...m].map(([k,ls])=>[k,ls]);scaleGroupCache.set(lines,g);return g}
 // v68: road brush shape. 'square' = grid-aligned rounded rectangles per segment (corners meet cleanly), 'round' = the old round brush.
 let ROAD_SHAPE=(()=>{try{return localStorage.getItem('projectA.roadShape')||'square'}catch(e){return 'square'}})();
@@ -259,9 +261,26 @@ let fpClip=null;const clipSplit=new WeakMap();
 function makeFpClip(grow=0){const F=window.VillageFootprint;if(!F)return null;const p=new Path2D();p.rect(-4000,-4000,WORLD_W+8000,WORLD_H*2+8000);let n=0;const gc=grow/(28*Math.SQRT2);for(const o of locations){if(o.id==='square'||!estate(o))continue;const cs=F.corners(F.worldRect(o,center(o))),cu=cs.reduce((a,c)=>a+c.u,0)/cs.length,cv=cs.reduce((a,c)=>a+c.v,0)/cs.length;const q=cs.map(a=>project(a.u+Math.sign(a.u-cu)*gc,a.v+Math.sign(a.v-cv)*gc));q.forEach((a,i)=>i?p.lineTo(a.x,a.y*2):p.moveTo(a.x,a.y*2));p.closePath();n++}return n?p:null}
 function paintRoad(q,lines,width){let sp=clipSplit.get(lines);if(!sp){const cut=fpClip?lines.filter(L=>!L.court):[];sp={cut,keep:cut.length?lines.filter(L=>L.court):lines};clipSplit.set(lines,sp)}
  if(sp.cut.length&&fpClip){q.save();q.clip(fpClipAt(ROAD_CLIP),'evenodd');roadPaint(q,sp.cut,width);q.restore()}if(sp.keep.length)roadPaint(q,sp.keep,width)}
-function roadPaint(q,lines,width){for(const[k,ls]of byScale(lines)){const w=width*k;if(ROAD_SHAPE==='round'){q.lineCap=q.lineJoin='round';q.lineWidth=w;q.stroke(pathFromLines(ls))}else q.fill(roadRects(ls,w),'nonzero')}}
-function strokeRoad(q,lines,width){for(const[k,ls]of byScale(lines)){q.lineWidth=width*k;q.stroke(pathFromLines(ls))}}
-function roadHit(x,y,pad=0){const probe=roadHit.c||(roadHit.c=document.createElement('canvas').getContext('2d'));for(const [lines,R] of [[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane],[roadExitLines,ROAD.main]]){for(const[k,ls]of byScale(lines)){if(ROAD_SHAPE==='round'){probe.lineCap=probe.lineJoin='round';probe.lineWidth=R.pave*k+pad;if(probe.isPointInStroke(pathFromLines(ls),x,y*2))return true}else if(probe.isPointInPath(roadRects(ls,R.pave*k+pad),x,y*2))return true}}return false}
+/* v98.883 · ROAD SURFACE FROM THE ROAD SHEET (assets/village-town/ground/road-sheet-*.webp, cut from the supplied road tiles by tools/build-road-sheet.py):
+   the flat top-down cobble and the stone-block curb, scaled so ONE CELL = CELLPX paint px (the tile edges are tilted to the exact 2:1 grid) and laid on the (u,v) axes
+   (pattern rotated 45° in paint space) so every block row is on a grid line. The curb is one row of blocks ¼ cell deep along the OUTER edge of the road
+   (which is on the grid, see snapK); blocks run along the road, so u-direction and v-direction segments use the two orientations of the same tile. */
+const SHEET={cobble:null,curb:null,pat:new WeakMap()};
+for(const[k,f]of[['cobble','road-sheet-cobble.webp'],['curb','road-sheet-curb.webp']]){const im=new Image();im.onload=()=>{SHEET[k]=im;SHEET.pat=new WeakMap();terrainDirty=true;try{lateTerrain()}catch(e){}};im.src='assets/village-town/ground/'+f}
+function sheetPat(ctx,key){if(!SHEET.cobble||!SHEET.curb)return null;let m=SHEET.pat.get(ctx);if(!m)SHEET.pat.set(ctx,m=new Map());if(m.has(key))return m.get(key);let src,s;
+ if(key==='cobble'){src=SHEET.cobble;s=CELLPX/49}else{const c=document.createElement('canvas');c.width=c.height=192;const q=c.getContext('2d');if(key==='curbV')q.setTransform(0,1,1,0,0,0);q.drawImage(SHEET.curb,0,0);src=c;s=CELLPX/48}
+ const pt=ctx.createPattern(src,'repeat');pt.setTransform(new DOMMatrix().rotate(45).scale(s));m.set(key,pt);return pt}
+/* a main/lane road split into its u-direction and v-direction segments (2-point lines that keep the road's width multiplier) */
+const dirCache=new WeakMap();
+function splitDir(lines){let r=dirCache.get(lines);if(r)return r;const kind=kindOfLines(lines),u=[],v=[];for(const L of lines){const w=lineW(L);for(let i=1;i<L.length;i++){const dx=L[i].x-L[i-1].x,dy=(L[i].y-L[i-1].y)*2;if(Math.hypot(dx,dy)<.5)continue;(dx*dy>0?u:v).push([{...L[i-1],w},{...L[i],w}])}}lineTag.set(u,kind);lineTag.set(v,kind);r={u,v};dirCache.set(lines,r);return r}
+/* v98.883 · ROAD WIDTH BY ROLE. The outer edge is on the grid (snapK). The stone curb of road_sheet is one row of blocks = ¼ cell deep, so the paving is that much narrower:
+   rim (thin dark outline) = outer · curb texture = outer − 3 px · paving = outer − ½ cell (+ the feather growth the caller adds) · anything else (walk corridor, dirt exits) keeps width × k. */
+const CELLPX=28*Math.SQRT2,CURB_ROW=.25;
+function roadW(width,lines,k){const kind=kindOfLines(lines);if(kind==='exit')return width*k;const R=kind==='lane'?ROAD.lane:ROAD.main,A=R.curb+2*RIM_DARK,outer=A*k;
+ if(width===A)return outer;if(width===R.curb)return outer-3;if(width>=R.pave)return outer-2*CURB_ROW*CELLPX+(width-R.pave);return width*k}
+function roadPaint(q,lines,width){for(const[k,ls]of byScale(lines)){const w=roadW(width,lines,k);if(ROAD_SHAPE==='round'){q.lineCap=q.lineJoin='round';q.lineWidth=w;q.stroke(pathFromLines(ls))}else q.fill(roadRects(ls,w),'nonzero')}}
+function strokeRoad(q,lines,width){for(const[k,ls]of byScale(lines)){q.lineWidth=roadW(width,lines,k);q.stroke(pathFromLines(ls))}}
+function roadHit(x,y,pad=0){const probe=roadHit.c||(roadHit.c=document.createElement('canvas').getContext('2d'));for(const [lines,R] of [[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane],[roadExitLines,ROAD.main]]){for(const[k,ls]of byScale(lines)){if(ROAD_SHAPE==='round'){probe.lineCap=probe.lineJoin='round';probe.lineWidth=roadW(R.pave,lines,k)+pad;if(probe.isPointInStroke(pathFromLines(ls),x,y*2))return true}else if(probe.isPointInPath(roadRects(ls,roadW(R.pave,lines,k)+pad),x,y*2))return true}}return false}
 function setRoadShape(v){ROAD_SHAPE=v==='round'?'round':'square';try{localStorage.setItem('projectA.roadShape',ROAD_SHAPE)}catch(e){}finishRoads()}
 function junctionShape(p,c,R){if(ROAD_SHAPE==='round'){p.moveTo(c.x+R,c.y*2);p.arc(c.x,c.y*2,R,0,Math.PI*2);return}const h=ROAD.main.pave/2,a=[.7071,.7071],b=[-.7071,.7071],X=c.x,Y=c.y*2;roundPoly(p,[[X-a[0]*h-b[0]*h,Y-a[1]*h-b[1]*h],[X+a[0]*h-b[0]*h,Y+a[1]*h-b[1]*h],[X+a[0]*h+b[0]*h,Y+a[1]*h+b[1]*h],[X-a[0]*h+b[0]*h,Y-a[1]*h+b[1]*h]],34)}
 
@@ -329,8 +348,9 @@ function drawTerrain(){
  const rings=[plazaPath,junctionPath].filter(Boolean);
  if(ROAD_EDGE_STYLE==='classic'){
   ROAD_CLIP=0;for(const [lines,R] of [[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane]]){g.strokeStyle=g.fillStyle='#4f4532';paintRoad(g,lines,R.curb+2*RIM_DARK)}for(const P of rings){g.lineJoin='round';g.strokeStyle='#4f4532';g.lineWidth=2*(RIM_DARK+rimLight())+4;g.stroke(P)}
-  ROAD_CLIP=RIM_DARK;for(const [lines,R] of [[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane]]){g.strokeStyle=g.fillStyle='#cdc3aa';paintRoad(g,lines,R.curb)}for(const P of rings){g.strokeStyle='#cdc3aa';g.lineWidth=2*rimLight()+4;g.stroke(P)}
-  g.setLineDash([3,27]);g.lineCap='butt';g.strokeStyle='rgba(74,62,44,.6)';for(const [lines,R] of [[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane]]){strokeRoad(g,lines,R.curb)}g.lineWidth=2*rimLight()+4;for(const P of rings)g.stroke(P);g.setLineDash([]);ROAD_CLIP=RIM_DARK+rimLight();
+  const cu=sheetPat(g,'curbU'),cv=sheetPat(g,'curbV');
+  ROAD_CLIP=RIM_DARK;for(const [lines,R] of [[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane]]){if(cu){const S=splitDir(lines);g.strokeStyle=g.fillStyle=cu;paintRoad(g,S.u,R.curb);g.strokeStyle=g.fillStyle=cv;paintRoad(g,S.v,R.curb)}else{g.strokeStyle=g.fillStyle='#cdc3aa';paintRoad(g,lines,R.curb)}}for(const P of rings){g.strokeStyle=cu||'#cdc3aa';g.lineWidth=2*rimLight()+4;g.stroke(P)}
+  if(!cu){g.setLineDash([3,27]);g.lineCap='butt';g.strokeStyle='rgba(74,62,44,.6)';for(const [lines,R] of [[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane]]){strokeRoad(g,lines,R.curb)}g.lineWidth=2*rimLight()+4;for(const P of rings)g.stroke(P);g.setLineDash([])}ROAD_CLIP=RIM_DARK+rimLight();
  }else{const tex=roadEdgePattern(g);g.save();g.lineCap='round';g.lineJoin='round';for(const [lines,R] of [[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane]]){g.strokeStyle='#514a3a';ROAD_CLIP=0;paintRoad(g,lines,R.curb+2*RIM_DARK);g.strokeStyle=tex;ROAD_CLIP=RIM_DARK;paintRoad(g,lines,R.curb);g.strokeStyle='rgba(66,57,42,.5)';g.lineWidth=5;g.setLineDash([2,20]);g.stroke(pathFromLines(lines))}g.setLineDash([]);for(const P of rings){g.strokeStyle='#514a3a';g.lineWidth=2*(RIM_DARK+rimLight())+4;g.stroke(P);g.strokeStyle=tex;g.lineWidth=2*rimLight()+4;g.stroke(P)}g.restore();ROAD_CLIP=RIM_DARK+rimLight()}
  // v69: roads out of the village are packed-dirt trails without a stone rim
  {const dirt=TownArt.pattern(g,'ground/dirt-road.png')||'#8a6a44';g.save();g.globalAlpha=.45;g.strokeStyle=g.fillStyle=dirt;paintRoad(g,roadExitLines,ROAD.main.pave+46);g.globalAlpha=1;paintRoad(g,roadExitLines,ROAD.main.pave-10);g.restore()}
@@ -345,7 +365,7 @@ function drawTerrain(){
   shape=(c,G,grow=0)=>{c.lineCap=c.lineJoin='round';for(const[l,w]of G.lines)paintRoad(c,l,w+grow*2);for(const P of G.paths)if(P){c.fill(P);if(grow){c.lineWidth=grow*2;c.stroke(P)}}},
   layer=(c,dy,fn)=>{c.save();c.translate(0,dy);c.scale(1,.5);fn();c.restore()},
   union=(st,dy)=>layer(q,dy,()=>{q.strokeStyle=q.fillStyle=st;for(const k of['main','lane','plaza'])shape(q,groups[k])}),
-  P=id=>TownArt.pattern(q,id)||TownArt.pattern(q,'paving')||'#c9bca0',tex={main:P('paving'),lane:P('ground/cobble.png'),plaza:P('ground/plaza-slabs.png'),exit:TownArt.pattern(q,'ground/dirt-road.png')||'#8a6a44'};
+  P=id=>TownArt.pattern(q,id)||TownArt.pattern(q,'paving')||'#c9bca0',tex={main:sheetPat(q,'cobble')||P('paving'),lane:sheetPat(q,'cobble')||P('ground/cobble.png'),plaza:P('ground/plaza-slabs.png'),exit:TownArt.pattern(q,'ground/dirt-road.png')||'#8a6a44'};
   union('#8f826a',0);q.globalCompositeOperation='source-atop';union('rgba(40,34,24,.55)',6);
   if(F<=0){for(const k of['main','lane','plaza'])layer(q,9,()=>{q.strokeStyle=q.fillStyle=tex[k];shape(q,groups[k])})}
   else{layer(q,9,()=>{q.fillStyle=tex.main;q.fillRect(0,0,WORLD_W,WORLD_H*2)});
