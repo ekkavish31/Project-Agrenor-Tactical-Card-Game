@@ -4,7 +4,7 @@
 <meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Battleground Editor</title>
-<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/editor-store.js?v=v98.889"></script><script src="js/key-layout.js?v=1"></script><style>
+<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/editor-store.js?v=v98.894"></script><script src="js/key-layout.js?v=1"></script><style>
 :root{--panel:#1b302af7;--line:#4d6656;--edge:#b9c48f;--text:#f3ead0;--muted:#c9d2b8;--gold:#e5c06b;--accent:#c9893a}
 *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#14201b;color:var(--text);font:13px/1.45 AgThai,system-ui,"Noto Sans Thai",sans-serif}
 button,select,input{font:inherit;color:var(--text);background:#233a2e;border:1px solid #7f9170;border-radius:8px;padding:5px 9px}button{cursor:pointer}button:hover{border-color:var(--gold)}button.on{background:var(--gold);color:#1b302a;border-color:var(--gold)}
@@ -73,8 +73,8 @@ body.real #realFrame{display:block}body.real #realBar{display:flex}body.real #ba
  <p class="muted">โอกาสใส่ชิ้น = ทุกกี่ศึกจะมีชิ้นทำมือหนึ่งชิ้นวางบนแผนที่ (ถ้าวางแล้วทำให้ทางไปจุดเกิดขาด ระบบจะย้ายที่หรือไม่วาง) · กลางคืน = โอกาสเป็นฉากกลางคืน</p></details>
 </aside>
 <div id="tileInfo"></div><div id="warn"></div><div id="status"></div>
-<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-settings.js?v=v98.861"></script>
-<script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.884"></script>
+<script src="js/webp-redirect.js?v=92.04"></script><script src="js/game-settings.js?v=v98.894"></script>
+<script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.894"></script>
 <script>
 'use strict';
 /* v87.4 · Battleground editor in the same Build Mode layout as the village / sub-maps:
@@ -216,7 +216,7 @@ $('pushBtn').onclick=async()=>{save();if(!GitHubPush.config().token){GitHubPush.
  try{const sha=await GitHubPush.pushSettings([KEY],'Battleground',[],status);status(sha?'⬆ push สนามต่อสู้แล้ว · '+sha:'ไม่มีค่าที่ต้อง push')}catch(e){status('push ไม่สำเร็จ: '+e.message)}finally{b.disabled=false}};
 {const s=GitHubPush.settingsButton();s.innerHTML='<b>⚙</b><span>GitHub</span>';s.title='ตั้งค่า GitHub (token / repo)';$('bar').append(s)}
 
-load();/* v98.881 · the sample is NOT written to this browser on first open: tactics-core reads battleground-v1, so a browser that merely opened this page used to fight on the sample chunks while other computers did not (and it showed as an unpushed edit) */renderSide();renderCat();renderTileProps();addEventListener('resize',fit);fit();
+load();/* v98.894 · the sample is NOT written to this browser on first open: tactics-core reads battleground-v1, so a browser that merely opened this page used to fight on the sample chunks while other computers did not (and it showed as an unpushed edit) */renderSide();renderCat();renderTileProps();addEventListener('resize',fit);fit();
 
 /* ---------- v98.257 · 🎬 ฉากจริง: the REAL battle scene (battle-field.html — the renderer the game uses) with its real textures, props and units, inside the editor.
    Honest note: that scene is generated from the biome + seed (js/field-host.js), it does NOT read the chunks drawn here yet (chunks feed the old grid-lab) — see docs/TODO.md §13. */

@@ -38,7 +38,7 @@ textarea{width:100%;height:120px;font:11px monospace}
  <h3>ส่งออก / นำเข้า</h3><div class="row"><button id="exp">คัดลอก JSON ฉากนี้</button><button id="imp">นำเข้า JSON</button></div><textarea id="io" placeholder="วาง JSON ที่นี่แล้วกด นำเข้า"></textarea>
  <p class="hint">• ค่าที่แก้บันทึกอัตโนมัติในเบราว์เซอร์นี้ (กด ▶ ทดลองเล่นเห็นผลทันที) · กด ⬆ ใส่ Cart แล้ว Push เพื่อให้ทุกเครื่องใช้ตาม<br>• แก้ได้: แผนที่ · ขนาด · ตำแหน่งตัวเอก/เพื่อน/ศัตรู · ชนิด/เลือด/ชื่อของศัตรู · กติกา บทพูด เป้าหมาย คลื่น ยังอยู่ในโค้ด <code>js/set-pieces.js</code> (ปากอุโมงค์/จุดป้องกัน แสดงเป็นเครื่องหมายอ่านอย่างเดียว)</p></aside>
 <div id="status"><span id="pos"></span><span id="info"></span></div>
-<script src="js/editor-store.js?v=v98.889"></script><script src="js/game-settings.js"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.884"></script><script src="js/set-pieces.js?v=v98.619"></script>
+<script src="js/editor-store.js?v=v98.894"></script><script src="js/game-settings.js"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.894"></script><script src="js/set-pieces.js?v=v98.619"></script>
 <script>
 const SP = SetPieces, KEY = SP.EDIT_KEY, $ = id => document.getElementById(id), cv = $('cv'), g = cv.getContext('2d');
 const NAMES = { '.': 'พื้นเรียบ', '#': 'หินใหญ่ (ตัน)', b: 'กระดูก (ตัน)', '+': 'ที่กำบัง (เศษหิน)', '~': 'โคลน (เดินช้า)', 1: 'พื้นสูง ระดับ 1', 2: 'พื้นสูง ระดับ 2', t: 'เต็นท์', f: 'รั้วไม้', p: 'เสาหิน', x: 'กำแพงไม่มีภาพ', H: 'บ้าน', S: 'แผงตลาดแดง', T: 'แผงตลาดน้ำเงิน', k: 'ลังไม้', r: 'ถังไม้', z: 'กระสอบ', c: 'เกวียน', y: 'กองฟาง', L: 'เสาโคม', w: 'บ่อน้ำ', V: 'แผงผัก', B: 'ม้านั่ง (กำบัง)', F: 'กล่องดอกไม้ (กำบัง)' };
