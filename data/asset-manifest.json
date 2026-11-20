@@ -137920,6 +137920,1302 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ]
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-1",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-2",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-3",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-4",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-5",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-6",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-7",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-8",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-9",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-10",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-11",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-mwp0iwga-yc71-12",
+   "file": "assets/tactics/imported/ally-berg-walk-sw-mwp0iwga-yc71/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-1",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-2",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-3",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-4",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-5",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-6",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-7",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-8",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-9",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-10",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-11",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-se-walk-mwp0iwga-yc71-12",
+   "file": "assets/tactics/imported/ally-berg-walk-se-mwp0iwga-yc71/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "artRevision": "mwp0iwga-yc71",
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   }
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-1",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-2",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-3",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-4",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-5",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-6",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-7",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-8",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-9",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-10",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-11",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-sw-walk-12",
+   "file": "assets/tactics/imported/ally-berg-walk-sw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m2mk"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-1",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-2",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-3",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-4",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-5",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-6",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-7",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-8",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-9",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-10",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-11",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
+  },
+  {
+   "id": "studio-ally-berg-se-walk-12",
+   "file": "assets/tactics/imported/ally-berg-walk-se/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "mwp1m8u4"
   }
  ],
  "studioReviews": {
@@ -143639,6 +144935,22 @@
    "frames": {},
    "approvedAt": "2026-11-20T06:41:32.853Z",
    "at": 1795156892882
+  },
+  "[\"allywalk:berg:SW\",\"SW\",true,[[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-1\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-01.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-2\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-02.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-3\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-03.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-4\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-04.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-5\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-05.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-6\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-06.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-7\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-07.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-8\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-08.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-9\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-09.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-10\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-10.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-11\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-11.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-12\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-12.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "at": 1795183001225
+  },
+  "[\"allywalk:berg:SW\",\"SW\",true,[[\"studio-ally-berg-sw-walk-1\",\"assets/tactics/imported/ally-berg-walk-sw/frame-01.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-2\",\"assets/tactics/imported/ally-berg-walk-sw/frame-02.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-3\",\"assets/tactics/imported/ally-berg-walk-sw/frame-03.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-4\",\"assets/tactics/imported/ally-berg-walk-sw/frame-04.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-5\",\"assets/tactics/imported/ally-berg-walk-sw/frame-05.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-6\",\"assets/tactics/imported/ally-berg-walk-sw/frame-06.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-7\",\"assets/tactics/imported/ally-berg-walk-sw/frame-07.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-8\",\"assets/tactics/imported/ally-berg-walk-sw/frame-08.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-9\",\"assets/tactics/imported/ally-berg-walk-sw/frame-09.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-10\",\"assets/tactics/imported/ally-berg-walk-sw/frame-10.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-11\",\"assets/tactics/imported/ally-berg-walk-sw/frame-11.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-12\",\"assets/tactics/imported/ally-berg-walk-sw/frame-12.webp\",0,\"mwp1m2mk\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795183010237,
+   "approvedAt": "2026-11-20T13:56:50.237Z"
+  },
+  "[\"allywalk:berg:SE\",\"SE\",true,[[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-1\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-01.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-2\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-02.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-3\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-03.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-4\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-04.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-5\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-05.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-6\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-06.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-7\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-07.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-8\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-08.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-9\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-09.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-10\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-10.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-11\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-11.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwp1lew8-6y0h-12\",\"assets/tactics/imported/ally-berg-walk-se-mwp1lew8-6y0h/frame-12.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "at": 1795183014936
   }
  },
  "studioClipHistory": {
@@ -152356,66 +153668,66 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-17T06:50:32.458Z",
+    "createdAt": "2026-11-20T13:56:48.716Z",
     "frames": [
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-1",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-01.webp",
+      "assetId": "studio-ally-berg-sw-walk-1",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-01.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-2",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-02.webp",
+      "assetId": "studio-ally-berg-sw-walk-2",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-02.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-3",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-03.webp",
+      "assetId": "studio-ally-berg-sw-walk-3",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-03.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-4",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-04.webp",
+      "assetId": "studio-ally-berg-sw-walk-4",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-04.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-5",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-05.webp",
+      "assetId": "studio-ally-berg-sw-walk-5",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-05.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-6",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-06.webp",
+      "assetId": "studio-ally-berg-sw-walk-6",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-06.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-7",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-07.webp",
+      "assetId": "studio-ally-berg-sw-walk-7",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-07.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-8",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-08.webp",
+      "assetId": "studio-ally-berg-sw-walk-8",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-08.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-9",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-09.webp",
+      "assetId": "studio-ally-berg-sw-walk-9",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-09.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-10",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-10.webp",
+      "assetId": "studio-ally-berg-sw-walk-10",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-10.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-11",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-11.webp",
+      "assetId": "studio-ally-berg-sw-walk-11",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-11.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-sw-walk-mwkc2buy-12",
-      "src": "assets/tactics/imported/ally-berg-walk-sw-mwkc2buy/frame-12.webp",
+      "assetId": "studio-ally-berg-sw-walk-12",
+      "src": "assets/tactics/imported/ally-berg-walk-sw/frame-12.webp",
       "ms": 100
      }
     ]
@@ -152431,66 +153743,66 @@
      0.9375
     ],
     "loop": true,
-    "createdAt": "2026-11-17T06:50:36.679Z",
+    "createdAt": "2026-11-20T13:56:56.764Z",
     "frames": [
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-1",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-01.webp",
+      "assetId": "studio-ally-berg-se-walk-1",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-01.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-2",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-02.webp",
+      "assetId": "studio-ally-berg-se-walk-2",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-02.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-3",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-03.webp",
+      "assetId": "studio-ally-berg-se-walk-3",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-03.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-4",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-04.webp",
+      "assetId": "studio-ally-berg-se-walk-4",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-04.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-5",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-05.webp",
+      "assetId": "studio-ally-berg-se-walk-5",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-05.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-6",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-06.webp",
+      "assetId": "studio-ally-berg-se-walk-6",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-06.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-7",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-07.webp",
+      "assetId": "studio-ally-berg-se-walk-7",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-07.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-8",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-08.webp",
+      "assetId": "studio-ally-berg-se-walk-8",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-08.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-9",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-09.webp",
+      "assetId": "studio-ally-berg-se-walk-9",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-09.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-10",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-10.webp",
+      "assetId": "studio-ally-berg-se-walk-10",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-10.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-11",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-11.webp",
+      "assetId": "studio-ally-berg-se-walk-11",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-11.webp",
       "ms": 100
      },
      {
-      "assetId": "studio-ally-berg-se-walk-mwkc2f47-12",
-      "src": "assets/tactics/imported/ally-berg-walk-se-mwkc2f47/frame-12.webp",
+      "assetId": "studio-ally-berg-se-walk-12",
+      "src": "assets/tactics/imported/ally-berg-walk-se/frame-12.webp",
       "ms": 100
      }
     ]
