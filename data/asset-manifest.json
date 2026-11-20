@@ -125236,7 +125236,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-windup/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.137Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-se-windup",
@@ -125255,7 +125264,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-windup/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.175Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-sw-strike",
@@ -125274,7 +125292,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-strike/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.215Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-se-strike",
@@ -125293,7 +125320,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-strike/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.259Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-sw-guard",
@@ -125312,7 +125348,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-guard/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.303Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-se-guard",
@@ -125331,7 +125376,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-guard/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.352Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-sw-hit",
@@ -125350,7 +125404,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-hit/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.403Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-se-hit",
@@ -125369,7 +125432,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-hit/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.453Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-sw-down",
@@ -125388,7 +125460,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-down/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.507Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-se-down",
@@ -125407,7 +125488,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-141356"
+   "artRevision": "20261120-211746",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-down/mwp2d0rf-abh8.webp",
+     "at": "2026-11-20T14:17:46.560Z",
+     "stamp": "mwp2d0rf-abh8",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "studio-ally-mira-sw-walk-mwkd5e3g-1",
@@ -126560,7 +126650,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142948"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-ne-windup/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.199Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-nw-windup",
@@ -126579,7 +126678,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142948"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-nw-windup/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.268Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-ne-strike",
@@ -126598,7 +126706,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142948"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-ne-strike/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.342Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-nw-strike",
@@ -126617,7 +126734,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142948"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-nw-strike/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.417Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-ne-guard",
@@ -126636,7 +126762,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142948"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-ne-guard/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.492Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-nw-guard",
@@ -126655,7 +126790,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142948"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-nw-guard/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.568Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-ne-hit",
@@ -126674,7 +126818,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142948"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-ne-hit/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.646Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-nw-hit",
@@ -126693,7 +126846,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142948"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-nw-hit/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.726Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-ne-down",
@@ -126712,7 +126874,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142949"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-ne-down/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.804Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "tactics-berg-nw-down",
@@ -126731,7 +126902,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261117-142949"
+   "artRevision": "20261120-211808",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-nw-down/mwp2dhry-z3ac.webp",
+     "at": "2026-11-20T14:18:08.884Z",
+     "stamp": "mwp2dhry-z3ac",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "studio-ally-lin-sw-walk-mwkdk9nh-1",
@@ -140404,6 +140584,82 @@
     "group": "characters"
    },
    "artRevision": "mwp21mrs"
+  },
+  {
+   "id": "tactics-berg-sw-idle",
+   "file": "assets/tactics/berg_sw_idle.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "idle",
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "20261120-211746"
+  },
+  {
+   "id": "tactics-berg-se-idle",
+   "file": "assets/tactics/berg_se_idle.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "idle",
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "20261120-211746"
+  },
+  {
+   "id": "tactics-berg-ne-idle",
+   "file": "assets/tactics/berg_ne_idle.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "idle",
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "20261120-211808"
+  },
+  {
+   "id": "tactics-berg-nw-idle",
+   "file": "assets/tactics/berg_nw_idle.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "idle",
+   "studioOwner": {
+    "id": "ally:berg",
+    "name": "Berg",
+    "group": "characters"
+   },
+   "artRevision": "20261120-211808"
   }
  ],
  "studioReviews": {
@@ -146173,6 +146429,12 @@
    "frames": {},
    "at": 1795183729063,
    "approvedAt": "2026-11-20T14:08:49.063Z"
+  },
+  "[\"allywalk:berg:SE\",\"SE\",true,[[\"studio-ally-berg-se-walk-1\",\"assets/tactics/imported/ally-berg-walk-se/frame-01.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-2\",\"assets/tactics/imported/ally-berg-walk-se/frame-02.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-3\",\"assets/tactics/imported/ally-berg-walk-se/frame-03.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-4\",\"assets/tactics/imported/ally-berg-walk-se/frame-04.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-5\",\"assets/tactics/imported/ally-berg-walk-se/frame-05.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-6\",\"assets/tactics/imported/ally-berg-walk-se/frame-06.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-7\",\"assets/tactics/imported/ally-berg-walk-se/frame-07.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-8\",\"assets/tactics/imported/ally-berg-walk-se/frame-08.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-9\",\"assets/tactics/imported/ally-berg-walk-se/frame-09.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-10\",\"assets/tactics/imported/ally-berg-walk-se/frame-10.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-11\",\"assets/tactics/imported/ally-berg-walk-se/frame-11.webp\",0,\"mwp21mrs\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795183736455,
+   "approvedAt": "2026-11-20T14:08:56.455Z"
   }
  },
  "studioClipHistory": {
