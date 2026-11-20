@@ -75,7 +75,7 @@
     return v;
   };
   P.setItem = function (k, v) {
-    k = String(k); v = String(v);
+    k = String(k); v = String(v); if (this === LS) noteUnknown(k);
     if (this !== LS || internal(k) || !isJ(v)) return nSet.call(this, k, v);
     const cur = nGet.call(LS, k), mine = seenBy.get(k);
     if (cur === null || cur === v || !mine || mine.includes(cur)) { nSet.call(LS, k, v); remember(k, v); return }
@@ -158,13 +158,49 @@
   const SYNC = ['art-lights-v1', 'depth-style-v1', 'portrait-facing-v1', 'progress-review-v1', 'project-a-char-scale-v1', 'project-a-place-prefabs-v1', 'project-a-village-prefabs-v1',
     'set-piece-edits-v1', 'proportion-rulers-v1', 'proportion-datum-v1', 'proportion-done-v1', 'proportion-girth-v1', 'proportion-master-v1', 'proportion-standard-v1', 'proportion-templates-v1',
     'pose-sheet.rulers', 'project-a-uploaded-decor-v1', 'project-a-village-asset-lib-v1', 'card-studio-v1',
-    'battleground-v1', 'object-asset-preset-v1', 'storyMapPos', 'storyMapGeo'];
+    'battleground-v1', 'object-asset-preset-v1', 'storyMapPos', 'storyMapGeo', 'projectA.roadEdgeStyle', 'vfx-kit', 'vfx-kit-kinds', 'asset-batches-v1',
+    'tactics-anchors-v1', 'project-a-ct-crops-v32', 'project-a-battle-polish', 'three-card-config-v2', 'three-card-routes-v1', 'everyday-layout-v1', 'everyday-village-map-v03', 'everyday-village-routes-v1'];
+  const SYNC_PRE = ['proportion-zones-v1:'];   /* one key per picture */
+  /* v98.881 · EVERY localStorage key the pages use has a class. Only 'sync' / 'layout' / 'manifest' data is editor work that must follow the repo;
+     'device' = a preference of this browser (panels, zoom, sound, token, caches) · 'save' = the player's game save (per device by design, moved with
+     the save backup) · 'own' = drafts with their own export / push button (battlefield editor). A key the page writes that is in NO list is recorded
+     (EditorStore.unknown(), shown in the 🛒 Cart) — a new editor value that someone forgot to add to SYNC can then never stay on one computer unnoticed.
+     tools/test-sot-keys.cjs fails when the code uses a key that is not classified here. */
+  const DEVICE = ['battle-tab-sub', 'hud-tab-sub', 'visual-tab-sub', 'ur-tab', 'smMapW', 'battleground-recent-v1', 'gh-latest-v1', 'project-a-repo-tree-v1', 'project-a-gh-assets-v1',
+    'pose-sheet.cart-sig', 'pose-sheet.hidden', 'pose-sheet.mode', 'pose-sheet.show', 'pose-sheet.zoom', 'pose-sheet.mirrorSync', 'pose-sheet.mirrorSync2', 'pose-sheet.revSync', 'pose-sheet.revSync2',
+    'project-a-bgm-v24', 'project-a-sfx', 'project-a-field-grid', 'project-a-fp-float', 'project-a-fs', 'project-a-gart', 'project-a-gart-ring', 'project-a-grid-mode', 'project-a-grid-show',
+    'project-a-ground-brush', 'project-a-lock-ratio', 'project-a-manager-mode', 'project-a-ramp', 'project-a-sharp', 'project-a-sharp-amt', 'project-a-place-clipboard-v1', 'project-a-layout-sync-v1',
+    'projectA.autoRes', 'projectA.battleSnap', 'projectA.bump', 'projectA.csAuto', 'projectA.cursor', 'projectA.dev', 'projectA.editQuality', 'projectA.fbDuel', 'projectA.fbHudMin', 'projectA.fieldRot',
+    'projectA.github', 'projectA.hd2d', 'projectA.mood', 'projectA.precached', 'projectA.renderStep', 'projectA.skipIntro', 'projectA.texelNorm', 'projectA.texelStats',
+    'projectA.touchUI', 'projectA.wipShown', 'projectA.wmFight', 'projectA.worldScale', 'scale-lineup-filter-v1', 'scale-lineup-hidden-v1', 'scale-lineup-subfilter-v1', 'studio.dockH', 'studio.dockMin', 'studio.filesOpen',
+    'lineup.collapsed', 'lineup.rtOpen', 'lineup.standU', 'lineup.vp', 'proc-motion-walk-reset-v98.640', 'project-a-village-group-clip-v1', 'project-a-village-repo-assets-v1'];
+  const DEVICE_PRE = ['project-a-layout-backup-', 'pd-', 'proc-motion-walk-reset-'];
+  const SAVE = ['three-card-forge-v4', 'three-card-forge-v2', 'three-card-forge-before-v8', 'three-card-forge-before-newgame', 'three-card-config-v1', 'agrenor-leads-v1', 'project-a-started-v1', 'project-a-newgame', 'agrenor-mind-v1', 'agrenor-secret-elements',
+    'agrenor-world-v1', 'agrenor-clock-v1', 'agrenor-standalone-v1', 'projectA.resume', 'projectA.heroVariant'];
+  const SAVE_PRE = ['projectA.slot.'], OWN_PRE = ['bgAsset:', 'bgAssets:', 'projectA.scaleAdjustDraft', 'pose-sheet.scaleDraft'], MANIFEST = ['asset-animation-reviews-v1'];
+  function classify(k) {
+    k = String(k);
+    if (internal(k) || k.startsWith('es-')) return 'internal';
+    if (k === LAYOUT || k === LAYOUT_POS) return 'layout';
+    if (SYNC.includes(k) || SYNC_PRE.some(p => k.startsWith(p)) || (root.GAME_SETTINGS && k in root.GAME_SETTINGS) || k in seenMap()) return 'sync';   /* seenMap = every pushed key this browser has loaded (pages without js/game-settings.js know them too) */
+    if (MANIFEST.includes(k)) return 'manifest';
+    if (DEVICE.includes(k) || DEVICE_PRE.some(p => k.startsWith(p))) return 'device';
+    if (SAVE.includes(k) || SAVE_PRE.some(p => k.startsWith(p))) return 'save';
+    if (OWN_PRE.some(p => k.startsWith(p))) return 'own';
+    return 'unknown';
+  }
+  const UNK = 'es-unknown';
+  function noteUnknown(k) { try { if (classify(k) !== 'unknown') return; const l = JSON.parse(nGet.call(LS, UNK) || '[]'); if (l.includes(k)) return; l.push(k); nSet.call(LS, UNK, JSON.stringify(l.slice(-50))); console.warn('[EditorStore] localStorage key "' + k + '" is not classified (sync / device / save) — add it to js/editor-store.js') } catch (e) { } }
+  function unknown() { try { return (JSON.parse(nGet.call(LS, UNK) || '[]') || []).filter(k => classify(k) === 'unknown' && nGet.call(LS, k) != null) } catch (e) { return [] } }
+  /* keep a copy of something that is about to be dropped (e.g. a stale snapshot file in the Cart) in the backups */
+  function keep(key, value, why) { return backup(key, typeof value === 'string' ? value : JSON.stringify(value), why) }
   const BIG = 400 * 1024;   /* a value larger than this is not put into js/game-settings.js (every page loads that file) */
   function same(a, b) { if (a === b) return true; const A = parse(a), B = parse(b); return A !== undefined && B !== undefined && canon(A) === canon(B) }
   /* settings keys with edits that are not pushed yet: pushed keys whose copy differs from the base · listed data keys never pushed at all */
   function drafts(opt = {}) {
     const GS = root.GAME_SETTINGS || {}, out = [];
-    for (const k of new Set([...Object.keys(GS), ...SYNC])) {
+    const pre = []; try { for (let i = 0; i < LS.length; i++) { const k = LS.key(i); if (k && SYNC_PRE.some(p => k.startsWith(p))) pre.push(k) } } catch (e) { }
+    for (const k of new Set([...Object.keys(GS), ...SYNC, ...pre])) {
       const cur = nGet.call(LS, k); if (cur == null || cur === '' || cur === '{}' || cur === '[]') continue;
       const base = nGet.call(LS, BASE + k) ?? GS[k];
       if (base != null && same(cur, base)) continue;
@@ -201,5 +237,5 @@
   /* the pushed settings are seeded the moment js/game-settings.js assigns them — even when that file was written by an older push page (its own old SEED then finds nothing to change) */
   try { let gs = root.GAME_SETTINGS; Object.defineProperty(root, 'GAME_SETTINGS', { configurable: true, enumerable: true, get: () => gs, set: v => { gs = v; seed(v) } }) } catch (e) { }
   try { let vl = root.VillageDefaultLayout; Object.defineProperty(root, 'VillageDefaultLayout', { configurable: true, enumerable: true, get: () => vl, set: v => { vl = v; seedLayout(v) } }) } catch (e) { }
-  root.EditorStore = { seed, seedLayout, markPushed, afterPush, drafts, layoutDraft, discard, bigDrafts, SYNC, LAYOUT, backups, restore, openBackups, merges: () => merges, _diff: diff, _apply: apply };
+  root.EditorStore = { seed, seedLayout, markPushed, afterPush, drafts, layoutDraft, discard, bigDrafts, classify, unknown, keep, SYNC, LAYOUT, backups, restore, openBackups, merges: () => merges, _diff: diff, _apply: apply };
 })(globalThis);
