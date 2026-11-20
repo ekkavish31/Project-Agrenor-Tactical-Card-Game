@@ -6,7 +6,7 @@
      road-sheet-curb.webp    192×192 px = 4×4 cells (48 px per cell) · 16 rows of curb blocks, each row ¼ cell deep (the block tops of the sheet's curb)
    village-town.html lays both on the (u,v) axes (pattern rotated 45° in paint space, 1 cell = 28√2 px) so the block rows sit on grid lines.
    Run:  python3 tools/build-road-sheet.py      (needs numpy + Pillow)"""
-from PIL import Image
+from PIL import Image, ImageFilter
 import numpy as np, random, os
 ROOT = os.path.join(os.path.dirname(__file__), '..'); G = os.path.join(ROOT, 'assets/village-town/ground/')
 a = np.array(Image.open(G + 'road-sheet-source.webp').convert('RGBA')).astype(float)
@@ -28,7 +28,8 @@ def hwrap(s):
 hs = [hwrap(s) for s in strips]; tile = np.zeros((H * len(hs), Wc, 3))
 for j, s in enumerate(hs):
     cur = s[:H].copy(); t = np.linspace(0, 1, m)[:, None, None]; cur[:m] = (1 - t) * hs[j - 1][H:H + m] + t * cur[:m]; tile[j * H:(j + 1) * H] = cur
-Image.fromarray(np.clip(tile, 0, 255).astype(np.uint8)).save(G + 'road-sheet-cobble.webp', quality=90)
+cob = Image.fromarray(np.clip(tile, 0, 255).astype(np.uint8)).filter(ImageFilter.UnsharpMask(radius=1.4, percent=170, threshold=2))   # the source is small and soft: sharpen so the stone joints stay crisp when magnified
+cob.save(G + 'road-sheet-cobble.webp', quality=92)
 # ---- curb: block tops of the near-edge strips, one ¼-cell row at a time
 rng = random.Random(11); TILE, D = 192, 12
 def joints(f):
