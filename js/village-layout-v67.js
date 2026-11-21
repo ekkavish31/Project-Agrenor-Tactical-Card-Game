@@ -1538,6 +1538,39 @@ window.VillageDefaultLayout={
         "du": 7,
         "dv": -1,
         "s": 1.5
+      },
+      "add:mwqot7j8npc140": {
+        "s": 0.9
+      },
+      "add:mwqot7j8npc141": {
+        "s": 0.5
+      },
+      "add:mwqot7j8npc142": {
+        "s": 0.55
+      },
+      "add:mwqot7j8npc143": {
+        "s": 0.75
+      },
+      "add:mwqot7j8npc145": {
+        "s": 0.68
+      },
+      "add:mwqot7j8npc146": {
+        "s": 0.68
+      },
+      "add:mwqot7j8npc90": {
+        "s": 0.7
+      },
+      "add:mwqot7j8npc91": {
+        "s": 0.75
+      },
+      "add:mwqot7j8npc92": {
+        "s": 0.5
+      },
+      "add:mwqot7j8npc93": {
+        "s": 0.68
+      },
+      "add:mwqot7j8npc94": {
+        "s": 0.68
       }
     },
     "added": [
@@ -1981,6 +2014,90 @@ window.VillageDefaultLayout={
         "du": 0,
         "dv": 12,
         "kind": "pic:assets/village-town/nature/w1-oak-grove.webp"
+      },
+      {
+        "id": "add:mwqot7j8npc140",
+        "owner": "npc14",
+        "du": -4.6,
+        "dv": 1.2,
+        "kind": "pic:assets/interior/millstone.webp"
+      },
+      {
+        "id": "add:mwqot7j8npc141",
+        "owner": "npc14",
+        "du": 4.4,
+        "dv": 1.4,
+        "kind": "decor:hay"
+      },
+      {
+        "id": "add:mwqot7j8npc142",
+        "owner": "npc14",
+        "du": 4.9,
+        "dv": 2.9,
+        "kind": "pic:assets/village-town/props/crates-barrel.webp"
+      },
+      {
+        "id": "add:mwqot7j8npc143",
+        "owner": "npc14",
+        "du": -2.6,
+        "dv": 2.8,
+        "kind": "decor:flower-box"
+      },
+      {
+        "id": "add:mwqot7j8npc144",
+        "owner": "npc14",
+        "du": 2.6,
+        "dv": 2.9,
+        "kind": "flowers:2"
+      },
+      {
+        "id": "add:mwqot7j8npc145",
+        "owner": "npc14",
+        "du": -4.8,
+        "dv": 5.6,
+        "kind": "decor:fence-picket"
+      },
+      {
+        "id": "add:mwqot7j8npc146",
+        "owner": "npc14",
+        "du": 4.6,
+        "dv": 5.8,
+        "kind": "decor:fence-picket"
+      },
+      {
+        "id": "add:mwqot7j8npc90",
+        "owner": "npc9",
+        "du": -3.3,
+        "dv": 3.4,
+        "kind": "pic:assets/interior/herb-drying-rack.webp"
+      },
+      {
+        "id": "add:mwqot7j8npc91",
+        "owner": "npc9",
+        "du": -2.4,
+        "dv": 4.9,
+        "kind": "decor:flower-bed"
+      },
+      {
+        "id": "add:mwqot7j8npc92",
+        "owner": "npc9",
+        "du": 3.2,
+        "dv": 3.6,
+        "kind": "pic:assets/village-town/nature/w1-bush-flowers.webp"
+      },
+      {
+        "id": "add:mwqot7j8npc93",
+        "owner": "npc9",
+        "du": -3.6,
+        "dv": 5.8,
+        "kind": "decor:fence-picket"
+      },
+      {
+        "id": "add:mwqot7j8npc94",
+        "owner": "npc9",
+        "du": 3.3,
+        "dv": 6,
+        "kind": "decor:fence-picket"
       }
     ],
     "buildings": {

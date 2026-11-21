@@ -1046,3 +1046,5 @@
 
 - [ ] (WIP · ยังไม่ต่อเข้าเกม) ระบบเซฟ 5 Run: เขียน `js/run-slots.js` แล้ว (registry `projectA.runs` · เซฟอัตโนมัติ `projectA.run.N` · เซฟมือรายรัน `projectA.run.N.m.I` · ย้ายเซฟเดิม/3 ช่องเก่าเข้า Run 1) **ยังไม่ถูกโหลดจากหน้าไหน** · เหลือ: ใส่ `<script>` ใน `index.html` ก่อน `js/title-screen.js` · ต่อหน้าเลือกช่อง Run ตอน New Game/Load ใน `js/title-screen.js` (เรียก `RunSlots.beginNew(n)` ก่อนล้างคีย์เดิม) · ย้ายเมนู 💾/📂 ใน `js/console-ui.js` ไปใช้ `RunSlots.manual` · เพิ่ม prefix `projectA.run` ใน SAVE_PRE ของ `js/editor-store.js` แล้วรัน `node tools/test-sot-keys.cjs` · ทดสอบ New/Load/สลับ Run/เซฟมือ/โควตา localStorage
 - [ ] ทางเดิน: แยกน้ำหนัก "ถนนหินกรวด" กับ "ลานหินปู" ให้ตัวเอก/NPC ยึดถนนก่อน (รอเจ้าของยืนยันนิยามถนน + ความแรงของการยอมอ้อม)
+
+- [ ] (v98.920 นำร่อง) จัดโซนที่อยู่อาศัยด้านล่างของหมู่บ้านตามแบบครึ่งบน: ทำแล้ว npc14, npc9 (ของตกแต่งตามอาชีพ+รั้ว) · รอเจ้าของรีวิว · เหลือ npc1, npc3, npc4, npc6, npc7, npc10, npc11, npc12, npc13, npc15 · วิธีทำ: วางผ่าน VillageAssetEdit ในหน้า village-town.html?edit=1 (พิกัดท้องถิ่นของบ้านหัน SE: +v = ด้านหน้าประตู, ±u = ด้านข้าง) แล้วเพิ่มเฉพาะรายการใหม่เข้า js/village-layout-v67.js
