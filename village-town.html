@@ -269,7 +269,7 @@ function paintRoad(q,lines,width){let sp=clipSplit.get(lines);if(!sp){const cut=
 const SHEET={cobble:null,curb:null,strips:null,pat:new WeakMap()};
 {const im=new Image();im.onload=()=>{SHEET.strips=im;terrainDirty=true;try{lateTerrain()}catch(e){}};im.src='assets/village-town/ground/road-strips.webp'}
 const STRIPS=()=>!!(window.ROAD_STRIPS&&SHEET.strips&&SHEET.cobble);
-{const im=new Image();im.onload=()=>{SHEET.curves=im;terrainDirty=true;try{lateTerrain()}catch(e){}};im.src='assets/village-town/ground/road-curves.webp'}
+{const im=new Image();im.onload=()=>{SHEET.curves=im;terrainDirty=true;try{lateTerrain()}catch(e){}try{buildRoadCover()}catch(e){}};im.src='assets/village-town/ground/road-curves.webp?v=v98.914'}
 const DIRNAME=(du,dv)=>du<-.5?'NW':du>.5?'SE':dv<-.5?'NE':'SW';
 for(const[k,f]of[['cobble','road-sheet-cobble.webp'],['curb','road-sheet-curb.webp']]){const im=new Image();im.onload=()=>{SHEET[k]=im;SHEET.pat=new WeakMap();terrainDirty=true;try{lateTerrain()}catch(e){}};im.src='assets/village-town/ground/'+f}
 function sheetPat(ctx,key){if(!SHEET.cobble||!SHEET.curb)return null;let m=SHEET.pat.get(ctx);if(!m)SHEET.pat.set(ctx,m=new Map());if(m.has(key))return m.get(key);let src,s;
@@ -368,8 +368,15 @@ function junctionShape(p,c,R){if(ROAD_SHAPE==='round'){p.moveTo(c.x+R,c.y*2);p.a
 /* v98.908 · the roads' visible footprint (paving + curb) as a mask: painted ground is cut out wherever it is opaque, so ground paint can never cover a road */
 const roadCover=document.createElement('canvas');roadCover.width=WORLD_W;roadCover.height=WORLD_H;
 function buildRoadCover(){try{const c=roadCover.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,WORLD_W,WORLD_H);const keep=ROAD_CLIP;ROAD_CLIP=0;c.save();c.scale(1,.5);c.lineCap=c.lineJoin='round';c.strokeStyle=c.fillStyle='#000';for(const[lines,R]of[[roadMainLines,ROAD.main],[roadLaneLines,ROAD.lane]])paintRoad(c,lines,R.curb+2*RIM_DARK);paintRoad(c,roadExitLines,ROAD.main.pave-10);if(plazaPath)c.fill(plazaPath);if(junctionPath)c.fill(junctionPath);
-  /* v98.912 · CURVES are the exception, but ONLY the OUTER CORNER: a curved bend leaves a gap outside the curve (the square corner beyond the arc, bendPath(B,true)) — ground may be painted there to patch it; the curved road itself stays covered */
- c.globalCompositeOperation='destination-out';try{for(const B of roadBends())c.fill(bendPath(B,true))}catch(e){console.warn('road cover bends',e)}c.restore();ROAD_CLIP=keep;window.TownPaint?.setCover?.(roadCover)}catch(e){console.warn('road cover',e)}}
+  /* v98.912 · CURVES are the exception, but ONLY the OUTER CORNER: a curved bend leaves a gap outside the curve (the square corner beyond the arc, bendPath(B,true)) — ground may be painted there to patch it; the curved road itself stays covered. v98.913: the INNER corner (bendPath(B,false)) is open too */
+ c.globalCompositeOperation='destination-out';try{for(const B of roadBends())if(!B.CV){c.fill(bendPath(B,true));c.fill(bendPath(B,false))}}catch(e){console.warn('road cover bends',e)}
+ c.restore();
+ /* v98.914 · bends drawn with the owner's curve picture: the cover there is EXACTLY the picture's own shape (its alpha), so painted ground (soil) meets the curb with no strip of green grass left between them */
+ try{for(const B of roadBends())if(B.CV&&SHEET.curves){const M=B.CV.m,Pv={x:2240+(B.V.u-B.V.v)*28,y:1232+(B.V.u+B.V.v)*14},poly=curveRegion(B).map(g=>({x:2240+(g.u-g.v)*28,y:1232+(g.u+g.v)*14}));
+   c.save();c.beginPath();c.moveTo(poly[0].x,poly[0].y);for(let z=1;z<4;z++)c.lineTo(poly[z].x,poly[z].y);c.closePath();c.globalCompositeOperation='destination-out';c.fill();c.globalCompositeOperation='source-over';c.clip();
+   const T=document.createElement('canvas');T.width=B.CV.w;T.height=B.CV.h;const t=T.getContext('2d');t.drawImage(SHEET.curves,B.CV.x,B.CV.y,B.CV.w,B.CV.h,0,0,B.CV.w,B.CV.h);t.globalCompositeOperation='source-in';t.fillStyle='#000';t.fillRect(0,0,B.CV.w,B.CV.h);
+   c.translate(Pv.x,Pv.y);c.transform(M[0],M[2],M[1],M[3],0,0);c.drawImage(T,-B.CV.vx,-B.CV.vy);c.restore()}}catch(e){console.warn('road cover curves',e)}
+ ROAD_CLIP=keep;window.TownPaint?.setCover?.(roadCover)}catch(e){console.warn('road cover',e)}}
 function finishRoads(){window.VillageForest?.reset();fpClip=makeFpClip();fpClipCache=new Map();plazaPath=makePlaza();roadPath=pathFromLines(roadLines);
  roadMainLines=roadLines.filter((_,i)=>(roadKinds[i]||'main')==='main');roadExitLines=roadLines.filter((_,i)=>roadKinds[i]==='exit');roadLaneLines=[...roadLines.filter((_,i)=>roadKinds[i]==='lane')];roadMain=pathFromLines(roadMainLines);roadLane=pathFromLines(roadLaneLines);
  junctionPath=new Path2D();roadLines.forEach((l,i)=>{if(i===0||(roadKinds[i]||'main')!=='main'||l.length<2)return;junctionShape(junctionPath,l.at(-1),150)});
