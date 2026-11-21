@@ -25,6 +25,7 @@ function create(o){
  const W=o.w,H=o.h,res=o.res||.25,squash=o.squash??.5,unit=o.unitPx||28,org=o.origin||{x:W/2,y:H/2},span=o.span||2.6,MW=Math.round(W*res),MH=Math.round(H*res);
  const comp=canvas(W,H),cg=comp.getContext('2d'),masks={},alphas={},tmp=canvas(8,8),tg=tmp.getContext('2d');
  let listeners=[],version=0,loading=0;
+ let cover=null;   /* canvas (world size): where it is opaque the painted ground is removed (roads) */
  const mask=id=>masks[id]||(masks[id]=canvas(MW,MH));
  const used=()=>MATERIALS.filter(m=>masks[m.id]);
  // texture → iso ground: texture px (tx,ty) = (u,v) in units of span; screen x=(u-v)*unit, y=(u+v)*unit/2
@@ -32,6 +33,8 @@ function create(o){
  function recomposite(x,y,w,h){x=Math.max(0,Math.floor(x));y=Math.max(0,Math.floor(y));w=Math.min(W-x,Math.ceil(w));h=Math.min(H-y,Math.ceil(h));if(w<=0||h<=0)return;
   cg.clearRect(x,y,w,h);if(tmp.width<w)tmp.width=w;if(tmp.height<h)tmp.height=h;
   for(const m of used()){const p=pattern(tg,m,x,y);if(!p)continue;tg.globalCompositeOperation='source-over';tg.clearRect(0,0,w,h);tg.fillStyle=p;tg.fillRect(0,0,w,h);tg.globalCompositeOperation='destination-in';tg.imageSmoothingEnabled=true;tg.drawImage(masks[m.id],x*res,y*res,w*res,h*res,0,0,w,h);cg.drawImage(tmp,0,0,w,h,x,y,w,h)}
+  /* v98.908 · ROADS ARE ALWAYS ABOVE PAINTED GROUND: the road footprint (village-town.html sets it with setCover) is cut out of the painted layer, so no brush can cover a road */
+  if(cover){cg.globalCompositeOperation='destination-out';cg.drawImage(cover,x,y,w,h,x,y,w,h);cg.globalCompositeOperation='source-over'}
   tg.globalCompositeOperation='source-over'}
  function full(){recomposite(0,0,W,H);readAlphas();version++}
  function readAlphas(){for(const k of Object.keys(alphas))if(!masks[k])delete alphas[k];for(const m of used()){if(m.walk==null)continue;const d=masks[m.id].getContext('2d',{willReadFrequently:true}).getImageData(0,0,MW,MH).data,a=alphas[m.id]||(alphas[m.id]=new Uint8Array(MW*MH));for(let i=0;i<a.length;i++)a[i]=d[i*4+3]}}
@@ -76,7 +79,7 @@ function create(o){
  /* v92.07 · which painted material (id) covers each world point — for terrain kinds in battle; null = nothing painted */
  function matsAt(pts){const out=pts.map(()=>null),best=pts.map(()=>127);for(const id of Object.keys(masks)){const d=masks[id].getContext('2d',{willReadFrequently:true}).getImageData(0,0,MW,MH).data;pts.forEach((p,i)=>{const ix=Math.floor(p.x*res),iy=Math.floor(p.y*res);if(ix<0||iy<0||ix>=MW||iy>=MH)return;const a=d[(iy*MW+ix)*4+3];if(a>best[i]){best[i]=a;out[i]=id}})}return out}
  function hasPath(){for(const k in alphas)if(BY[k]?.walk===true)return true;return false}
- return {smooth,hasPath,setClip:p=>{clipPolys=p&&p.length?p:null},get clip(){return clipPolys},matsAt,unit,draw,walkMask,blockMask,dab,cellDab,cellIdx,rectDab,rectPts,cellPoly,cellKey:(p,sz)=>{const q=cellPoly(p.x,p.y,sz)[0];return q.x+','+q.y},endStroke,walk,save,load,clear,ui,onChange:f=>listeners.push(f),get version(){return version},squash,W,H,compCanvas:()=>comp,hasMasks:()=>Object.keys(masks).length>0};   /* v98.844 · the editor's merged ground layer (village-town.html drawMergedGround) */
+ return {setCover:c=>{cover=c||null;if(Object.keys(masks).length)full()},smooth,hasPath,setClip:p=>{clipPolys=p&&p.length?p:null},get clip(){return clipPolys},matsAt,unit,draw,walkMask,blockMask,dab,cellDab,cellIdx,rectDab,rectPts,cellPoly,cellKey:(p,sz)=>{const q=cellPoly(p.x,p.y,sz)[0];return q.x+','+q.y},endStroke,walk,save,load,clear,ui,onChange:f=>listeners.push(f),get version(){return version},squash,W,H,compCanvas:()=>comp,hasMasks:()=>Object.keys(masks).length>0};   /* v98.844 · the editor's merged ground layer (village-town.html drawMergedGround) */
 }
 
 /* ---------- brush panel + toolbar button ----------
