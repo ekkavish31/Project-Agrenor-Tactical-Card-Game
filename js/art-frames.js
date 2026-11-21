@@ -11,7 +11,9 @@
   const OWN_HINT = ['sw', 'sh', 'orderU', 'orderV', 'zo', 'cmp'];
   let store = null, PA = null;
   /* v98.838 · ONE picture = ONE template in every editor: the village map names its decor pictures 'v:decor:<name>', the sub-maps 'decor:<name>' — same picture, so both ids share the same template (a frame / ticks saved in either appear in the other) */
-  const norm = a => typeof a === 'string' && a.startsWith('v:decor:') ? a.slice(2) : a;
+  /* v98.917 · the village's built-in street lamp ('v:lamp') draws assets/village-town/decor/lamp-post.webp — the SAME picture as 'decor:lamp-post' in the sub-maps, so they share one template */
+  const ALIAS = { 'v:lamp': 'decor:lamp-post' };
+  const norm = a => typeof a === 'string' ? (ALIAS[a] || (a.startsWith('v:decor:') ? a.slice(2) : a)) : a;
   let migrated = false;
   /* once: review ticks (🟦 🟥 📐) that were ticked piece by piece in the sub-maps (before the ticks travelled with the picture) → the picture's template, when the template has none yet and that piece follows it */
   function migrateTicks() {
