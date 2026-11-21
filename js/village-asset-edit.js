@@ -2240,16 +2240,16 @@
 
  /* footprint panel: the ground area this place claims on the grid (blue tiles on the map) */
  function fpHtml(o) {
-  return '';   /* v98.835 · the old blue plot footprint panel is retired: it was the wall that blocked walking; a place now uses 🟦 order frame + 🟥 block frame (🔍 แก้ละเอียด) */
+  /* v98.907 · back in the building tab as "ขนาดฐาน" (the dashed yellow frame on the map): since v98.835 it no longer blocks walking (that is the 🟥 red frame's job) — it is only the plot that the place sits on (frontage, what belongs to the place, where pieces snap) */
   const f = window.VillageFootprint?.fpOf(o);
   if (!f) return '';
   const custom = window.VillageFootprint.isCustom(o), se = o.facing === 'SE';
   const edge = (k, label) => `<div class="row" style="align-items:center;margin:2px 0"><span style="min-width:74px">${label} ${f[k]}</span><button data-fp="${k},-1">−1</button><button data-fp="${k},-0.5">−½</button><button data-fp="${k},-0.25">−¼</button><button data-fp="${k},0.25">+¼</button><button data-fp="${k},0.5">+½</button><button data-fp="${k},1">+1</button></div>`;
-  return `<b class="sec">กรอบพื้นที่ (กริด)${custom ? ' · ปรับเอง' : ' · อัตโนมัติ'}</b>
-  <p class="sub">พื้นฟ้าบนแผนที่ = ช่องกริดที่สถานที่นี้กิน · ชนสถานที่อื่นไม่ได้ · บีบเข้าเพื่อให้ของที่ล้นขอบ (เช่น กิ่งไม้) ไม่กินช่อง</p>
+  return `<b class="sec">📐 ขนาดฐาน (กรอบเส้นประเหลือง)${custom ? ' · ปรับเอง' : ' · อัตโนมัติ'}</b>
+  <p class="sub">กรอบเส้นประเหลืองบนแผนที่ = แปลงพื้นที่ที่สถานที่นี้ตั้งอยู่ (หน่วย = ช่องกริด) · ปรับทีละขอบหรือทั้งกรอบ · ไม่ได้บล็อกการเดิน (ใช้ 🟥 กรอบแดงสำหรับบล็อกเดิน)</p>
   ${edge('u0', se ? 'ซ้าย(หลัง)' : 'ซ้าย')}${edge('u1', se ? 'ขวา(หน้า)' : 'ขวา')}${edge('v0', 'หลัง')}${edge('v1', 'หน้า')}
   <div class="row"><button data-fpa="-1">บีบทั้งกรอบ −1</button><button data-fpa="-0.5">บีบทั้งกรอบ −½</button><button data-fpa="0.5">ขยายทั้งกรอบ +½</button><button data-fpa="1">ขยายทั้งกรอบ +1</button></div>
-  <div class="row"><button id="fpFit" title="หดทั้ง 4 ขอบเข้าหาแถวกริดนอกสุดที่ยังมีพิกเซลภาพทับอยู่">🧲 หดพอดีภาพ</button><button id="fpAuto"${custom ? '' : ' disabled'}>คืนค่าอัตโนมัติ</button></div><p class="sub">ลากจุดขาวที่ขอบกริดฟ้าบนแผนที่ได้อิสระ · ดับเบิลคลิกจุดขาว = หดขอบนั้นเข้าหาแถวนอกสุดที่มีภาพทับ</p>
+  <div class="row"><button id="fpFit" title="หดทั้ง 4 ขอบเข้าหาแถวกริดนอกสุดที่ยังมีพิกเซลภาพทับอยู่">🧲 หดพอดีภาพ</button><button id="fpAuto"${custom ? '' : ' disabled'}>คืนค่าอัตโนมัติ</button></div><p class="sub">🧲 หดพอดีภาพ = หดทั้ง 4 ขอบเข้าหาแถวกริดนอกสุดที่ยังมีภาพทับ</p>
 `;
  }
  function bindFp(body, o) {
