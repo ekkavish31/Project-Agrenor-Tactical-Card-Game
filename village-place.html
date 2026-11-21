@@ -1157,6 +1157,7 @@ function draw(t) {
   hits.push({
    type: 'station',
    i,
+   big: true,   /* v98.911 · the whole picture is NOT clickable any more: only the aura round the entrance (auraHit) */
    r: artRect(s.art, s.u, s.v, s.width || 120, s.s || 1)
   });
   objects.push({
@@ -1170,7 +1171,7 @@ function draw(t) {
     type: 'station',
     i
    },
-   draw: () => { if (window.Interactables?.isActive('st:' + i)) stationOutline(s); drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp, (s.ix != null || s.iy != null || s.skx || s.sky || s.pm || s.artX || s.artY) ? s : null) }
+   draw: () => { if (window.Interactables?.isActive('st:' + i)) { drawAura(s); stationOutline(s) } drawArt(s.art, s.u, s.v, s.width || 120, s.s || 1, s.f, t, hp, (s.ix != null || s.iy != null || s.skx || s.sky || s.pm || s.artX || s.artY) ? s : null) }
   })
  });
  M.stations.forEach((s, i) => { const o = vendorObj(s, i); if (o) objects.push(o) });   /* v98.556 */
@@ -1364,13 +1365,38 @@ function world(e) {
  }
 }
 
+/* v98.911 · ENTRANCE AURA: a place is chosen only when the pointer is inside a ring (AURA_R cells) round its entrance (door).
+   Anywhere else — even on the building's picture — a click just walks to the nearest walkable spot. */
+const AURA_R = 1.5;
+function auraHit(p) {
+ const q = inv(p.x, p.y);
+ let best = null, bd = 1e9;
+ M.stations.forEach((s, i) => { const d = door(s), dist = Math.hypot(q.u - d.u, q.v - d.v); if (dist < AURA_R && dist < bd) { bd = dist; best = { type: 'station', i } } });
+ return best
+}
+function drawAura(s) {
+ const d = door(s); g.save(); g.beginPath();
+ for (let k = 0; k <= 48; k++) { const t = k / 48 * Math.PI * 2, p = project(d.u + Math.cos(t) * AURA_R, d.v + Math.sin(t) * AURA_R); k ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y) }
+ g.closePath(); g.fillStyle = 'rgba(255,228,150,.22)'; g.fill(); g.strokeStyle = 'rgba(255,240,190,.95)'; g.lineWidth = 3; g.setLineDash([10, 7]); g.stroke(); g.restore()
+}
+/* nearest walkable spot to q (rings outward, the candidate closest to the hero on each ring) */
+function nearestFree(q, max = 6) {
+ if (!blocked(q.u, q.v)) return q;
+ for (let r = .5; r <= max; r += .5) {
+  let best = null, bd = 1e9;
+  for (let a = 0; a < 24; a++) { const t = a / 24 * Math.PI * 2, u = q.u + Math.cos(t) * r, v = q.v + Math.sin(t) * r; if (!blocked(u, v)) { const d = Math.hypot(u - hero.u, v - hero.v); if (d < bd) { bd = d; best = { u, v } } } }
+  if (best) return best
+ }
+ return null
+}
 function hitAt(p) {
  for (let k = hits.length - 1; k >= 0; k--) {
   const h = hits[k],
    r = h.r;
+  if (h.big) continue;
   if (p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) return h
  }
- return null
+ return auraHit(p)
 }
 let drag = null;
 cv.onpointerdown = e => {
@@ -1387,7 +1413,7 @@ cv.onpointerdown = e => {
  cv.setPointerCapture(e.pointerId)
 };
 cv.onpointermove = e => {
- if (!drag && !editing && e.pointerType !== 'touch') { const w = world(e), h = hitAt(w), it = h?.type === 'station' ? { id: 'st:' + h.i, label: M.stations[h.i].name, x: e.clientX, y: e.clientY } : window.Interactables?.at(w.x, w.y); window.Interactables?.setHover(it?.id); window.Interactables?.showTip(it ? { ...it, x: 0 } : null, e.clientX, e.clientY) }
+ if (!drag && !editing && e.pointerType !== 'touch') { const w = world(e), h = hitAt(w), it = h?.type === 'station' ? { id: 'st:' + h.i, label: 'กำลังเลือก · ' + M.stations[h.i].name, x: e.clientX, y: e.clientY } : window.Interactables?.at(w.x, w.y); window.Interactables?.setHover(it?.id); window.Interactables?.showTip(it ? { ...it, x: 0 } : null, e.clientX, e.clientY) }
  if (!drag) return;
  const dx = e.clientX - drag.x,
   dy = e.clientY - drag.y;
@@ -1419,7 +1445,8 @@ cv.onpointerup = e => {
   return
  }
  target = null;
- path = blocked(q.u, q.v) ? [] : route(hero, q);
+ const goal = nearestFree(q);   /* v98.911 · a click on a wall / building / blocked spot walks to the nearest walkable spot */
+ path = goal ? route(hero, goal) : [];
  $('status').textContent = path.length ? 'กำลังเดิน…' : 'เดินไปจุดนี้ไม่ได้'
 };
 cv.onpointercancel = () => drag = null;
