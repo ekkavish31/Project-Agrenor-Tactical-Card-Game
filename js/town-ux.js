@@ -74,7 +74,7 @@ addEventListener('keydown',e=>{if((e.key==='m'||e.key==='M')&&!e.target.closest?
 // v81.x · a service point can sit deep inside the building: the hero walks to the edge, then straight over the art to it
 const deepEntry=Object.assign(document.createElement('label'),{innerHTML:'<input type="checkbox"> วางจุดเข้าลึกเข้าไปในอาคารได้ (หรือกด Shift ขณะลาก)'});deepEntry.style.cssText='gap:6px;font-size:12px;margin:4px 0';const deepBox=deepEntry.querySelector('input');Object.defineProperty(deepEntry,'checked',{get:()=>deepBox.checked});selectMode.after(deepEntry);deepEntry.hidden=true;selectMode.addEventListener('change',()=>deepEntry.hidden=!editing||mode!=='entry');
 function edgeOf(o){const a=center(o),d=entry(o),b=boundary(o,d);return canonical(o,a.u+b.du,a.v+b.dv)}
-function deepOwner(p){return locations.find(o=>o.entry?.deep&&Math.hypot(entry(o).u-p.u,entry(o).v-p.v)<.6)}
+function deepOwner(p){return locations.find(o=>o.entry?.deep&&!window.VillageAssetEdit?.hasRed?.(o.id)&&Math.hypot(entry(o).u-p.u,entry(o).v-p.v)<.6)}   /* v98.900 · a place walled by its RED frame has no 'walk to the plot edge first' rule any more: the entrance sits OUTSIDE the frame, so the hero (who starts on it) walked to the old plot edge — inside the frame — and then looped around */
 const baseFind=findPath;findPath=function(start,end){const to=deepOwner(end),from=deepOwner(start);
  if(to&&!(from===to)){const edge=edgeOf(to),near=Math.hypot(start.u-edge.u,start.v-edge.v)<.5,p=near?[]:baseFind(start,edge);if(!near&&!p.length)return[];return[...p,{u:edge.u,v:edge.v},{u:end.u,v:end.v}]}
  if(from&&from!==to){const edge=edgeOf(from),p=baseFind(edge,end);return p.length?[{u:edge.u,v:edge.v},...p]:[]}

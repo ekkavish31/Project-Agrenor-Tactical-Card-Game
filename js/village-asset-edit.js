@@ -1052,7 +1052,7 @@
  let blockList = [];
  function rebuildBlocks() { blockList = frame.filter(e => (e.geo || e.ov)?.block && !e.hidden).map(e => { const c = inv(e.x, e.y); return window.PieceGeometry.footprint(e.geo || e.ov, c.u, c.v, true) });
   /* v98.835 · a PLACE with a red frame (data.buildings[id].block) is walled by that frame — nothing else: the old plot footprint wall + yellow entrance cells + green cells no longer apply to it (village-town.html skips it via hasRed) */
-  for (const o of locations) { const t = data.buildings[o.id]; if (!t || !t.block) continue; try { const c = center(o); blockList.push(window.PieceGeometry.footprint({ zb: t.zb, blockU: t.blockU, blockV: t.blockV, fw: t.fw, fh: t.fh }, c.u, c.v, true)) } catch (e) { } } }
+  for (const o of locations) { const t = data.buildings[o.id]; if (!t || !t.block) continue; try { const c = center(o); blockList.push(window.PieceGeometry.footprint({ zb: t.zb, blockU: t.blockU, blockV: t.blockV, fw: t.fw, fh: t.fh }, c.u, c.v, true)) } catch (e) { } } try { window.resetWalkMemo?.() } catch (e) { } }
  const blockBoxes = () => blockList.flatMap(r => r.parts || [r]);   /* v98.499 · free-form red zones are lists of boxes */
  const blockedAt = (u, v) => { for (const r of blockBoxes()) if (u > r.u0 && u < r.u1 && v > r.v0 && v < r.v1) return true; return false };
  function itemRectAt(k, c) {

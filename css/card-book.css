@@ -173,3 +173,8 @@ body.gt-on .card-book.cb-v2{--w:min(86vw,140vh);--pt:2vh}   /* lesson: book at t
 .cb-v2 .cb-tabs.cb-side.L button.on,.cb-v2 .cb-tabs.cb-side.R button.on{transform:none!important;width:calc(var(--u)*11.4)!important}
 .cb-v2 .cb-no{display:none!important}   /* v98.856 · no page numbers in the corners — only the 1/1 counter */
 .cb-v2 .cb-pg .collection-count{top:calc(var(--u)*.15)!important}   /* v98.857 · inside the card (the page clips anything above it) */
+/* v98.900 · ribbons: a little lower (clear of the gold corner of the cover) and ~10 px further in, so their base lies over the first page edge like they are slipped into the book */
+.cb-v2 .cb-tabs.cb-side{top:calc(var(--pt) + var(--u)*7.4)!important}
+.cb-v2 .cb-tabs.cb-side.L{left:calc(var(--u)*-7.6)!important}.cb-v2 .cb-tabs.cb-side.R{right:calc(var(--u)*-7.6)!important}
+/* v98.900 · ONE close button at a time: while a card's detail page is open, only its own close button shows (it closes the top page first); the book's "ปิดสมุด" waits underneath */
+body:has(#collectionFocus[open]) #panel .cb-close{visibility:hidden!important}
