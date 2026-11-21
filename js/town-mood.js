@@ -17,10 +17,8 @@ function grade(g,W,H){const k=level();if(!k)return;g.save();g.setTransform(devic
  // 4. vignette
  g.globalCompositeOperation='multiply';const r=Math.hypot(W,H)/2;gr=g.createRadialGradient(W*.5,H*.46,r*.38,W*.5,H*.5,r);gr.addColorStop(0,'#fff');gr.addColorStop(1,mix([92,84,88],k));g.fillStyle=gr;g.fillRect(0,0,W,H);
  g.restore()}
-function shadows(g){const k=Math.max(.35,level());g.save();g.filter='blur(14px)';g.fillStyle=`rgba(24,30,18,${.38*k+.12})`;const p=new Path2D();
- for(const o of locations){if(!o.w||!o.d)continue;const c=center(o),L=o.id==='square'?.5:Math.min(3.2,(o.w+o.d)*.55);
-  for(let s=0;s<=1;s+=.25){const du=L*s,dv=L*s*.25,pts=[[-o.w,-o.d],[o.w,-o.d],[o.w,o.d],[-o.w,o.d]].map(([a,b])=>project(c.u+a+du,c.v+b+dv));p.moveTo(pts[0].x,pts[0].y);for(const q of pts.slice(1))p.lineTo(q.x,q.y);p.closePath()}}
- g.fill(p,'nonzero');g.restore()}
+/* v98.905 · OFF: this baked a blurred dark box under every place's old footprint (plus a cast offset). The places are now painted assets with their own light and shadow, so those boxes showed up as big dark blotches on the street and the grass, unrelated to anything drawn. Contact shadows under villagers are drawn separately (villager-draw.js) and stay. */
+function shadows(g){}
 /* lamps */
 const AUTO_LAMPS=false;let lamps=[],lampKey='';
 function inPoly(x,y,pts){let a=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const p=pts[i],q=pts[j];if((p.y>y)!==(q.y>y)&&x<(q.x-p.x)*(y-p.y)/(q.y-p.y)+p.x)a=!a}return a}
