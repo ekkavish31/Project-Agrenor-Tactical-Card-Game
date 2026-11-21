@@ -20,13 +20,14 @@
     { id: 'event', icon: ICON('mail'), name: 'เหตุการณ์', tip: 'ใช้แล้วเกิดเรื่องราว' }
   ];
   const PER_PAGE = 6, PER_SPREAD = PER_PAGE * 2, SIDE_CAP = 6;
-  /* v98.853 · page-turn pictures: forward = the right page lifts (flip1) then falls to the left (flip2); backward = the same two in reverse */
-  const FLIP = ['assets/ui/cardbook2-flip1.webp', 'assets/ui/cardbook2-flip2.webp'], FLIP_MS = 100;
-  for (const f of FLIP) new Image().src = f;
+  /* v98.904 · page-turn pictures: the owner's 20-frame turn (assets/ui/bookturn/turn-01..20.webp, same 1672×941 as the open book, top-right ornament removed to match): forward = frames 1→20 (the right page lifts and falls to the left), backward = the same frames in reverse. The content is swapped (mid) when the turning page stands over the spine (about frame 10). */
+  const FLIP = Array.from({ length: 20 }, (_, i) => `assets/ui/bookturn/turn-${String(i + 1).padStart(2, '0')}.webp`), FLIP_MS = 26, FLIP_MID = 9;
+  const warm = () => { for (const f of FLIP) { const im = new Image(); im.decoding = 'async'; im.src = f } };
+  try { (window.requestIdleCallback || setTimeout)(warm, 1500) } catch (e) { }
   const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches } catch (e) { return false } };
   /* play the turn on `el` (its background is the book), call `mid` when the old page is covered, `done` at the end */
-  function pageTurn(el, dir, mid, done) { if (!el || reduced()) { mid?.(); done?.(); return } const fr = dir < 0 ? [...FLIP].reverse() : FLIP; el.classList.add('cb-turning'); let i = 0;
-    const step = () => { if (i < fr.length) { el.style.setProperty('--cb-page', `url("${new URL(fr[i], document.baseURI).href}")`); if (i === 0) setTimeout(() => mid?.(), FLIP_MS * .6); i++; setTimeout(step, FLIP_MS) } else { el.style.removeProperty('--cb-page'); el.classList.remove('cb-turning'); done?.() } };
+  function pageTurn(el, dir, mid, done) { if (!el || reduced()) { mid?.(); done?.(); return } const fr = dir < 0 ? [...FLIP].reverse() : FLIP; el.classList.add('cb-turning'); let i = 0, midDone = false;
+    const step = () => { if (i < fr.length) { el.style.setProperty('--cb-page', `url("${new URL(fr[i], document.baseURI).href}")`); if (i === FLIP_MID && !midDone) { midDone = true; mid?.() } i++; setTimeout(step, FLIP_MS) } else { if (!midDone) mid?.(); el.style.removeProperty('--cb-page'); el.classList.remove('cb-turning'); done?.() } };
     step() }
   window.CardBookTurn = pageTurn;
   let tab = 'use';
