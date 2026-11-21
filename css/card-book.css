@@ -178,3 +178,18 @@ body.gt-on .card-book.cb-v2{--w:min(86vw,140vh);--pt:2vh}   /* lesson: book at t
 .cb-v2 .cb-tabs.cb-side.L{left:calc(var(--u)*-7.6)!important}.cb-v2 .cb-tabs.cb-side.R{right:calc(var(--u)*-7.6)!important}
 /* v98.900 · ONE close button at a time: while a card's detail page is open, only its own close button shows (it closes the top page first); the book's "ปิดสมุด" waits underneath */
 body:has(#collectionFocus[open]) #panel .cb-close{visibility:hidden!important}
+/* ===== v98.901 · BIGGER BOOK + ONE CLOSE BUTTON INSIDE THE PAGE
+   • the open book AND a card's detail page share one size (92 % of the width / 170 vh) and one place; the tab ribbons hang out on the left, so the whole spread sits a little to the right to make room for them
+   • close = a red round X with a white rim, no text, in the top-right corner of the right page — the same button, size and place on the book and on the card's detail page */
+.card-book.cb-v2,dialog#collectionFocus.grim{--sx:calc(var(--u,var(--gw)/100)*3.8)}
+.card-book.cb-v2{--w:min(92vw,170vh);--pt:max(.6vh,calc((100vh - var(--w)*.5628)/2 - 6px));transform:translateX(var(--sx))}
+dialog#collectionFocus.grim{--gw:min(92vw,170vh);--u:calc(var(--gw)/100);margin-top:max(.6vh,calc((100vh - var(--gw)*.5628)/2 - 6px));transform:translateX(var(--sx))}
+body.gt-on .card-book.cb-v2{--w:min(86vw,140vh);--pt:2vh;--sx:0px}
+body.gt-on dialog#collectionFocus.grim{--gw:min(86vw,140vh);margin-top:2vh;--sx:0px}
+.cb-v2 .cb-close,dialog#collectionFocus.grim .collection-close{position:absolute!important;right:calc(var(--u)*7.4)!important;left:auto!important;bottom:auto!important;width:calc(var(--u)*3.2)!important;height:calc(var(--u)*3.2)!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;color:transparent!important;font-size:0!important;z-index:6!important;cursor:pointer;display:block!important;
+ background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28.5' fill='%23d9302b' stroke='%23fff' stroke-width='5'/%3E%3Cpath d='M21 21L43 43M43 21L21 43' stroke='%23fff' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat!important;
+ filter:drop-shadow(0 2px 3px #0008)!important;box-shadow:none!important;outline:0!important;text-shadow:none!important;transition:transform .12s,filter .12s}
+.cb-v2 .cb-close{top:calc(var(--u)*5.6)!important}
+dialog#collectionFocus.grim .collection-close{top:calc(var(--u)*5.6)!important}
+.cb-v2 .cb-close:hover,dialog#collectionFocus.grim .collection-close:hover{transform:scale(1.1)!important;filter:drop-shadow(0 0 5px #ffd0a0) brightness(1.1)!important}
+.cb-v2 .cb-close:focus-visible,dialog#collectionFocus.grim .collection-close:focus-visible{outline:2px solid #ffd77a!important;outline-offset:2px}

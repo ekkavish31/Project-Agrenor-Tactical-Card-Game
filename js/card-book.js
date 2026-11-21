@@ -67,7 +67,7 @@
     const tabBtn = t => `<button type="button" role="tab" data-t="${t.id}" title="${esc(t.name + ' · ' + t.tip)}"><img src="${t.icon}" alt="" draggable="false"><em>${count(t.id)}</em><b>${t.name}</b></button>`;
     book.innerHTML = `<nav class="cb-tabs cb-side L" role="tablist">${tabs.slice(0, SIDE_CAP).map(tabBtn).join('')}</nav>${tabs.length > SIDE_CAP ? `<nav class="cb-tabs cb-side R" role="tablist">${tabs.slice(SIDE_CAP).map(tabBtn).join('')}</nav>` : ''}
       <div class="cb-open">
-        <button type="button" class="cb-close" aria-label="ปิดสมุด" title="ปิดสมุด" onclick="if(!(window.closeTopFirst&&window.closeTopFirst()))document.getElementById('panel').close()">ปิดสมุด</button>
+        <button type="button" class="cb-close" aria-label="ปิดสมุด" title="ปิด" onclick="if(!(window.closeTopFirst&&window.closeTopFirst()))document.getElementById('panel').close()"></button>
         ${tabs.map(t => `<section class="cb-page" data-p="${t.id}" role="tabpanel" aria-label="${esc(notes[t.id] || t.name)}"><div class="cb-pg L collection-grid"></div><div class="cb-pg R collection-grid"></div><span class="cb-no L"></span><span class="cb-no R"></span></section>`).join('')}
         <div class="cb-nav"><button type="button" class="cb-prev" aria-label="หน้าก่อน">◀</button><span class="cb-count">1/1</span><button type="button" class="cb-next" aria-label="หน้าถัดไป">▶</button></div>
       </div>
