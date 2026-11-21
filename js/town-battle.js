@@ -1361,8 +1361,9 @@
   const FBLK = { NW: { b: [.6543, .6060], t: [.2600, .4089] }, NE: { b: [.3457, .6060], t: [.7400, .4089] }, SW: { b: [.6543, .4517], t: [.2600, .6489] }, SE: { b: [.3457, .4517], t: [.7400, .6489] } };
   function facingWedge(h, du, dv, f) {
     const at = (a, b) => screenOf({ vu: h.vu + du * a - dv * b, vv: h.vv + dv * a + du * b }), A = at(.5, 0), B = at(1.1, 0), mid = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
-    const K = FBLK[f], vx = (K.t[0] - K.b[0]) * 128, vy = (K.t[1] - K.b[1]) * 128, s = Math.hypot(B.x - A.x, B.y - A.y) / Math.hypot(vx, vy), len = Math.hypot(vx, vy) * s, size = 128 * s;
-    const ox = (.5 - (K.b[0] + K.t[0]) / 2) * size, oy = (.5 - (K.b[1] + K.t[1]) / 2) * size, bw = Math.abs(vx) * s + len * .5, bh = Math.abs(vy) * s + len * .5, nm = d => `assets/fx/facing/${f.toLowerCase()}-${d}.webp`;
+    /* v98.921 · the arrow PICTURE follows where the arrow really sits on the SCREEN (B − A), not the lattice name: on a map whose camera is turned the names no longer match the screen, and every arrow pointed one step counter-clockwise */
+    const sk = (B.y - A.y < 0 ? 'N' : 'S') + (B.x - A.x < 0 ? 'W' : 'E'), K = FBLK[sk], vx = (K.t[0] - K.b[0]) * 128, vy = (K.t[1] - K.b[1]) * 128, s = Math.hypot(B.x - A.x, B.y - A.y) / Math.hypot(vx, vy), len = Math.hypot(vx, vy) * s, size = 128 * s;
+    const ox = (.5 - (K.b[0] + K.t[0]) / 2) * size, oy = (.5 - (K.b[1] + K.t[1]) / 2) * size, bw = Math.abs(vx) * s + len * .5, bh = Math.abs(vy) * s + len * .5, nm = d => `assets/fx/facing/${sk.toLowerCase()}-${d}.webp`;
     const svg = `<u class="aura" style="width:${(len * 1.7).toFixed(1)}px;height:${(len * 1.05).toFixed(1)}px"></u><img class="fi n" src="${nm('normal')}" alt="" draggable="false" style="width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;left:calc(50% + ${(ox - size / 2).toFixed(1)}px);top:calc(50% + ${(oy - size / 2).toFixed(1)}px)"><img class="fi s" src="${nm('selected')}" alt="" draggable="false" style="width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;left:calc(50% + ${(ox - size / 2).toFixed(1)}px);top:calc(50% + ${(oy - size / 2).toFixed(1)}px)">`;
     return { x: mid.x, y: mid.y, w: bw, h: bh, left: bw / 2, top: bh / 2, ang: Math.atan2(vy, vx), svg, cell: len / .08 * .2 };
   }
