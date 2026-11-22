@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 5408 ไฟล์ (393.2 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 5834 ไฟล์ (407.2 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -17,16 +17,16 @@
 | หมวดหมู่ | ไฟล์ | ขนาด | โฟลเดอร์หลัก | ลงทะเบียน slot | ไฟล์ซ้ำ (เนื้อหาเหมือนกัน) |
 |---|---|---|---|---|---|
 | 🗣 ภาพสนทนา (portrait) | 136 | 13.1 MB | `assets/portraits` 136 | 0 | 4 |
-| 🧑‍🎤 ตัวเอก | 2580 | 96.6 MB | `assets/tactics` 2553 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2568 | 510 |
-| 👥 ชาวบ้าน / NPC | 292 | 11.7 MB | `assets/village-town` 292 | 180 | 23 |
+| 🧑‍🎤 ตัวเอก | 2869 | 104.0 MB | `assets/tactics` 2842 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2809 | 524 |
+| 👥 ชาวบ้าน / NPC | 332 | 12.7 MB | `assets/village-town` 332 | 220 | 23 |
 | 🤝 เพื่อนร่วมทีม | 200 | 9.7 MB | `assets/tactics` 196 · `assets/allies` 4 | 200 | 16 |
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
-| ⚔ ท่าต่อสู้ในสนาม (tactics) | 402 | 25.2 MB | `assets/tactics` 395 · `assets/objects` 7 | 370 | 26 |
+| ⚔ ท่าต่อสู้ในสนาม (tactics) | 452 | 26.8 MB | `assets/tactics` 445 · `assets/objects` 7 | 418 | 40 |
 | 🃏 การ์ด | 168 | 44.0 MB | `assets/cards` 166 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 156 | 16 |
-| 🎛 UI · ไอคอน · เมนู | 204 | 6.1 MB | `assets/ui` 95 · `assets/icons` 82 · `assets/cursor` 19 · `assets/cursor-fantasy-active.png` 1 | 90 | 9 |
-| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 138 | 19.4 MB | `assets/village-town` 123 · `assets/objects` 15 | 12 | 6 |
+| 🎛 UI · ไอคอน · เมนู | 243 | 8.6 MB | `assets/ui` 120 · `assets/icons` 82 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 90 | 11 |
+| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 144 | 20.8 MB | `assets/village-town` 129 · `assets/objects` 15 | 12 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
-| ⛰ ภูมิประเทศ · แผนที่โลก | 106 | 6.9 MB | `assets/terrain` 75 · `assets/world` 27 · `assets/v03` 4 | 4 | 0 |
+| ⛰ ภูมิประเทศ · แผนที่โลก | 108 | 7.0 MB | `assets/terrain` 77 · `assets/world` 27 · `assets/v03` 4 | 4 | 2 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
 | ✨ เอฟเฟกต์ | 68 | 4.0 MB | `assets/fx` 68 | 0 | 0 |
 | 🎒 ไอเทม · อาวุธ · พืชผล | 61 | 5.3 MB | `assets/crops` 36 · `assets/weapons` 7 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 25 | 1 |
@@ -42,13 +42,13 @@
 - ตัวละครเนื้อเรื่อง (4 อารมณ์) — 32
 
 ### 🧑‍🎤 ตัวเอก
-- ท่าตัวเอกที่นำเข้าจากสตูดิโอ — 2553
+- ท่าตัวเอกที่นำเข้าจากสตูดิโอ — 2842
 - ลุคตัวเอก (ชาย/หญิง) — 22
 - ตัวเอก (เดิม) — 3
 - ไอคอนสถานที่ / เบ็ดเตล็ด (ระดับบนสุดของ assets) — 2
 
 ### 👥 ชาวบ้าน / NPC
-- ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 292
+- ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 332
 
 ### 🤝 เพื่อนร่วมทีม
 - ท่าของ bram — 24
@@ -67,8 +67,8 @@
 - มอนสเตอร์ (หน้า/หลัง) — 104
 
 ### ⚔ ท่าต่อสู้ในสนาม (tactics)
-- ท่าที่นำเข้าจากสตูดิโอ (idle/walk/ท่า) — 217
-- ท่าต่อสู้ · อาวุธในมือ — 178
+- ท่าที่นำเข้าจากสตูดิโอ (idle/walk/ท่า) — 263
+- ท่าต่อสู้ · อาวุธในมือ — 182
 - วัตถุ · รั้ว · บ้านจาก Workshop — 7
 
 ### 🃏 การ์ด
@@ -82,9 +82,9 @@
 - การ์ด src — 1
 
 ### 🎛 UI · ไอคอน · เมนู
-- UI — 95
+- UI — 120
 - ไอคอน — 82
-- เคอร์เซอร์เกม — 19
+- เคอร์เซอร์เกม — 33
 - UI / เคอร์เซอร์ — 8
 
 ### 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง
@@ -92,14 +92,14 @@
 - ของตกแต่ง — 33
 - ขอบ — 24
 - วัตถุ · รั้ว · บ้านจาก Workshop — 15
+- พื้น — 13
 - อาคาร — 11
-- พื้น — 7
 
 ### 🏠 ภายในอาคาร
 - เฟอร์นิเจอร์ · ของในห้อง — 185
 
 ### ⛰ ภูมิประเทศ · แผนที่โลก
-- ภูมิประเทศ (สนามรบ) — 75
+- ภูมิประเทศ (สนามรบ) — 77
 - วัตถุบนแผนที่โลก — 27
 - พื้นหลัง · HUD เก่า — 4
 
@@ -152,9 +152,9 @@
 - 0.1 MB เสียไปกับสำเนา 2 ไฟล์: `assets/portraits/hero-male-calm.webp`, `assets/portraits/hero-male-neutral.webp`
 - 0.1 MB เสียไปกับสำเนา 2 ไฟล์: `assets/_versions/unified/mvvihj13/tactics-bram-sw-idle.png`, `assets/_versions/unified/mvvj6rqu/tactics-bram-sw-idle.png`
 - 0.1 MB เสียไปกับสำเนา 2 ไฟล์: `assets/tactics/props/pine.webp`, `assets/village-town/nature/pine.webp`
+- 0.1 MB เสียไปกับสำเนา 2 ไฟล์: `assets/ui/bookturn/turn-01.webp`, `assets/ui/bookturn/turn-20.webp`
 - 0.1 MB เสียไปกับสำเนา 2 ไฟล์: `assets/_versions/unified/mw2xb4ck/tactics-kier-nw-idle.png`, `assets/_versions/unified/mw2xbir2/tactics-kier-nw-idle.png`
 - 0.1 MB เสียไปกับสำเนา 3 ไฟล์: `assets/tactics/imported/strike-sw-mw4kvsmf-i3pm/frame-01.webp`, `assets/tactics/imported/strike-sw-mw4kvvuh-sbyz/frame-01.webp`, `assets/tactics/imported/strike-sw-mw4kyto8-bdbh/frame-01.webp`
 - 0.1 MB เสียไปกับสำเนา 3 ไฟล์: `assets/tactics/imported/hit-sw-mw4kvsmf-i3pm/frame-01.webp`, `assets/tactics/imported/hit-sw-mw4kvvuh-sbyz/frame-01.webp`, `assets/tactics/imported/hit-sw-mw4kyto8-bdbh/frame-01.webp`
 - 0.1 MB เสียไปกับสำเนา 2 ไฟล์: `assets/tactics/bram_sw_idle.webp`, `assets/village-town/npc/bram/sw-stand.webp`
 - 0.1 MB เสียไปกับสำเนา 2 ไฟล์: `assets/tactics/bram_se_idle.webp`, `assets/village-town/npc/bram/se-stand.webp`
-- 0.1 MB เสียไปกับสำเนา 2 ไฟล์: `assets/tactics/luna_se_idle.webp`, `assets/village-town/npc/luna/se-stand.webp`

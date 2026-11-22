@@ -41,6 +41,8 @@ const PLACE = {
 };
 /* v98.441 · the old button scene's drawing code is archived (archive/old-scene/js); what is left in js/ is used by the game, so every script counts */
 const OLD_JS = new Set([]);
+/* v98.931 · files that only LIST pictures (a clip inventory, a preload list, the plan) are not users of them: the hero's animation-data still lists the old adventure.run frames although nothing plays them */
+const INVENTORY = /^(animation-data|precache-list|master-plan|progress-history|progress)\./;
 
 const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name).slice(ROOT.length + 1)]);
 const files = walk(path.join(ROOT, 'assets')).sort();
@@ -52,7 +54,7 @@ function codeScan() {
   const srcs = [];
   for (const d of ['js', 'css', 'data']) for (const f of fs.readdirSync(path.join(ROOT, d))) {
     const n = f.replace(/\.[a-z]+$/, '').replace(/-v\d+$/, '');
-    if (/^(asset-manifest|asset-studio|studio-|build-)/.test(f) || OLD_JS.has(f.replace(/\.js$/, ''))) continue;
+    if (/^(asset-manifest|asset-studio|studio-|build-)/.test(f) || INVENTORY.test(f) || OLD_JS.has(f.replace(/\.js$/, ''))) continue;
     if (!/\.(js|css|json)$/.test(f)) continue;
     srcs.push({ f: d + '/' + f, name: f.replace(/\.[a-z]+$/, ''), t: fs.readFileSync(path.join(ROOT, d, f), 'utf8') });
   }
