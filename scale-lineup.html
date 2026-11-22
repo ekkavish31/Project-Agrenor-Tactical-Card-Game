@@ -119,7 +119,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 <p class="hint" id="note"></p></section>
 <aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.920"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/char-size.js?v=v98.572"></script><script src="js/character-scale-adjust-data.js?v=v98.894"></script><script src="js/character-scale-adjust.js?v=v98.656"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.937"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.936"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
+<script src="js/village-layout-v67.js?v=v98.920"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/game-settings.js?v=v98.894"></script><script src="js/char-size.js?v=v98.572"></script><script src="js/character-scale-adjust-data.js?v=v98.894"></script><script src="js/character-scale-adjust.js?v=v98.948"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.937"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.936"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
@@ -136,7 +136,8 @@ const ALLIES = { bram: 'บรัม', luna: 'ลูน่า', kier: 'เคี
 const PICK = {};
 /* v98.386 · ONE pose + direction for the whole row (studio): every character shows the same ท่า · ทิศ (frame #) so they compare like for like.
    A character's own frame chosen in the 📏 inspector (PICK) still wins. Adjusting proportion writes THIS pose·direction and its OPPOSITE (SW↔SE · NW↔NE). */
-const VP = (() => { try { return { action: 'idle', view: 'SW', index: 0, ...JSON.parse(localStorage.getItem('lineup.vp') || '{}') } } catch (e) { return { action: 'idle', view: 'SW', index: 0 } } })();
+/* v98.942 · LOCKED: the lineup compares ONE pose and direction — standing (idle) · SW · first frame. Every other pose is made the same height per character in Asset Studio → Animation → 📐 เรียงท่า, so the lineup only needs the standing one (docs/TODO.md §35.0). */
+const VP = { action: 'idle', view: 'SW', index: 0 };
 const OPPV = { SW: 'SE', SE: 'SW', NW: 'NE', NE: 'NW' }, VP_ACT = [['idle', 'ยืน'], ['walk', 'เดิน'], ['windup', 'เตรียมโจมตี'], ['strike', 'โจมตี'], ['guard', 'ป้องกัน'], ['hit', 'โดนโจมตี'], ['down', 'ล้ม']];
 /* follow-up: which character·pose·direction has been checked as correct ('ok') or adjusted and waiting for a check ('adj') */
 const DONE_KEY = 'proportion-done-v1', DONE = (() => { try { return JSON.parse(localStorage.getItem(DONE_KEY) || '{}') || {} } catch (e) { return {} } })();
@@ -204,9 +205,32 @@ if (DOCK) document.body.classList.add('dock'); if (WORLD_ONLY) document.body.cla
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
 const RANK = { hero: 0, ally: 1, monster: 2 };
 /* one picture per character (the standing SW picture, or the frame picked from the Animation clips) — the SAME entry for 'battle' and 'village', so both views always agree */
+/* v98.942 · HEIGHT BASIS. Standing · SW height = from the middle of the two feet to the skull top (the 📐 เรียงท่า datum, 'pose-sheet-v1'). A character without a usable datum falls back to its SHADOW (silhouette)
+   measured from the feet line (y = 360) up and scaled by SHADOW_K, because hair / hats stick out above the skull (measured on 4 characters with a datum: datum ÷ shadow-from-feet-line = 0.86–0.92, median ≈ 0.88).
+   Once ≥ 6 characters have a datum, SHADOW_K is their median instead. Only the displayed height changes — the game draws pictures at a fixed canvas size, nothing is saved by this. */
+const stripExt = x => String(x || '').split('?')[0].replace(/^\.?\//, '').replace(/\.[a-z0-9]+$/i, '');
+let SHADOW_K = .88, SHADOW_N = 0;
+const datumAll = (() => { let D = null; return () => { if (D) return D; try { D = JSON.parse(localStorage.getItem('pose-sheet-v1') || '{}') } catch (e) { D = {} } return D } })();
+function datumOf(id, file) {   /* → {H, fy} | {stale:true} | null */
+  const r = datumAll()[AK(id)]?.['idle@SW']; if (!r) return null; const p = r.p || {}; if (!(p.top && (p.footL || p.footR))) return null;
+  if (r.fp && file && stripExt(r.fp.split('|')[0]) !== stripExt(file)) return { stale: true };   /* the picture was replaced after the points were placed */
+  const fy = p.footL && p.footR ? (p.footL[1] + p.footR[1]) / 2 : (p.footL || p.footR)[1], H = fy - p.top[1]; return H >= 20 ? { H, fy } : null;
+}
+const FEET = () => (window.CharSize && CharSize.FEET_Y) || 360;
+function finalizeBasis() {
+  const cs = []; for (const e of ENTRIES) { const C = e.ctx.battle; if (C && C.sil && (e.kind === 'hero' || e.kind === 'ally')) cs.push(C) }
+  const ratios = cs.filter(C => C.dm && !C.dm.stale).map(C => C.dm.H / Math.max(1, FEET() - C.sil.top + 1)).sort((a, b) => a - b);
+  SHADOW_N = ratios.length; SHADOW_K = ratios.length >= 6 ? Math.max(.75, Math.min(.98, ratios[Math.floor(ratios.length / 2)])) : .88;
+  for (const C of cs) {
+    if (C.dm && !C.dm.stale) { C.m.H = C.dm.H; C.m.bottom = Math.round(C.dm.fy) - 1; C.basis = 'datum' }
+    else { C.m.H = Math.max(1, FEET() - C.sil.top + 1) * SHADOW_K; C.m.bottom = FEET() - 1; C.basis = C.dm?.stale ? 'stale' : 'shadow' }
+    C.units = C.m.H / 384 * C.factor;
+  }
+}
+const basisTag = e => { const b = e.ctx?.battle?.basis; return b === 'datum' ? '<i title="วัดจาก Datum: กึ่งกลางเท้า → ยอดกะโหลก" style="color:#1f6f43;font-style:normal">● Datum</i>' : b === 'stale' ? '<i title="Datum เป็นของภาพเก่า (ภาพท่ายืน SW ถูกเปลี่ยน) — ใช้เงาแทน ต้องวาง Datum ใหม่" style="color:#b3261e;font-style:normal">⚠ ภาพเปลี่ยน · ~เงา</i>' : b === 'shadow' ? `<i title="ยังไม่มี Datum — ใช้ความสูงเงาจากเส้นเท้า × ${SHADOW_K.toFixed(2)} (ประมาณ ±3%)" style="color:#8a6a00;font-style:normal">~ เงา×${SHADOW_K.toFixed(2)}</i>` : '' };
 async function addChar(id, name, kind, pic, factor) {
   const url0 = pic.url || pic.src, img = await load(url0); if (!img) return; const url = img.__rel || url0; const m = measure(img, pic.flip); if (!m) return;
-  const C = { img, m, src: url, url, file: pic.file || pic.src, flip: !!pic.flip, label: pic.label || '', vp: pic.vp || null, units: m.H / 384 * factor, factor, formula: `สูง ÷ 384 × ${factor}` };
+  const C = { img, m, sil: { top: m.top, bottom: m.bottom, H: m.H }, dm: datumOf(id, pic.file || pic.src), src: url, url, file: pic.file || pic.src, flip: !!pic.flip, label: pic.label || '', vp: pic.vp || null, units: m.H / 384 * factor, factor, formula: `สูง ÷ 384 × ${factor}` };
   let e = ENTRIES.find(x => x.id === id); if (!e) ENTRIES.push(e = { id, name, kind, ctx: {} });
   e.name = name; e.ctx.battle = e.ctx.village = C;
 }
@@ -229,7 +253,7 @@ async function buildChars() {
   const list = ST ? ST.lineup.entities().map(e => { const id = e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''); if (e.group) GROUPOF[id] = e.group; return { id, sid: e.id, name: e.name, clips: e.clips } }) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
   for (const c of list) {
     let pic, vp = null;
-    if (ST) { const own = PICK[c.id], clip = own ? null : (c.clips || []).find(x => x.action === VP.action && x.view === VP.view) || (VP.action === 'idle' ? null : (c.clips || []).find(x => x.action === VP.action && x.view === OPPV[VP.view]));
+    if (ST) { const own = null, clip = own ? null : (c.clips || []).find(x => x.action === VP.action && x.view === VP.view) || (VP.action === 'idle' ? null : (c.clips || []).find(x => x.action === VP.action && x.view === OPPV[VP.view]));
       pic = await ST.lineup.picture(c.sid, VP.view, own?.clip || clip?.id, own ? own.index : Math.min(VP.index, (clip?.n || 1) - 1)); vp = { sid: c.sid, action: own ? 'pick' : VP.action, view: VP.view, index: own ? own.index : VP.index, clips: c.clips || [] };
       if (!pic) pic = await ST.lineup.picture(c.sid, 'SW') }
     else pic = { src: c.id === 'hero' ? lookPic(heroLook(), 'SW').src : `assets/village-town/npc/${c.id}/sw-stand.webp` };
@@ -244,6 +268,7 @@ async function buildChars() {
   const have = new Set(list.map(c => c.id)); for (let i = ENTRIES.length - 1; i >= 0; i--) if ((ENTRIES[i].kind === 'hero' || ENTRIES[i].kind === 'ally') && !have.has(ENTRIES[i].id)) ENTRIES.splice(i, 1);
   ENTRIES.sort((a, b) => (RANK[a.kind] ?? 3) - (RANK[b.kind] ?? 3));
   { const mi = ENTRIES.findIndex(e => lookOfId(e.id) === 'male'), fi = ENTRIES.findIndex(e => lookOfId(e.id) === 'female'); if (mi >= 0 && fi >= 0) { const male = ENTRIES[mi], female = ENTRIES[fi]; ENTRIES.splice(Math.max(mi, fi), 1); ENTRIES.splice(Math.min(mi, fi), 1); ENTRIES.unshift(male, female) } }   /* v98.457/458 · the two hero looks stand side by side at the front: male first, female second — always */
+  finalizeBasis();   /* v98.942 */
 }
 async function build() {
   const add = async (id, name, kind, ctx, src, factor, formula, file) => {
@@ -319,10 +344,7 @@ function render() {
   if (!ENTRIES.some(e => e.id === 'hero' && e.ctx.battle)) { $('stage').innerHTML = '<p class="hint">ยังไม่พบภาพท่ายืนของตัวเอก (SW) — ตัวเอกคือไม้วัดของหน้านี้ · ตรวจว่าไฟล์ภาพถูก push แล้ว หรือกด รีเฟรช</p>'; $('list').innerHTML = ''; $('insp').innerHTML = ''; return }
   ctx = tab === 'char' || tab === 'ratio' || tab === 'field' ? 'battle' : 'village';
   if (ST && ['char', 'ratio', 'maps'].includes(tab)) {   /* v98.386 · ท่า · ทิศ · เฟรม for the whole row */
-    $('vpCtl').innerHTML = `<span class="vp">ท่า <select id="vpAct">${VP_ACT.map(([k, n]) => `<option value="${k}"${VP.action === k ? ' selected' : ''}>${n}</option>`).join('')}</select> ทิศ ${['SW', 'NW', 'NE', 'SE'].map(v => `<button data-vv="${v}" aria-pressed="${VP.view === v}">${v}</button>`).join('')} เฟรม <input id="vpIdx" type="number" min="1" max="24" value="${VP.index + 1}" style="width:48px"></span>`;
-    const again = async () => { try { localStorage.setItem('lineup.vp', JSON.stringify(VP)) } catch (e) { } await buildChars(); render() };
-    $('vpAct').onchange = ev => { VP.action = ev.target.value; VP.index = 0; again() }; $('vpIdx').onchange = ev => { VP.index = Math.max(0, (+ev.target.value || 1) - 1); again() };
-    $('vpCtl').querySelectorAll('[data-vv]').forEach(b => b.onclick = () => { VP.view = b.dataset.vv; again() });
+    $('vpCtl').innerHTML = `<span class="vp" title="ล็อกไว้: เทียบเฉพาะท่ายืน ทิศ SW เฟรมแรก — ท่าอื่นทำให้สูงเท่ากันต่อตัวที่หน้า เรียงท่า">🧍 ท่ายืน · ทิศ SW <small>(ล็อก)</small></span>`;
   } else $('vpCtl').innerHTML = '';
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k || (k === 'ratio' && tab === 'char')}">${t}</button>`).join(' ');
   $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' || tab === 'field' ? (visible()[0]?.id || 'hero') : (visible()[1]?.id || 'hero'); viewCtl(); render() });
@@ -330,7 +352,7 @@ function render() {
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
   const V = visible();
-  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${isSel(e.id)}">${MULTI ? `<b style="width:18px">${PICKED.has(e.id) ? '☑' : '☐'}</b>` : ''}<img alt="" src="${e.ctx[ctx].url || e.ctx[ctx].src}"${e.ctx[ctx].flip ? ' style="transform:scaleX(-1)"' : ''}><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m${e.unwired ? ' · ⏳ ยังไม่ต่อเกม' : ''}</small></span>${chip(e)}</button>`).join('');
+  $('list').innerHTML = V.map(e => `<button class="row" role="listitem" data-c="${e.id}" aria-pressed="${isSel(e.id)}">${MULTI ? `<b style="width:18px">${PICKED.has(e.id) ? '☑' : '☐'}</b>` : ''}<img alt="" src="${e.ctx[ctx].url || e.ctx[ctx].src}"${e.ctx[ctx].flip ? ' style="transform:scaleX(-1)"' : ''}><span><b>${e.name}</b><small>${metres(e).toFixed(2)} m${e.unwired ? ' · ⏳ ยังไม่ต่อเกม' : ''} ${basisTag(e)}</small></span>${chip(e)}</button>`).join('');
   $('list').querySelectorAll('.row').forEach(b => b.onclick = () => pickSel(b.dataset.c));
   if (tab === 'ratio') { renderRatio(V); inspect(); controls(); return }
   if (tab === 'maps') { renderMaps(); return }
@@ -419,7 +441,7 @@ let _rt = 0; const reRatio = () => { cancelAnimationFrame(_rt); _rt = requestAni
 function renderRatio(V) {
   /* v98.657 · a pose other than standing is drawn at the SAME scale as the standing figure of that character (screen px per picture px = the game's draw size), never fitted to its own silhouette — a lying figure is short and wide and was blown up to several times the row, and a character without that pose showed its standing picture at a random size */
   const poseNow = vpPose(), FH = DOCK ? 250 : 300, SU = (() => { try { if (poseNow === 'idle') { const u = refE()?.ctx?.[ctx]?.units; if (u > .5) localStorage.setItem('lineup.standU', String(u)) } return +localStorage.getItem('lineup.standU') || 1.43 } catch (x) { return 1.43 } })();
-  const ksOf = e => FH / SU * (e.ctx.battle.factor / 384) * eff(e), sizeOfFig = e => { const c = e.ctx.battle, bw = c.m.x1 - c.m.x0 + 1; let k = ksOf(e); const cap = FH * 1.25 / bw; if (k * bw > FH * 1.25) k = cap; return { k, fh: c.m.H * k } };
+  const ksOf = e => FH / SU * (e.ctx.battle.factor / 384) * eff(e), sizeOfFig = e => { const c = e.ctx.battle, bw = c.m.x1 - c.m.x0 + 1; let k = ksOf(e); const cap = FH * 1.25 / bw; if (k * bw > FH * 1.25) k = cap; return { k, fh: (c.m.bottom + 1 - c.m.top) * k } };
   const { R, med } = ratioRows(V), fhOf = poseNow === 'idle' ? (e => FH * metres(e) / HERO_M) : (e => sizeOfFig(e).fh), maxFH = Math.max(...V.map(fhOf)), bad = R.filter(x => x.v.level === 'bad').length, warn = R.filter(x => x.v.level === 'warn').length, ok = R.filter(x => x.v.level === 'ok').length;
   const st = $('stage'); st.style.height = 'auto'; st.style.width = 'auto';
   const lvl = bad ? 'bad' : warn ? 'warn' : 'ok';
@@ -427,11 +449,11 @@ function renderRatio(V) {
   let h = `<div class="stdctl"><b>⭐ ตัวมาตรฐาน: ${standardText()}</b> · ยอมคลาดเคลื่อน ± <input type="number" id="sTol" min="1" max="15" step="0.5" value="${STDV.tol}"> จุดเปอร์เซ็นต์ <span class="lgd">สัดส่วนชุดเดียว: กะโหลก–คาง / คาง–ขาหนีบ / ขาหนีบ–ข้อเท้า · ไม่รวมผมและมือยก · ยังไม่มี Datum ครบ = รอข้อมูล</span></div>`;
   h += `<div class="figs" style="min-height:${maxFH + 92}px;align-items:flex-end">`;
   for (const { e, r, v } of R) {
-    const c = e.ctx.battle, bw = c.m.x1 - c.m.x0 + 1, fh0 = fhOf(e), k = poseNow === 'idle' ? Math.min(fh0 / c.m.H, fh0 * 1.1 / bw) : sizeOfFig(e).k, fh = c.m.H * k, fw = bw * k, fl = c.flip ? 'transform:scaleX(-1);' : '', noPose = poseNow !== 'idle' && /^ท่ายืน/.test(c.label || '');   /* v98.416 · a wide, low pose (lying down) is capped so it does not grow past the row */
+    const c = e.ctx.battle, bw = c.m.x1 - c.m.x0 + 1, fh0 = fhOf(e), k = poseNow === 'idle' ? Math.min(fh0 / c.m.H, fh0 * 1.1 / bw) : sizeOfFig(e).k, fh = (c.m.bottom + 1 - c.m.top) * k,   /* v98.942 · box = silhouette top → floor line (m.H is now the measured height, not the box) */  fw = bw * k, fl = c.flip ? 'transform:scaleX(-1);' : '', noPose = poseNow !== 'idle' && /^ท่ายืน/.test(c.label || '');   /* v98.416 · a wide, low pose (lying down) is capped so it does not grow past the row */
     /* v98.401 · the chin/shoulder/hip LINES are gone for good (see v98.400) — but a dozen tiny dots over every thumbnail in this overview
        row turned out just as hard to read, so the row stays plain. The 📍 Datum points still show on the big panel below when you pick one. */
     h += `<div data-c="${e.id}"${noPose ? ' style="opacity:.35" title="ตัวนี้ยังไม่มีภาพท่านี้ (แสดงภาพท่ายืนแทน)"' : ''}><div class="fig" style="width:${fw}px;height:${fh}px"><img alt="" src="${c.url || c.src}" style="${fl}position:absolute;width:${c.m.w * k}px;height:${c.m.h * k}px;left:${-c.m.x0 * k}px;top:${-c.m.top * k}px">`;
-    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}${doneOf(e.id) === 'ok' ? ' verified' : ''}" data-c="${e.id}">${e.name}${r.datum ? ` <span class="chip ok" title="วาง 📍 Datum ครบแล้ว (ตา · คาง · ขาหนีบ · เท้า) — ตัวเลข ${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}% ด้านล่างวัดจากจุดนี้โดยตรง ไม่ใช่ประมาณจากภาพ">📍✔</span>` : ''}<br><span class="chip ${LV[v.level][0]}">${r.manual ? `${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}%` : 'รอ Datum'}</span>${doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}</div></div>`;
+    h += `</div><div class="figcap${e.id === sel ? ' sel' : ''}${doneOf(e.id) === 'ok' ? ' verified' : ''}" data-c="${e.id}">${e.name}${r.datum ? ` <span class="chip ok" title="วาง 📍 Datum ครบแล้ว (ตา · คาง · ขาหนีบ · เท้า) — ตัวเลข ${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}% ด้านล่างวัดจากจุดนี้โดยตรง ไม่ใช่ประมาณจากภาพ">📍✔</span>` : ''}<br><span class="chip ${LV[v.level][0]}">${r.manual ? `${r.heads.toFixed(2)} หัว · ${(r.head * 100).toFixed(1)}%` : (e.ctx.battle?.basis === 'datum' ? 'Datum ✔ ความสูง' : 'รอ Datum')}</span>${doneOf(e.id) === 'adj' ? ' <span class="chip warn" title="ปรับแล้ว รอติ๊กยืนยัน">✎</span>' : ''}</div></div>`;
   }
   h += `</div><details class="rtBox"${(() => { try { return localStorage.getItem('lineup.rtOpen') === '1' ? ' open' : '' } catch (e) { return '' } })()}><summary><b>📋 ตารางเทียบทั้งทีม</b> <small>(${R.length} ตัว · ตรง ${ok} · เฉียด ${warn} · ไม่ตรง ${bad} · ${medianText(med)}${ST ? ` · ✔ ตรวจแล้ว ${nOk}/${R.length}${nAdj ? ' · ✎ รอติ๊ก ' + nAdj : ''}` : ''})</small> <span class="info" title="จุดสี = 📍 Datum ที่จิ้มไว้จริง (จางกว่า = ยืมจากทิศคู่ ยังไม่ได้จิ้มเอง) · ทุกตัวสูงตามขนาดจริงใน Scale Lineup (ตัวเอก = 1.70 m, เท้าอยู่เส้นเดียวกัน) · ป้าย 📍✔ ที่ชื่อ = วาง Datum ครบแล้ว · รอ Datum = ยังไม่แสดงสัดส่วนและไม่ตัดสิน · เลือกตัวแล้ววาง/แก้ Datum ที่แผงขวา (ปุ่ม 📍 Datum)">ⓘ วิธีอ่าน</span> <button id="rNext" type="button" title="ข้ามไปตัวถัดไปที่ยังไม่ติ๊ก ✔ (ไล่ปรับทีละตัวให้ครบทีม)" style="padding:2px 9px;font-size:12px;font-weight:700">⏭ ถัดไปที่ยังไม่เสร็จ</button> <button id="rCopy" type="button" style="padding:2px 9px;font-size:12px">📋 คัดลอกรายงาน</button></summary><table class="rt"><tr><th>ตัวละคร</th><th>หัว–ข้อเท้า px</th><th>หัว %</th><th>จำนวนหัว</th><th>ลำตัว %</th><th>ขา %</th><th>ผล</th></tr>`;
   for (const { e, r, v } of R) h += `<tr data-c="${e.id}" class="${e.id === sel ? 'sel' : ''}"><td>${e.name}${r.manual ? '' : ' <small title="ยังไม่ได้วาง 📍 Datum — ตัวเลขนี้ประมาณจากภาพคร่าว ๆ เท่านั้น">~</small>'}</td><td>${r.manual ? r.H : '—'}</td><td>${r.manual ? (r.head * 100).toFixed(1) : '—'}</td><td>${r.manual ? r.heads.toFixed(2) : '—'}</td><td>${r.manual ? (r.torso * 100).toFixed(1) : '—'}</td><td>${r.manual ? (r.legs * 100).toFixed(1) : '—'}</td><td><span class="chip ${LV[v.level][0]}" title="${v.notes.join(' · ')}">${LV[v.level][1]}</span></td></tr>`;
@@ -444,7 +466,7 @@ function renderRatio(V) {
   $('rNext').onclick = ev => { ev.preventDefault(); ev.stopPropagation(); const ids = R.map(x => x.e.id), i0 = Math.max(0, ids.indexOf(sel));
     const next = ids.slice(i0 + 1).concat(ids.slice(0, i0 + 1)).find(id => doneOf(id) !== 'ok');
     if (!next) { ev.target.textContent = 'ติ๊ก ✔ ครบทุกตัวแล้ว 🎉'; return } pickSel(next) };
-  $('note').textContent = 'สัดส่วนอ่านจากภาพ SW ของแต่ละตัว (หรือเฟรมที่เลือกในแท็บ Animation) · ความสูงของแต่ละตัวอิงขนาดใน Scale Lineup เหมือนในเกม';
+  $('note').textContent = 'เทียบเฉพาะ ท่ายืน · ทิศ SW (ล็อก) · ความสูง = จากกึ่งกลางเท้า ถึง ยอดกะโหลก (Datum จากหน้า เรียงท่า) · ' + (() => { const L = ENTRIES.filter(e => (e.kind === 'hero' || e.kind === 'ally') && e.ctx.battle?.basis), n = L.filter(e => e.ctx.battle.basis === 'datum').length, st = L.filter(e => e.ctx.battle.basis === 'stale').length; return `วัดจาก Datum ${n}/${L.length} ตัว · ที่เหลือใช้ความสูงเงาจากเส้นเท้า × ${SHADOW_K.toFixed(2)}${SHADOW_N >= 6 ? ' (ค่ากลางของตัวที่มี Datum)' : ' (ค่าตั้งต้น ±3%)'}${st ? ` · ⚠ ${st} ตัวภาพเปลี่ยนหลังวาง Datum` : ''}` })();
 }
 /* v98.399 · 🛠 ปรับสัดส่วน is now DATUM-ONLY: no draggable / typed chin·shoulder·hip lines, no silhouette auto-estimate feeding the
    warp, no fixed "หัว ≈ 38%" auto-scale target. The cut points always come straight from the character's own 📍 Datum (chin, crotch)
@@ -1067,7 +1089,7 @@ function inspect() {
   if (false) { const a = metres(e), b = metres(e, other), d = a / b - 1; cross = row('ข้ามบริบท', `สนามรบ ${metres(e, 'battle').toFixed(2)} m · หมู่บ้าน ${metres(e, 'village').toFixed(2)} m <span class="chip ${Math.abs(d) < .06 ? 'ok' : Math.abs(d) < .12 ? 'warn' : 'bad'}">${d >= 0 ? '+' : ''}${Math.round(d * 100)}%</span>`) }
   $('insp').innerHTML = `<b>${e.name}</b> <span class="chip">${e.kind}</span><dl>
    ${row('ความสูงบนจอ', `${metres(e).toFixed(2)} m · ${c.units.toFixed(2)} UNIT`)}${row('เทียบตัวเอก', Math.round(metres(e) / HERO_M * 100) + '%')}${cross}
-   ${row('เงาในภาพ', `สูง ${c.m.H} px · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${/^data:/.test(c.file || c.src || '') ? '(ภาพตัดจากชีต)' : String(c.file || c.src).slice(0, 160)}</code>`)}</dl>
+   ${row('เงาในภาพ', `สูงเงา ${c.sil ? c.sil.H : c.m.H} px · วัดความสูง ${Math.round(c.m.H)} px (${c.basis === 'datum' ? 'Datum' : c.basis === 'stale' ? 'Datum เก่า → เงา' : c.basis ? 'เงา × ' + SHADOW_K.toFixed(2) : 'เงา'}) · หัว ${c.m.headW} px · ภาพ ${c.m.w}×${c.m.h}`)}${row('สูตร', `<code>${c.formula}</code>`)}${row('ไฟล์', `<code>${/^data:/.test(c.file || c.src || '') ? '(ภาพตัดจากชีต)' : String(c.file || c.src).slice(0, 160)}</code>`)}</dl>
   <p class="hint">ปรับขนาดที่แผง ⚖ ด้านล่าง</p>${e.unwired ? '<p class="hint">⏳ มอนสเตอร์ตัวนี้มีภาพ/อนิเมชันใน asset แล้ว แต่ <b>ยังไม่ได้ต่อเข้าสนามรบ</b> (ไม่มีในตาราง MON) — ค่าที่ปรับจะถูกเก็บไว้และมีผลเมื่อเกมนำตัวนี้มาใช้</p>' : ''}`;
 }
 /* v98.322 · the view controls live ABOVE the stage (where you look), grouped and labelled; only the ones that matter for the open tab are shown */
@@ -1141,7 +1163,7 @@ function controls() {
   const pct = v => Math.round(v * 100), row = (label, field, note) => `<div class="adj"><span>${label}</span><button data-b="${field}:-5">−5</button><button data-b="${field}:-1">−1</button><input type="number" min="40" max="200" value="${pct(field === 'g' ? gOf(e.id) : sOf(field, e.id))}" data-f="${field}"><button data-b="${field}:1">+1</button><button data-b="${field}:5">+5</button>${note ? `<small>${note}</small>` : ''}</div>`;
   const dim = isRefId(e.id) ? 'ตัวเอก (ชาย) คือไม้วัด: ปรับแล้วตัวอื่นเทียบตามความสูงเดิม' : '';
   /* studio only: compare ANY frame of this character from the Animation clips */
-  const pickerHtml = () => { if (!ST || !(e.kind === 'hero' || e.kind === 'ally')) return ''; const sid = e.id === 'hero' ? 'hero' : 'ally:' + e.id, en = ST.lineup.entities().find(x => x.id === sid); if (!en) return '';
+  const pickerHtml = () => { return ''; if (!ST || !(e.kind === 'hero' || e.kind === 'ally')) return ''; const sid = e.id === 'hero' ? 'hero' : 'ally:' + e.id, en = ST.lineup.entities().find(x => x.id === sid); if (!en) return '';
     const p = PICK[e.id] || {}, clips = en.clips.filter(c => ['SW', 'SE', 'NW', 'NE'].includes(c.view)), cur = clips.find(c => c.id === p.clip), c0 = e.ctx[ctx];
     return `<div class="adj"><span>เฟรมที่เทียบ</span><select id="cClip"><option value="">ท่ายืนมาตรฐาน (SW)</option>${clips.map(c => `<option value="${c.id}"${c.id === p.clip ? ' selected' : ''}>${c.action} · ${c.view} (${c.n} เฟรม)</option>`).join('')}</select>${cur && cur.n > 1 ? `<input id="cFrame" type="range" min="0" max="${cur.n - 1}" value="${p.index || 0}" style="width:100%">` : ''}<small>${c0.label || ''}</small></div>` };
   const dirs = pickerHtml();
@@ -1211,7 +1233,7 @@ function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
 /* v98.393 · docked: report the height the content needs (header + the strip column; the inspector scrolls on its own) so the studio sizes the row to fit — no empty band */
 if (DOCK) { const post = () => { try { const c = document.querySelector('main > section:nth-of-type(2)'), hd = document.querySelector('header'); parent.postMessage({ type: 'lineup-dock-h', h: Math.ceil((hd?.offsetHeight || 0) + (c?.scrollHeight || 0) + 22) }, location.origin) } catch (e) { } };
   let t = 0; const later = () => { clearTimeout(t); t = setTimeout(post, 80) }; try { new ResizeObserver(later).observe(document.querySelector('main > section:nth-of-type(2)')) } catch (e) { } addEventListener('toggle', later, true); addEventListener('load', later) }
-window.dockGoto = async ({ id, action, view, frame = 0, open = 'ratio' }) => { VP.action = action; VP.view = view; VP.index = frame | 0; delete PICK[id]; try { localStorage.setItem('lineup.vp', JSON.stringify(VP)) } catch (e) { } tab = 'ratio'; await buildChars(); sel = id; viewCtl(); render(); const e = ENTRIES.find(x => x.id === id); if (e && open === 'datum') openDatum(e) };
+window.dockGoto = async ({ id, action, view, frame = 0, open = 'ratio' }) => { delete PICK[id]; tab = 'ratio';   /* v98.942 · the pose / direction stay locked to idle · SW */ await buildChars(); sel = id; viewCtl(); render(); const e = ENTRIES.find(x => x.id === id); if (e && open === 'datum') openDatum(e) };
 /* v98.470 · show which version this page runs (the live game-version.js, never from cache) + the scale data it loaded, so an old cached page is obvious */
 fetch('js/game-version.js', { cache: 'no-store' }).then(r => r.text()).then(t => { const v = (t.match(/v:\s*'([^']+)'/) || [])[1] || '?', el = document.getElementById('lineupVer'); if (el) el.textContent = '· ' + v + ' · หน้า ' + LINEUP_BUILD + ' · ข้อมูลสเกล ' + Object.keys(SAVED.global || {}).length + ' ตัว' + (SAVED.pose ? ' + ท่า' : '') }).catch(() => { });
 build().then(() => { ready = true; viewCtl(); render(); wireStudio(); window.__lineupReady = true; $('lineupLoadState').hidden=true }).catch(err=>{console.error('Scale Lineup load failed',err);window.lineupLoading('โหลด Scale Lineup ไม่สำเร็จ: '+err.message,true)});

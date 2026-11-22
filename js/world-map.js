@@ -267,10 +267,11 @@
   /* v98.19 · the hero token uses the same walk data as the village and the battle (12-frame walk, procedural bob) — facing left/right = SW/SE */
   const MOTION = (() => { try { return window.HeroMotion && typeof TACTICS_SPRITES !== 'undefined' ? HeroMotion.snapshot(TACTICS_SPRITES) : null } catch (e) { return null } })();
   const motionPics = new Map(), motionPic = src => { let im = motionPics.get(src); if (!im) { im = new Image(); im.src = src; motionPics.set(src, im) } return im };
-  function drawTokenMotion(now, s, at, faceArg, walkArg, motArg) {
+  function drawTokenMotion(now, s, at, faceArg, walkArg, motArg, look) {
     const MOT = motArg || MOTION, T = at || token, walk0 = motArg ? walkArg : token.walking;
     if (!MOT) return false;
     const face = faceArg || (token.face < 0 ? 'SW' : 'SE'); let f = null; try { f = HeroMotion.frame(MOT, face, now, walk0) } catch (e) { }
+    s *= window.CharScaleAdjust?.heroPose?.(walk0, face, look) || 1;   /* v98.944 · the size set for this pose in 📐 เรียงท่า */
     if (!f || !f.src) return false; const im0 = motionPic(f.src); if (!im0.complete || !im0.naturalWidth) return false;
     const a = MOT.anchor || [.5, .9375], im = LOOK && !motArg ? JobLook.pic(im0, f.src, LOOK) : im0, ap = { x: 0, y: 0 };
     g.save(); g.translate(T.x, T.y + 4);
@@ -284,7 +285,7 @@
   /* v98.233 · the other hero (the sibling) walks one body length behind the party token */
   function drawFollower(now) {
     const sz = CharSize.WORLD_HERO_PX * (window.MapScale ? MapScale.get('world') : 1) * (window.CharScaleAdjust?.factor('world', 'hero') || 1);
-    for (const o of window.HeroFollower?.objects({ u: token.x, v: token.y }, null, now, { show: true, project: (u, v) => ({ x: u, y: v }), size: sz * .9, face: (du, dv, pd) => { if (Math.abs(du) < .01 && Math.abs(dv) < .01) return pd; const k = ((Math.round(Math.atan2(dv, du) / (Math.PI / 4)) % 8) + 8) % 8; return ['SE', 'SE', 'SE', 'SW', 'SW', 'NW', 'NE', 'NE'][k] },   /* v98.345 · E→SE · SE→SE · S→SE · SW→SW · W→SW · NW→NW · N→NE · NE→NE */ drawFn: (p, dir, walking, mot) => { g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(p.x, p.y + 2, 14, 5, 0, 0, 7); g.fill(); return drawTokenMotion(now, sz, p, dir === 'SW' || dir === 'NW' ? 'SW' : 'SE', walking, mot) } }) || []) o.draw();
+    for (const o of window.HeroFollower?.objects({ u: token.x, v: token.y }, null, now, { show: true, project: (u, v) => ({ x: u, y: v }), size: sz * .9, face: (du, dv, pd) => { if (Math.abs(du) < .01 && Math.abs(dv) < .01) return pd; const k = ((Math.round(Math.atan2(dv, du) / (Math.PI / 4)) % 8) + 8) % 8; return ['SE', 'SE', 'SE', 'SW', 'SW', 'NW', 'NE', 'NE'][k] },   /* v98.345 · E→SE · SE→SE · S→SE · SW→SW · W→SW · NW→NW · N→NE · NE→NE */ drawFn: (p, dir, walking, mot, ph, look) => { g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(p.x, p.y + 2, 14, 5, 0, 0, 7); g.fill(); return drawTokenMotion(now, sz, p, dir === 'SW' || dir === 'NW' ? 'SW' : 'SE', walking, mot, look) } }) || []) o.draw();
   }
   function drawToken(now) {
     const set = token.walking ? walkImgs : heroImgs, im0 = set[Math.floor(now / (token.walking ? 110 : 260)) % set.length], im = LOOK ? JobLook.pic(im0, im0.src, LOOK) : im0, s = CharSize.WORLD_HERO_PX * (window.MapScale ? MapScale.get('world') : 1) * (window.CharScaleAdjust?.factor('world', 'hero') || 1);   /* v98.139 · one multiplier for the world map */
