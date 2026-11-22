@@ -1042,7 +1042,7 @@ function vendorObj(s, i) {
   px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale();
  hits.push({ type: 'station', i, r: { x: p.x - px * .22, y: p.y - px * .9, w: px * .44, h: px * .95 } });   /* a click on the seller = the station */
  return { y: p.y, vendor: true, wu: w.u, wv: w.v, draw: (t = performance.now()) => {
-  const im = TownArt.image('assets/village-town/vendors/' + kind + '-' + face.toLowerCase() + '.webp'), bob = Math.sin(t * .0018 + hash) * 1.1;
+  const im = window.VillagePaintedArt ? null : TownArt.image('assets/village-town/vendors/' + kind + '-' + face.toLowerCase() + '.webp'), bob = Math.sin(t * .0018 + hash) * 1.1;
   if (im && im.complete && im.naturalWidth) { g.fillStyle = 'rgba(20,16,10,.28)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7); g.fill(); g.drawImage(im, p.x - px / 2, p.y - px * 360 / 384 - bob, px, px) }
   else if (window.VillagePaintedArt?.draw(g, kind, p.x, p.y - bob, px, { height: px * .88, flip: face === 'SE' })) { /* painted vendor atlas */ }
    else window.VillagerDraw?.(g, VENDOR_KINDS[kind].look, p.x, p.y, t, { face, scale: window.placeScale() })

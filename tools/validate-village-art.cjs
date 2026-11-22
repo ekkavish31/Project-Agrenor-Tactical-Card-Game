@@ -1,4 +1,4 @@
-/* Run every repository test. Failed tests are re-run against the exact PR base,
+/* Run repository checks (use --all to include the legacy UI suite). Failed tests are re-run against the exact PR base,
    with the same dependencies. A new/different failure fails validation. */
 const fs = require('node:fs'), path = require('node:path'), cp = require('node:child_process');
 const root = path.resolve(__dirname, '..'), base = process.env.VALIDATION_BASE;
@@ -10,7 +10,7 @@ const run = (dir, file) => cp.spawnSync(process.execPath, ['tools/' + file], {
   cwd: dir, encoding: 'utf8', timeout: 180000, maxBuffer: 32 * 1024 * 1024,
   env: { ...process.env, NODE_PATH: path.join(root, 'node_modules') }
 });
-const signature = r => (r.stdout + '\n' + r.stderr).split('\n').find(s => /AssertionError|TypeError:|ReferenceError:|Error:|^FAIL |^✗ /.test(s))?.replaceAll(root, '<repo>').replaceAll(base || '<no-base>', '<repo>') || String(r.error?.code || r.status);
+const signature = r => (r.stdout + '\n' + r.stderr).split('\n').find(s => /^(AssertionError|TypeError:|ReferenceError:|Error:|FAIL |✗ )/.test(s))?.replaceAll(root, '<repo>').replaceAll(base || '<no-base>', '<repo>') || String(r.error?.code || r.status);
 let passed = 0, preExisting = [], regressions = [];
 for (const file of tests) {
   console.log('::group::tools/' + file); const r = run(root, file); process.stdout.write(r.stdout || ''); process.stderr.write(r.stderr || '');

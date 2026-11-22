@@ -23,7 +23,7 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           for file in js/*.js; do node --check "$file" || exit 1; done
-      - name: Rebuild image catalogue and report generated metadata
+      - name: Rebuild image catalogue
         run: |
           node <<'NODE'
           const fs = require('fs'), vm = require('vm'), cp = require('child_process');
@@ -31,8 +31,7 @@ jobs:
           const old = read(), by = new Map(old.items.map(x=>[x[0],JSON.stringify(x)]));
           cp.execFileSync(process.execPath,['tools/build-image-index.cjs'],{stdio:'inherit'});
           const next = read(), paths = new Set(next.items.map(x=>x[0]));
-          console.log('PAINTED_INDEX_DELTA:'+JSON.stringify({n:next.n,updates:next.items.filter(x=>by.get(x[0])!==JSON.stringify(x)),removed:old.items.filter(x=>!paths.has(x[0])).map(x=>x[0])}));
-          console.log('PAINTED_IMAGE_MAP:'+JSON.stringify(fs.readFileSync('docs/IMAGE-MAP-TH.md','utf8')));
+          console.log('Image catalogue: '+next.n+' files, '+next.items.filter(x=>by.get(x[0])!==JSON.stringify(x)).length+' refreshed rows');
           NODE
       - name: Check against the exact PR base
         env:

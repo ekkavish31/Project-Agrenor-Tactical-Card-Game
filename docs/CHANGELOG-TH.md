@@ -7281,3 +7281,7 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - เพิ่ม atlas ของฟาร์ม/ไก่/แกะ/วัว/กองไม้/แผนที่/กระเป๋านักเดินทาง; ใช้ภาพแพะและรางน้ำที่มีแล้ว ของฟาร์มและไอคอนแผนที่อ่านภาพก่อน fallback เดิม
 - Atlas ตัดกรอบ alpha ครั้งเดียวเพื่อให้ขนาดและจุดเท้าตรง; ลงทะเบียนภาพใน manifest ทั้ง JSON/JS และขยับ cache version ของผู้ใช้สคริปต์ทุกหน้า
 - ภาพหน้าที่เพิ่มเป็นภาพเดียวต่อคน; พนักงานและสัตว์ใหม่ยังไม่มี walk cycle เฉพาะ ใช้การเคลื่อนไหวตามตำแหน่งเดิม
+
+- ตรวจจริงบน Chromium: PNG 11 ไฟล์ถอดรหัสครบ, atlas 22 ช่องตัด alpha และวาดครบ, ไม่มี script error หรือคำขอ asset ที่หาย; ตรวจรอบ PR 71 รายการ = ผ่าน 65 / ล้มเหมือนฐานเดิม 6 / ไม่มี regression รอบนี้ (ชุด UI เดิม 8 รายการแยกใน manual --all)
+- ข้อผิดพลาดเดิมที่ยืนยันเทียบ commit ฐาน c01435f: test-piece-geometry, test-placeable-art, test-proportion-preview, test-story-map, test-studio-roster, test-villager-art; ไม่แก้พฤติกรรมส่วนอื่นเพื่อกลบผลทดสอบ
+- สร้าง data/image-index.js และ docs/IMAGE-MAP-TH.md ใหม่ด้วย tools/build-image-index.cjs: ภาพ 5,894 ไฟล์ รวมภาพใหม่และแถวที่ค้างจากงานก่อน
