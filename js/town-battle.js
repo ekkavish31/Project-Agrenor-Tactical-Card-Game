@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.953';
+  const V = '98.954';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1474,6 +1474,11 @@
   }
   function shadow(g, p, r) { g.fillStyle = '#0006'; g.beginPath(); g.ellipse(p.x, p.y, Math.max(0, r), Math.max(0, r * .45), 0, 0, 7); g.fill() }
   function bar(g, p, top, frac, col) { const bw = 46, bx = p.x - bw / 2, by = top - 8; g.fillStyle = '#000a'; g.fillRect(bx - 1, by - 1, bw + 2, 7); g.fillStyle = col; g.fillRect(bx, by, bw * Math.max(0, frac), 5) }
+  /* v98.954 · stamina bar (แรง) directly under the HP bar — only the hero has stamina (u.stamina is a number); same x / width as bar(), 3 px high, gold; empties toward red when low */
+  function staBar(g, p, top, u) {
+    if (typeof u.stamina !== 'number' || u.hp <= 0) return; const cap = u.stMax || 100, f = Math.max(0, Math.min(1, u.stamina / cap)), bw = 46, bx = p.x - bw / 2, by = top - 8 + 7;
+    g.fillStyle = '#000a'; g.fillRect(bx - 1, by - 1, bw + 2, 5); g.fillStyle = f < .2 ? '#e0703a' : '#e8c34a'; g.fillRect(bx, by, bw * f, 3)
+  }
   /* hero: the old TACTICS_SPRITES poses (idle/walk/windup/strike/guard/hit/down) per direction, weapon drawn at the pose's hand anchor */
   /* TACTICS_SPRITES is a top-level const (not a window property) */
   let SPR_TABLE = null;   /* set while the sibling is drawn */
@@ -1663,7 +1668,7 @@
     else if (OLDPOSE && !f.rightBehind) sword();
     jobAura(g, u, p, size, t, true);
     g.restore();
-    bar(g, p, top + size * .12, u.shown / u.maxHp, '#6fd18a'); jobEmblem(g, u, p, top + size * .12);
+    bar(g, p, top + size * .12, u.shown / u.maxHp, '#6fd18a'); staBar(g, p, top + size * .12, u); jobEmblem(g, u, p, top + size * .12);
   }
   /* monster: old MonsterArt clips (idle/walk/windup/strike/hit/down, SE/NE + mirror); static picture until the clip loads */
   /* companions: the old per-character pictures (<key>_<se|ne>_<idle|windup|strike|hit|guard|down>.webp), SW/NW mirrored, moved with poseMotion */
