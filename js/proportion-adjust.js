@@ -92,7 +92,9 @@
     const N = W * H, wh = new Float32Array(N), wt = new Float32Array(N), wl = new Float32Array(N), chin = seg.head[1], hip = seg.torso[1], useCuts = !!(cuts && cuts.neck && cuts.hip && cuts.head);
     let sdN = null, sdH = null;
     if (useCuts) { sdN = lineField(cuts.neck, cuts.head, W, H); sdH = lineField(cuts.hip, cuts.head, W, H);
-      for (let i = 0; i < N; i++) { const h = 1 - ss(-soft, soft, sdN[i]), l = ss(-soft, soft, sdH[i]); wh[i] = h; wl[i] = l; wt[i] = Math.max(0, 1 - h - l) } }
+      /* v98.934 · along the body axis (neck → hip) nothing can be HEAD farther down than the lowest point of the neck line: the line's infinite extension used to leave thin head-coloured strips across the torso / legs where the nearest segment (and so the sign) flips */
+      const mid = a => [a.reduce((q, p) => q + p[0], 0) / a.length, a.reduce((q, p) => q + p[1], 0) / a.length], nm = mid(cuts.neck), hm = mid(cuts.hip), ax = [hm[0] - nm[0], hm[1] - nm[1]], al = Math.hypot(ax[0], ax[1]) || 1, ux = ax[0] / al, uy = ax[1] / al, maxP = Math.max(...cuts.neck.map(p => (p[0] - nm[0]) * ux + (p[1] - nm[1]) * uy)), mg = Math.max(2, soft * 2);
+      for (let i = 0; i < N; i++) { const l = ss(-soft, soft, sdH[i]), px = ((i % W) - nm[0]) * ux + (((i / W) | 0) - nm[1]) * uy, h = (1 - ss(-soft, soft, sdN[i])) * (1 - l) * (1 - ss(maxP + mg * .5, maxP + mg * 1.5, px)); wh[i] = h; wl[i] = l; wt[i] = Math.max(0, 1 - h - l) } }   /* v98.934 · the far side of the hip line is LEGS whatever the neck line does: a bent neck polyline's extended end segment used to run on through the legs and tinted a strip of them as head */
     else for (let y = 0; y < H; y++) { const h = 1 - ss(chin - soft, chin + soft, y), l = ss(hip - soft, hip + soft, y), t = Math.max(0, 1 - h - l); for (let x = 0; x < W; x++) { const i = y * W + x; wh[i] = h; wt[i] = t; wl[i] = l } }
     if (mode !== 'shape') return [wh, wt, wl];
     /* the shape of each part: its opaque pixels in its own rows, grown and softened so the weights fade out around the outline */
