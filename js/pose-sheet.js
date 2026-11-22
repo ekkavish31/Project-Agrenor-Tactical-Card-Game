@@ -168,6 +168,7 @@
   }
   const pct = (v, H) => v == null ? '—' : (v / H * 100).toFixed(1) + '%';
   function valsHtml(ck) {
+    if (!SHOW.vals) return '';   /* v98.939 · 📊 ตัวเลข off: no number window over the pictures */
     /* v98.921 · the numbers include the pose's SIZE (ขนาดท่า, the "enlarge everything" control): px values = picture px × that size, so "สูงรวม … จากยืน" moves when a pose is enlarged / shrunk */
     const sized = (v, k2) => { if (!v || v.need) return v; const c2 = cur?.cells[k2], kk = c2 ? kOf(c2) : 1, o2 = { ...v }; for (const f of ['H', 'tall', 'head', 'sh', 'torso', 'leg', 'thick']) if (typeof o2[f] === 'number') o2[f] *= kk; return o2 };
     const v = sized(vals(ck), ck); if (!v) return ''; if (v.need) return `<div class="vals dim">${v.need}</div>`;
@@ -260,7 +261,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
     let h = `<div class="ps-app"><div class="ps-top" id="psTop"><b class="ps-name">${esc(cur.name)}</b><div class="ps-next" id="psNext"></div><span class="sp" style="flex:1"></span>
         <button type="button" class="act" id="psUndo" ${UNDO.length ? '' : 'disabled'} title="ย้อน (Ctrl+Z)">↶ ย้อน</button><button type="button" class="act" id="psRedo" ${REDO.length ? '' : 'disabled'} title="ทำซ้ำ (Ctrl+Y / Ctrl+Shift+Z)">↷ ทำซ้ำ</button>
-        <button type="button" class="act ${SHOW.pts ? 'on' : ''}" id="psShowPts" title="แสดง/ซ่อนจุด datum บนภาพ">● จุด</button><button type="button" class="act ${SHOW.zone ? 'on' : ''}" id="psShowZone" title="โซนสีแบ่งส่วน: หัว · ลำตัว · ขา (ท่าที่มี คาง + เส้นตัดขา แล้ว)">🎨 โซนสี</button>
+        <button type="button" class="act ${SHOW.pts ? 'on' : ''}" id="psShowPts" title="แสดง/ซ่อนจุด datum บนภาพ">● จุด</button><button type="button" class="act ${SHOW.zone ? 'on' : ''}" id="psShowZone" title="โซนสีแบ่งส่วน: หัว · ลำตัว · ขา (ท่าที่มี คาง + เส้นตัดขา แล้ว)">🎨 โซนสี</button><button type="button" class="act ${SHOW.vals ? 'on' : ''}" id="psShowVals" title="แสดง/ซ่อนหน้าต่างตัวเลข (สูงรวม · หัว · ไหล่ …) ที่มุมซ้ายบนของแต่ละท่า — ซ่อนเมื่อบังภาพ (V)">📊 ตัวเลข</button>
         <button type="button" class="act ${tool === 'hand' ? 'on' : ''}" id="psHand" title="ลากภาพในช่อง (H)">✋ ย้ายภาพ</button><button type="button" class="act ${tool === 'dset' ? 'on' : ''}" id="psDset" title="ย้ายจุด datum ทั้งชุดของท่า — ภาพอยู่ที่เดิม ลากในช่องของท่านั้น (ท่าที่ล็อกอยู่ย้ายไม่ได้)">⬚ ย้าย Datum Set</button>
         <label style="font-size:12.5px">ซูม <input id="psZoom" type="range" min=".25" max="2.5" step=".05" value="${Z}"></label>
         <span id="psCartMsg" style="font-size:12.5px;color:#315d46"></span>
@@ -323,7 +324,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* v98.739 · always say WHICH point comes next (before it is placed): a banner that stays at the top of the sheet + a small label that follows the pointer over a pose */
   const stepInfo = () => { const L = stepsOf(act); const i = L.findIndex(s => s[0] === step), s = L[Math.max(0, i)]; return { n: Math.max(0, i) + 1, all: L.length, label: s[1], short: s[1].split(' · ')[0], col: s[2] } };
   /* v98.745 · SHOW: points on/off · colour zones on/off (head pink · torso blue · legs green, cut at the chin and the crotch line) */
-  const SHOW = (() => { try { return { pts: true, zone: false, ...(JSON.parse(localStorage.getItem('pose-sheet.show')) || {}) } } catch (e) { return { pts: true, zone: false } } })();
+  const SHOW = (() => { try { return { pts: true, zone: false, vals: true, ...(JSON.parse(localStorage.getItem('pose-sheet.show')) || {}) } } catch (e) { return { pts: true, zone: false, vals: true } } })();
   const saveShow = () => { try { localStorage.setItem('pose-sheet.show', JSON.stringify(SHOW)) } catch (e) { } };
   /* v98.746 · hide a pose from the overview (per character): 🙈 hides the selected pose's cell (a small placeholder stays), 👁 shows them all again */
   const HKEY = 'pose-sheet.hidden', hidAll = () => { try { return JSON.parse(localStorage.getItem(HKEY)) || {} } catch (e) { return {} } };
@@ -531,7 +532,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!ps._uk) { ps._uk = 1; document.addEventListener('keydown', ev => {
       if (!document.body.classList.contains('sheet-mode') || ev.target.closest?.('input,textarea,select,[contenteditable]')) return; const k = ev.key.toLowerCase();
       if ((ev.ctrlKey || ev.metaKey) && k === 'z' && !ev.shiftKey) { ev.preventDefault(); undo() } else if ((ev.ctrlKey || ev.metaKey) && (k === 'y' || (k === 'z' && ev.shiftKey))) { ev.preventDefault(); redo() } }, true) }
-    $('psShowPts').onclick = () => { SHOW.pts = !SHOW.pts; saveShow(); draw() }; $('psShowZone').onclick = () => { SHOW.zone = !SHOW.zone; saveShow(); draw() };
+    $('psShowPts').onclick = () => { SHOW.pts = !SHOW.pts; saveShow(); draw() }; $('psShowZone').onclick = () => { SHOW.zone = !SHOW.zone; saveShow(); draw() }; $('psShowVals').onclick = () => { SHOW.vals = !SHOW.vals; saveShow(); draw() };
     $('psFull').onclick = () => { const e = document.fullscreenElement; if (e === ps) document.exitFullscreen?.(); else (ps.requestFullscreen?.() || Promise.reject()).catch(() => msg('เปิดเต็มจอไม่ได้ในหน้านี้ — ลองกด F11 ของเบราว์เซอร์')) };
     if (!ps._rz) { ps._rz = 1; addEventListener('resize', () => { try { updNext() } catch (e) { } }) }
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
@@ -593,6 +594,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   addEventListener('keydown', ev => {
     if (!document.body.classList.contains('sheet-mode') || $('psAdj') || /INPUT|TEXTAREA|SELECT/.test(ev.target?.tagName || '')) return;
     if (ev.key === 'h' || ev.key === 'H') { tool = tool === 'hand' ? 'mark' : 'hand'; draw(); return }
+    if ((ev.key === 'v' || ev.key === 'V') && !ev.ctrlKey && !ev.metaKey) { SHOW.vals = !SHOW.vals; saveShow(); draw(); return }
     if (ev.key === 'Enter' && act) { const R = peek(act)?.p; const k = R && Object.keys(LINES).find(x => lineOpen(R, x)); if (k) { ev.preventDefault(); R[k + 'Done'] = true; write(KEY, DATA); step = firstMissing(R, act) || k; draw(); return } }
     if (act && isLocked(act) && (/^Arrow/.test(ev.key) || ev.key === 'Delete' || ev.key === 'Backspace' || ev.key === 'Enter')) { flash(LOCKMSG); return }
     if (!act || !pick) return; const P = recOf(act).p, hk = pick.includes('#') ? pick.split('#') : null, v = hk ? P[LINES[hk[0]]]?.[+hk[1]] : P[pick]; if (!v) return;
