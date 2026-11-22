@@ -31,6 +31,8 @@
     }
     return out;
   }
+  /* v98.955 · reward from the card forge (js/card-forge.js lives in the game page; these files may run inside a frame) */
+  const forgeReward = src => { try { let w = root; for (let i = 0; i < 4 && w && !w.CardForge; i++) { if (w.parent === w) break; w = w.parent } return w?.CardForge?.reward(src) || '' } catch (e) { return '' } };
   const active = S => list(S).filter(b => b.state === 'open' || b.state === 'slain');
   function why(S, o) { if (o.taken) return 'รับไปแล้ว'; if (list(S).filter(b => b.state === 'open').length >= 2) return 'รับได้ทีละ 2 ใบ'; return '' }
   function take(S, o) { if (why(S, o)) return false; list(S).push({ id: o.id, name: o.name, text: o.text, kind: o.kind, pic: o.pic, tier: o.tier, reward: o.reward, board: o.board, until: day() + 10, state: 'open' }); return true }
@@ -52,6 +54,7 @@
     const out = [];
     for (const b of list(S)) {
       if (b.state !== 'slain') continue; b.state = 'paid'; S.gold = (S.gold || 0) + b.reward; const F = root.Factions;
+      forgeReward('bounty');
       F?.add('guild', 2 + b.tier, 'ปราบ' + b.name); F?.add(BOARD[b.board]?.poster || 'village', 2, 'ปราบ' + b.name);
       const f = root.Law?.file(S, b.board); if (f?.heat) f.heat--;
       S.bountiesDone = (S.bountiesDone || 0) + 1; out.push('💰 รับค่าหัว ' + b.name + ' ' + b.reward + ' 💰');

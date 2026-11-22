@@ -109,9 +109,11 @@
     if (G.fert > 0) G.fert--; else { if ((g.village.coins || 0) < FERT_COST) return 'เงินไม่พอซื้อปุ๋ย'; g.village.coins -= FERT_COST }
     p.fert = true; commit(); return '';
   }
+  /* v98.955 · reward from the card forge (js/card-forge.js lives in the game page; these files may run inside a frame) */
+  const forgeReward = src => { try { let w = root; for (let i = 0; i < 4 && w && !w.CardForge; i++) { if (w.parent === w) break; w = w.parent } return w?.CardForge?.reward(src) || '' } catch (e) { return '' } };
   function harvest(G, i) {
     const p = G?.plots[i]; if (!p?.ripe) return 0; const C = CROPS[p.crop], n = C.yield + (stars(p) - 1);
-    G.basket[p.crop] = (G.basket[p.crop] || 0) + n; G.harvests = (G.harvests || 0) + 1; G.best ||= {}; G.best[p.crop] = Math.max(G.best[p.crop] || 0, stars(p));   /* v97.81 · for the harvest contest */
+    G.basket[p.crop] = (G.basket[p.crop] || 0) + n; G.harvests = (G.harvests || 0) + 1; if (G.harvests % 8 === 0) forgeReward('farm'); G.best ||= {}; G.best[p.crop] = Math.max(G.best[p.crop] || 0, stars(p));   /* v97.81 · for the harvest contest */
     if (C.regrow) { p.ripe = false; p.g = C.days - C.regrow; p.dry = 0 } else G.plots[i] = null;
     commit(); return n;
   }

@@ -21,6 +21,8 @@
       lines: ['ค่าหัวเปลี่ยนทุกสัปดาห์ ใบนี้ข้าเพิ่งเขียนเมื่อเช้า!', 'ใบไหนถูกฉีกไปแล้วก็มีคนรับไปแล้วนะ'] }
   };
   const ACTIONS = { register: 'คุยกับเจ้าหน้าที่ทะเบียน', contracts: 'งานกิลด์', bounty: 'ประกาศจับ', cards: 'ตู้การ์ด' };
+  /* v98.955 · reward from the card forge (js/card-forge.js lives in the game page; these files may run inside a frame) */
+  const forgeReward = src => { try { let w = root; for (let i = 0; i < 4 && w && !w.CardForge; i++) { if (w.parent === w) break; w = w.parent } return w?.CardForge?.reward(src) || '' } catch (e) { return '' } };
   const L = () => root.VillageLife, day = () => { try { return root.VillageClock.read().day } catch (e) { return 1 } };
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const toast = m => { try { root.toast ? root.toast(m) : (document.getElementById('message') && (document.getElementById('message').textContent = m)) } catch (e) { } };
@@ -37,7 +39,8 @@
     const G = contract(S), a = G.active; if (!a || (S.kills || 0) - a.base < a.n) return '';
     const FC = root.Factions; a.reward = Math.round(a.reward * (FC?.payMult?.('guild') ?? 1) * (1 + .15 * (root.Offices?.perk?.(S, 'magus') || 0)));
     S.gold += a.reward; FC?.add?.('guild', 6, 'ส่งงาน ' + a.label); root.Law?.service?.(S, 'fernvale'); FC?.add?.('village', 2, 'ช่วยกำจัดภัยรอบหมู่บ้าน'); G.done = (G.done || 0) + 1; G.active = null;
-    return '✔ ส่งงานกิลด์ +' + a.reward + '💰';
+    const fx = forgeReward('guild');
+    return '✔ ส่งงานกิลด์ +' + a.reward + '💰' + (fx ? ' · ◈ ' + fx : '');
   }
   function drop(S) { const G = contract(S); G.active = null; return 'ยกเลิกงานแล้ว' }
 

@@ -40,27 +40,39 @@
     const v = V(), day = G()?.day || 1, sh = (v.cardShop ||= {});
     if (sh.day !== day) { const r = seeded(day * 7919 + 13), pool = allCards().filter(k => !owned(k)); sh.day = day; sh.list = []; sh.sold = [];
       for (let i = 0; i < 4 && pool.length; i++) sh.list.push(pool.splice(Math.floor(r() * pool.length), 1)[0]); doSave() }
+    /* v98.955 · card forge extras (js/card-forge.js): one spare copy of a card the hero owns + one mod chip per day (never in the same seed as the new cards above) */
+    if (sh.xDay !== day && root.CardForge) { const r2 = seeded(day * 104729 + 7), own = allCards().filter(k => k.startsWith('c:') && (legacy() || owned(k))), kinds = Object.keys(root.CardForge.MODS);
+      sh.xDay = day; sh.dup = own.length ? own[Math.floor(r2() * own.length)] : null; sh.dupSold = false; sh.chip = kinds[Math.floor(r2() * kinds.length)]; sh.chipSold = false; doSave() }
     return sh;
   }
+  const CHIP_PRICE = 90;
   function renderShop() {
     if (typeof villageDialog !== 'function') return;
-    if (legacy()) { villageDialog('ร้านการ์ด', '<p>เซฟนี้ใช้การ์ดได้ทุกใบอยู่แล้ว (เซฟจากก่อนมีระบบคอลเลกชัน) จึงไม่มีอะไรต้องซื้อ</p>'); return }
-    const sh = offers(), v = V();
+    const sh = offers(), v = V(), CF = root.CardForge;
+    if (legacy() && !CF) { villageDialog('ร้านการ์ด', '<p>เซฟนี้ใช้การ์ดได้ทุกใบอยู่แล้ว (เซฟจากก่อนมีระบบคอลเลกชัน) จึงไม่มีอะไรต้องซื้อ</p>'); return }
     const rows = sh.list.map((k, i) => { const t = TIER[tierOf(k)], sold = sh.sold.includes(k) || owned(k), html = root.CardStudio?.renderCard?.((parse(k).group === 'movement' ? 'm-' : 'a-') + parse(k).id, { mini: true }) || '';
       return `<article class="cs-offer ${sold ? 'sold' : ''}"><div class="cs-card">${html || `<div class="ck-plain">${esc(nameOf(k))}</div>`}</div><h3>${esc(nameOf(k))}</h3><p class="muted small">${esc(t.label)}</p>
         <button type="button" data-buy="${i}" ${sold || (v.coins || 0) < t.price ? 'disabled' : ''}>${sold ? 'ซื้อแล้ว' : '◉ ' + t.price}</button></article>` }).join('');
-    villageDialog('ร้านการ์ด · วันที่ ' + (G().day || 1), `<p>◉ ${v.coins || 0} เหรียญ · การ์ดเปลี่ยนทุกวัน มีแต่ใบที่ยังไม่มีในคอลเลกชัน</p><div class="cs-offers">${rows || '<p>มีการ์ดครบทุกใบในร้านแล้ว</p>'}</div>
+    const dupT = sh.dup ? TIER[tierOf(sh.dup)] : null, chipK = sh.chip && CF ? CF.MODS[sh.chip] : null;
+    const extra = CF ? `<h3>เสริมการ์ด <small class="muted">เปลี่ยนทุกวัน</small></h3><div class="cs-offers">
+      ${dupT ? `<article class="cs-offer ${sh.dupSold ? 'sold' : ''}"><div class="cs-card">${root.CardStudio?.renderCard?.('a-' + parse(sh.dup).id, { mini: true }) || `<div class="ck-plain">${esc(nameOf(sh.dup))}</div>`}</div><h3>${esc(nameOf(sh.dup))} <small>ใบซ้ำ</small></h3><p class="muted small">ใช้รวมเป็นดาว ★</p><button type="button" data-dup="1" ${sh.dupSold || (v.coins || 0) < dupT.price ? 'disabled' : ''}>${sh.dupSold ? 'ซื้อแล้ว' : '◉ ' + dupT.price}</button></article>` : ''}
+      ${chipK ? `<article class="cs-offer ${sh.chipSold ? 'sold' : ''}"><div class="cs-card"><div class="ck-plain" style="font-size:42px">${chipK.icon}</div></div><h3>ชิป ${esc(chipK.name)}</h3><p class="muted small">${esc(chipK.desc)}</p><button type="button" data-chip="1" ${sh.chipSold || (v.coins || 0) < CHIP_PRICE ? 'disabled' : ''}>${sh.chipSold ? 'ซื้อแล้ว' : '◉ ' + CHIP_PRICE}</button></article>` : ''}</div>` : '';
+    villageDialog('ร้านการ์ด · วันที่ ' + (G().day || 1), `<p>◉ ${v.coins || 0} เหรียญ · การ์ดเปลี่ยนทุกวัน ${legacy() ? '' : 'มีแต่ใบที่ยังไม่มีในคอลเลกชัน'}</p>${legacy() ? '' : `<div class="cs-offers">${rows || '<p>มีการ์ดครบทุกใบในร้านแล้ว</p>'}</div>`}${extra}
       <p class="muted small">ได้การ์ดเพิ่มอีกทาง: ล้มบอสบนแผนที่โลก · เรียนท่ากับซิกริด ซิสเตอร์ออร์ลา หรือโอลเวน</p>`);
+    document.querySelectorAll('[data-dup]').forEach(b => b.onclick = () => { const c = parse(sh.dup), t = TIER[tierOf(sh.dup)]; if ((v.coins || 0) < t.price) return toast('เงินไม่พอ · ต้องใช้ ' + t.price + ' 💰'); v.coins -= t.price; CF.giveCopy(c.id, 1); sh.dupSold = true; toast('ได้ใบซ้ำ ' + esc(nameOf(sh.dup)) + ' · รวมเป็นดาวได้ที่ จัดสำรับ → ★ เสริม', 'good'); doSave(); doRender(); renderShop() });
+    document.querySelectorAll('[data-chip]').forEach(b => b.onclick = () => { if ((v.coins || 0) < CHIP_PRICE) return toast('เงินไม่พอ · ต้องใช้ ' + CHIP_PRICE + ' 💰'); v.coins -= CHIP_PRICE; const u = (v.cardUp ||= {}); u.chips ||= {}; u.cards ||= {}; u.dust ||= 0; u.chips[sh.chip] = (u.chips[sh.chip] || 0) + 1; sh.chipSold = true; toast('ได้ชิป ' + esc(CF.MODS[sh.chip].name), 'good'); doSave(); doRender(); renderShop() });
     document.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => { const k = sh.list[+b.dataset.buy], t = TIER[tierOf(k)];
       if (buy(k, t.price, { kicker: 'ร้านการ์ด', title: nameOf(k), text: 'เพิ่มเข้าคอลเลกชันแล้ว · จัดสำรับได้ที่บ้าน' })) { sh.sold.push(k); doSave(); try { document.querySelector('dialog[open]')?.close() } catch (e) { } } });
   }
 
   /* ---------- 2 · boss drop (called from the world map) ---------- */
   function bossDrop(bossName) {
-    if (legacy()) return Promise.resolve(null);
+    if (legacy()) { try { root.CardForge?.reward('boss') } catch (e) { } return Promise.resolve(null) }
     const pick = ['rare', 'uncommon', 'common'].map(t => TIER[t].cards.filter(k => !owned(k))).find(l => l.length);
-    if (!pick) return Promise.resolve(null);
+    const bonus = () => { try { return root.CardForge?.reward('boss') } catch (e) { return null } };   /* v98.955 · shards + a chip from every boss */
+    if (!pick) { const dup = TIER.rare.cards.filter(k => k.startsWith('c:')), k = dup[Math.floor(Math.random() * dup.length)], c = parse(k); try { root.CardForge?.giveCopy(c.id, 1); toast('ได้ใบซ้ำ ' + esc(nameOf(k)) + ' จากบอส · รวมเป็นดาวได้', 'good') } catch (e) { } bonus(); doSave(); return Promise.resolve(null) }
     const k = pick[Math.floor(Math.random() * pick.length)], c = parse(k);
+    bonus();
     return Promise.resolve(root.StarterKit?.unlock?.([{ group: c.group, id: c.id, n: 1 }], { kicker: 'ของจากบอส', title: nameOf(k), text: (bossName ? bossName + ' ทิ้งไว้ · ' : '') + 'เพิ่มเข้าคอลเลกชันแล้ว' })).then(() => k);
   }
 
