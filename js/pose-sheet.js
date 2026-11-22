@@ -704,7 +704,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function markSent() { try { localStorage.setItem('pose-sheet.cart-sig', sigOf(markSig())) } catch (e) { } }
   /* what the one Cart button will put in the Cart (live: the adjust on the selected pose counts too) */
   function cartPlan() {
-    const moved = Object.keys(cur?.cells || {}).filter(pending).length, nd = draftCount(), mk = marksDirty(), qa = !!(QA.ck && qaDirty());
+    const moved = Object.keys(cur?.cells || {}).filter(pending).length, nd = sizeCells().length, mk = marksDirty(), qa = !!(QA.ck && qaDirty());
     const parts = [qa ? 'ปรับสัดส่วน' : '', moved ? 'ตำแหน่ง ' + moved : '', nd ? 'ขนาด ' + nd : '', mk ? 'จุด/ติ๊ก' : ''].filter(Boolean), n = parts.length;
     return { moved, nd, mk, qa, n, text: '🛒 ใส่ Cart' + (n ? ' (' + parts.join(' · ') + ')' : ' · ไม่มีอะไรเปลี่ยน') };
   }
@@ -716,7 +716,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     try {
       if (qaDirty() && QA.ck) { note('ปรับสัดส่วน…'); const okq = await qaSave(); (okq ? done : fail).push('ปรับสัดส่วน'); if (!okq && QA.msg) why.push(QA.msg) }
       if (movedNow()) { note('ตำแหน่งภาพ…'); const r = await bakeMoves(); if (r.ok) { done.push('ตำแหน่งภาพ' + (r.skipped.length ? ' (ข้าม ' + r.skipped.length + ')' : '')); if (r.skipped.length) why.push('ข้าม: ' + r.skipped.join(' · ')) } else { fail.push('ตำแหน่งภาพ'); why.push(r.err) } }
-      if (draftCount()) { note('ขนาด…'); (await saveSizes() ? done : fail).push('ขนาด') }
+      if (sizeCells().length) { note('ฝังขนาด…'); (await saveSizes() ? done : fail).push('ขนาด (ฝังลงภาพ)') }
       { const rl = relock(); if (rl.length) { for (const ck of rl) mirrorToTwin(ck, true); write(KEY, DATA); await reviewSync(rl, true) } }   /* the NEW picture's "ตรวจแล้ว" in the Animation grid too */
       if (marksDirty()) { note('จุด/ติ๊ก…'); (await pushMarks() ? done : fail).push('จุด/ติ๊ก') }
     } finally { draw(); const extra = why.length ? ' — ' + why.join(' · ') : ''; note(fail.length ? '⚠ ไม่สำเร็จ: ' + fail.join(' · ') + (done.length ? ' · ใส่ Cart แล้ว: ' + done.join(' · ') : '') + extra : done.length ? '✔ ใส่ Cart แล้ว: ' + done.join(' · ') + ' (รอ Push)' + extra : ''); const m = $('psCartMsg'); if (m) { m.style.cssText = 'font-size:12.5px;color:' + (fail.length || why.length ? '#a4341c' : '#315d46') + ';max-width:46ch;white-space:normal;line-height:1.25'; m.title = extra.slice(3) } }
@@ -725,22 +725,52 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     const G = root.GitHubPush; if (!G?.pushSettings) { msg('ไม่พบระบบ Push'); return false }
     try { msg('กำลังใส่จุด/ติ๊กลง Cart…'); const r = await G.pushSettings([KEY], '📐 เรียงท่า: จุด datum + ติ๊กตรวจ'); markSent(); msg('✔ ' + (r || 'บันทึกแล้ว')); return true } catch (e) { msg('ไม่สำเร็จ: ' + e.message); return false }
   }
+  /* v98.943 · T2 (docs/TODO.md §35.3) — a pose's SIZE is BAKED INTO THE PICTURES, like the move / re-proportion: every frame of the pose's clip is scaled about the feet (datum foot mid-point, else the ground point 192,360)
+     by the size set on its first frame, the opposite direction with its own pictures follows (mirrored), the datum points are scaled with it, and the pose's old multiplier (CHARACTER_SCALE_ADJUST.pose — read only by the battle) is removed
+     so nothing counts twice. Sizes already saved as multipliers before (hero · hero-female · graven · berg) are baked the same way the next time that character is put in the Cart. One size per character then lives in ⚖ Scale Lineup only. */
+  const sizeCells = () => cur ? Object.keys(cur.cells).filter(ck => { const c = cur.cells[ck]; return c?.clip?.frames?.length && Math.abs(sizeOf(cur.id, c.pose, c.dir) - 1) > .0005 }) : [];
   async function saveSizes() {
-    const G = root.GitHubPush; if (!G?.commit) { msg('ไม่พบระบบ Push'); return false } if (!draftCount()) return null;
-    const draft = JSON.parse(JSON.stringify(DRAFT)), PATH = 'js/character-scale-adjust-data.js';
-    const merge = text => {
-      const i = text.indexOf('window.CHARACTER_SCALE_ADJUST'), a = text.indexOf('{', i), b = text.lastIndexOf('}'); const head = text.slice(0, i), data = JSON.parse(text.slice(a, b + 1));
-      data.pose ||= {}; for (const [k, m] of Object.entries(draft)) for (const [ck, v] of Object.entries(m)) { if (Math.abs(v - 1) < .0005) { if (data.pose[k]) delete data.pose[k][ck] } else (data.pose[k] ||= {})[ck] = +v.toFixed(4) }
-      for (const k of Object.keys(data.pose)) if (!Object.keys(data.pose[k]).length) delete data.pose[k];
-      return { text: head + 'window.CHARACTER_SCALE_ADJUST = ' + JSON.stringify(data) + ';\n', data };
-    };
+    const G = root.GitHubPush; if (!G?.commit) { msg('ไม่พบระบบ Push'); return false }
+    const cks = sizeCells(); if (!cks.length) return null;
+    const nameOf = ck => { const c = cur.cells[ck]; return ((POSES.find(q => q[0] === c.pose) || [, c.pose])[1]) + ' ' + c.dir };
+    const items = [], done = [], skipped = [];
+    for (const ck of cks) {
+      try {
+        const c = cur.cells[ck], sc = sizeOf(cur.id, c.pose, c.dir), a = anchorOf(ck) || [GX, GY], tw = twinOf(ck), part = []; let lost = 0, n = 0;
+        const scaled = (img, ax) => { const cv = document.createElement('canvas'); cv.width = cv.height = SRC; const g = cv.getContext('2d'); g.imageSmoothingQuality = 'high'; g.translate(ax, a[1]); g.scale(sc, sc); g.drawImage(img, -ax, -a[1], SRC, SRC); return cv };
+        for (const f of c.clip.frames) {
+          msg('ฝังขนาด ' + nameOf(ck) + ' ' + (++n) + '/' + c.clip.frames.length + '…');
+          const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้');
+          const ax = flipOf(c, f) ? SRC - a[0] : a[0], cv = scaled(img, ax);
+          if (sc > 1) { const tc = document.createElement('canvas'); tc.width = tc.height = SRC; const tg = tc.getContext('2d'); tg.drawImage(img, 0, 0, SRC, SRC); const d0 = tg.getImageData(0, 0, SRC, SRC).data, d1 = cv.getContext('2d').getImageData(0, 0, SRC, SRC).data; let a0 = 0, a1 = 0; for (let k = 3; k < d0.length; k += 4) { if (d0[k] > 40) a0++; if (d1[k] > 40) a1++ } lost = Math.max(lost, Math.round(a0 * sc * sc - a1 - a0 * .02)) }
+          part.push({ file: f.file, dataUrl: toURL(cv) });
+          const tf = tw?.own ? tw.clip.frames[n - 1] : null;   /* the opposite direction with its OWN picture = the mirror of this one: scale it about the mirrored feet */
+          if (tf && tf.file !== f.file) { const ti = await frameImg(tf); if (ti) part.push({ file: tf.file, dataUrl: toURL(scaled(ti, tf.flip ? a[0] : SRC - a[0])) }) }
+          await new Promise(r => setTimeout(r, 0));
+        }
+        if (lost > 60) throw new Error(`ขยายแล้วมีส่วนของตัว ~${lost} พิกเซลหลุดนอกกรอบ 384×384 — ย้ายภาพลง/ลดขนาดก่อน`);
+        items.push(...part); done.push(ck);
+      } catch (e) { skipped.push(nameOf(ck) + ': ' + e.message) }
+    }
+    if (!done.length) { msg('ฝังขนาดไม่สำเร็จ — ' + skipped.join(' · ')); return false }
+    const k = akey(cur.id), PATH = 'js/character-scale-adjust-data.js', sizes = {}, gone = new Set();
+    for (const ck of done) { const c = cur.cells[ck]; sizes[ck] = sizeOf(cur.id, c.pose, c.dir); gone.add(ck); gone.add(c.pose); const tw = twinOf(ck); if (tw) gone.add(tw.ck) }
+    /* 1 · the old multipliers go first (so a picture is never scaled twice: baked AND multiplied) — 2 · then the baked pictures. If 2 fails, the sizes are put back as a draft here so the next Cart bakes them (never twice). */
     try {
-      msg('กำลังบันทึกขนาด…'); let out = null;
-      const r = await G.commit('📐 เรียงท่า: ปรับขนาดท่า', async h => { const t = await h.read(PATH); if (!t) throw new Error('อ่าน ' + PATH + ' ไม่ได้'); out = merge(t); return [{ path: PATH, content: out.text }] });
-      if (out) root.CHARACTER_SCALE_ADJUST = out.data; DRAFT = {}; write(SKEY, DRAFT);
-      try { const f = $('lineupDockFrame'); if (f?.src) f.contentWindow.location.reload() } catch (e) { }
-      draw(); msg('✔ ' + (r || 'บันทึกแล้ว') + ' · ขนาดท่าใช้ในเกมหลังเว็บอัปเดต'); return true
-    } catch (e) { msg('บันทึกไม่สำเร็จ: ' + e.message); return false }
+      const merge = text => { const i0 = text.indexOf('window.CHARACTER_SCALE_ADJUST'), a0 = text.indexOf('{', i0), b0 = text.lastIndexOf('}'), head = text.slice(0, i0), data = JSON.parse(text.slice(a0, b0 + 1)); if (data.pose?.[k]) { for (const g of gone) delete data.pose[k][g]; if (!Object.keys(data.pose[k]).length) delete data.pose[k] } return { text: head + 'window.CHARACTER_SCALE_ADJUST = ' + JSON.stringify(data) + ';\n', data } };
+      const had = [...gone].some(g => committed().pose?.[k]?.[g] != null); let out = null;
+      if (had) { msg('ลบตัวคูณท่าเดิม…'); await G.commit('📐 เรียงท่า: ฝังขนาดท่าลงภาพ (ลบตัวคูณท่า)', async h => { const t = await h.read(PATH); if (!t) throw new Error('อ่าน ' + PATH + ' ไม่ได้'); out = merge(t); return [{ path: PATH, content: out.text }] }) }
+      if (out) root.CHARACTER_SCALE_ADJUST = out.data;
+      if (DRAFT[k]) { for (const g of gone) delete DRAFT[k][g]; if (!Object.keys(DRAFT[k]).length) delete DRAFT[k]; write(SKEY, DRAFT) }
+    } catch (e) { msg('ฝังขนาดไม่สำเร็จ (ลบตัวคูณเดิมไม่ได้ — ยังไม่ได้แตะภาพ): ' + e.message); return false }
+    try {
+      msg('กำลังบันทึก ' + items.length + ' ภาพ…'); await apply(items);
+    } catch (e) { (DRAFT[k] ||= {}); for (const ck of done) DRAFT[k][ck] = sizes[ck]; write(SKEY, DRAFT); msg('ฝังขนาดไม่สำเร็จ: ' + e.message + ' — เก็บขนาดไว้เป็นร่าง กด Cart ใหม่ได้'); return false }
+    /* the points follow the pictures (scaled about the same feet point) · the lock drops (new pixels) — cartAll re-ticks a pose that was locked */
+    for (const ck of done) { const r = peek(ck), sc = sizes[ck], a = anchorOf(ck) || [GX, GY]; if (r?.p) { const xf = q => [Math.round((a[0] + (q[0] - a[0]) * sc) * 10) / 10, Math.round((a[1] + (q[1] - a[1]) * sc) * 10) / 10]; for (const kk of Object.keys(r.p)) { const v = r.p[kk]; r.p[kk] = Array.isArray(v) && Array.isArray(v[0]) ? v.map(xf) : Array.isArray(v) && typeof v[0] === 'number' ? xf(v) : v } r.ok = false; r.fp = null; mirrorToTwin(ck, false) } }
+    write(KEY, DATA);
+    await new Promise(r => setTimeout(r, 300)); await load(); draw();
+    msg('✔ ฝังขนาดลงภาพแล้ว ' + done.length + ' ท่า (รอ Push)' + (skipped.length ? ' · ข้าม: ' + skipped.join(' · ') : '')); return true;
   }
 
   /* follow the character picked in the Animation tab / the lineup row */
