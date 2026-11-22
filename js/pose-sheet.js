@@ -62,7 +62,7 @@
     const k = akey(id), d = DRAFT[k]?.[cellKey(pose, dir)]; if (typeof d === 'number') return d;
     const m = committed().pose?.[k]; const v = m?.[cellKey(pose, dir)] ?? m?.[pose]; return typeof v === 'number' && v > .2 && v < 3 ? v : 1;
   }
-  function setSize(id, pose, dir, v) { if (isLocked(cellKey(pose, dir))) { flash(LOCKMSG); return } const k = akey(id); v = Math.max(.3, Math.min(2.5, Math.round(v * 1000) / 1000)); (DRAFT[k] ||= {})[cellKey(pose, dir)] = v; write(SKEY, DRAFT); draw(); status() }
+  function setSize(id, pose, dir, v) { if (isLocked(cellKey(pose, dir))) { flash(LOCKMSG); return } const k = akey(id); v = Math.max(.3, Math.min(2.5, Math.round(v * 1000) / 1000)); (DRAFT[k] ||= {})[cellKey(pose, dir)] = v; write(SKEY, DRAFT); draw(); status(); try { for (const ck of Object.keys(cur?.cells || {})) refreshVals(ck) } catch (e) { } }   /* v98.921 · every table: the standing pose's size is the base of the others */
   const draftCount = () => Object.values(DRAFT).reduce((n, m) => n + Object.keys(m || {}).length, 0);
 
   /* ---------- the pictures of the character on show ---------- */
@@ -163,8 +163,10 @@
   }
   const pct = (v, H) => v == null ? '—' : (v / H * 100).toFixed(1) + '%';
   function valsHtml(ck) {
-    const v = vals(ck); if (!v) return ''; if (v.need) return `<div class="vals dim">${v.need}</div>`;
-    const bk = 'idle@' + cur.cells[ck].dir, base = (ck === bk || ck === 'idle@SW' ? null : isBack(ck) ? vals(bk) : vals(bk) || vals('idle@SW'));   /* back poses: only against the standing BACK pose */
+    /* v98.921 · the numbers include the pose's SIZE (ขนาดท่า, the "enlarge everything" control): px values = picture px × that size, so "สูงรวม … จากยืน" moves when a pose is enlarged / shrunk */
+    const sized = (v, k2) => { if (!v || v.need) return v; const c2 = cur?.cells[k2], kk = c2 ? kOf(c2) : 1, o2 = { ...v }; for (const f of ['H', 'tall', 'head', 'sh', 'torso', 'leg', 'thick']) if (typeof o2[f] === 'number') o2[f] *= kk; return o2 };
+    const v = sized(vals(ck), ck); if (!v) return ''; if (v.need) return `<div class="vals dim">${v.need}</div>`;
+    const bk = 'idle@' + cur.cells[ck].dir, base = (ck === bk || ck === 'idle@SW' ? null : isBack(ck) ? sized(vals(bk), bk) : sized(vals(bk), bk) || sized(vals('idle@SW'), 'idle@SW'));   /* back poses: only against the standing BACK pose */
     const bkP = v.H == null, row = (n, a, bk, dim) => { const p = a == null ? null : bkP ? a : a / v.H * 100; let dl = ''; if (base && !base.need && base[bk] != null && p != null) { const q = bkP ? base[bk] : base[bk] / base.H * 100, x = (p - q) / q * 100; dl = ` <i class="${Math.abs(x) > 5 ? 'bad' : Math.abs(x) > 2 ? 'warn' : 'ok'}">${x > 0 ? '+' : ''}${x.toFixed(1)}%</i>` } return `<tr${dim ? ' style="opacity:.5"' : ''}><td>${n}</td><td>${a == null ? '—' : Math.round(a)}px</td><td>${p == null || bkP ? '' : p.toFixed(1) + '%'}${dl}</td></tr>` };
     return `<table class="vals">${bkP ? row('สูงรวม', v.tall, 'tall') : `<tr><td>สูงรวม</td><td>${Math.round(v.H)}px</td><td>${base && !base.need ? ((v.H / base.H - 1) * 100 >= 0 ? '+' : '') + ((v.H / base.H - 1) * 100).toFixed(1) + '% จากยืน' : ''}</td></tr>`}${row(v.headLabel, v.head, 'head')}${row('ไหล่กว้าง', v.sh, 'sh')}${row('ท่อนขา หนา', v.thick, 'thick')}${v.sharp == null ? '' : `<tr title="ความคมของภาพ (ยิ่งสูงยิ่งคม · เฉลี่ยทุกเฟรมของท่า) — ไม่ใช่ DPI"><td>ความคม</td><td>${v.sharp.toFixed(1)}</td><td></td></tr>`}</table>`;
   }
