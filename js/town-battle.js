@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.956';
+  const V = '98.957';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1541,12 +1541,12 @@
     }
   }
   /* procedural action poses (code instead of pictures): lean back on windup, lunge + sword arc on strike, recoil on hit, crouch on guard, fall on down */
-  /* v98.956 · READY STANCE: a fighter whose turn has not come (idle · alive · not the one acting · no sleep / freeze / bind) stands in the "เตรียมโจมตี" (windup) pose instead of the relaxed idle,
+  /* v98.956 · READY STANCE (our side only — heroes and friends, not monsters): a fighter whose turn has not come (idle · alive · not the one acting · no sleep / freeze / bind) stands in the "เตรียมโจมตี" (windup) pose instead of the relaxed idle,
      and that stance moves by itself: a knee-bounce, breathing, a slow sway and a weapon tip that wobbles — each fighter on its own phase (by id) so the line does not move in step.
      Implemented by drawUnit(): while a ready fighter is drawn, u.pose = 'windup' and u._rdy = true, restored right after; nothing in the rules sees it. */
   function isReady(u) {
     try {
-      if (!st || st.outcome || !FB || u.hp <= 0 || u.walking || u.mipForm || (u.pose && u.pose !== 'idle')) return false;
+      if (!st || st.outcome || !FB || u.side !== 'hero' || u.hp <= 0 || u.walking || u.mipForm || (u.pose && u.pose !== 'idle')) return false;   /* our side only (owner 22 Nov: monsters stay in their idle) */
       if (u.sts && (u.sts.sleep || u.sts.freeze || u.sts.bind || u.sts.stun) || u.stun) return false;
       return u !== FB.actor(st);
     } catch (e) { return false }
@@ -1847,9 +1847,7 @@
     const drawUnit = u => { const ld = u.dir, rdy = isReady(u), lp = u.pose, fsh = frontShown(u); if (rdy) { u.pose = 'windup'; u._rdy = true } if (fsh) u.dir = u.frontDir; if (window.viewDir) u.dir = viewDir(u.dir);
       const SFX = window.StatusFX, sp = SFX && u.hp > 0 && (u.sts || u.stun || u.slowed) ? project(u.vu, u.vv) : null, sh = sp ? UNIT * 1.3 * (u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1) : 0;   /* v98.397 · the status shows on the body (js/status-fx.js): bubbles, flames + smoke, ice … */
       if (sp) SFX.back(g, u, sp.x, sp.y, sh, t);
-      const mm = rdy && u.side === 'monster' ? readyMotion(u, t, true) : null, pp = mm ? project(u.vu, u.vv) : null;   /* monsters have no poseMotion: the ready sway is a light transform around the whole figure */
-      if (mm) { g.save(); g.translate(pp.x + mm.dx, pp.y + mm.dy); g.scale(mm.sx, mm.sy); g.translate(-pp.x, -pp.y) }
-      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t), u.mystery && !u.mipForm && u.hp > 0 && mysteryGlint(g, u, t)) } finally { if (mm) g.restore(); u.dir = ld; if (rdy) { u.pose = lp; u._rdy = false } }
+      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t), u.mystery && !u.mipForm && u.hp > 0 && mysteryGlint(g, u, t)) } finally { u.dir = ld; if (rdy) { u.pose = lp; u._rdy = false } }
       if (sp) SFX.front(g, u, sp.x, sp.y, sh, t) };
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
