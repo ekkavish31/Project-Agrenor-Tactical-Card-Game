@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.955';
+  const V = '98.956';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1541,8 +1541,25 @@
     }
   }
   /* procedural action poses (code instead of pictures): lean back on windup, lunge + sword arc on strike, recoil on hit, crouch on guard, fall on down */
+  /* v98.956 · READY STANCE: a fighter whose turn has not come (idle · alive · not the one acting · no sleep / freeze / bind) stands in the "เตรียมโจมตี" (windup) pose instead of the relaxed idle,
+     and that stance moves by itself: a knee-bounce, breathing, a slow sway and a weapon tip that wobbles — each fighter on its own phase (by id) so the line does not move in step.
+     Implemented by drawUnit(): while a ready fighter is drawn, u.pose = 'windup' and u._rdy = true, restored right after; nothing in the rules sees it. */
+  function isReady(u) {
+    try {
+      if (!st || st.outcome || !FB || u.hp <= 0 || u.walking || u.mipForm || (u.pose && u.pose !== 'idle')) return false;
+      if (u.sts && (u.sts.sleep || u.sts.freeze || u.sts.bind || u.sts.stun) || u.stun) return false;
+      return u !== FB.actor(st);
+    } catch (e) { return false }
+  }
+  function readyMotion(u, t, still) {
+    const ph = (u.id ? [...String(u.id)].reduce((a, c) => a + c.charCodeAt(0), 0) : 0) * .61, fs = ['SE', 'NE'].includes(u.dir) ? 1 : -1;
+    const br = Math.sin(t * .0044 + ph), bob = Math.sin(t * .0088 + ph), sway = Math.sin(t * .0021 + ph * 1.3), shift = Math.sin(t * .0008 + ph * .7);
+    if (still) return { dx: shift * .8, dy: -(.5 + .5 * bob) * 1.2, rot: 0, sx: 1 - br * .008, sy: 1 + br * .014, wpn: 0 };
+    return { dx: -fs * 2.6 + sway * 1.5 + shift * 1.2, dy: -(.5 + .5 * bob) * 1.8, rot: -fs * .045 + sway * .014, sx: 1 - br * .01, sy: 1 + br * .02, wpn: -fs * 30 + Math.sin(t * .0057 + ph) * 8 };
+  }
   function poseMotion(u, t) {
     const name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
+    if (u._rdy && name === 'windup' && u.hp > 0) { if (u._lp !== name) { u._lp = name; u._pt = t } return readyMotion(u, t, !!u._edPose) }
     if (u._lp !== name) { u._lp = name; u._pt = t }
     const e = t - (u._pt || t), fs = ['SE', 'NE'].includes(u.dir) ? 1 : -1, ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), m = { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, wpn: 0 };
     if (name === 'idle' && u.hp > 0 && !OLDPOSE) { const k = Math.sin(t * .0032 + (u.id?.length || 0) * 1.3) * .012; m.sy = 1 + k; m.sx = 1 - k * .5 }   /* v98.251 · a slow breath so a one-picture idle is not frozen */
@@ -1827,10 +1844,12 @@
     window.__fieldOrder = order;   /* v98.284 · read by tools/check-field-occlusion.cjs */
     /* v98.71 · until a unit moves, acts or is turned (u.face changes), it shows SW/SE (toward the camera) so the player sees who is there; the rules still use u.face */
     const frontShown = u => { const i = u.idle0; if (!i) return false; if (u.walking || (u.pose && u.pose !== 'idle') || u.u !== i.u || u.v !== i.v || u.face !== i.face || u.hp <= 0) { u.idle0 = null; return false } return true };
-    const drawUnit = u => { const ld = u.dir; if (frontShown(u)) u.dir = u.frontDir; if (window.viewDir) u.dir = viewDir(u.dir);
+    const drawUnit = u => { const ld = u.dir, rdy = isReady(u), lp = u.pose, fsh = frontShown(u); if (rdy) { u.pose = 'windup'; u._rdy = true } if (fsh) u.dir = u.frontDir; if (window.viewDir) u.dir = viewDir(u.dir);
       const SFX = window.StatusFX, sp = SFX && u.hp > 0 && (u.sts || u.stun || u.slowed) ? project(u.vu, u.vv) : null, sh = sp ? UNIT * 1.3 * (u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1) : 0;   /* v98.397 · the status shows on the body (js/status-fx.js): bubbles, flames + smoke, ice … */
       if (sp) SFX.back(g, u, sp.x, sp.y, sh, t);
-      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t), u.mystery && !u.mipForm && u.hp > 0 && mysteryGlint(g, u, t)) } finally { u.dir = ld }
+      const mm = rdy && u.side === 'monster' ? readyMotion(u, t, true) : null, pp = mm ? project(u.vu, u.vv) : null;   /* monsters have no poseMotion: the ready sway is a light transform around the whole figure */
+      if (mm) { g.save(); g.translate(pp.x + mm.dx, pp.y + mm.dy); g.scale(mm.sx, mm.sy); g.translate(-pp.x, -pp.y) }
+      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t), u.mystery && !u.mipForm && u.hp > 0 && mysteryGlint(g, u, t)) } finally { if (mm) g.restore(); u.dir = ld; if (rdy) { u.pose = lp; u._rdy = false } }
       if (sp) SFX.front(g, u, sp.x, sp.y, sh, t) };
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
