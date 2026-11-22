@@ -15,5 +15,8 @@
   function poseFactor(id, pose, data, dir) { const d = data || root.CHARACTER_SCALE_ADJUST || {}; let k = clean(id);
     if (k === 'hero' && !data) { try { if (root.HeroVariant?.get?.() === 'female') k = 'hero-female' } catch (e) { } }
     const m = d.pose?.[k]; if (!m) return 1; const b = BASE[String(dir || '').toUpperCase()]; if (b && m[pose + '@' + b] != null) return num(m[pose + '@' + b]); return num(m[pose]) }
-  root.CharScaleAdjust = { factor, poseFactor };
+  /* v98.944 · the size of the hero's STANDING / WALKING picture outside the battle (docs/TODO.md §35): the per-pose size set in 📐 เรียงท่า (walk@SW …) — the same value the battle uses.
+     look = 'male' | 'female' of the picture being drawn (the follower is the OTHER look); omitted = the look the player has chosen. Only idle / walk exist outside the battle. */
+  function heroPose(walking, dir, look) { const D = root.CHARACTER_SCALE_ADJUST; if (!D?.pose) return 1; let l = look; if (!l) { try { l = root.HeroVariant?.get?.() } catch (e) { } } return poseFactor(l === 'female' ? 'hero-female' : 'hero', walking ? 'walk' : 'idle', D, dir) }
+  root.CharScaleAdjust = { factor, poseFactor, heroPose };
 })(globalThis);
