@@ -69,9 +69,13 @@
  function registerLookAssets(id,t){const have=new Set((M.assets||[]).map(a=>a.file)),files=new Set();
   for(const D of Object.values(t?.directions||{}))for(const pose of ['idle','walk','windup','strike','guard','hit','down'])for(const f of [...(D[pose+'Frames']||[]),...(pose==='walk'?D.walk||[]:[]),D[pose]].filter(Boolean))if(f.src&&!/^data:|^blob:/.test(f.src))files.add(f.src);
   for(const file of files)if(!have.has(file))M.assets.push({id:'look-'+id+'-'+file.replace(/^assets\//,'').replace(/\.[a-z]+$/i,'').replace(/[^a-z0-9]+/gi,'-'),file,category:'tactics-hero',status:'final',size:[384,384],transparent:true,view:'',pose:'',variant:id,studioOwner:{id:'hero',name:'ตัวหลัก · Hero',group:'characters'}})}
- function rebuild(){if(window.StudioVariants?.active==='classic'&&runtime.tactics&&(M.assets||[]).length)enterLook('male');state.model=lookOnly(C.build(M,clipsFor(M),meta));return state.model}
+ /* v98.930 · one character can hold TWO stand slots for the same direction (the village stand 'npc-<id>-<dir>-stand' + the battle idle 'tactics-<id>-<dir>-idle'): when the village slot is still EMPTY (missing) and the same direction already has a real picture of that action, the empty slot is not listed — it showed as a blank 'ยืน' tile above the real one, and 📐 เรียงท่า picked the blank one. It comes back by itself if the real picture is removed. */
+ const dropEmptyTwins=entities=>{const miss=new Map((M.assets||[]).map(a=>[a.id,a.status==='missing'||a.status==='planned']));
+  for(const e of entities){if(!e.clips)continue;const empty=c=>c.frames?.length&&c.frames.every(f=>miss.get(f.assetId)===true),real=new Set(e.clips.filter(c=>c.frames?.length&&!empty(c)).map(c=>c.action+'|'+c.view));
+   e.clips=e.clips.filter(c=>!(empty(c)&&real.has(c.action+'|'+c.view)))}return entities};
+ function rebuild(){if(window.StudioVariants?.active==='classic'&&runtime.tactics&&(M.assets||[]).length)enterLook('male');state.model=dropEmptyTwins(lookOnly(C.build(M,clipsFor(M),meta)));return state.model}
  // Share one catalog between matrix and the detailed reviewer, including static assets.
- R.catalog=function(manifest){return lookOnly(C.build(manifest,clipsFor(manifest),meta)).flatMap(e=>e.clips)};
+ R.catalog=function(manifest){return dropEmptyTwins(lookOnly(C.build(manifest,clipsFor(manifest),meta))).flatMap(e=>e.clips)};
  function entity(){return state.model.find(e=>e.id===state.entity)}
  function reviewStatus(c){
   let status='unreviewed';try{let store=JSON.parse(localStorage.getItem('asset-animation-reviews-v1')||'{}'),r=store[R.signature(c)];{const rm=M.studioReviews?.[R.signature(c)];r=!r?rm:(!rm||(r.at||0)>(rm.at||0))?r:rm}   /* v98.848 · the newer entry wins (a tie → the pushed manifest) */status=Object.values(r?.frames||{}).some(f=>f.flagged)?'needsfix':r?.status||status}catch{}
