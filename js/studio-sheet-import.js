@@ -94,15 +94,15 @@
     #shMain{display:flex;gap:12px;align-items:flex-start}#shMain #shCells{flex:1;min-width:0}
     #shAnim{position:sticky;top:0;width:268px;flex:none;border:1px solid #cdbf93;border-radius:12px;background:#fffdf6;padding:8px;text-align:center;font-size:12px}#shAnimCv{width:250px;height:250px;border-radius:8px;background:repeating-conic-gradient(#e8e2d0 0 25%,#fffdf6 0 50%) 0/16px 16px;display:block;margin:4px auto}#shAnim button{margin:0 2px}
     #shSharp{margin:4px 0;color:#315d46}.shc .shsh{float:right;color:#315d46;font-weight:700}
-    .shc select{width:100%;margin-top:4px}.shc label{display:flex;gap:4px;align-items:center;margin-top:3px}#sheetImport .msg{min-height:18px;color:#315d46;margin:6px 0}`; document.head.append(s);
+    .shc.skip{opacity:.38}.shc select{width:100%;margin-top:4px}.shc label{display:flex;gap:4px;align-items:center;margin-top:3px}#sheetImport .msg{min-height:18px;color:#315d46;margin:6px 0}`; document.head.append(s);
   }
   function build() {
     css(); if (dlg) return dlg; dlg = document.createElement('dialog'); dlg.id = 'sheetImport'; document.body.append(dlg);
     dlg.innerHTML = `<h2>🧩 นำเข้าชีทหลายช่อง</h2><p id="shWho" style="margin:0 0 6px"></p>
      <div class="row"><input type="file" id="shFile" accept="image/*" multiple><button type="button" id="shAdd" title="เพิ่มชีทต่อท้าย (เลือกได้หลายไฟล์) — ช่องของชีทใหม่ต่อจากชีทเดิม">＋ เพิ่มชีทต่อท้าย</button><button type="button" id="shDrop" title="เอาชีททั้งหมดออก" hidden>✕ ล้างชีท</button><input type="file" id="shFile2" accept="image/*" multiple hidden><span style="color:#6b6247">หรือวางภาพ (Ctrl+V) / ลากไฟล์มาวางที่หน้าต่างนี้ · วาง/ลากเพิ่ม = ต่อท้ายชีทเดิม · เลือกหลายไฟล์พร้อมกันได้</span></div>
      <div class="row" id="shCut" hidden>
-      <label>วิธีตัด <select id="shMode"><option value="grid">ตารางเท่าๆ กัน</option><option value="smart">ตารางหาร่องว่างอัตโนมัติ</option><option value="blob" selected>ตามชิ้นภาพ (อัตโนมัติ)</option></select></label>
-      <label>คอลัมน์ <input type="number" id="shCols" min="1" max="12" value="3" disabled></label><label>แถว <input type="number" id="shRows" min="1" max="12" value="2" disabled></label>
+      <label>วิธีตัด <select id="shMode"><option value="grid" selected>ตารางเท่าๆ กัน</option><option value="smart">ตารางหาร่องว่างอัตโนมัติ</option><option value="blob">ตามชิ้นภาพ (อัตโนมัติ)</option></select></label>
+      <label>คอลัมน์ <input type="number" id="shCols" min="1" max="12" value="4"></label><label>แถว <input type="number" id="shRows" min="1" max="12" value="4"></label><label title="ใช้เฉพาะ N ช่องแรก (เรียงตามลำดับอ่าน) · ช่องที่เหลือไม่นำเข้า · เปลี่ยนรายช่องได้ที่ติ๊ก ใช้เฟรมนี้">ใช้ช่องแรก <input type="number" id="shFirst" min="0" max="144" value="12"></label>
       <label><input type="checkbox" id="shBg" checked> ลบพื้นหลังสีเรียบ</label><label>ความไว <input type="number" id="shTol" min="5" max="120" value="40"></label>
       <button id="shRecut">ตัดใหม่</button></div>
      <div id="shInfo" style="color:#6b6247"></div><div id="shSharp"></div><canvas id="shPrev" hidden></canvas>
@@ -129,8 +129,9 @@
     sheets.forEach((s, si) => {
       const src = toCanvas(s.cv); if (bgOn && removeBackground(src, tol)) bgDone = true; s.work = src; srcs.push(src);
       const rects = mode === 'blob' ? blobRects(src) : gridRects(src, Math.max(1, +$('shCols').value | 0), Math.max(1, +$('shRows').value | 0), mode === 'smart');
-      for (const r of rects) { const trim = cropTrim(src, r); if (trim) cells.push({ rect: r, trim, target: '', mirror: false, sheet: si }) }
+      for (const r of rects) { const trim = cropTrim(src, r); if (trim) cells.push({ rect: r, trim, target: '', mirror: false, sheet: si, skip: false }) }
     });
+    { const nF = $('shFirst')?.value; if (nF !== '' && nF != null) cells.forEach((c, i) => { c.skip = i >= (+nF || 0) }) }   /* v98.928 · 'ใช้ช่องแรก N': the rest are skipped */
     $('shInfo').textContent = sheets.map((s, i) => `ชีท ${i + 1}: ${s.name} (${srcs[i].width}×${srcs[i].height} · ${cells.filter(c => c.sheet === i).length} ช่อง)`).join(' · ') + ` — รวม ${cells.length} ช่อง` + (bgDone ? ' · ลบพื้นหลังแล้ว' : '');
     /* preview: the sheets stacked top → bottom (cell numbers run on from one sheet to the next) */
     const pv = $('shPrev'); pv.hidden = false; const k = Math.min(1, 1100 / Math.max(...srcs.map(s => s.width)), 300 / Math.max(...srcs.map(s => s.height))), LAB = sheets.length > 1 ? 18 : 0, ys = []; let y0 = 0; srcs.forEach(s => { ys.push(y0 + LAB); y0 += Math.round(s.height * k) + LAB + 6 });
@@ -141,19 +142,19 @@
   }
 
   function fill() { const view = $('shView').value, seq = PRESETS[$('shPreset').value], m = $('shMirrorAll').checked;
-    if (!seq) { cells.forEach(c => { c.target = 'walk|' + view; c.mirror = m }); drawCells(); return }   /* v98.822 · a sheet of WALK frames only: every piece is a frame of the walk set of this direction, in reading order */ cells.forEach(c => { c.target = ''; c.mirror = false }); cells.slice(0, seq.length).forEach((c, i) => { c.target = seq[i] + '|' + view; c.mirror = m }); drawCells() }
+    const use = cells.filter(c => !c.skip); if (!seq) { use.forEach(c => { c.target = 'walk|' + view; c.mirror = m }); drawCells(); return }   /* v98.822 · a sheet of WALK frames only: every piece is a frame of the walk set of this direction, in reading order */ cells.forEach(c => { c.target = ''; c.mirror = false }); use.slice(0, seq.length).forEach((c, i) => { c.target = seq[i] + '|' + view; c.mirror = m }); drawCells() }
   function drawCells() {
     const kAll0 = scaleK(), box = $('shCells'), opts = '<option value="">— ไม่นำเข้า —</option>' + actsNow().map(([a, n]) => `<optgroup label="${n}">${viewsNow().map(v => `<option value="${a}|${v}">${n} · ${v}</option>`).join('')}</optgroup>`).join('');
-    box.innerHTML = cells.map((c, i) => `<div class="shc${c.target ? ' on' : ''}" data-i="${i}"><b>ช่อง ${i + 1}</b> <small>${c.trim.width}×${c.trim.height}</small><span class="shsh" title="ความคมของช่องนี้หลังจัดเข้ากรอบเกม (ยิ่งสูงยิ่งคม)">${(() => { const v = sharpOfCell(c, kAll0 ?? undefined); return v == null ? '' : 'คม ' + v.toFixed(1) })()}</span><canvas></canvas><select data-t>${opts}</select><label><input type="checkbox" data-m ${c.mirror ? 'checked' : ''}${c.target ? '' : ' disabled'}> ↔ ทิศตรงข้ามด้วย</label></div>`).join('');
+    box.innerHTML = cells.map((c, i) => `<div class="shc${c.target ? ' on' : ''}${c.skip ? ' skip' : ''}" data-i="${i}"><label style="float:left;margin:0 6px 0 0" title="ติ๊ก = ใช้เฟรมนี้ · เอาออก = ไม่นำเข้า"><input type="checkbox" data-use ${c.skip ? '' : 'checked'}></label><b>ช่อง ${i + 1}</b> <small>${c.trim.width}×${c.trim.height}</small><span class="shsh" title="ความคมของช่องนี้หลังจัดเข้ากรอบเกม (ยิ่งสูงยิ่งคม)">${(() => { const v = sharpOfCell(c, kAll0 ?? undefined); return v == null ? '' : 'คม ' + v.toFixed(1) })()}</span><canvas></canvas><select data-t>${opts}</select><label><input type="checkbox" data-m ${c.mirror ? 'checked' : ''}${c.target ? '' : ' disabled'}> ↔ ทิศตรงข้ามด้วย</label></div>`).join('');
     box.querySelectorAll('.shc').forEach(el => { const i = +el.dataset.i, c = cells[i], cv = el.querySelector('canvas'); cv.width = 240; cv.height = 240; const k = Math.min(230 / c.trim.width, 230 / c.trim.height); cv.getContext('2d').drawImage(c.trim, (240 - c.trim.width * k) / 2, 235 - c.trim.height * k, c.trim.width * k, c.trim.height * k);
-      const sel = el.querySelector('[data-t]'); sel.value = c.target; sel.onchange = () => { c.target = sel.value; if (!c.target) c.mirror = false; drawCells() }; el.querySelector('[data-m]').onchange = e => { c.mirror = e.target.checked } });
+      const sel = el.querySelector('[data-t]'); sel.value = c.target; sel.onchange = () => { c.target = sel.value; if (!c.target) c.mirror = false; drawCells() }; el.querySelector('[data-m]').onchange = e => { c.mirror = e.target.checked }; el.querySelector('[data-use]').onchange = e => { c.skip = !e.target.checked; if (c.skip) { c.target = ''; c.mirror = false } drawCells() } });
     const n = cells.filter(c => c.target).length; $('shApply').disabled = !n || busy; $('shApply').textContent = n ? `นำเข้า ${n} ช่อง` : 'นำเข้า';
     try { sharpSummary(kAll0) } catch (er) { } try { refreshPreview() } catch (er) { }
   }
 
   /* ---------------- v98.822 · sharpness numbers + live walk preview ---------------- */
   /* the common scale of the sheet (null = every piece has its own); for monsters the 512 cell box */
-  const scaleK = () => { if (!cells.length) return 1; const W = Math.max(...cells.map(c => c.trim.width)), H = Math.max(...cells.map(c => c.trim.height)); return monMode ? Math.min(488 / W, 470 / H) : $('shCommon').checked ? Math.min(BOX_W / W, BOX_H / H) : null };
+  const usedCells = () => cells.filter(c => !c.skip), scaleK = () => { const uc = usedCells(); if (!uc.length) return 1; const W = Math.max(...uc.map(c => c.trim.width)), H = Math.max(...uc.map(c => c.trim.height)); return monMode ? Math.min(488 / W, 470 / H) : $('shCommon').checked ? Math.min(BOX_W / W, BOX_H / H) : null };
   const kFor = (c, kAll) => kAll ?? Math.min(BOX_W / c.trim.width, BOX_H / c.trim.height);
   const placedOf = (c, kAll, headCentre) => monMode ? placeMon(c.trim, kAll) : place(c.trim, kFor(c, kAll), headCentre);
   /* SHARPNESS ("คม") of each piece as it will look in the game frame (after the scale-to-fit): same number as the badge on the Animation tiles (StudioSharp.of) — higher = crisper, a soft / blurred / over-stretched piece scores low */
@@ -191,7 +192,7 @@
     try {
       /* one scale for the whole sheet (the tallest / widest piece fills the box) */
       if (monMode) { await applyMonster(e, chosen); return }
-      const common = $('shCommon').checked, all = common ? cells : null, kAll = common ? Math.min(BOX_W / Math.max(...all.map(c => c.trim.width)), BOX_H / Math.max(...all.map(c => c.trim.height))) : null;
+      const common = $('shCommon').checked, all = common ? (usedCells().length ? usedCells() : cells) : null, kAll = common ? Math.min(BOX_W / Math.max(...all.map(c => c.trim.width)), BOX_H / Math.max(...all.map(c => c.trim.height))) : null;
       const kOf = c => kAll ?? Math.min(BOX_W / c.trim.width, BOX_H / c.trim.height), ms = Math.max(20, +$('shMs').value || 100);
       /* group: slot → pieces in reading order; mirrored pieces also feed the opposite slot */
       const groups = new Map(), add = (slot, canvas) => { if (!groups.has(slot)) groups.set(slot, []); groups.get(slot).push(canvas) };
