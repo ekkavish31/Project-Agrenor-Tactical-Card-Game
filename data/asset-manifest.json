@@ -125236,8 +125236,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-095443",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-windup/20261122-095443.webp",
+     "at": "2026-11-22T02:54:43.941Z",
+     "stamp": "20261122-095443",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-windup/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.013Z",
@@ -125306,8 +125313,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-095444",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-strike/20261122-095443.webp",
+     "at": "2026-11-22T02:54:44.051Z",
+     "stamp": "20261122-095443",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-strike/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.096Z",
@@ -125376,8 +125390,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-095444",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-guard/20261122-095443.webp",
+     "at": "2026-11-22T02:54:44.162Z",
+     "stamp": "20261122-095443",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-guard/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.186Z",
@@ -125446,8 +125467,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-095444",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-hit/20261122-095443.webp",
+     "at": "2026-11-22T02:54:44.277Z",
+     "stamp": "20261122-095443",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-hit/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.290Z",
@@ -125516,8 +125544,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-095444",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-down/20261122-095443.webp",
+     "at": "2026-11-22T02:54:44.390Z",
+     "stamp": "20261122-095443",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-down/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.392Z",
@@ -140086,7 +140121,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-1/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.256Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-2",
@@ -140113,7 +140157,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-2/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.333Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-3",
@@ -140140,7 +140193,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-3/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.417Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-4",
@@ -140167,7 +140229,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-4/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.500Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-5",
@@ -140194,7 +140265,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-5/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.622Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-6",
@@ -140221,7 +140301,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-6/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.719Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-7",
@@ -140248,7 +140337,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-7/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.825Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-8",
@@ -140275,7 +140373,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-8/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.941Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-9",
@@ -140302,7 +140409,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-9/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.062Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-10",
@@ -140329,7 +140445,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-10/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.257Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-11",
@@ -140356,7 +140481,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwp21h2t"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-11/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.413Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-1",
@@ -142827,13 +142961,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094954",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-1/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.296Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-2",
@@ -142854,13 +142997,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094954",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-2/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.372Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-3",
@@ -142881,13 +143033,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094954",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-3/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.458Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-4",
@@ -142908,13 +143069,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094954",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-4/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.545Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-5",
@@ -142935,13 +143105,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094954",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-5/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.670Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-6",
@@ -142962,13 +143141,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094954",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-6/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.770Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-7",
@@ -142989,13 +143177,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094954",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-7/20261122-094954.webp",
+     "at": "2026-11-22T02:49:54.881Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-8",
@@ -143016,13 +143213,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094955",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-8/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.000Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-9",
@@ -143043,13 +143249,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094955",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-9/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.124Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-10",
@@ -143070,13 +143285,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094955",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-10/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.344Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-11",
@@ -143097,13 +143321,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094955",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-11/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.490Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-se-walk-mwr7ak86-13mt-12",
@@ -143124,13 +143357,22 @@
     0.5,
     0.9375
    ],
-   "artRevision": "mwr7ak86-13mt",
+   "artRevision": "20261122-094955",
    "studioAllyWalk": true,
    "studioOwner": {
     "id": "ally:berg",
     "name": "Berg",
     "group": "characters"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-se-walk-mwr7ak86-13mt-12/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.636Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-sw-walk-1",
@@ -143454,7 +143696,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "mwr7ccus"
+   "artRevision": "20261122-094959",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-berg-sw-walk-12/20261122-094954.webp",
+     "at": "2026-11-22T02:49:55.566Z",
+     "stamp": "20261122-094954",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-berg-nw-walk-mwr7dg82-h7l8-1",
@@ -150111,6 +150362,114 @@
    "status": "unreviewed",
    "frames": {},
    "at": 1795313632429
+  },
+  "[\"allywalk:berg:NE\",\"NE\",true,[[\"studio-ally-berg-ne-walk-1\",\"assets/tactics/imported/ally-berg-walk-ne/frame-01.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-2\",\"assets/tactics/imported/ally-berg-walk-ne/frame-02.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-3\",\"assets/tactics/imported/ally-berg-walk-ne/frame-03.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-4\",\"assets/tactics/imported/ally-berg-walk-ne/frame-04.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-5\",\"assets/tactics/imported/ally-berg-walk-ne/frame-05.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-6\",\"assets/tactics/imported/ally-berg-walk-ne/frame-06.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-7\",\"assets/tactics/imported/ally-berg-walk-ne/frame-07.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-8\",\"assets/tactics/imported/ally-berg-walk-ne/frame-08.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-9\",\"assets/tactics/imported/ally-berg-walk-ne/frame-09.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-10\",\"assets/tactics/imported/ally-berg-walk-ne/frame-10.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-11\",\"assets/tactics/imported/ally-berg-walk-ne/frame-11.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-ne-walk-12\",\"assets/tactics/imported/ally-berg-walk-ne/frame-12.webp\",0,\"mwr7e2r0\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795313647860,
+   "approvedAt": "2026-11-22T02:14:07.860Z"
+  },
+  "[\"allywalk:berg:SW\",\"SW\",true,[[\"studio-ally-berg-sw-walk-1\",\"assets/tactics/imported/ally-berg-walk-sw/frame-01.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-2\",\"assets/tactics/imported/ally-berg-walk-sw/frame-02.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-3\",\"assets/tactics/imported/ally-berg-walk-sw/frame-03.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-4\",\"assets/tactics/imported/ally-berg-walk-sw/frame-04.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-5\",\"assets/tactics/imported/ally-berg-walk-sw/frame-05.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-6\",\"assets/tactics/imported/ally-berg-walk-sw/frame-06.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-7\",\"assets/tactics/imported/ally-berg-walk-sw/frame-07.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-8\",\"assets/tactics/imported/ally-berg-walk-sw/frame-08.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-9\",\"assets/tactics/imported/ally-berg-walk-sw/frame-09.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-10\",\"assets/tactics/imported/ally-berg-walk-sw/frame-10.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-11\",\"assets/tactics/imported/ally-berg-walk-sw/frame-11.webp\",0,\"mwr7ccus\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-12\",\"assets/tactics/imported/ally-berg-walk-sw/frame-12.webp\",0,\"20261122-094959\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:50:02.923Z",
+   "at": 1795315802950
+  },
+  "[\"allywalk:berg:SE\",\"SE\",true,[[\"studio-ally-berg-se-walk-mwr7ak86-13mt-1\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-01.webp\",0,\"20261122-094954\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-2\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-02.webp\",0,\"20261122-094954\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-3\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-03.webp\",0,\"20261122-094954\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-4\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-04.webp\",0,\"20261122-094954\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-5\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-05.webp\",0,\"20261122-094954\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-6\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-06.webp\",0,\"20261122-094954\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-7\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-07.webp\",0,\"20261122-094954\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-8\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-08.webp\",0,\"20261122-094955\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-9\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-09.webp\",0,\"20261122-094955\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-10\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-10.webp\",0,\"20261122-094955\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-11\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-11.webp\",0,\"20261122-094955\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-se-walk-mwr7ak86-13mt-12\",\"assets/tactics/imported/ally-berg-walk-se-mwr7ak86-13mt/frame-12.webp\",0,\"20261122-094955\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:50:02.923Z",
+   "at": 1795315802951
+  },
+  "[\"tactics-berg-sw-windup\",\"SW\",true,[[\"tactics-berg-sw-windup\",\"assets/tactics/berg_sw_windup.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795315963041,
+   "approvedAt": "2026-11-22T02:52:43.008Z"
+  },
+  "[\"tactics-berg-se-windup\",\"SE\",true,[[\"tactics-berg-se-windup\",\"assets/tactics/berg_se_windup.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795316085900,
+   "approvedAt": "2026-11-22T02:54:45.876Z"
+  },
+  "[\"tactics-berg-sw-strike\",\"SW\",true,[[\"tactics-berg-sw-strike\",\"assets/tactics/berg_sw_strike.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795315975907,
+   "approvedAt": "2026-11-22T02:52:55.878Z"
+  },
+  "[\"tactics-berg-se-strike\",\"SE\",true,[[\"tactics-berg-se-strike\",\"assets/tactics/berg_se_strike.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795316085900,
+   "approvedAt": "2026-11-22T02:54:45.876Z"
+  },
+  "[\"tactics-berg-sw-guard\",\"SW\",true,[[\"tactics-berg-sw-guard\",\"assets/tactics/berg_sw_guard.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795315982365,
+   "approvedAt": "2026-11-22T02:53:02.336Z"
+  },
+  "[\"tactics-berg-se-guard\",\"SE\",true,[[\"tactics-berg-se-guard\",\"assets/tactics/berg_se_guard.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795316085900,
+   "approvedAt": "2026-11-22T02:54:45.876Z"
+  },
+  "[\"tactics-berg-sw-hit\",\"SW\",true,[[\"tactics-berg-sw-hit\",\"assets/tactics/berg_sw_hit.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795315992644,
+   "approvedAt": "2026-11-22T02:53:12.614Z"
+  },
+  "[\"tactics-berg-se-hit\",\"SE\",true,[[\"tactics-berg-se-hit\",\"assets/tactics/berg_se_hit.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795316085900,
+   "approvedAt": "2026-11-22T02:54:45.876Z"
+  },
+  "[\"tactics-berg-sw-down\",\"SW\",true,[[\"tactics-berg-sw-down\",\"assets/tactics/berg_sw_down.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:54:30.205Z",
+   "at": 1795316070242
+  },
+  "[\"tactics-berg-se-down\",\"SE\",true,[[\"tactics-berg-se-down\",\"assets/tactics/berg_se_down.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:54:45.876Z",
+   "at": 1795316085901
+  },
+  "[\"tactics-berg-sw-windup\",\"SW\",true,[[\"tactics-berg-sw-windup\",\"assets/tactics/berg_sw_windup.webp\",0,\"20261122-095443\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:54:45.876Z",
+   "at": 1795316085900
+  },
+  "[\"tactics-berg-sw-strike\",\"SW\",true,[[\"tactics-berg-sw-strike\",\"assets/tactics/berg_sw_strike.webp\",0,\"20261122-095444\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:54:45.876Z",
+   "at": 1795316085900
+  },
+  "[\"tactics-berg-sw-guard\",\"SW\",true,[[\"tactics-berg-sw-guard\",\"assets/tactics/berg_sw_guard.webp\",0,\"20261122-095444\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:54:45.876Z",
+   "at": 1795316085900
+  },
+  "[\"tactics-berg-sw-hit\",\"SW\",true,[[\"tactics-berg-sw-hit\",\"assets/tactics/berg_sw_hit.webp\",0,\"20261122-095444\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:54:45.876Z",
+   "at": 1795316085900
+  },
+  "[\"tactics-berg-sw-down\",\"SW\",true,[[\"tactics-berg-sw-down\",\"assets/tactics/berg_sw_down.webp\",0,\"20261122-095444\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T02:54:45.876Z",
+   "at": 1795316085900
   }
  },
  "studioClipHistory": {
