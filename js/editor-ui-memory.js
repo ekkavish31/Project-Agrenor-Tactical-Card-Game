@@ -43,14 +43,25 @@
     const m = load(), p = m[page] || (m[page] = { nav: {}, sel: {}, order: [] }); p.sel = p.sel || {}; p.sel[el.id] = el.value; save(m);
   }, true);
 
-  /* replay: nav clicks in the order they were made (each retried until its control exists), then the selects */
+  /* replay: the remembered controls are checked again and again for up to 40 s (every 0.5 s), in the order they were made, until the page has settled and the user touches something themselves.
+     A page often builds its tabs LATE or sets its own default tab AFTER our first click (data loads slowly on the real site) — so a control that was on after our click and has gone off is clicked again (max 4 times each). A control with no visible "on" state is clicked once. */
+  let touched = false; for (const t of ['pointerdown', 'keydown']) document.addEventListener(t, e => { if (e.isTrusted && !replaying) touched = true }, true);
+  function toast(t) { try { const d = document.createElement('div'); d.textContent = t; d.style.cssText = 'position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147483000;background:#1f2a22e6;color:#d8f0d8;border:1px solid #5a8a62;border-radius:999px;padding:5px 14px;font:600 12px system-ui,sans-serif;pointer-events:none;transition:opacity .5s'; document.body.append(d); setTimeout(() => { d.style.opacity = 0 }, 2600); setTimeout(() => d.remove(), 3200) } catch (e) { } }
   function replay() {
-    const p = load()[page]; if (!p) return; const todo = (p.order || Object.keys(p.nav || {})).filter(g => p.nav[g]), sel = Object.entries(p.sel || {}), t0 = Date.now(); let step = 0, stall = 0;
+    const p = load()[page]; if (!p) return; const todo = (p.order || Object.keys(p.nav || {})).filter(g => p.nav[g]), sel = Object.entries(p.sel || {}), t0 = Date.now(), st = todo.map(() => ({ clicks: 0, wasOn: false })); let calm = 0, did = [];
     const tick = () => {
-      if (Date.now() - t0 > 14000 || step >= todo.length) { replaying = false; for (const [id, v] of sel) { const s = document.getElementById(id); if (s && s.value !== v && [...s.options].some(o => o.value === v)) { replaying = true; s.value = v; s.dispatchEvent(new Event('change', { bubbles: true })); replaying = false } } return }
-      replaying = true; const d = p.nav[todo[step]], el = find(d);
-      if (el) { if (!isOn(el)) { try { el.click() } catch (e) { } } step++; stall = 0; replaying = false; setTimeout(tick, 350) }
-      else { replaying = false; if (++stall > 20) { step++; stall = 0 } setTimeout(tick, 400) }
+      if (touched || Date.now() - t0 > 40000) { replaying = false; if (did.length) toast('↩ คืนหน้าเดิม: ' + did.join(' › ')); return }
+      let acted = false, missing = 0;
+      for (let i = 0; i < todo.length && !acted; i++) {
+        const d = p.nav[todo[i]], el = find(d), S = st[i];
+        if (!el) { missing++; break }                       /* later controls only exist after this one — wait */
+        if (isOn(el)) { S.wasOn = true; continue }
+        if (S.clicks === 0 || (S.wasOn && S.clicks < 4)) { replaying = true; try { el.click() } catch (e) { } S.clicks++; replaying = false; acted = true; if (!did.includes(d.text)) did.push(d.text); if (isOn(el)) S.wasOn = true }
+      }
+      for (const [id, v] of sel) { const s2 = document.getElementById(id); if (s2 && s2.value !== v && [...s2.options].some(o => o.value === v) && !(st.sel ||= {})[id]) { st.sel[id] = 1; replaying = true; s2.value = v; s2.dispatchEvent(new Event('change', { bubbles: true })); replaying = false; acted = true } }
+      calm = acted || missing ? 0 : calm + 1;
+      if (calm >= 24) { replaying = false; if (did.length) toast('↩ คืนหน้าเดิม: ' + did.join(' › ')); return }   /* 12 s with nothing to do = settled */
+      setTimeout(tick, acted ? 350 : 500);
     };
     tick();
   }

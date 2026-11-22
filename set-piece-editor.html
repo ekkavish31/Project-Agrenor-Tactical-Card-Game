@@ -151,5 +151,5 @@ $('exp').onclick = () => { $('io').value = JSON.stringify({ id: sid, ...JSON.par
 $('imp').onclick = () => { try { const o = JSON.parse($('io').value); if (o.id && SP.SCENES[o.id] && o.id !== sid) { sid = o.id } S = clone({ R: o.R, map: o.map, hero: o.hero, allies: o.allies, enemies: o.enemies }); const errs = validateUi(); commit(); $('msg').textContent = errs.length ? 'นำเข้าแล้ว แต่มีข้อผิดพลาด ' + errs.length : 'นำเข้าแล้ว' } catch (e) { alert('นำเข้าไม่ได้: ' + e.message) } };
 new ResizeObserver(resize).observe($('stage'));
 load(new URLSearchParams(location.search).get('scene') in SP.SCENES ? new URLSearchParams(location.search).get('scene') : sid); resize();
-</script><script src="js/editor-ui-memory.js?v=v98.941"></script>
+</script><script src="js/editor-ui-memory.js?v=v98.943"></script>
 </body></html>

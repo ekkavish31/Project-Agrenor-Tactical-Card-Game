@@ -44,5 +44,5 @@ document.getElementById('reset').onclick = () => { if (confirm('ล้างค�
 document.getElementById('pushBtn').onclick = async () => { const m = document.getElementById('msg'), G = window.GitHubPush; if (!G) { m.textContent = 'ไม่พบระบบ Push'; return } if (!G.config().token) return G.openSettings();
   try { const t = await G.pushSettings([PF.KEY], 'ทิศหน้า Portrait'); m.textContent = String(t || 'ใส่แล้ว') } catch (err) { m.textContent = 'ไม่สำเร็จ: ' + err.message } };
 paint();
-</script><script src="js/editor-ui-memory.js?v=v98.941"></script>
+</script><script src="js/editor-ui-memory.js?v=v98.943"></script>
 </body></html>
