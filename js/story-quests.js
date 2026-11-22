@@ -301,6 +301,19 @@ function victorySummary(r){return new Promise(done=>{
    and put them back there afterwards — retried for a moment, because the map can re-place the hero at a door while it wakes up again */
 function heroSpot(){try{const T=root.VillageTown;if(!T)return null;const sc=T.getScene?.(),f=/^place:/.test(sc||'')?T.marketFrame:T.frame,h=f?.contentWindow?.ResumeHook?.get?.();return h?{f,h:{...h},sc}:null}catch(e){return null}}
 function heroBack(spot){if(!spot)return;const put=()=>{try{if(root.VillageTown?.getScene?.()===spot.sc)spot.f.contentWindow?.ResumeHook?.set?.(spot.h)}catch(e){}};put();for(const ms of [120,400,900,1600])setTimeout(put,ms)}
+/* v98.922 · BATTLE WARM-UP — the first fight of a session stuttered / near-froze (and the farm scene behind it with it): battle-field.html is a separate page whose ~300 files (3.8 MB asset-manifest, scripts, sprites, the field picture) were all downloaded at the moment the fight opened,
+   on the same thread that animates the story scene. After a reload (files cached) it ran smooth. So while the player is still talking / walking to the fight, the files are fetched quietly in the background (idle, one at a time, pictures through the service worker cache).
+   List: data/warm-battle.json (made by running the fight in a browser and recording its requests: common + per-fight). Code: exactly the <script>/<link> files battle-field.html names. */
+const WARMED=new Set(),WARM_FOR={wake:'goat',goats:'goat',goatsBack:'pumpkin',seeds:'pumpkin'};
+function warmBattle(kind){
+ if(!kind||WARMED.has(kind))return;WARMED.add(kind);
+ try{if((navigator.connection||{}).saveData)return;
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms)),idle=()=>new Promise(r=>root.requestIdleCallback?root.requestIdleCallback(r,{timeout:2500}):setTimeout(r,800)),q='?v='+(root.GAME_VERSION?.v||'');
+  (async()=>{await idle();let L={};try{L=await(await fetch('data/warm-battle.json'+q)).json()}catch(e){}
+   try{const h=await(await fetch('battle-field.html'+q)).text();for(const m of h.matchAll(/(?:src|href)="([^"#]+?\.(?:js|css)(?:\?[^"]*)?)"/g)){await fetch(m[1]).catch(()=>{});await sleep(40)}}catch(e){}
+   const urls=[...(L.common||[]),...(L[kind]||[])],imgs=urls.filter(u=>/\.(png|webp|jpe?g)$/i.test(u)),rest=urls.filter(u=>!imgs.includes(u)),sw=navigator.serviceWorker?.controller;
+   if(sw){for(let i=0;i<imgs.length;i+=20){sw.postMessage({type:'precache',urls:imgs.slice(i,i+20)});await sleep(400)}}else for(const u of imgs){await fetch(u).catch(()=>{});await sleep(30)}
+   for(const u of rest){await fetch(u).catch(()=>{});await sleep(30)}})()}catch(e){}}
 function questBattle(d,o){return new Promise(resolve=>{
  if(d.fighting||onWorld()){resolve('busy');return}
  const g=G(),v=V();if((g.hp||0)<30)g.hp=Math.max(g.hp||0,40);
@@ -388,6 +401,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  if(sale){d.sales=(d.sales||0)+1}
  if(step.id==='raid'&&d.fighting&&!document.getElementById('storyBattle')){d.fighting=false;doSave()}
  step.tick?.(d);
+ warmBattle(WARM_FOR[step.id]);
  if(root.Cutscene?.isPlaying()||tacticsOpen()||document.getElementById('storyBattle')){draw();return}
  homeHooks().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
  busy=true;try{
