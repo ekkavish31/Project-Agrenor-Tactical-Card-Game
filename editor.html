@@ -45,11 +45,15 @@ const TABS=[
  {id:'story',name:'🧭 เส้นเรื่อง',src:'story-map.html',note:'แผนผังเส้นเรื่องหลัก (mind map): เส้น Mip · เหมือง/VQ · สงคราม · ศรัทธา · ranger · เส้นรอง · จุดตัดสินใจแตกกิ่งถึงตอนจบ · ดูว่ากล่องไหนทำแล้ว/ยังไม่ทำ/รอเจ้าของเกม · อ่านอย่างเดียว (ข้อมูลที่ js/story-map-data.js)'},];
 /* v98.894 · every (re)load of a tab asks for a URL nobody has cached: the old reload button reused the same URL (f.src=f.src) so the browser handed back the OLD page */
 const busted=src=>src.replace(/([?&])build=[^&]*&?/,'$1').replace(/[?&]$/,'')+(src.includes('?')?'&':'?')+'build='+encodeURIComponent((window.GAME_VERSION?.v||'')+'-'+Date.now().toString(36));
+/* v98.938 · each tool tells us which URL it is on (e.g. village-place.html?edit=1&place=market): the tab reopens THAT page after a reload (js/editor-ui-memory.js posts it) */
+const URLKEY='editor-tab-url-v1',urlMem=()=>{try{return JSON.parse(localStorage.getItem(URLKEY)||'{}')||{}}catch(e){return{}}};
+const savedUrl=T=>{try{const u=urlMem()[T.id],base=T.src.split('?')[0];if(u&&u.split('?')[0].split('/').pop()===base.split('/').pop()){const a=new URL(u,location.href),dir=location.pathname.replace(/[^/]*$/,'');if(a.pathname.startsWith(dir))return a.pathname.slice(dir.length)+a.search+a.hash}}catch(e){}return T.src};
+addEventListener('message',e=>{try{const d=e.data;if(!d||!d.editorUrl)return;const f=[...document.querySelectorAll('#frames iframe')].find(x=>x.contentWindow===e.source);if(!f)return;const m=urlMem(),T=TABS.find(t=>t.id===f.dataset.id);if(!T||(d.page||'')!==T.src.split('?')[0].split('/').pop())return;m[T.id]=d.editorUrl;localStorage.setItem(URLKEY,JSON.stringify(m))}catch(x){}});
 const tabs=document.getElementById('tabs'),frames=document.getElementById('frames'),note=document.getElementById('note');let cur=null;
 function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replaceState(null,'','#'+T.id);try{localStorage.setItem('editor-last-tab',T.id)}catch(e){}   /* v98.894 · the editor reopens on the tab that was open last (also with Ctrl+Shift+R / a link without #) */
  tabs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===T.id));
  for(let f of frames.children)f.hidden=f.dataset.id!==T.id;
- if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=busted(T.src);f.title=T.name;f.allow='fullscreen';f.setAttribute('allowfullscreen','');frames.appendChild(f)}}
+ if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=busted(savedUrl(T));f.title=T.name;f.allow='fullscreen';f.setAttribute('allowfullscreen','');frames.appendChild(f)}}
 tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}" title="${t.note.replace(/"/g,'&quot;')} · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด">${t.name}</button>`).join('');
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
 /* v98.894 · the ↻ โหลดใหม่ button is removed — use Ctrl+Shift+R */

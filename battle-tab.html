@@ -7,4 +7,5 @@ main{flex:1;position:relative}iframe{position:absolute;inset:0;width:100%;height
 <script src="js/editor-store.js?v=v98.894"></script><script>const SRC={lab:'battleground.html',fixed:'set-piece-editor.html'};const m=document.getElementById('m');let last='lab';try{last=localStorage.getItem('battle-tab-sub')||'lab'}catch(e){}if(!SRC[last])last='lab';
 function show(id){last=id;try{localStorage.setItem('battle-tab-sub',id)}catch(e){}document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
  for(const f of m.children)f.hidden=f.dataset.id!==id;if(!m.querySelector('[data-id="'+id+'"]')){const f=document.createElement('iframe');f.dataset.id=id;f.src=SRC[id]+(location.search||'');m.append(f)}}
-document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.id)};show(last);</script></body></html>
+document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.id)};show(last);</script><script src="js/editor-ui-memory.js?v=v98.941"></script>
+</body></html>

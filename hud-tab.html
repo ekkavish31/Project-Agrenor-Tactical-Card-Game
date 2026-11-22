@@ -59,4 +59,5 @@ const msg=t=>$('msg').textContent=t;
 {const G=window.GitHubPush;if(G?.settingsButton){const b=G.settingsButton();b.id='gh';$('push').after(b)}}
 $('push').onclick=async()=>{const G=window.GitHubPush;if(!G)return msg('ไม่มีระบบ push');if(!G.config().token){G.openSettings(()=>$('push').click());return}$('push').disabled=true;try{const sha=await G.pushSettings([KEY],'HUD: เคอร์เซอร์ + ลูกศรชี้',[],msg);msg(sha?'⬆ push แล้ว · '+sha:'ไม่มีค่าที่ต้อง push')}catch(e){msg('push ไม่สำเร็จ: '+e.message)}finally{$('push').disabled=false}};
 draw();show(tab);raf=requestAnimationFrame(drawArrows);
-</script></body></html>
+</script><script src="js/editor-ui-memory.js?v=v98.941"></script>
+</body></html>
