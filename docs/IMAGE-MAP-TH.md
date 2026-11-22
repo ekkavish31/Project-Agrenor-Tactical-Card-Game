@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 5894 ไฟล์ (433.1 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 5960 ไฟล์ (485.9 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -16,7 +16,7 @@
 ## จำนวนต่อหมวดหมู่
 | หมวดหมู่ | ไฟล์ | ขนาด | โฟลเดอร์หลัก | ลงทะเบียน slot | ไฟล์ซ้ำ (เนื้อหาเหมือนกัน) |
 |---|---|---|---|---|---|
-| 🗣 ภาพสนทนา (portrait) | 139 | 19.4 MB | `assets/portraits` 136 · `assets/generated-village` 3 | 3 | 4 |
+| 🗣 ภาพสนทนา (portrait) | 199 | 52.6 MB | `assets/portraits` 184 · `assets/generated-village` 15 | 63 | 4 |
 | 🧑‍🎤 ตัวเอก | 2917 | 104.9 MB | `assets/tactics` 2890 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2833 | 519 |
 | 👥 ชาวบ้าน / NPC | 333 | 13.7 MB | `assets/village-town` 332 · `assets/generated-village` 1 | 221 | 23 |
 | 🤝 เพื่อนร่วมทีม | 200 | 9.7 MB | `assets/tactics` 196 · `assets/allies` 4 | 200 | 16 |
@@ -30,7 +30,7 @@
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
 | ✨ เอฟเฟกต์ | 68 | 4.0 MB | `assets/fx` 68 | 0 | 0 |
 | 🎒 ไอเทม · อาวุธ · พืชผล | 61 | 5.3 MB | `assets/crops` 36 · `assets/weapons` 7 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 25 | 1 |
-| 📖 เปิดเรื่อง · อินโทร · ฉาก | 33 | 52.7 MB | `assets/new-game-prologue` 17 · `assets/intro` 10 · `assets/generated-village` 6 | 6 | 0 |
+| 📖 เปิดเรื่อง · อินโทร · ฉาก | 39 | 72.3 MB | `assets/new-game-prologue` 17 · `assets/generated-village` 12 · `assets/intro` 10 | 12 | 0 |
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
 | 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 238 | 17.2 MB | `assets/_versions` 238 | 0 | 47 |
 | 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 42 | 6.9 MB | `archive/old-scene` 31 · `_archive/undefined-bg` 2 · `adjbox.png` 1 · `art-production/facing-arrows-4.png` 1 | 0 | 12 |
@@ -38,8 +38,9 @@
 ## หมวดย่อยในแต่ละหมวด
 
 ### 🗣 ภาพสนทนา (portrait)
-- ตัวเอก · ชาวบ้าน — 104
+- ตัวเอก · ชาวบ้าน — 152
 - ตัวละครเนื้อเรื่อง (4 อารมณ์) — 32
+- ต้นฉบับภาพสนทนา NPC (4 อารมณ์) — 12
 - ภาพสนทนาหมู่บ้าน — 3
 
 ### 🧑‍🎤 ตัวเอก
@@ -121,7 +122,7 @@
 
 ### 📖 เปิดเรื่อง · อินโทร · ฉาก
 - เปิดเรื่อง · อินโทร — 27
-- ฉากสนทนาหมู่บ้าน — 6
+- ฉากสนทนาหมู่บ้าน — 12
 
 ### 🗺 แผนที่โลกในเอกสาร (lore)
 - แผนที่โลกที่เจ้าของวาด — 5
