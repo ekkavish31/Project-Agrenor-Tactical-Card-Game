@@ -5,6 +5,7 @@
   if (window.__webpRedirect) return; window.__webpRedirect = 1;
   const SKIP = /\/(cursor-[^/]*|_versions\/.*|_reviews\/.*)$/i;
   function conv(u) {
+    if (typeof u === 'string' && /(?:^|\/)assets\/generated-village\//.test(u)) return u;
     if (typeof u !== 'string' || u.startsWith('data:') || u.startsWith('blob:')) return u;
     const m = u.match(/^(.*?\/?assets\/[^?#]*?)\.png([?#].*)?$/i);
     if (!m || SKIP.test(m[1] + '.png')) return u;

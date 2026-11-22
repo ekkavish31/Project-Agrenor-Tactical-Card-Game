@@ -22,6 +22,10 @@
   PAINTED.elder = PAINTED.oren;
   PAINTED.third = PAINTED.corvin;
   PAINTED.mage = PAINTED.serrien;
+  /* v98.946 · authored neutral portraits; other moods share the neutral picture. */
+  for (const id of ['clerk', 'vera', 'boss']) PAINTED[id] = [id, ['neutral']];
+  const portraitFile = (set, mood) => ['clerk', 'vera', 'boss'].includes(set)
+    ? 'assets/generated-village/' + set + '.png' : 'assets/portraits/' + set + '-' + mood + '.webp';
   /* v98.204 · the hero's painted set follows the chosen look (HeroVariant): hero-<look>-<pose>.webp. Only looks that have a sheet are listed; the other keeps the code-drawn bust */
   const HERO_SETS = { male: ['hero-male', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }], female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* v98.206 · which way a painted set faces as drawn (checked on every pose: hero male/female all look LEFT, mom all looks RIGHT). A speaker on the left of the stage must face right, one on the right must face left, so the picture is mirrored when its native facing is wrong for its side. */
@@ -180,7 +184,7 @@
     if (cur.face === face && cur.el) return cur;
     cur.face = face;
     if (P) {
-      const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral), src = 'assets/portraits/' + P[0] + '-' + f + '.webp';
+      const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral), src = portraitFile(P[0], f);
       if (!cur.el || cur.el.tagName !== 'IMG') { art.innerHTML = ''; cur.el = new Image(); cur.el.alt = ''; art.append(cur.el) }
       if (!cur.el.src.endsWith(src)) { cur.el.style.opacity = '0'; cur.el.onload = () => { cur.el.style.transition = 'opacity .18s'; cur.el.style.opacity = '1' }; cur.el.src = src; if (cur.el.complete && cur.el.naturalWidth) cur.el.onload() }   /* v98.336 · the picture fades in once loaded (no empty stage with an emote floating over it) */
       cur.el.dataset.flip = (window.PortraitFacing ? PortraitFacing.flip(src, side) : ((FACING[P[0]] || 'left') === (side === 'L' ? 'left' : 'right'))) ? '1' : '0';   /* v98.595 · the face direction of EACH picture (js/portrait-facing.js) decides the mirror, not one guess per character */
@@ -192,7 +196,7 @@
     return cur;
   }
   /* v98.222 · the face picture for the dialogue box: the speaker's painted portrait (current mood) when they have a set, else null */
-  function facePic(who, sp, face) { const P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : who === 'sib' ? sibSet() : null); if (!P) return null; const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral); return 'assets/portraits/' + P[0] + '-' + f + '.webp' }
+  function facePic(who, sp, face) { const P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : who === 'sib' ? sibSet() : null); if (!P) return null; const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral); return portraitFile(P[0], f) }
   function emote(side, ch) { const st = stands[side]; st.querySelector('.cs-emote')?.remove(); if (!ch) return; const e = document.createElement('div'); e.className = 'cs-emote'; e.textContent = ch; st.append(e); setTimeout(() => e.remove(), 1700) }
   function fx(side, cls) { const st = stands[side]; st.classList.remove('fx-shock', 'fx-hop', 'fx-jump', 'fx-shake', 'fx-sag'); void st.offsetWidth; if (cls) for (const c of cls) st.classList.add(c) }
 
@@ -205,7 +209,7 @@
   function srcsOf(line, sp) {
     if (!line?.who) return []; const P = PAINTED[sp?.bust || line.who] || (line.who === 'hero' ? heroSet() : line.who === 'sib' ? sibSet() : null); if (!P) return [];
     const face = faceOf(line), f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral);
-    return ['assets/portraits/' + P[0] + '-' + f + '.webp', 'assets/portraits/' + P[0] + '-' + (Array.isArray(P[1]) ? 'neutral' : P[1].neutral) + '.webp'];
+    return [portraitFile(P[0], f), portraitFile(P[0], Array.isArray(P[1]) ? 'neutral' : P[1].neutral)];
   }
   function warm(src) { let p = PRE.get(src); if (!p) { const im = new Image(); im.src = src; p = im.decode ? im.decode().catch(() => { }) : Promise.resolve(); PRE.set(src, p) } return p }
   function preload(lines, speakerOf, from = 0, n = 1e9) {
@@ -239,7 +243,7 @@
   }
   /* v98.687 · every painted face of every speaker (+ both hero sets), for the loading screen: a portrait that is not loaded in time leaves the PREVIOUS speaker's picture on stage */
   function allFaces() {
-    const out = new Set(), add = P => { if (!P) return; const [set, f] = P; for (const x of (Array.isArray(f) ? f : Object.values(f))) out.add('assets/portraits/' + set + '-' + x + '.webp') };
+    const out = new Set(), add = P => { if (!P) return; const [set, f] = P; for (const x of (Array.isArray(f) ? f : Object.values(f))) out.add(portraitFile(set, x)) };
     for (const k of Object.keys(PAINTED)) add(PAINTED[k]); for (const k of Object.keys(HERO_SETS)) add(HERO_SETS[k]); return [...out];
   }
   root.StoryActors = { allFaces, preload, facePic, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };

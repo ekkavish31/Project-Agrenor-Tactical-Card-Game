@@ -189,6 +189,7 @@
   const contestDays = () => { try { return Math.min(3, story()?.pumpkinDays?.() || 0) } catch (e) { return 0 } };
   /* v98.604 · the quest planks are drawn as real BOARDS (a small stack of three, solid colours + dark outline, nails and grain) — the 🪵 emoji looked like a see-through log */
   function plankDraw(gx, o, t) {
+    if (root.VillagePaintedArt?.draw(gx, 'plank', 0, 0, 48)) return;
     const bob = Math.sin(t * .003 + o.phase) * 1.2; gx.save(); gx.translate(0, 6 + bob);
     const board = (x, y, w, h, rot, base, dark) => { gx.save(); gx.translate(x, y); gx.rotate(rot); const g = gx.createLinearGradient(0, -h / 2, 0, h / 2); g.addColorStop(0, base); g.addColorStop(1, dark); gx.fillStyle = g; gx.strokeStyle = '#3b2412'; gx.lineWidth = 2.2; gx.lineJoin = 'round';
       gx.beginPath(); gx.roundRect(-w / 2, -h / 2, w, h, 3); gx.fill(); gx.stroke();

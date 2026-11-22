@@ -347,6 +347,7 @@
     }
     if (i.k === 'fobj') {   /* what stands on a field tile: debris or a crop */
       const k = G?.ground?.[i.idx], p = G?.plots[i.idx], y = c.y;
+      if (['weed', 'branch', 'rock', 'stump'].includes(k) && window.VillagePaintedArt?.draw(g, k, c.x, y + 2, k === 'branch' ? 35 : 29)) return;
       if (k === 'weed') { g.strokeStyle = '#3f6a2a'; g.lineWidth = 2; for (const [dx, h] of [[-8, 12], [-3, 16], [3, 14], [8, 10]]) { g.beginPath(); g.moveTo(c.x + dx, y); g.quadraticCurveTo(c.x + dx * 1.4, y - h * .6, c.x + dx * 1.8, y - h); g.stroke() } return }
       if (k === 'branch') { g.strokeStyle = '#6a4a2a'; g.lineWidth = 3; g.beginPath(); g.moveTo(c.x - 12, y - 2); g.lineTo(c.x + 10, y - 6); g.moveTo(c.x - 2, y - 4); g.lineTo(c.x + 2, y - 11); g.stroke(); return }
       if (k === 'rock') { g.fillStyle = '#8a8680'; g.beginPath(); g.ellipse(c.x, y - 6, 13, 9, 0, 0, 7); g.fill(); g.fillStyle = '#a8a49c'; g.beginPath(); g.ellipse(c.x - 3, y - 10, 6, 4, 0, 0, 7); g.fill(); return }
@@ -369,7 +370,9 @@
     if (i.k === 'cabin') { const f = P(i.u + i.w / 2, i.v + i.d / 2); if (pic('assets/village-town/buildings/house-02.webp', f.x, f.y + (i.w + i.d) * HH * .55, (i.w + i.d) * HW * 1.25)) { g.fillStyle = '#ffe9a8'; g.font = '700 11px AgThai,system-ui,sans-serif'; g.textAlign = 'center'; g.fillText('กระท่อม', f.x, f.y - 150); return } }
     if (['well', 'woodpile', 'cart', 'signpost'].includes(i.k)) { pic(DECOR + i.k + '.webp', c.x, c.y + 8, { well: 46, woodpile: 54, cart: 60, signpost: 34 }[i.k]); return }
     if (i.k === 'cabin' || i.k === 'coop') { const red = i.k === 'coop'; box(i.u, i.v, i.w, i.d, i.h, red ? '#c9a060' : '#a8804a', red ? '#b08a50' : '#8a6438', red ? '#9a7642' : '#76542e'); const e = P(i.u, i.v + i.d), cc = P(i.u + i.w, i.v + i.d), bb = P(i.u + i.w, i.v); g.fillStyle = red ? '#8a3a2a' : '#6a3a2a'; g.beginPath(); g.moveTo(e.x, e.y - i.h); g.lineTo((e.x + bb.x) / 2, (e.y + bb.y) / 2 - i.h - 30); g.lineTo(cc.x, cc.y - i.h); g.closePath(); g.fill(); g.beginPath(); g.moveTo(cc.x, cc.y - i.h); g.lineTo((e.x + bb.x) / 2, (e.y + bb.y) / 2 - i.h - 30); g.lineTo(bb.x, bb.y - i.h); g.closePath(); g.fillStyle = red ? '#7a3224' : '#5a3224'; g.fill(); const m = P(i.u + i.w * .5, i.v + i.d); g.fillStyle = '#4a2e18'; g.fillRect(m.x - 7, m.y - 24, 14, 24); g.fillStyle = '#ffe9a8'; g.font = '700 11px AgThai,system-ui,sans-serif'; g.textAlign = 'center'; g.fillText(red ? 'เล้าไก่' : 'กระท่อม', m.x, m.y - i.h - 36); return }
-    if (i.k === 'bin') { box(i.u + .1, i.v + .1, .8, .8, i.h, '#a8804a', '#8a6438', '#76542e'); g.fillStyle = '#ffe9a8'; g.font = '700 10px AgThai,system-ui,sans-serif'; g.textAlign = 'center'; g.fillText('กล่องส่งขาย', c.x, c.y - 30); const n = Object.values(G?.basket || {}).reduce((a, b) => a + b, 0); if (n) { g.font = '13px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.fillText('🧺' + n, c.x, c.y - 44) } return }
+    if (i.k === 'bin') { if (!window.VillagePaintedArt?.draw(g, 'bin', c.x, c.y, 48)) box(i.u + .1, i.v + .1, .8, .8, i.h, '#a8804a', '#8a6438', '#76542e'); g.fillStyle = '#ffe9a8'; g.font = '700 10px AgThai,system-ui,sans-serif'; g.textAlign = 'center'; g.fillText('กล่องส่งขาย', c.x, c.y - 30); const n = Object.values(G?.basket || {}).reduce((a, b) => a + b, 0); if (n) { g.font = '13px AgThai,system-ui,"Segoe UI Emoji",sans-serif'; g.fillText('🧺' + n, c.x, c.y - 44) } return }
+    if (i.k === 'trough' && pic('assets/interior/water-trough.webp', c.x, c.y + 4, 70)) return;
+    if (i.k === 'fence' && window.VillagePaintedArt?.draw(g, 'fence', c.x, c.y + 4, 54, { flip: i.side === 'v' })) return;
     if (i.k === 'fence') { const a = i.side === 'u' ? P(i.u, i.v + .5) : P(i.u + .5, i.v), b = i.side === 'u' ? P(i.u + 1, i.v + .5) : P(i.u + .5, i.v + 1); g.strokeStyle = '#7a5634'; g.lineWidth = 3.5; for (const h of [8, 18]) { g.beginPath(); g.moveTo(a.x, a.y - h); g.lineTo(b.x, b.y - h); g.stroke() } g.fillStyle = '#5a3a1e'; g.fillRect(a.x - 2, a.y - 24, 4, 24); return }
     if (i.k === 'penfloor') { poly([P(i.u, i.v), P(i.u + 1, i.v), P(i.u + 1, i.v + 1), P(i.u, i.v + 1)], (i.u + i.v) % 2 ? '#9a8a52' : '#a3925a'); return }
     if (i.k === 'hay' && pic(DECOR + 'hay.webp', c.x, c.y + 4, 44)) return;
@@ -392,6 +395,14 @@
   function drawAnimal(h, t) {
     const k = h.a.kind, p = P(h.u, h.v), hop = h.wait > 0 ? 0 : Math.abs(Math.sin(t * .01 + h.u)) * 2.5, dir = (h.tu || 0) - h.u >= 0 ? 1 : -1;
     g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(p.x, p.y, k === 'chicken' ? 8 : 15, k === 'chicken' ? 3 : 5, 0, 0, 7); g.fill();
+    if (k === 'goat') {
+      const A = window.MonsterArt || (() => { try { return parent.MonsterArt } catch (e) { return null } })();
+      const art = A?.frame('goat', dir > 0 ? 'SE' : 'SW', { pose: h.wait > 0 ? 'graze' : 'walk' }, 1, t, 'farm-goat');
+      if (art) { const hh = 35, ww = hh * art.sw / art.sh, pv = art.pivot || [.5, .95]; g.save(); g.translate(p.x, p.y - hop); if (art.flip) g.scale(-1, 1); g.drawImage(art.image, art.sx, art.sy, art.sw, art.sh, -ww * pv[0], -hh * pv[1], ww, hh); g.restore(); if (h.a.hungry) { g.fillStyle = '#c84a3a'; g.font = 'bold 12px sans-serif'; g.fillText('!', p.x + 14, p.y - 30) } return; }
+    }
+    if (window.VillagePaintedArt?.draw(g, k, p.x, p.y - hop, k === 'chicken' ? 22 : k === 'sheep' ? 38 : 48, { flip: dir > 0 })) {
+      if (h.a.hungry) { g.fillStyle = '#c84a3a'; g.font = 'bold 12px sans-serif'; g.fillText('!', p.x + 14, p.y - 30) } return;
+    }
     g.save(); g.translate(p.x, p.y - hop); g.scale(dir, 1);
     const ell = (x, y, rx, ry, col) => { g.fillStyle = col; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill() };
     const legs = (xs, top, len, col) => { g.strokeStyle = col; g.lineWidth = 2; for (const x of xs) { g.beginPath(); g.moveTo(x, top); g.lineTo(x, top + len); g.stroke() } };
@@ -1008,6 +1019,8 @@
     const st = document.createElement('style'); st.textContent = `
     #room,#inHud{display:none!important}
     #visitBg{position:fixed;inset:0;z-index:1;overflow:hidden;background:linear-gradient(#f6c98a 0,#f0b574 34%,#7d5a3a 34.2%,#4a3220 100%)}
+    #visitBg.painted{background:#3a2a1b url('assets/generated-village/door.png') center/cover no-repeat}
+    #visitBg.painted>div{display:none}
     #visitBg .wall{position:absolute;left:0;right:0;top:0;height:62%;background:repeating-linear-gradient(90deg,#6b4a2d 0 46px,#5f4026 46px 48px),#6b4a2d;box-shadow:inset 0 -26px 40px #0006}
     #visitBg .door{position:absolute;left:50%;bottom:38%;width:min(22vw,230px);height:min(40vh,340px);transform:translateX(-50%);border-radius:999px 999px 6px 6px/46% 46% 6px 6px;background:linear-gradient(90deg,#4a2e18,#6a4426 45%,#4a2e18);border:7px solid #2d1b0e;box-shadow:0 0 0 5px #8a6a3a,0 18px 40px #0009,inset 0 0 40px #0008}
     #visitBg .door::after{content:'';position:absolute;right:16%;top:54%;width:14px;height:14px;border-radius:50%;background:radial-gradient(#ffe29a,#a8782a)}
@@ -1019,7 +1032,7 @@
     .visit .in-dlg-bg{background:linear-gradient(#0000 45%,#000b)}
     .visit .in-dlg{width:min(980px,100%);grid-template-columns:170px 1fr}.visit .in-dlg canvas{width:160px;height:190px}`;
     document.head.append(st); document.documentElement.classList.add('visit');
-    const bgv = document.createElement('div'); bgv.id = 'visitBg'; bgv.innerHTML = '<div class="wall"></div><div class="glow"></div><div class="win l"></div><div class="win r"></div><div class="door"></div><div class="step"></div><h1></h1>'; bgv.querySelector('h1').textContent = NAME; document.body.prepend(bgv);
+    const bgv = document.createElement('div'); bgv.id = 'visitBg'; bgv.className = 'painted'; bgv.innerHTML = '<div class="wall"></div><div class="glow"></div><div class="win l"></div><div class="win r"></div><div class="door"></div><div class="step"></div><h1></h1>'; bgv.querySelector('h1').textContent = NAME; document.body.prepend(bgv);
     const WHERE = { market: 'ตลาด', inn: 'โรงแรม', temple: 'วิหาร', forge: 'โรงตีเหล็ก', square: 'ลานกลางหมู่บ้าน', shop: 'ร้านค้า', healer: 'บ้านหมอยา', guild: 'สมาคมนักผจญภัย' };
     const startVisit = () => {
       const a = people.get(OWNER);

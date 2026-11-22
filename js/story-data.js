@@ -4,7 +4,7 @@
 (function(root){'use strict';
 const B={houseFront:'assets/new-game-prologue/images/hero-house.webp',home:'assets/home.webp',market:'assets/market.webp',work:'assets/workshop.webp',anvil:'assets/forge.webp',camp:'assets/camp.webp',
  forest:'assets/scenes/area-forest.webp',mine:'assets/scenes/area-mine.webp',ruins:'assets/scenes/area-ruins.webp'};
-const ally=()=>{try{const c=(s.village.party||[]).find(x=>x.key!=='sib');const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,portrait:'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
+const ally=()=>{try{const c=(s.village.party||[]).find(x=>x.key!=='sib');const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,bust:c.key,portrait:root.StoryActors?.facePic(c.key,{},'neutral')||'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
 const SPEAKERS={
  hero:{name:()=>{try{return s.village.heroName||'นักผจญภัย'}catch{return 'นักผจญภัย'}},portrait:'assets/cards/portraits/u-hero.webp'},
  sib:{name:()=>{try{return s.village.siblingName||'น้อง'}catch{return 'น้อง'}},color:'#5a6a8a'},   /* v98.230 · the other hero: elder BROTHER (male look) / younger SISTER (female look) — same name/portrait logic as hero, see story-actors sibSet */
@@ -23,7 +23,7 @@ const SPEAKERS={
  kier:{name:'เคียร์',color:'#3d6b6b',portrait:'assets/cards/portraits/u-kier.webp'},
  vera:{name:'เวร่า · ร้านค้า',color:'#6a5a8a'},
  boss:{name:'หัวหน้าโจรป่า',portrait:'assets/cards/portraits/en-bandit.webp'},
- ally:{name:()=>ally()?.name||'เพื่อนร่วมทาง',portrait:()=>ally()?.portrait||null,color:'#3d6b6b'}};
+ ally:{name:()=>ally()?.name||'เพื่อนร่วมทาง',bust:()=>ally()?.bust||null,portrait:()=>ally()?.portrait||null,color:'#3d6b6b'}};
 
 const SCENES={
  opening:{card:{kicker:'บทที่ 1',title:'สามวันก่อนเทศกาล'},bg:B.home,pan:'in',tint:'',fx:['motes'],lines:[

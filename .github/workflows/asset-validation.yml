@@ -1,0 +1,28 @@
+name: Validate village art integration
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          for file in js/*.js; do node --check "$file" || exit 1; done
+      - name: Run repository checks
+        run: |
+          failed=0
+          for file in tools/test-*.cjs; do
+            echo "::group::$file"
+            node "$file" || failed=1
+            echo "::endgroup::"
+          done
+          exit "$failed"

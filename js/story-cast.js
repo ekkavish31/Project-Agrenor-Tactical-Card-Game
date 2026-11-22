@@ -244,6 +244,7 @@
     /* v98.586 · the lead and the other sibling by the look the player chose (was always the brother) */
     if (id === 'hero' || id === 'sib') { const fem = (() => { try { return root.HeroVariant?.get?.() === 'female' } catch (e) { return false } })(), me = id === 'hero' ? fem : !fem, m = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'sad', calm: 'calm' })[emotion] || 'neutral';
       return { src: `assets/portraits/hero-${me ? 'female' : 'male'}-${m}.webp`, pos: '50% 4%', size: '230%' } }
+    if (['clerk', 'vera', 'boss'].includes(id)) return { src: 'assets/generated-village/' + id + '.png', pos: '50% 4%', size: '200%' };
     if (id === 'mip') return { src: 'assets/ui/mip-sheet.webp?v=2', pos: '0% 50%', size: '1200% auto' };
     if (['corvin', 'helga', 'darren', 'mierris', 'lorrik', 'serrien', 'irene', 'vik'].includes(id)) {
       const mood = ({ happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry' })[emotion] || 'neutral';
