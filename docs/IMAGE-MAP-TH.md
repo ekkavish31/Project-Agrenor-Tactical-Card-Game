@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 5979 ไฟล์ (436.3 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6064 ไฟล์ (439.7 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -24,7 +24,7 @@
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 454 | 27.8 MB | `assets/tactics` 446 · `assets/objects` 7 · `assets/generated-village` 1 | 421 | 33 |
 | 🃏 การ์ด | 168 | 44.0 MB | `assets/cards` 166 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 156 | 16 |
 | 🎛 UI · ไอคอน · เมนู | 243 | 8.6 MB | `assets/ui` 120 · `assets/icons` 82 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 90 | 11 |
-| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 224 | 22.4 MB | `assets/village-town` 209 · `assets/objects` 15 | 12 | 8 |
+| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 304 | 24.1 MB | `assets/village-town` 289 · `assets/objects` 15 | 12 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 108 | 7.0 MB | `assets/terrain` 77 · `assets/world` 27 · `assets/v03` 4 | 4 | 2 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
@@ -32,7 +32,7 @@
 | 🎒 ไอเทม · อาวุธ · พืชผล | 61 | 5.3 MB | `assets/crops` 36 · `assets/weapons` 7 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 25 | 1 |
 | 📖 เปิดเรื่อง · อินโทร · ฉาก | 33 | 52.7 MB | `assets/new-game-prologue` 17 · `assets/intro` 10 · `assets/generated-village` 6 | 6 | 0 |
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
-| 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 243 | 18.8 MB | `assets/_versions` 243 | 0 | 47 |
+| 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 248 | 20.5 MB | `assets/_versions` 248 | 0 | 47 |
 | 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 42 | 6.9 MB | `archive/old-scene` 31 · `_archive/undefined-bg` 2 · `adjbox.png` 1 · `art-production/facing-arrows-4.png` 1 | 0 | 12 |
 
 ## หมวดย่อยในแต่ละหมวด
@@ -91,7 +91,7 @@
 - UI / เคอร์เซอร์ — 8
 
 ### 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง
-- ภาพหมู่บ้านอื่น ๆ — 128
+- ภาพหมู่บ้านอื่น ๆ — 208
 - ของตกแต่ง — 33
 - ขอบ — 24
 - วัตถุ · รั้ว · บ้านจาก Workshop — 15
@@ -127,7 +127,7 @@
 - แผนที่โลกที่เจ้าของวาด — 5
 
 ### 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน)
-- ประวัติของ slot — 243
+- ประวัติของ slot — 248
 
 ### 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง
 - archive — 31
