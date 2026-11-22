@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.958';
+  const V = '98.959';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1548,14 +1548,14 @@
     }
   }
   /* procedural action poses (code instead of pictures): lean back on windup, lunge + sword arc on strike, recoil on hit, crouch on guard, fall on down */
-  /* v98.956 · READY STANCE (our side only — heroes and friends, not monsters): a fighter whose turn has not come (idle · alive · not the one acting · no sleep / freeze / bind) stands in the "เตรียมโจมตี" (windup) pose instead of the relaxed idle,
+  /* v98.956 · READY STANCE (our side only — heroes and friends, not monsters): a fighter that is just standing (idle · alive · no sleep / freeze / bind) — waiting OR on its own turn stands in the "เตรียมโจมตี" (windup) pose instead of the relaxed idle,
      and that stance moves by itself: a knee-bounce, breathing, a slow sway and a weapon tip that wobbles — each fighter on its own phase (by id) so the line does not move in step.
      Implemented by drawUnit(): while a ready fighter is drawn, u.pose = 'windup' and u._rdy = true, restored right after; nothing in the rules sees it. */
   function isReady(u) {
     try {
       if (!st || st.outcome || !FB || u.side !== 'hero' || u.hp <= 0 || u.walking || u.mipForm || (u.pose && u.pose !== 'idle')) return false;   /* our side only (owner 22 Nov: monsters stay in their idle) */
       if (u.sts && (u.sts.sleep || u.sts.freeze || u.sts.bind || u.sts.stun) || u.stun) return false;
-      return u !== FB.actor(st);
+      return true;   /* v98.959 · also the one whose turn it is (owner 22 Nov) — any fighter on our side that is just standing */
     } catch (e) { return false }
   }
   function readyMotion(u, t, still) {
