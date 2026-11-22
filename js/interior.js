@@ -1032,7 +1032,7 @@
     .visit .in-dlg-bg{background:linear-gradient(#0000 45%,#000b)}
     .visit .in-dlg{width:min(980px,100%);grid-template-columns:170px 1fr}.visit .in-dlg canvas{width:160px;height:190px}`;
     document.head.append(st); document.documentElement.classList.add('visit');
-    const bgv = document.createElement('div'); bgv.id = 'visitBg'; bgv.className = 'painted'; bgv.innerHTML = '<div class="wall"></div><div class="glow"></div><div class="win l"></div><div class="win r"></div><div class="door"></div><div class="step"></div><h1></h1>'; bgv.querySelector('h1').textContent = NAME; document.body.prepend(bgv);
+    const bgv = document.createElement('div'); bgv.id = 'visitBg'; const doorImage = window.VillagePaintedArt?.image('assets/generated-village/door.png'); if (doorImage?.complete && doorImage.naturalWidth) bgv.className = 'painted'; else doorImage?.addEventListener('load', () => { bgv.className = 'painted' }, { once: true }); bgv.innerHTML = '<div class="wall"></div><div class="glow"></div><div class="win l"></div><div class="win r"></div><div class="door"></div><div class="step"></div><h1></h1>'; bgv.querySelector('h1').textContent = NAME; document.body.prepend(bgv);
     const WHERE = { market: 'ตลาด', inn: 'โรงแรม', temple: 'วิหาร', forge: 'โรงตีเหล็ก', square: 'ลานกลางหมู่บ้าน', shop: 'ร้านค้า', healer: 'บ้านหมอยา', guild: 'สมาคมนักผจญภัย' };
     const startVisit = () => {
       const a = people.get(OWNER);

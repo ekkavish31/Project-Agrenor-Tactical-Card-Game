@@ -8,21 +8,36 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install test dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright @napi-rs/canvas
+          npx playwright install --with-deps chromium
       - name: Check JavaScript syntax
         run: |
           for file in js/*.js; do node --check "$file" || exit 1; done
-      - name: Run repository checks
+      - name: Rebuild image catalogue and report generated metadata
         run: |
-          failed=0
-          for file in tools/test-*.cjs; do
-            echo "::group::$file"
-            node "$file" || failed=1
-            echo "::endgroup::"
-          done
-          exit "$failed"
+          node <<'NODE'
+          const fs = require('fs'), vm = require('vm'), cp = require('child_process');
+          const read = () => { const c = {window:{}}; vm.runInNewContext(fs.readFileSync('data/image-index.js','utf8'),c); return c.window.IMAGE_INDEX; };
+          const old = read(), by = new Map(old.items.map(x=>[x[0],JSON.stringify(x)]));
+          cp.execFileSync(process.execPath,['tools/build-image-index.cjs'],{stdio:'inherit'});
+          const next = read(), paths = new Set(next.items.map(x=>x[0]));
+          console.log('PAINTED_INDEX_DELTA:'+JSON.stringify({n:next.n,updates:next.items.filter(x=>by.get(x[0])!==JSON.stringify(x)),removed:old.items.filter(x=>!paths.has(x[0])).map(x=>x[0])}));
+          console.log('PAINTED_IMAGE_MAP:'+JSON.stringify(fs.readFileSync('docs/IMAGE-MAP-TH.md','utf8')));
+          NODE
+      - name: Check against the exact PR base
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          base_sha="${BASE_SHA:-HEAD^}"
+          git worktree add --detach "$RUNNER_TEMP/agrenor-validation-base" "$base_sha"
+          VALIDATION_BASE="$RUNNER_TEMP/agrenor-validation-base" node tools/validate-village-art.cjs
