@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th"><head><meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="th"><head><script src="js/editor-ui-memory.js?v=v98.945"></script><meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Scale Lineup · เทียบสเกลตัวละคร</title>
 <link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/editor-store.js?v=v98.894"></script><script src="js/key-layout.js?v=1"></script><link rel="stylesheet" href="css/town-font.css">
 <style>
@@ -1215,5 +1215,4 @@ window.dockGoto = async ({ id, action, view, frame = 0, open = 'ratio' }) => { V
 /* v98.470 · show which version this page runs (the live game-version.js, never from cache) + the scale data it loaded, so an old cached page is obvious */
 fetch('js/game-version.js', { cache: 'no-store' }).then(r => r.text()).then(t => { const v = (t.match(/v:\s*'([^']+)'/) || [])[1] || '?', el = document.getElementById('lineupVer'); if (el) el.textContent = '· ' + v + ' · หน้า ' + LINEUP_BUILD + ' · ข้อมูลสเกล ' + Object.keys(SAVED.global || {}).length + ' ตัว' + (SAVED.pose ? ' + ท่า' : '') }).catch(() => { });
 build().then(() => { ready = true; viewCtl(); render(); wireStudio(); window.__lineupReady = true; $('lineupLoadState').hidden=true }).catch(err=>{console.error('Scale Lineup load failed',err);window.lineupLoading('โหลด Scale Lineup ไม่สำเร็จ: '+err.message,true)});
-</script><script src="js/editor-ui-memory.js?v=v98.943"></script>
-</body></html>
+</script></body></html>

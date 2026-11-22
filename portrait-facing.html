@@ -1,4 +1,4 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · ทิศหน้า Portrait</title>
+<!doctype html><html lang="th"><head><script src="js/editor-ui-memory.js?v=v98.945"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · ทิศหน้า Portrait</title>
 <link rel="stylesheet" href="css/thai-font.css?v=1">
 <style>
 :root{--bg:#171a16;--panel:#20251f;--line:#3a4236;--text:#ece6d4;--muted:#a8a58f;--gold:#d9a441}
@@ -44,5 +44,4 @@ document.getElementById('reset').onclick = () => { if (confirm('ล้างค�
 document.getElementById('pushBtn').onclick = async () => { const m = document.getElementById('msg'), G = window.GitHubPush; if (!G) { m.textContent = 'ไม่พบระบบ Push'; return } if (!G.config().token) return G.openSettings();
   try { const t = await G.pushSettings([PF.KEY], 'ทิศหน้า Portrait'); m.textContent = String(t || 'ใส่แล้ว') } catch (err) { m.textContent = 'ไม่สำเร็จ: ' + err.message } };
 paint();
-</script><script src="js/editor-ui-memory.js?v=v98.943"></script>
-</body></html>
+</script></body></html>

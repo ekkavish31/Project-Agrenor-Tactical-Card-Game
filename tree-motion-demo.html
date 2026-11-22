@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="th">
-<head>
+<head><script src="js/editor-ui-memory.js?v=v98.945"></script>
 <meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agrenor — Tree Code Motion Test</title>
@@ -31,6 +31,5 @@ const amp=document.getElementById('amp'), speed=document.getElementById('speed')
 function update(){const a=Number(amp.value),s=Number(speed.value);canopy.style.setProperty('--sway',a+'deg');canopy.style.animationDuration=s+'s';document.getElementById('ampValue').textContent=a.toFixed(1)+'°';document.getElementById('speedValue').textContent=s.toFixed(1)+' วินาที';}
 amp.addEventListener('input',update);speed.addEventListener('input',update);toggle.addEventListener('click',()=>{stage.classList.toggle('paused');toggle.textContent=stage.classList.contains('paused')?'เล่นต่อ':'หยุด / เล่น';});update();
 </script>
-<script src="js/editor-ui-memory.js?v=v98.943"></script>
 </body>
 </html>

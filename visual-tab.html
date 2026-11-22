@@ -1,4 +1,4 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · Visual (Editor)</title>
+<!doctype html><html lang="th"><head><script src="js/editor-ui-memory.js?v=v98.945"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · Visual (Editor)</title>
 <style>html,body{height:100%;margin:0;background:#111;color:#eee;font:13px AgThai,system-ui,"Noto Sans Thai",sans-serif}body{display:flex;flex-direction:column}
 nav{display:flex;gap:6px;padding:5px 8px;background:#0c0e0b;border-bottom:1px solid #333}nav button{font:inherit;color:#eee;background:#252b22;border:1px solid #3a4236;border-radius:8px;padding:5px 14px;cursor:pointer}nav button[aria-pressed=true]{background:#d9a441;color:#241a07;font-weight:700;border-color:#d9a441}
 main{flex:1;position:relative}iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#111}iframe[hidden]{display:none}</style></head><body>
@@ -8,5 +8,4 @@ main{flex:1;position:relative}iframe{position:absolute;inset:0;width:100%;height
 <script src="js/editor-store.js?v=v98.894"></script><script>const SRC={vfx:'vfx-kit-preview.html',hud:'hud-tab.html'};const m=document.getElementById('m');let last='vfx';try{last=localStorage.getItem('visual-tab-sub')||'vfx'}catch(e){}if(!SRC[last])last='vfx';
 function show(id){last=id;try{localStorage.setItem('visual-tab-sub',id)}catch(e){}document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
  for(const f of m.children)f.hidden=f.dataset.id!==id;if(!m.querySelector('[data-id="'+id+'"]')){const f=document.createElement('iframe');f.dataset.id=id;f.src=SRC[id]+(location.search||'');m.append(f)}}
-document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.id)};show(last);</script><script src="js/editor-ui-memory.js?v=v98.943"></script>
-</body></html>
+document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.id)};show(last);</script></body></html>
