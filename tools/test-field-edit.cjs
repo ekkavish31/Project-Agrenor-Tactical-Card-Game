@@ -12,11 +12,15 @@ let bad = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); if (
   const q = encodeURIComponent, URL = BASE + 'battle-field.html?battle=1&embed=1&edit=1&warm=1&cine=0&r=5&night=0&biome=grass&seed=4242&ms=' + q('wolf*1.2,bandit*1.2') + '&party=' + q('sib:50:50:charge:1,luna:44:44:charge:1');
   await p.goto(URL); await p.waitForTimeout(7000);
   ok(await p.evaluate(() => !!window.FieldEdit && !!document.getElementById('fePanel')), 'edit panel is there');
+  /* Freeze the follow camera before measuring pointer coordinates. A target cell
+     must also own its visible top face; a taller foreground tile can cover it. */
+  await p.evaluate(() => cv.dispatchEvent(new WheelEvent('wheel', { deltaY: 0, clientX: innerWidth / 2, clientY: innerHeight / 2 })));
+  await p.waitForTimeout(100);
   /* screen position of a world point */
   const scr = (u, v) => p.evaluate(([u, v]) => { const pt = project(u, v), k = scale * zoom, r = cv.getBoundingClientRect(); return { x: r.left + W / 2 + pan.x + (pt.x - WORLD_W / 2) * k, y: r.top + H / 2 + pan.y + (pt.y - WORLD_H / 2) * k } }, [u, v]);
   const unitBefore = await p.evaluate(() => { const u = TownBattle.state().units.find(x => x.id === 'ally1'); return { u: u.u, v: u.v } });
   /* find a free target cell next to the unit */
-  const target = await p.evaluate(({ u, v }) => { for (const [du, dv] of [[1, 0], [0, 1], [-1, 0], [0, -1], [2, 0], [0, 2]]) { const c = FIELD.cells.get(FIELD.key(u + du, v + dv)); if (c && c.k !== 'blocked' && !c.big && !TownBattle.state().units.some(x => x.u === u + du && x.v === v + dv)) return { u: u + du, v: v + dv } } return null }, unitBefore);
+  const target = await p.evaluate(({ u, v }) => { for (const [du, dv] of [[1, 0], [0, 1], [-1, 0], [0, -1], [2, 0], [0, 2]]) { const c = FIELD.cells.get(FIELD.key(u + du, v + dv)); if (c && c.k !== 'blocked' && !c.big && !TownBattle.state().units.some(x => x.u === u + du && x.v === v + dv)) { const pt = project(u + du + .5, v + dv + .5), hit = FieldHeight.hit(pt.x, pt.y - 4 / (scale * zoom)); if (hit && hit.u === u + du && hit.v === v + dv) return { u: u + du, v: v + dv } } } return null }, unitBefore);
   ok(!!target, 'a free cell exists next to the unit');
   const a = await scr(unitBefore.u + .5, unitBefore.v + .5), t = await scr(target.u + .5, target.v + .5);
   await p.mouse.move(a.x, a.y - 30); await p.mouse.down(); await p.mouse.move((a.x + t.x) / 2, (a.y + t.y) / 2, { steps: 4 }); await p.mouse.move(t.x, t.y - 4, { steps: 4 }); await p.mouse.up(); await p.waitForTimeout(200);
