@@ -136,6 +136,11 @@
   async function reviewSync(cks, on) { const U = root.StudioUnifiedReview; if (!U?.setVerdictMany) return; const ids = [...new Set(cks.flatMap(clipIdsOf))]; if (!ids.length) return; try { await U.setVerdictMany(ids, on ? 'approved' : 'unreviewed') } catch (e) { console.warn('pose-sheet review sync', e) } }
   const changed = ck => { const r = peek(ck), c = cur?.cells[ck]; return !!(r && c && r.fp && r.fp !== c.fp) };
   const off = ck => { const r = peek(ck); return [r?.ox || 0, r?.oy || 0] };
+  /* v98.937 · ROTATION of a pose (degrees, + = clockwise): kept per pose like the move (r.rot), previewed live, baked into the pictures + the datum points with the Cart. The pivot = the centre of the figure's visible pixels (display orientation, cached per picture). */
+  const rotOf = ck => peek(ck)?.rot || 0, pending = ck => { const [x, y] = off(ck); return !!(x || y || rotOf(ck)) };
+  const pivOf = ck => { const c = cur?.cells[ck]; if (!c?.img) return [SRC / 2, SRC / 2]; if (c._pv && c._pvk === c.fp) return c._pv; let r = [SRC / 2, SRC / 2]; try { const cv = document.createElement('canvas'); cv.width = cv.height = SRC; const q = cv.getContext('2d', { willReadFrequently: true }); if (c.flip) { q.translate(SRC, 0); q.scale(-1, 1) } q.drawImage(c.img, 0, 0, SRC, SRC); const d = q.getImageData(0, 0, SRC, SRC).data; let x0 = SRC, y0 = SRC, x1 = -1, y1 = -1; for (let y = 0; y < SRC; y++) for (let x = 0; x < SRC; x++) if (d[(y * SRC + x) * 4 + 3] > 40) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y } if (x1 >= 0) r = [(x0 + x1) / 2, (y0 + y1) / 2] } catch (e) { } c._pv = r; c._pvk = c.fp; return r };
+  const rotPt = (ck, p, sign = 1) => { const th = rotOf(ck) * Math.PI / 180 * sign; if (!th) return p; const [cx, cy] = pivOf(ck), c = Math.cos(th), s2 = Math.sin(th), x = p[0] - cx, y = p[1] - cy; return [cx + x * c - y * s2, cy + x * s2 + y * c] };
+  function setRot(ck, v) { if (isLocked(ck)) { flash(LOCKMSG); return } const r = recOf(ck); r.rot = Math.max(-180, Math.min(180, Math.round(v * 10) / 10)) || 0; if (!r.rot) delete r.rot; write(KEY, DATA); draw(); status() }
   function counts() { if (!cur) return { ok: 0, all: 0 }; const ks = Object.keys(cur.cells); return { ok: ks.filter(okOf).length, all: ks.length } }
 
   /* ---------- numbers of a pose ---------- */
@@ -202,7 +207,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #poseSheet .ps-rl{background:#edf0e6;font-weight:700;font-size:12.5px;padding:8px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;border-right:1px solid #d6dccb}
 #poseSheet .ps-c{position:relative;border-right:1px solid #e6e9df;border-bottom:1px solid #e6e9df}#poseSheet .ps-c.act{box-shadow:inset 0 0 0 2px #2f5d46}
 #poseSheet .ps-c canvas{display:block;cursor:crosshair}body.ps-hand #poseSheet .ps-c canvas{cursor:grab}body.ps-sel #poseSheet .ps-c canvas{cursor:default}#poseSheet .ps-c .ctl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;padding:4px;font-size:12px}
-#poseSheet .ps-c .ctl button{border:1px solid #ccd3bd;background:#fff;border-radius:6px;padding:1px 7px;font:inherit;cursor:pointer}#poseSheet .ps-c .ctl input[type=number]{width:54px;font:inherit;text-align:right}
+#poseSheet .ps-c .ctl button{border:1px solid #ccd3bd;background:#fff;border-radius:6px;padding:1px 7px;font:inherit;cursor:pointer}#poseSheet .ps-c .ctl input[type=number]{width:54px;font:inherit;text-align:right}#poseSheet .ps-c .ctl .rot{display:inline-flex;align-items:center;gap:2px}#poseSheet .ps-c .ctl .rot input{width:48px}
 #poseSheet .ps-c .ctl label{display:flex;gap:3px;align-items:center;cursor:pointer}#poseSheet .ps-c .ctl .ok{color:#1f7a4d;font-weight:700}#poseSheet .ps-c .ctl .chg{color:#b5530b}#poseSheet .ps-c .ctl .mv{color:#8a4b06;font-weight:700}
 #poseSheet .vals{width:100%;font-size:11.5px;border-collapse:collapse;margin:0 0 4px}#poseSheet .vals td{padding:1px 6px;border-top:1px solid #eef0e6}#poseSheet .vals td:nth-child(2),#poseSheet .vals td:nth-child(3){text-align:right}
 #poseSheet .vals i{font-style:normal;font-weight:700;margin-left:4px}#poseSheet .vals i.ok{color:#1f7a4d}#poseSheet .vals i.warn{color:#b5530b}#poseSheet .vals i.bad{color:#c92a2a}#poseSheet .dim{color:#9aa18f;font-size:11.5px;padding:2px 6px}
@@ -237,8 +242,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* ---------- geometry: image point → frame (offset, size about the ground point) → screen ---------- */
   const cwid = () => Math.round((SRC + 2 * PAD) * Z);
   const kOf = c => sizeOf(cur.id, c.pose, c.dir);
-  const toFrame = (c, ck, x, y) => { const [ox, oy] = off(ck), k = kOf(c); return [GX + (x + ox - GX) * k, GY + (y + oy - GY) * k] };
-  const fromFrame = (c, ck, fx, fy) => { const [ox, oy] = off(ck), k = kOf(c); return [GX + (fx - GX) / k - ox, GY + (fy - GY) / k - oy] };
+  const toFrame = (c, ck, x, y) => { const [ox, oy] = off(ck), k = kOf(c); [x, y] = rotPt(ck, [x, y]); return [GX + (x + ox - GX) * k, GY + (y + oy - GY) * k] };
+  const fromFrame = (c, ck, fx, fy) => { const [ox, oy] = off(ck), k = kOf(c); return rotPt(ck, [GX + (fx - GX) / k - ox, GY + (fy - GY) / k - oy], -1) };
   const sc = (fx, fy) => [(PAD + fx) * Z, (PAD + fy) * Z];
   const unsc = (sx, sy) => [sx / Z - PAD, sy / Z - PAD];
   const ptr = (cv, ev) => { const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left) * cv.width / r.width, (ev.clientY - r.top) * cv.height / r.height] };
@@ -249,7 +254,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function draw() {
     const ps = $('poseSheet'); if (!ps || !document.body.classList.contains('sheet-mode')) return;
     if (!cur) { if (ps.querySelector('.ps-app')) SCROLLMEM = scrollNow(ps); ps.innerHTML = '<div class="ps-msg">เลือกตัวละครจากแถว ⚖ Scale Lineup ด้านบน หรือจากรายการ Animation</div>'; return }
-    const HID = hidSet(), cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(ck => off(ck)[0] || off(ck)[1]).length, W = cwid();
+    const HID = hidSet(), cells = cur.cells, nd = draftCount(), moved = Object.keys(cells).filter(pending).length, W = cwid();
     /* v98.742 · LAYOUT: a sticky TOP BAR (name · next point · the tools used all the time) + a sticky SIDE BAR (the 12 points, the selected pose, the other tools) + the edit ZONE. ⛶ = full screen: only these three. */
     const mkDirty = marksDirty();
     const swatches = `${RUL.lines.map((l, i) => `<span class="sw" data-rc="l${i}" style="background:${l.c}" title="เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}${RUL.meas.map((m, i) => `<span class="sw" data-rc="m${i}" style="background:${m.c};border-radius:3px" title="ตัววัด · เปลี่ยนสี · ดับเบิลคลิกลบ"></span>`).join('')}`;
@@ -279,7 +284,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         h += `<div class="ps-c${act === ck ? ' act' : ''}${ok ? ' locked' : ''}" data-ck="${ck}" style="--pz:${Math.round(PAD * Z)}px"><canvas width="${W}" height="${W}" aria-label="${pose} ${dir}"></canvas><div class="ctl">
           <button type="button" data-k="-1" title="เล็กลง 1%" ${ok ? 'disabled' : ''}>−1%</button><input data-in type="number" step="0.5" min="30" max="250" value="${(k * 100).toFixed(1)}" aria-label="ขนาด %" ${ok ? 'disabled' : ''}><button type="button" data-k="1" title="ใหญ่ขึ้น 1%" ${ok ? 'disabled' : ''}>+1%</button>
           <label class="${ok ? 'ok' : ''}" title="${ok ? 'ท่านี้ล็อกอยู่ — เอาติ๊กออกเพื่อแก้' : 'ติ๊ก = ตรวจแล้ว และล็อกท่านี้กันแก้พลาด'}"><input type="checkbox" data-ok ${ok ? 'checked' : ''}>${ok ? '🔒 ล็อกแล้ว' : '🔓 ล็อก'}</label>${chg ? '<span class="chg" title="ภาพของท่านี้เปลี่ยนหลังวางจุด/ติ๊ก — ติ๊กหลุดแล้ว">ภาพเปลี่ยน</span>' : ''}
-          <button type="button" data-b="snap" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น" ${ok ? 'disabled' : ''}>⤓ พื้น</button>${ox || oy ? `<span class="mv" title="ย้ายแล้ว ยังไม่บันทึก">ย้าย ${ox},${oy}</span>` : ''}</div>${valsHtml(ck)}</div>`;
+          <button type="button" data-b="snap" title="เลื่อนภาพให้จุดเท้าอยู่ที่จุดพื้น" ${ok ? 'disabled' : ''}>⤓ พื้น</button><span class="rot" title="หมุนภาพทั้งท่า (องศา · + = ตามเข็มนาฬิกา) หมุนรอบกึ่งกลางตัว · จุด datum หมุนตาม"><button type="button" data-r="-1" ${ok ? 'disabled' : ''} title="หมุนทวนเข็ม 1°">⟲</button><input data-rin type="number" step="0.5" min="-180" max="180" value="${rotOf(ck)}" aria-label="หมุน องศา" ${ok ? 'disabled' : ''}>°<button type="button" data-r="1" ${ok ? 'disabled' : ''} title="หมุนตามเข็ม 1°">⟳</button></span>${ox || oy || rotOf(ck) ? `<span class="mv" title="ย้าย/หมุนแล้ว ยังไม่บันทึก">${ox || oy ? 'ย้าย ' + ox + ',' + oy : ''}${rotOf(ck) ? ' หมุน ' + rotOf(ck) + '°' : ''}</span>` : ''}</div>${valsHtml(ck)}</div>`;
       }
     }
     h += `</div><div class="ps-msg" id="psMsg" role="status">${tool === 'dset' ? 'โหมด ⬚: ลากในช่องเพื่อย้ายจุด datum ทั้งชุดของท่านั้น (ภาพอยู่ที่เดิม)' : tool === 'hand' ? 'โหมด ✋: ลากภาพในช่องเพื่อย้าย' : 'คลิกบนภาพเพื่อวาง <b>' + STEP[step][1] + '</b> · ลากจุดเพื่อย้าย · ลูกศร = ขยับจุดที่เลือก 1 px · Delete = ลบจุด'} · กรอบแดง = ภาพจริง 384×384 (ขอบนอกกรอบจะถูกตัดตอนบันทึก) · เส้นเขียว = เส้นพื้น</div></div></div>`;
@@ -445,15 +450,16 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     /* the ground line */ { const [, y] = sc(0, GY); line(0, y + .5, W, y + .5, '#6fa16f', 1.2) }
     if (RUL.center) { const [x] = sc(GX, 0); line(x + .5, 0, x + .5, W, '#7a7f6e', 1, [6, 5]) }
     /* the picture */
-    const drawImg = (img, flip, ax, ay, kk, alpha, silh) => {
+    const drawImg = (img, flip, ax, ay, kk, alpha, silh, rot) => {
       const x0 = GX + (ax - GX) * kk, y0 = GY + (ay - GY) * kk, [dx, dy] = sc(x0, y0), s = SRC * kk * Z; g.save(); g.globalAlpha = alpha;
+      if (rot) { const [pv0, pv1] = pivOf(ck), [px, py] = sc(x0 + pv0 * kk, y0 + pv1 * kk); g.translate(px, py); g.rotate(rot * Math.PI / 180); g.translate(-px, -py) }
       const src = silh ? silhouette(img, flip) : img; if (flip && !silh) { g.translate(dx + s, dy); g.scale(-1, 1); g.drawImage(src, 0, 0, s, s) } else g.drawImage(src, dx, dy, s, s); g.restore();
     };
     const idle = cur.cells['idle@SW'];
     /* v98.782 · the ghost = the standing SW pose (as before), or — on the lower row (NE) — the SAME pose of the row above (SW); "⇆ เงาสลับด้าน" mirrors it (flip about the ground point) */
     const gk = ghostKey(ck), gcell = cur.cells[gk];
     if (RUL.ghost && gcell?.img && ck !== gk) { const ia = anchorOf(gk) || [GX, GY], ki = kOf(gcell), mir = !!RUL.ghostFlip, iax = mir ? SRC - ia[0] : ia[0]; const ax = GX - iax * ki, ay = GY - ia[1] * ki; /* the ghost's origin so that its anchor sits on the ground point */ g.save(); const [dx, dy] = sc(ax, ay), s = SRC * ki * Z; g.globalAlpha = .38; g.drawImage(silhouette(gcell.img, !!gcell.flip !== mir), dx, dy, s, s); g.restore() }
-    if (c.img) { const prev = QA.ck === ck && QA.canvas; if (prev) drawImg(prev, false, ox, oy, k, 1, false); else drawImg(c.img, c.flip, ox, oy, k, 1, false); if (SHOW.zone && !prev) { const zo = zoneOver(ck); if (zo) drawImg(zo, false, ox, oy, k, 1, false) } } else { g.fillStyle = '#9aa18f'; g.font = '12px sans-serif'; g.textAlign = 'center'; g.fillText('กำลังโหลด…', W / 2, W / 2) }
+    if (c.img) { const prev = QA.ck === ck && QA.canvas; if (prev) drawImg(prev, false, ox, oy, k, 1, false, rotOf(ck)); else drawImg(c.img, c.flip, ox, oy, k, 1, false, rotOf(ck)); if (SHOW.zone && !prev) { const zo = zoneOver(ck); if (zo) drawImg(zo, false, ox, oy, k, 1, false, rotOf(ck)) } } else { g.fillStyle = '#9aa18f'; g.font = '12px sans-serif'; g.textAlign = 'center'; g.fillText('กำลังโหลด…', W / 2, W / 2) }
     /* the real 384 × 384 frame */ { const [x0, y0] = sc(0, 0); g.save(); g.strokeStyle = '#d9480f'; g.lineWidth = 1.5; g.strokeRect(x0 + .5, y0 + .5, SRC * Z, SRC * Z); g.restore() }
     /* rulers */
     if (RUL_UI && RUL.on) {
@@ -541,6 +547,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     ps.querySelectorAll('[data-rc]').forEach(b => { const t = b.dataset.rc[0], i = +b.dataset.rc.slice(1), a = t === 'l' ? RUL.lines : RUL.meas; b.onclick = () => { const o = a[i]; if (o) { o.c = RCOL[(RCOL.indexOf(o.c) + 1) % RCOL.length]; saveRul(); draw() } }; b.ondblclick = () => { a.splice(i, 1); saveRul(); draw() } });
     ps.querySelectorAll('.ps-c[data-ck]').forEach(el => {
       const ck = el.dataset.ck, c = cur.cells[ck], cv = el.querySelector('canvas');
+      el.querySelectorAll('[data-r]').forEach(b => b.onclick = () => setRot(ck, rotOf(ck) + (+b.dataset.r)));
+      { const ri = el.querySelector('[data-rin]'); if (ri) ri.onchange = () => setRot(ck, +ri.value || 0) }
       el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => setSize(cur.id, c.pose, c.dir, kOf(c) * (1 + (+b.dataset.k) / 100)));
       const inp = el.querySelector('[data-in]'); inp.onchange = () => { const v = +inp.value; if (v >= 30 && v <= 250) setSize(cur.id, c.pose, c.dir, v / 100) };
       el.querySelector('[data-ok]').onchange = ev => { const r = recOf(ck); r.ok = ev.target.checked; r.fp = c.fp; if (r.ok) mirrorToTwin(ck, true); write(KEY, DATA); draw(); status(); reviewSync([ck], r.ok) };
@@ -605,7 +613,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     write(KEY, DATA); return n;
   }
   function snap(ck, move) {
-    const an = anchorOf(ck); if (!an) return false; const r = recOf(ck); r.ox = Math.round(GX - an[0]); r.oy = Math.round(GY - an[1]); return true;
+    const an0 = anchorOf(ck); if (!an0) return false; const an = rotPt(ck, an0), r = recOf(ck); r.ox = Math.round(GX - an[0]); r.oy = Math.round(GY - an[1]); return true;
   }
 
   /* ---------- baking moves / adjusts into new pictures (every frame of the pose) ---------- */
@@ -617,17 +625,17 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   /* v98.759 · each pose is baked ON ITS OWN: a pose that cannot be baked (picture missing, or the move would push part of the figure out of the 384 × 384 frame) is SKIPPED with its reason, the others still go to the Cart.
      Before, one bad pose stopped all of them ("ไม่สำเร็จ: ตำแหน่งภาพ" and the number never went down). Returns { ok, err, skipped:[…] } */
   async function bakeMoves() {
-    const cells = Object.keys(cur.cells).filter(ck => { const [x, y] = off(ck); return x || y }); if (!cells.length) return { ok: true, skipped: [] };
+    const cells = Object.keys(cur.cells).filter(pending); if (!cells.length) return { ok: true, skipped: [] };
     msg('กำลังเตรียมภาพ…'); const items = [], done = [], skipped = [], nameOf = ck => { const c = cur.cells[ck]; return ((POSES.find(q => q[0] === c.pose) || [, c.pose])[1]) + ' ' + c.dir };
     for (const ck of cells) {
       try {
-        const c = cur.cells[ck], [ox, oy] = off(ck), sx = c.flip ? -ox : ox, clip = c.clip, frames = clip.frames, part = []; let lost = 0;
+        const c = cur.cells[ck], [ox, oy] = off(ck), sx = c.flip ? -ox : ox, clip = c.clip, frames = clip.frames, part = [], rot = rotOf(ck), pv = pivOf(ck), pf = c.flip ? [SRC - pv[0], pv[1]] : pv, ra = (c.flip ? -rot : rot) * Math.PI / 180; let lost = 0;
         for (const f of frames) {
           const img = await frameImg(f); if (!img) throw new Error('โหลดภาพไม่ได้');
-          const cv = document.createElement('canvas'); cv.width = cv.height = SRC; const g = cv.getContext('2d'); g.drawImage(img, sx, oy, SRC, SRC);
+          const cv = document.createElement('canvas'); cv.width = cv.height = SRC; const g = cv.getContext('2d'); if (rot) { g.translate(pf[0] + sx, pf[1] + oy); g.rotate(ra); g.imageSmoothingQuality = 'high'; g.drawImage(img, -pf[0], -pf[1], SRC, SRC) } else g.drawImage(img, sx, oy, SRC, SRC);
           /* any clearly visible pixel of the picture that would leave the frame? (the nearly transparent fringe does not count) */
           const tc = document.createElement('canvas'); tc.width = tc.height = SRC; const tg = tc.getContext('2d'); tg.drawImage(img, 0, 0, SRC, SRC); const d = tg.getImageData(0, 0, SRC, SRC).data;
-          for (let y = 0; y < SRC; y++) for (let x = 0; x < SRC; x++) if (d[(y * SRC + x) * 4 + 3] > 40) { const X = x + sx, Y = y + oy; if (X < 0 || X >= SRC || Y < 0 || Y >= SRC) lost++ }
+          if (rot) { let a0 = 0, a1 = 0; const dd = g.getImageData(0, 0, SRC, SRC).data; for (let i = 3; i < d.length; i += 4) { if (d[i] > 40) a0++; if (dd[i] > 40) a1++ } lost = Math.max(lost, Math.round(a0 - a1 * 1.0 - a0 * .02)) } else for (let y = 0; y < SRC; y++) for (let x = 0; x < SRC; x++) if (d[(y * SRC + x) * 4 + 3] > 40) { const X = x + sx, Y = y + oy; if (X < 0 || X >= SRC || Y < 0 || Y >= SRC) lost++ }
           part.push({ file: f.file, dataUrl: toURL(cv) });
         }
         if (lost > 60) throw new Error(`เมื่อเลื่อนแล้วมีส่วนของตัว ${lost} พิกเซลหลุดนอกกรอบ 384×384`);
@@ -637,7 +645,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (!done.length) { const err = 'ข้ามทุกท่าที่ย้าย — ' + skipped.join(' · '); msg('บันทึกตำแหน่งไม่สำเร็จ: ' + err); return { ok: false, err, skipped } }
     try {
       msg('กำลังบันทึก ' + items.length + ' ภาพ…'); await apply(items);
-      for (const ck of done) { const r = peek(ck), [ox, oy] = [r.ox || 0, r.oy || 0]; for (const k of Object.keys(r.p || {})) { const v = r.p[k]; r.p[k] = Array.isArray(v) && Array.isArray(v[0]) ? v.map(q => [q[0] + ox, q[1] + oy]) : Array.isArray(v) && typeof v[0] === 'number' ? [v[0] + ox, v[1] + oy] : v } r.ox = r.oy = 0; r.ok = false; r.fp = null }
+      for (const ck of done) { const r = peek(ck), [ox, oy] = [r.ox || 0, r.oy || 0], xf = q => { const t = rotPt(ck, q); return [Math.round((t[0] + ox) * 10) / 10, Math.round((t[1] + oy) * 10) / 10] }; for (const k of Object.keys(r.p || {})) { const v = r.p[k]; r.p[k] = Array.isArray(v) && Array.isArray(v[0]) ? v.map(xf) : Array.isArray(v) && typeof v[0] === 'number' ? xf(v) : v } r.ox = r.oy = 0; delete r.rot; r.ok = false; r.fp = null }
       write(KEY, DATA); msg('✔ บันทึกตำแหน่งภาพแล้ว ' + done.length + ' ท่า · รอกด “Push ที่แก้” / Cart' + (skipped.length ? ' · ข้าม ' + skipped.length + ' ท่า: ' + skipped.join(' · ') : '')); await new Promise(r => setTimeout(r, 400)); await load();
       return { ok: true, skipped };
     } catch (e) { const err = e.message || String(e); msg('บันทึกตำแหน่งไม่สำเร็จ: ' + err); return { ok: false, err, skipped } }
@@ -696,13 +704,13 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   function markSent() { try { localStorage.setItem('pose-sheet.cart-sig', sigOf(markSig())) } catch (e) { } }
   /* what the one Cart button will put in the Cart (live: the adjust on the selected pose counts too) */
   function cartPlan() {
-    const moved = Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length, nd = draftCount(), mk = marksDirty(), qa = !!(QA.ck && qaDirty());
+    const moved = Object.keys(cur?.cells || {}).filter(pending).length, nd = draftCount(), mk = marksDirty(), qa = !!(QA.ck && qaDirty());
     const parts = [qa ? 'ปรับสัดส่วน' : '', moved ? 'ตำแหน่ง ' + moved : '', nd ? 'ขนาด ' + nd : '', mk ? 'จุด/ติ๊ก' : ''].filter(Boolean), n = parts.length;
     return { moved, nd, mk, qa, n, text: '🛒 ใส่ Cart' + (n ? ' (' + parts.join(' · ') + ')' : ' · ไม่มีอะไรเปลี่ยน') };
   }
   async function cartAll() {
     const btn = $('psCartAll'); if (btn) btn.disabled = true; const done = [], fail = [], why = [], note = t => { const m = $('psCartMsg'); if (m) m.textContent = t };
-    const movedNow = () => Object.keys(cur?.cells || {}).filter(ck => { const [x, y] = off(ck); return x || y }).length;
+    const movedNow = () => Object.keys(cur?.cells || {}).filter(pending).length;
     /* v98.802 · saving a rebuilt / moved picture drops that pose's lock (its pixels changed) — but a pose that was ticked 🔒 when the Cart button was pressed stays locked: re-tick it on the NEW picture before the marks are pushed, so one press does it all */
     const wasOk = Object.keys(cur?.cells || {}).filter(okOf), relock = () => { const list = []; for (const ck of wasOk) { const r = peek(ck), c = cur?.cells[ck]; if (r && c?.fp && !(r.ok && r.fp === c.fp)) { r.ok = true; r.fp = c.fp; list.push(ck) } } if (list.length) write(KEY, DATA); return list };
     try {
