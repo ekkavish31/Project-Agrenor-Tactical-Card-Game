@@ -33,6 +33,10 @@ jobs:
           const next = read(), paths = new Set(next.items.map(x=>x[0]));
           console.log('Image catalogue: '+next.n+' files, '+next.items.filter(x=>by.get(x[0])!==JSON.stringify(x)).length+' refreshed rows');
           NODE
+      - name: Diagnose the field drag regression
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node tools/diagnose-art-field.cjs
       - name: Check against the exact PR base
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
