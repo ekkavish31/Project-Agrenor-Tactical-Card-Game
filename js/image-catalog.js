@@ -13,6 +13,10 @@
   };
   /* first match wins · [regex on the path, category, sub-category (string or fn(match))] */
   const RULES = [
+    [/^assets\/generated-village\/(clerk|vera|boss)\.png$/, 'portrait', 'ภาพสนทนาหมู่บ้าน'],
+    [/^assets\/generated-village\/vendors\.png$/, 'npc', 'พนักงานร้านและกิลด์ (atlas)'],
+    [/^assets\/generated-village\/farmprops\.png$/, 'village', 'ของฟาร์มและไอคอน (atlas)'],
+    [/^assets\/generated-village\//, 'story', 'ฉากสนทนาหมู่บ้าน'],
     [/^assets\/cursor\//, 'ui', 'เคอร์เซอร์เกม'],
     [/^assets\/_versions\//, 'versions', 'ประวัติของ slot'],
     [/^assets\/portraits\/story\//, 'portrait', 'ตัวละครเนื้อเรื่อง (4 อารมณ์)'],

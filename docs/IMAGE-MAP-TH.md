@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 5834 ไฟล์ (407.2 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 5894 ไฟล์ (433.1 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -16,12 +16,12 @@
 ## จำนวนต่อหมวดหมู่
 | หมวดหมู่ | ไฟล์ | ขนาด | โฟลเดอร์หลัก | ลงทะเบียน slot | ไฟล์ซ้ำ (เนื้อหาเหมือนกัน) |
 |---|---|---|---|---|---|
-| 🗣 ภาพสนทนา (portrait) | 136 | 13.1 MB | `assets/portraits` 136 | 0 | 4 |
-| 🧑‍🎤 ตัวเอก | 2869 | 104.0 MB | `assets/tactics` 2842 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2809 | 524 |
-| 👥 ชาวบ้าน / NPC | 332 | 12.7 MB | `assets/village-town` 332 | 220 | 23 |
+| 🗣 ภาพสนทนา (portrait) | 139 | 19.4 MB | `assets/portraits` 136 · `assets/generated-village` 3 | 3 | 4 |
+| 🧑‍🎤 ตัวเอก | 2917 | 104.9 MB | `assets/tactics` 2890 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2833 | 519 |
+| 👥 ชาวบ้าน / NPC | 333 | 13.7 MB | `assets/village-town` 332 · `assets/generated-village` 1 | 221 | 23 |
 | 🤝 เพื่อนร่วมทีม | 200 | 9.7 MB | `assets/tactics` 196 · `assets/allies` 4 | 200 | 16 |
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
-| ⚔ ท่าต่อสู้ในสนาม (tactics) | 452 | 26.8 MB | `assets/tactics` 445 · `assets/objects` 7 | 418 | 40 |
+| ⚔ ท่าต่อสู้ในสนาม (tactics) | 454 | 27.8 MB | `assets/tactics` 446 · `assets/objects` 7 · `assets/generated-village` 1 | 421 | 33 |
 | 🃏 การ์ด | 168 | 44.0 MB | `assets/cards` 166 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 156 | 16 |
 | 🎛 UI · ไอคอน · เมนู | 243 | 8.6 MB | `assets/ui` 120 · `assets/icons` 82 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 90 | 11 |
 | 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 144 | 20.8 MB | `assets/village-town` 129 · `assets/objects` 15 | 12 | 8 |
@@ -30,7 +30,7 @@
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
 | ✨ เอฟเฟกต์ | 68 | 4.0 MB | `assets/fx` 68 | 0 | 0 |
 | 🎒 ไอเทม · อาวุธ · พืชผล | 61 | 5.3 MB | `assets/crops` 36 · `assets/weapons` 7 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 25 | 1 |
-| 📖 เปิดเรื่อง · อินโทร · ฉาก | 27 | 36.1 MB | `assets/new-game-prologue` 17 · `assets/intro` 10 | 0 | 0 |
+| 📖 เปิดเรื่อง · อินโทร · ฉาก | 33 | 52.7 MB | `assets/new-game-prologue` 17 · `assets/intro` 10 · `assets/generated-village` 6 | 6 | 0 |
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
 | 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 238 | 17.2 MB | `assets/_versions` 238 | 0 | 47 |
 | 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 42 | 6.9 MB | `archive/old-scene` 31 · `_archive/undefined-bg` 2 · `adjbox.png` 1 · `art-production/facing-arrows-4.png` 1 | 0 | 12 |
@@ -40,15 +40,17 @@
 ### 🗣 ภาพสนทนา (portrait)
 - ตัวเอก · ชาวบ้าน — 104
 - ตัวละครเนื้อเรื่อง (4 อารมณ์) — 32
+- ภาพสนทนาหมู่บ้าน — 3
 
 ### 🧑‍🎤 ตัวเอก
-- ท่าตัวเอกที่นำเข้าจากสตูดิโอ — 2842
+- ท่าตัวเอกที่นำเข้าจากสตูดิโอ — 2890
 - ลุคตัวเอก (ชาย/หญิง) — 22
 - ตัวเอก (เดิม) — 3
 - ไอคอนสถานที่ / เบ็ดเตล็ด (ระดับบนสุดของ assets) — 2
 
 ### 👥 ชาวบ้าน / NPC
 - ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 332
+- พนักงานร้านและกิลด์ (atlas) — 1
 
 ### 🤝 เพื่อนร่วมทีม
 - ท่าของ bram — 24
@@ -67,9 +69,10 @@
 - มอนสเตอร์ (หน้า/หลัง) — 104
 
 ### ⚔ ท่าต่อสู้ในสนาม (tactics)
-- ท่าที่นำเข้าจากสตูดิโอ (idle/walk/ท่า) — 263
+- ท่าที่นำเข้าจากสตูดิโอ (idle/walk/ท่า) — 264
 - ท่าต่อสู้ · อาวุธในมือ — 182
 - วัตถุ · รั้ว · บ้านจาก Workshop — 7
+- ของฟาร์มและไอคอน (atlas) — 1
 
 ### 🃏 การ์ด
 - ภาพการ์ดยูนิต — 55
@@ -118,6 +121,7 @@
 
 ### 📖 เปิดเรื่อง · อินโทร · ฉาก
 - เปิดเรื่อง · อินโทร — 27
+- ฉากสนทนาหมู่บ้าน — 6
 
 ### 🗺 แผนที่โลกในเอกสาร (lore)
 - แผนที่โลกที่เจ้าของวาด — 5

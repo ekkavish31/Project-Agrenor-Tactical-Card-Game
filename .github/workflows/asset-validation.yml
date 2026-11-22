@@ -1,0 +1,42 @@
+name: Validate village art integration
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright @napi-rs/canvas
+          npx playwright install --with-deps chromium
+      - name: Check JavaScript syntax
+        run: |
+          for file in js/*.js; do node --check "$file" || exit 1; done
+      - name: Rebuild image catalogue
+        run: |
+          node <<'NODE'
+          const fs = require('fs'), vm = require('vm'), cp = require('child_process');
+          const read = () => { const c = {window:{}}; vm.runInNewContext(fs.readFileSync('data/image-index.js','utf8'),c); return c.window.IMAGE_INDEX; };
+          const old = read(), by = new Map(old.items.map(x=>[x[0],JSON.stringify(x)]));
+          cp.execFileSync(process.execPath,['tools/build-image-index.cjs'],{stdio:'inherit'});
+          const next = read(), paths = new Set(next.items.map(x=>x[0]));
+          console.log('Image catalogue: '+next.n+' files, '+next.items.filter(x=>by.get(x[0])!==JSON.stringify(x)).length+' refreshed rows');
+          NODE
+      - name: Check against the exact PR base
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          base_sha="${BASE_SHA:-HEAD^}"
+          git worktree add --detach "$RUNNER_TEMP/agrenor-validation-base" "$base_sha"
+          VALIDATION_BASE="$RUNNER_TEMP/agrenor-validation-base" node tools/validate-village-art.cjs ${{ github.event_name == 'workflow_dispatch' && '--all' || '' }}

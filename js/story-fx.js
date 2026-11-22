@@ -93,7 +93,7 @@ function setAuto(on){autoOn=on;try{localStorage.setItem('projectA.csAuto',on?'1'
 function ff(on){clearInterval(ffT);$('.cs-ff-btn')?.classList.toggle('on',!!on);if(!on||!curNext)return;ffT=setInterval(()=>{if(!curNext){clearInterval(ffT);return}if(!finishTyping())curNext()},110)}
 function logToggle(force){const L=$('.cs-log');if(!L)return false;const open=force??L.hidden;L.hidden=!open;if(open){clearTimeout(autoT);L.querySelector('.cs-log-list').innerHTML=history.map(h=>`<p>${h.name?`<b>${esc(h.name)}</b> `:''}${esc(h.text).replace(/\n/g,'<br>')}</p>`).join('');const li=L.querySelector('.cs-log-list');li.scrollTop=li.scrollHeight}else autoNext();return true}
 const SEG=(()=>{try{return new Intl.Segmenter('th',{granularity:'word'})}catch{return null}})();
-function speaker(who){const S=Cutscene.speakers[who]||{};const name=typeof S.name==='function'?S.name():S.name;return {name:name??(who==='hero'?heroName():who||''),portrait:typeof S.portrait==='function'?S.portrait():S.portrait,color:S.color||'#6b5a3a',look:S.look,bust:S.bust}}
+function speaker(who){const S=Cutscene.speakers[who]||{};const name=typeof S.name==='function'?S.name():S.name;return {name:name??(who==='hero'?heroName():who||''),portrait:typeof S.portrait==='function'?S.portrait():S.portrait,color:S.color||'#6b5a3a',look:S.look,bust:typeof S.bust==='function'?S.bust():S.bust}}
 function showLine(group){const line=group[0],box=$('.cs-box'),sp=speaker(line.who);box.hidden=false;clearTimeout(autoT);for(const g of group)history.push({name:g.who?sp.name:'',text:fill(g.text)});box.classList.toggle('cs-narr',!line.who);
  /* v95.20: half-body portraits left/right with faces, emotes, glow and moods (js/story-actors.js) */
  const hint=root.StoryActors?.line(el,line,sp)||{};if(hint.shake)shake(false);if(hint.flash)flash(hint.flash);
@@ -110,11 +110,11 @@ function finishTyping(){return !!T&&T.finish()}
 
 /* ---------------- play ---------------- */
 async function showCard(card){const c=$('.cs-card');c.querySelector('small').textContent=fill(card.kicker||'');c.querySelector('h2').textContent=fill(card.title||'');c.hidden=false;c.classList.remove('cs-in');void c.offsetWidth;c.classList.add('cs-in');await wait(reduced()?900:2300);c.classList.add('cs-out');await wait(reduced()?0:500);c.hidden=true;c.classList.remove('cs-out')}
-function applyLine(line){if(line.art)setArt(line.art);else if(line.bg){setArt(null);setBg(line.bg,line.pan)}if(line.tint!=null||line.fx)setLook({tint:line.tint,fx:line.fx??[...parts.kinds]});if(line.flash)flash(line.flash===true?null:line.flash);if(line.shake)shake(line.shake==='big');if(line.burst)burst(line.burst===true?{}:line.burst)}
-function play(scene){if(!scene)return Promise.resolve();if(playing)return playing.then(()=>play(scene));
+function applyLine(line){line=root.VillagePaintedArt?.scene(line)||line;if(line.art)setArt(line.art);else if(line.bg){setArt(null);setBg(line.bg,line.pan)}if(line.tint!=null||line.fx)setLook({tint:line.tint,fx:line.fx??[...parts.kinds]});if(line.flash)flash(line.flash===true?null:line.flash);if(line.shake)shake(line.shake==='big');if(line.burst)burst(line.burst===true?{}:line.burst)}
+function play(scene){if(!scene)return Promise.resolve();scene=root.VillagePaintedArt?.scene(scene)||scene;if(playing)return playing.then(()=>play(scene));
  build();playing=new Promise(async resolve=>{
   const lines=(scene.lines||[]).filter(l=>!l.lead||(l.lead==='sister')===leadFemale()).map(l=>l.who==='B'||l.who==='S'?{...l,who:roleWho(l.who)}:l);let i=-1,done=false,busy=false;
-  try{await root.StoryActors?.preload?.(lines,speaker)}catch(e){}   /* v98.621 · portraits are decoded before the scene opens */
+  try{await Promise.all([root.StoryActors?.preload?.(lines,speaker),root.VillagePaintedArt?.preload([scene.bg,...lines.map(l=>(root.VillagePaintedArt?.scene(l)||l).bg)])])}catch(e){}   /* v98.621 · portraits are decoded before the scene opens */
   el.hidden=false;root.StoryActors?.begin(el);document.body.classList.add('cs-open');parts.size();parts.start();
   setArt(scene.art);setBg(scene.bg,scene.pan,true);setLook({tint:scene.tint||'',fx:scene.fx||[]});$('.cs-box').hidden=true;
   requestAnimationFrame(()=>el.classList.add('cs-live'));

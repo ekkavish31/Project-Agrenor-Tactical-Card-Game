@@ -145001,6 +145001,179 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ]
+  },
+  {
+   "id": "scene-inn-dialogue",
+   "file": "assets/generated-village/inn.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "subject": "scene-inn-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1672,
+    941
+   ]
+  },
+  {
+   "id": "scene-guild-dialogue",
+   "file": "assets/generated-village/guild.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "subject": "scene-guild-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1672,
+    941
+   ]
+  },
+  {
+   "id": "scene-temple-dialogue",
+   "file": "assets/generated-village/temple.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "subject": "scene-temple-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1672,
+    941
+   ]
+  },
+  {
+   "id": "scene-healer-dialogue",
+   "file": "assets/generated-village/healer.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "subject": "scene-healer-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1672,
+    941
+   ]
+  },
+  {
+   "id": "scene-hilda-farm-dialogue",
+   "file": "assets/generated-village/farm.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "subject": "scene-hilda-farm-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1672,
+    941
+   ]
+  },
+  {
+   "id": "scene-house-door-dialogue",
+   "file": "assets/generated-village/door.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "subject": "scene-house-door-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1672,
+    941
+   ]
+  },
+  {
+   "id": "portrait-clerk-dialogue",
+   "file": "assets/generated-village/clerk.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "portrait-clerk-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1136,
+    1385
+   ]
+  },
+  {
+   "id": "portrait-vera-dialogue",
+   "file": "assets/generated-village/vera.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "portrait-vera-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1199,
+    1312
+   ]
+  },
+  {
+   "id": "portrait-bandit-boss-dialogue",
+   "file": "assets/generated-village/boss.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "portrait-bandit-boss-dialogue",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946"
+  },
+  {
+   "id": "village-vendors-atlas",
+   "file": "assets/generated-village/vendors.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "village-vendors-atlas",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1983,
+    793
+   ],
+   "atlas": {
+    "cols": 5,
+    "rows": 2,
+    "names": [
+     "m1",
+     "m2",
+     "m3",
+     "f1",
+     "f2",
+     "f3",
+     "g1",
+     "g2",
+     "g3",
+     "g4"
+    ]
+   }
+  },
+  {
+   "id": "village-farm-props-atlas",
+   "file": "assets/generated-village/farmprops.png",
+   "category": "tactics-props",
+   "status": "final",
+   "transparent": true,
+   "subject": "village-farm-props-atlas",
+   "usedIn": "ภาพแทนโค้ดหมู่บ้านและฉากสนทนา v98.946",
+   "size": [
+    1448,
+    1086
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 3,
+    "names": [
+     "weed",
+     "branch",
+     "rock",
+     "stump",
+     "fence",
+     "bin",
+     "plank",
+     "oldmap",
+     "chicken",
+     "sheep",
+     "cow",
+     "traveller"
+    ]
+   }
   }
  ],
  "studioReviews": {
