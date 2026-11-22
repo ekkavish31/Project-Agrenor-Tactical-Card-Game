@@ -464,8 +464,12 @@ async function bookIntro(){const v=V(),st=story();if(bookBusy||!v||!st||st.mode!
 const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings (the S / B roles), not one voice reading buttons */
  {who:'S',text:'ดูมุมขวาบนนั่น มีไอคอน สมุดผนึก อยู่ — {S2B} ลองกดเปิดดู',target:'.hud-ico[data-hud="bag"]'},
  {who:'B',text:'ของที่สมาคมให้ใช่ไหม ข้าไม่เคยเปิดดูจริง ๆ จัง ๆ เลย'},
+ {face:'happy',who:'S',text:'ได้มาตั้งแต่วันลงทะเบียน แล้ว {S2B} ก็เอาไปรองหัวนอนอย่างเดียว'},
+ {face:'think',who:'B',text:'มันนุ่มกว่าหมอนนิดหนึ่งนะ'},
  {who:'S',text:'ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้แหละ ลองกดแท็บ อุปกรณ์ ก่อนสิ',target:'.cb-tabs button[data-t="gear"]'},
  {face:'happy',who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย'},
+ {face:'think',who:'S',text:'ตอนเด็กแม่ไม่เคยให้เราแตะมีดเล่มนั้นเลย จำได้ไหม'},
+ {face:'happy',who:'B',text:'จำได้ … ข้าแอบแตะครั้งเดียว โดนล้างจานสามวัน'},
  {who:'S',text:'แตะการ์ดใบนั้นดูสิ จะเห็นรายละเอียด',target:'.cb-page[data-p="gear"] .card-thumb'},
  {face:'happy',who:'B',text:'ละเอียดกว่าที่คิดแฮะ เหมือนของจริงเลย'},
  {who:'S',text:'ปิดการ์ดนี้ก่อน แล้วไปดูแท็บอื่นกัน',target:'#collectionFocus button, #collectionFocus .focus-close'},
@@ -477,6 +481,8 @@ const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings 
  {who:'B',text:'งั้นยากับอาหารที่ทำเสร็จแล้วล่ะ อยู่ตรงไหน'},
  {who:'S',text:'แท็บ ของใช้ — ยาฟื้นฟูกับน้ำดื่มที่แม่เตรียมให้อยู่ตรงนี้ กดใช้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
  {who:'B',text:'เข้าใจแล้ว ใส่ไว้ในสมุดก็ไม่ต้องหอบเป็นกอง'},
+ {face:'happy',who:'S',text:'ต่อไปถ้าของหาย ก็ไม่ใช่เพราะหอบไม่ไหวแล้วนะ {S2B}'},
+ {face:'think',who:'B',text:'…ทำไมทุกเรื่องวกมาที่ข้าทำของหายตลอดเลย'},
  {face:'happy',who:'S',text:'งั้นกดกากบาทมุมขวาบนปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .cb-close'}];
 let tourBusy=false;
 async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{v.story=v.story||{};if(!v.story.bookGift){v.story.bookGift=true;const b=v.bag||(v.bag={});b.potion=(b.potion||0)+1;b.momWater=(b.momWater||0)+1;doSave()}   /* v98.668 · the ของใช้ page is not empty: 1 potion (+HP) and 1 water from mother (+stamina) */
