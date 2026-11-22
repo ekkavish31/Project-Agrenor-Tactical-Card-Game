@@ -3,7 +3,7 @@
 const fs = require('node:fs'), path = require('node:path'), cp = require('node:child_process');
 const root = path.resolve(__dirname, '..'), base = process.env.VALIDATION_BASE;
 const all = fs.readdirSync(path.join(root, 'tools')).filter(x => /^test-.*\.cjs$/.test(x)).sort();
-const deferred = process.argv.includes('--all') ? [] : all.filter(x => !['test-village-painted-browser.cjs', 'test-field-edit.cjs'].includes(x) && /require\(['"]playwright['"]\)/.test(fs.readFileSync(path.join(root, 'tools', x), 'utf8')));
+const deferred = process.argv.includes('--all') ? [] : all.filter(x => !['test-village-painted-browser.cjs', 'test-npc-event-browser.cjs', 'test-field-edit.cjs'].includes(x) && /require\(['"]playwright['"]\)/.test(fs.readFileSync(path.join(root, 'tools', x), 'utf8')));
 const tests = all.filter(x => !deferred.includes(x));
 console.log('SEPARATE_UI_CHECKS:' + JSON.stringify(deferred));
 const run = (dir, file) => cp.spawnSync(process.execPath, ['tools/' + file], {

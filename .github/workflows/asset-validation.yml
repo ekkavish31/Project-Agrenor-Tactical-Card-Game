@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -20,6 +21,18 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright @napi-rs/canvas
           npx playwright install --with-deps chromium
+      - name: Export authored NPC portraits and register event images
+        run: |
+          node tools/build-npc-event-art.cjs
+          node tools/build-image-index.cjs
+      - name: Save exported static assets on the authorized art branch
+        if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'codex/painted-npc-events'
+        run: |
+          git add assets/portraits data/asset-manifest.json js/asset-manifest.js data/image-index.js docs/IMAGE-MAP-TH.md
+          if ! git diff --cached --quiet; then
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "v98.947: Export 48 static NPC expressions and register six town illustrations"
+            git push origin HEAD:codex/painted-npc-events
+          fi
       - name: Check JavaScript syntax
         run: |
           for file in js/*.js; do node --check "$file" || exit 1; done

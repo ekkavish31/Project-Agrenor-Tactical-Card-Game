@@ -41,7 +41,7 @@
   function card(S, id) {
     const E = today(id); if (!E) return null;
     const off = done(S, id), lack = E.cost && (S.gold || 0) < E.cost, empty = E.id === 'caravan' && !Object.keys(S.cargo || {}).length;
-    return { html: `<div style="font-size:12.5px;margin:6px 0;padding:7px 10px;border-radius:10px;background:#f6d77a44;border:1px solid #c9902e88">${E.icon} <b>วันนี้: ${E.name}</b> — ${E.text}${off && !E.auto ? ' <small>(ทำไปแล้ววันนี้)</small>' : ''}</div>`,
+    return { html: `<div style="font-size:12.5px;margin:6px 0;padding:7px 10px;border-radius:10px;background:#f6d77a44;border:1px solid #c9902e88"><img src="assets/generated-village/events/${E.id}.png" alt="" loading="lazy" decoding="async" width="1672" height="941" style="display:block;width:100%;height:auto;max-height:230px;object-fit:cover;border-radius:7px;margin-bottom:7px">${E.icon} <b>วันนี้: ${E.name}</b> — ${E.text}${off && !E.auto ? ' <small>(ทำไปแล้ววันนี้)</small>' : ''}</div>`,
       button: E.auto || off ? null : { label: E.button, value: 'event', disabled: !!(lack || empty) } };
   }
   /* do today's event · ctx = { rng, battle(): Promise<'win'|…>, passTime(h), job } · returns the lines to show */
