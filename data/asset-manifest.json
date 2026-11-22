@@ -125236,8 +125236,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261122-095443",
+   "artRevision": "20261122-100025",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-windup/20261122-100024.webp",
+     "at": "2026-11-22T03:00:25.380Z",
+     "stamp": "20261122-100024",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-windup/20261122-095443.webp",
      "at": "2026-11-22T02:54:43.941Z",
@@ -125278,8 +125285,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-100025",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-windup/20261122-100024.webp",
+     "at": "2026-11-22T03:00:25.438Z",
+     "stamp": "20261122-100024",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-windup/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.054Z",
@@ -125313,8 +125327,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261122-095444",
+   "artRevision": "20261122-100158",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-strike/20261122-100157.webp",
+     "at": "2026-11-22T03:01:58.432Z",
+     "stamp": "20261122-100157",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-strike/20261122-095443.webp",
      "at": "2026-11-22T02:54:44.051Z",
@@ -125355,8 +125376,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-100158",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-strike/20261122-100157.webp",
+     "at": "2026-11-22T03:01:58.507Z",
+     "stamp": "20261122-100157",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-strike/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.139Z",
@@ -125390,8 +125418,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261122-095444",
+   "artRevision": "20261122-100314",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-guard/20261122-100313.webp",
+     "at": "2026-11-22T03:03:14.601Z",
+     "stamp": "20261122-100313",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-guard/20261122-095443.webp",
      "at": "2026-11-22T02:54:44.162Z",
@@ -125432,8 +125467,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-100314",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-guard/20261122-100313.webp",
+     "at": "2026-11-22T03:03:14.665Z",
+     "stamp": "20261122-100313",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-guard/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.236Z",
@@ -125467,8 +125509,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261122-095444",
+   "artRevision": "20261122-100451",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-hit/20261122-100450.webp",
+     "at": "2026-11-22T03:04:51.178Z",
+     "stamp": "20261122-100450",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-hit/20261122-095443.webp",
      "at": "2026-11-22T02:54:44.277Z",
@@ -125509,8 +125558,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-100451",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-hit/20261122-100450.webp",
+     "at": "2026-11-22T03:04:51.256Z",
+     "stamp": "20261122-100450",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-hit/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.342Z",
@@ -125544,8 +125600,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261122-095444",
+   "artRevision": "20261122-100525",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-sw-down/20261122-100523.webp",
+     "at": "2026-11-22T03:05:24.086Z",
+     "stamp": "20261122-100523",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-sw-down/20261122-095443.webp",
      "at": "2026-11-22T02:54:44.390Z",
@@ -125586,8 +125649,15 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212529",
+   "artRevision": "20261122-100524",
    "history": [
+    {
+     "file": "assets/_versions/tactics-berg-se-down/20261122-100523.webp",
+     "at": "2026-11-22T03:05:24.151Z",
+     "stamp": "20261122-100523",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/tactics-berg-se-down/mwp2kltc-50s8.webp",
      "at": "2026-11-20T14:23:40.445Z",
@@ -140869,7 +140939,16 @@
     "name": "Berg",
     "group": "characters"
    },
-   "artRevision": "20261120-212607"
+   "artRevision": "20261122-100027",
+   "history": [
+    {
+     "file": "assets/_versions/tactics-berg-ne-idle/20261122-100024.webp",
+     "at": "2026-11-22T03:00:27.055Z",
+     "stamp": "20261122-100024",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "tactics-berg-nw-idle",
@@ -150388,10 +150467,9 @@
    "approvedAt": "2026-11-22T02:52:43.008Z"
   },
   "[\"tactics-berg-se-windup\",\"SE\",true,[[\"tactics-berg-se-windup\",\"assets/tactics/berg_se_windup.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "at": 1795316085900,
-   "approvedAt": "2026-11-22T02:54:45.876Z"
+   "at": 1795316384149
   },
   "[\"tactics-berg-sw-strike\",\"SW\",true,[[\"tactics-berg-sw-strike\",\"assets/tactics/berg_sw_strike.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -150400,10 +150478,9 @@
    "approvedAt": "2026-11-22T02:52:55.878Z"
   },
   "[\"tactics-berg-se-strike\",\"SE\",true,[[\"tactics-berg-se-strike\",\"assets/tactics/berg_se_strike.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "at": 1795316085900,
-   "approvedAt": "2026-11-22T02:54:45.876Z"
+   "at": 1795316434311
   },
   "[\"tactics-berg-sw-guard\",\"SW\",true,[[\"tactics-berg-sw-guard\",\"assets/tactics/berg_sw_guard.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -150412,10 +150489,9 @@
    "approvedAt": "2026-11-22T02:53:02.336Z"
   },
   "[\"tactics-berg-se-guard\",\"SE\",true,[[\"tactics-berg-se-guard\",\"assets/tactics/berg_se_guard.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "at": 1795316085900,
-   "approvedAt": "2026-11-22T02:54:45.876Z"
+   "at": 1795316525559
   },
   "[\"tactics-berg-sw-hit\",\"SW\",true,[[\"tactics-berg-sw-hit\",\"assets/tactics/berg_sw_hit.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -150424,10 +150500,9 @@
    "approvedAt": "2026-11-22T02:53:12.614Z"
   },
   "[\"tactics-berg-se-hit\",\"SE\",true,[[\"tactics-berg-se-hit\",\"assets/tactics/berg_se_hit.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "at": 1795316085900,
-   "approvedAt": "2026-11-22T02:54:45.876Z"
+   "at": 1795316604764
   },
   "[\"tactics-berg-sw-down\",\"SW\",true,[[\"tactics-berg-sw-down\",\"assets/tactics/berg_sw_down.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -150436,40 +150511,112 @@
    "at": 1795316070242
   },
   "[\"tactics-berg-se-down\",\"SE\",true,[[\"tactics-berg-se-down\",\"assets/tactics/berg_se_down.webp\",0,\"20261120-212529\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-22T02:54:45.876Z",
-   "at": 1795316085901
+   "at": 1795316606625
   },
   "[\"tactics-berg-sw-windup\",\"SW\",true,[[\"tactics-berg-sw-windup\",\"assets/tactics/berg_sw_windup.webp\",0,\"20261122-095443\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-22T02:54:45.876Z",
-   "at": 1795316085900
+   "at": 1795316384149
   },
   "[\"tactics-berg-sw-strike\",\"SW\",true,[[\"tactics-berg-sw-strike\",\"assets/tactics/berg_sw_strike.webp\",0,\"20261122-095444\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-22T02:54:45.876Z",
-   "at": 1795316085900
+   "at": 1795316434311
   },
   "[\"tactics-berg-sw-guard\",\"SW\",true,[[\"tactics-berg-sw-guard\",\"assets/tactics/berg_sw_guard.webp\",0,\"20261122-095444\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-22T02:54:45.876Z",
-   "at": 1795316085900
+   "at": 1795316525559
   },
   "[\"tactics-berg-sw-hit\",\"SW\",true,[[\"tactics-berg-sw-hit\",\"assets/tactics/berg_sw_hit.webp\",0,\"20261122-095444\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-22T02:54:45.876Z",
-   "at": 1795316085900
+   "at": 1795316604764
   },
   "[\"tactics-berg-sw-down\",\"SW\",true,[[\"tactics-berg-sw-down\",\"assets/tactics/berg_sw_down.webp\",0,\"20261122-095444\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "at": 1795316606625
+  },
+  "[\"tactics-berg-ne-idle\",\"NE\",true,[[\"tactics-berg-ne-idle\",\"assets/tactics/berg_ne_idle.webp\",0,\"20261120-212607\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-22T02:54:45.876Z",
-   "at": 1795316085900
+   "approvedAt": "2026-11-22T02:59:29.251Z",
+   "at": 1795316369281
+  },
+  "[\"tactics-berg-nw-idle\",\"NW\",true,[[\"tactics-berg-nw-idle\",\"assets/tactics/berg_nw_idle.webp\",0,\"20261120-212607\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:00:30.531Z",
+   "at": 1795316430555
+  },
+  "[\"tactics-berg-sw-windup\",\"SW\",true,[[\"tactics-berg-sw-windup\",\"assets/tactics/berg_sw_windup.webp\",0,\"20261122-100025\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:00:29.656Z",
+   "at": 1795316429681
+  },
+  "[\"tactics-berg-se-windup\",\"SE\",true,[[\"tactics-berg-se-windup\",\"assets/tactics/berg_se_windup.webp\",0,\"20261122-100025\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:00:29.656Z",
+   "at": 1795316429681
+  },
+  "[\"tactics-berg-ne-idle\",\"NE\",true,[[\"tactics-berg-ne-idle\",\"assets/tactics/berg_ne_idle.webp\",0,\"20261122-100027\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:00:30.531Z",
+   "at": 1795316430555
+  },
+  "[\"tactics-berg-sw-strike\",\"SW\",true,[[\"tactics-berg-sw-strike\",\"assets/tactics/berg_sw_strike.webp\",0,\"20261122-100158\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:02:01.769Z",
+   "at": 1795316521795
+  },
+  "[\"tactics-berg-se-strike\",\"SE\",true,[[\"tactics-berg-se-strike\",\"assets/tactics/berg_se_strike.webp\",0,\"20261122-100158\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:02:01.769Z",
+   "at": 1795316521795
+  },
+  "[\"tactics-berg-sw-guard\",\"SW\",true,[[\"tactics-berg-sw-guard\",\"assets/tactics/berg_sw_guard.webp\",0,\"20261122-100314\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:03:19.318Z",
+   "at": 1795316599345
+  },
+  "[\"tactics-berg-se-guard\",\"SE\",true,[[\"tactics-berg-se-guard\",\"assets/tactics/berg_se_guard.webp\",0,\"20261122-100314\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:03:19.318Z",
+   "at": 1795316599345
+  },
+  "[\"tactics-berg-sw-hit\",\"SW\",true,[[\"tactics-berg-sw-hit\",\"assets/tactics/berg_sw_hit.webp\",0,\"20261122-100451\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:04:54.393Z",
+   "at": 1795316694421
+  },
+  "[\"tactics-berg-se-hit\",\"SE\",true,[[\"tactics-berg-se-hit\",\"assets/tactics/berg_se_hit.webp\",0,\"20261122-100451\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:04:54.393Z",
+   "at": 1795316694421
+  },
+  "[\"tactics-berg-sw-down\",\"SW\",true,[[\"tactics-berg-sw-down\",\"assets/tactics/berg_sw_down.webp\",0,\"20261122-100525\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:05:27.452Z",
+   "at": 1795316727480
+  },
+  "[\"tactics-berg-se-down\",\"SE\",true,[[\"tactics-berg-se-down\",\"assets/tactics/berg_se_down.webp\",0,\"20261122-100524\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-22T03:05:27.452Z",
+   "at": 1795316727480
   }
  },
  "studioClipHistory": {
