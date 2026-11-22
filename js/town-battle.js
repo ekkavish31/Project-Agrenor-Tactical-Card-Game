@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.957';
+  const V = '98.958';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -894,6 +894,13 @@
     if (!reduced) glows.push({ u: unit.vu, v: unit.vv, col: '255,210,110', r: UNIT * 1.2, charge: true, t0: now(), dur: duration });
     await wait(reduced ? Math.min(220, duration) : duration);
   }
+  /* v98.958 · a monster's attack reads idle → CHARGE (windup held, body trembles and squats, a gold ring fills) → strike: every monster attack now has that visible build-up
+     (650 ms · 800 ms when it is a full cut-scene hit · 900 ms for a boss or a hit of 20+), never shorter than the monster's own windup clip. */
+  async function monsterCharge(u, duration) {
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; u.pose = 'windup';
+    if (!reduced) { u._chg = { t0: now(), dur: duration }; glows.push({ u: u.vu, v: u.vv, col: '255,190,90', r: UNIT * 1.2, charge: true, t0: now(), dur: duration }) }
+    try { await wait(reduced ? Math.min(220, duration) : duration) } finally { u._chg = null }
+  }
   async function heroAction(r) {
     const h = FB.hero(st), m = r.target || FB.monster(st);
     if (r.self) {
@@ -981,7 +988,7 @@
     const tw = isMon ? M?.timing?.(a.kind, a.dir, 'windup') : null, ts = isMon ? M?.timing?.(a.kind, a.dir, strikePose) : null;
     const isHero = t === FB.hero(st), down = t.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน')), full = isHero || s.crit || down || a.boss;
     await cinemaIf(s.crit || s.damage >= 20 || a.boss || (down && isHero), a, t, async () => {
-      a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } if (a.boss || s.damage >= 20) await chargeAttack(a, Math.max(560, Math.min(900, tw?.duration || 0))); else await wait(isMon ? Math.min(full ? 900 : 520, tw?.duration || 380) : (full ? 300 : 200));
+      a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } if (isMon) await monsterCharge(a, Math.max(a.boss || s.damage >= 20 ? 900 : full ? 800 : 650, tw?.duration || 0)); else if (a.boss || s.damage >= 20) await chargeAttack(a, Math.max(560, Math.min(900, tw?.duration || 0))); else await wait(full ? 300 : 200);
       a.pose = strikePose; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
       if (s.evaded) { const o = { u: t.vu, v: t.vv }; t.vu += (t.vu - a.vu) * .35; t.vv += (t.vv - a.vv) * .35; fx('wind', t, a, {}); sfx('swing'); floatText(t, 'MISS', '#bfe8ff', false, true); await wait(420); t.vu = o.u; t.vv = o.v; a.pose = 'idle'; return }
       fx(guarded ? 'parry' : fxk, t, a, { color: isMon ? '#ffb36a' : '#9fd4ff' }); impact(t, guarded ? 'parry' : fxk, { big: s.crit || s.damage >= 12, crit: s.crit, kill: down && (isHero || !FB.monsters(st).some(u => u.hp > 0)), from: a });
@@ -1847,7 +1854,9 @@
     const drawUnit = u => { const ld = u.dir, rdy = isReady(u), lp = u.pose, fsh = frontShown(u); if (rdy) { u.pose = 'windup'; u._rdy = true } if (fsh) u.dir = u.frontDir; if (window.viewDir) u.dir = viewDir(u.dir);
       const SFX = window.StatusFX, sp = SFX && u.hp > 0 && (u.sts || u.stun || u.slowed) ? project(u.vu, u.vv) : null, sh = sp ? UNIT * 1.3 * (u.side === 'monster' ? (MON[u.evoShow || u.kind]?.scale || 1) : 1) : 0;   /* v98.397 · the status shows on the body (js/status-fx.js): bubbles, flames + smoke, ice … */
       if (sp) SFX.back(g, u, sp.x, sp.y, sh, t);
-      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t), u.mystery && !u.mipForm && u.hp > 0 && mysteryGlint(g, u, t)) } finally { u.dir = ld; if (rdy) { u.pose = lp; u._rdy = false } }
+      const ch = u._chg && u.side === 'monster' && u.hp > 0 ? u._chg : null, pp = ch ? project(u.vu, u.vv) : null;   /* v98.958 · the charge before a monster strikes: tremble + squat that grows */
+      if (ch) { const k = Math.min(1, Math.max(0, (now() - ch.t0) / Math.max(1, ch.dur))); g.save(); g.translate(pp.x + Math.sin(t * .09) * (.6 + 2.6 * k), pp.y); g.scale(1 + .035 * k, 1 - .07 * k); g.translate(-pp.x, -pp.y) }
+      try { u === h ? drawHero(g, u, t) : u.side === 'hero' ? drawAlly(g, u, t) : (drawMonster(g, u, t), SFX || frozenMark(g, u, t), u.mystery && !u.mipForm && u.hp > 0 && mysteryGlint(g, u, t)) } finally { if (ch) g.restore(); u.dir = ld; if (rdy) { u.pose = lp; u._rdy = false } }
       if (sp) SFX.front(g, u, sp.x, sp.y, sh, t) };
     for (const it of order) {
       if (!it.unit) { it.draw(g, t); continue }
