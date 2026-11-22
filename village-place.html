@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th"><meta charset="utf-8"><script src="js/editor-store.js?v=v98.894"></script><script src="js/play-guard.js?v=v98.894"></script><script src="js/perf-scale.js?v=v98.574"></script><script src="js/asset-size.js?v=v98.894"></script><script src="js/tilt-shift.js?v=v98.663"></script><script src="js/game-cursor.js?v=v98.894"></script><script src="js/texel.js?v=v98.894"></script><script src="js/piece-geometry.js?v=v98.500"></script><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
+<html lang="th"><meta charset="utf-8"><script src="js/vendor-kinds.js?v=v98.947"></script><script src="js/editor-store.js?v=v98.894"></script><script src="js/play-guard.js?v=v98.894"></script><script src="js/perf-scale.js?v=v98.574"></script><script src="js/asset-size.js?v=v98.894"></script><script src="js/tilt-shift.js?v=v98.663"></script><script src="js/game-cursor.js?v=v98.894"></script><script src="js/texel.js?v=v98.894"></script><script src="js/piece-geometry.js?v=v98.500"></script><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
 <script src="js/img-gate.js?v=v98.352"></script><script src="js/walk-speed.js?v=v98.894"></script><script src="js/sfx.js?v=98.298"></script><script src="js/key-layout.js?v=1"></script><script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=v98.946"></script><script src="js/staged-preview.js?v=v98.387"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
@@ -1015,20 +1015,7 @@ let hits = [];
 /* v98.556 · VENDORS: a station can have a seller who stands there (s.vendor = { kind, du, dv, face }). Generic sellers, NOT named villagers: several similar "kinds", each with only TWO directions (SW · SE).
    Art: assets/village-town/vendors/<kind>-sw.webp and <kind>-se.webp (384×384 canvas, feet at y=360 like every character picture) — until a picture exists the seller is drawn with code (VillagerDraw, palette below).
    du/dv = offset from the station centre (default: at the stall's front, toward the door) · face SW|SE (default: toward the customer side). Set / drag in the editor (station → 🧑‍🌾 คนขาย). Clicking a seller = using the station. */
-const VENDOR_KINDS = {
- m1: { name: 'พ่อค้า ก (หมวกแก๊ป)', look: { coat: '#7a5a3a', apron: '#e8dcc0', hair: '#4a3020', hat: 'cap', hatCol: '#6a4a2a', age: 40 } },
- m2: { name: 'พ่อค้า ข (มีหนวด)', look: { coat: '#4a5a6a', apron: '#d8d0b8', hair: '#2a2018', hat: 'none', beard: '#2a2018', age: 45 } },
- m3: { name: 'พ่อค้า ค (หมวกเขียว)', look: { coat: '#6a3a3a', apron: '#e8dcc0', hair: '#6a5030', hat: 'cap', hatCol: '#3a4a3a', age: 38 } },
- f1: { name: 'แม่ค้า ก (ผ้าโพกหัว)', look: { coat: '#8a4b5c', apron: '#efe2c8', hair: '#5a3a22', hat: 'scarf', hatCol: '#c9a07a', longHair: true, age: 35 } },
- f2: { name: 'แม่ค้า ข (ผ้าโพกครีม)', look: { coat: '#4a6a4a', apron: '#efe2c8', hair: '#3a2a1e', hat: 'scarf', hatCol: '#e8d6b0', longHair: true, age: 40 } },
- f3: { name: 'แม่ค้า ค (ผมยาว)', look: { coat: '#6a5a8a', apron: '#f1e6cc', hair: '#8a5a2a', hat: 'none', longHair: true, age: 32 } },
- /* v98.585 · Adventurers' Guild staff (unnamed · navy-and-gold guild coat) — js/guild-desk.js STAFF */
- g1: { name: 'ฟรีดา · เจ้าหน้าที่ทะเบียน', look: { coat: '#2f4a6a', apron: '#e8d6a8', hair: '#5a3a22', hat: 'none', longHair: true, age: 30 } },
- g2: { name: 'แกเร็ธ · เจ้าหน้าที่จัดงาน', look: { coat: '#2f4a6a', apron: '#c9a45a', hair: '#2a2018', hat: 'cap', hatCol: '#1f3048', beard: '#2a2018', age: 42 } },
- g3: { name: 'ออสวิน · ผู้ประเมินการ์ด', look: { coat: '#4a3a6a', apron: '#e8dcc0', hair: '#cfcfd6', hat: 'none', beard: '#bfbfc6', age: 60 } },
- g4: { name: 'ไนลา · ผู้ดูแลกระดานประกาศ', look: { coat: '#3a4a3a', apron: '#d8c08a', hair: '#8a5a2a', hat: 'scarf', hatCol: '#2f4a6a', longHair: true, age: 26 } }
-};
-window.VENDOR_KINDS = VENDOR_KINDS;
+/* v98.946 · VENDOR_KINDS (the 10 kinds + their picture poses) moved to js/vendor-kinds.js — shared with Asset Studio */
 function vendorDefault(s) {
  const d = s.door || { du: 0, dv: 1 }, alongU = Math.abs(d.du) >= Math.abs(d.dv), sg = Math.sign(alongU ? d.du : d.dv) || 1;
  return { du: alongU ? sg * +(s.w * .55).toFixed(2) : 0, dv: alongU ? 0 : sg * +(s.d * .55).toFixed(2), face: alongU && sg > 0 ? 'SE' : 'SW' }
@@ -1042,12 +1029,24 @@ function vendorObj(s, i) {
   px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale();
  hits.push({ type: 'station', i, r: { x: p.x - px * .22, y: p.y - px * .9, w: px * .44, h: px * .95 } });   /* a click on the seller = the station */
  return { y: p.y, vendor: true, wu: w.u, wv: w.v, draw: (t = performance.now()) => {
-  const im = window.VillagePaintedArt ? null : TownArt.image('assets/village-town/vendors/' + kind + '-' + face.toLowerCase() + '.webp'), bob = Math.sin(t * .0018 + hash) * 1.1;
+  const stand = window.VillagePaintedArt ? null : TownArt.image(vendorFile(kind, face.toLowerCase())), pk = stand && vendorPoseOf(s, t, hash), pim = pk && TownArt.image(vendorFile(kind, face.toLowerCase(), pk)),
+   im = pim && pim.complete && pim.naturalWidth ? pim : stand, bob = Math.sin(t * .0018 + hash) * 1.1;   /* v98.947 · the pose picture if it exists, else the standing one (not when the painted village art replaces vendors) */
   if (im && im.complete && im.naturalWidth) { g.fillStyle = 'rgba(20,16,10,.28)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7); g.fill(); g.drawImage(im, p.x - px / 2, p.y - px * 360 / 384 - bob, px, px) }
   else if (window.VillagePaintedArt?.draw(g, kind, p.x, p.y - bob, px, { height: px * .88, flip: face === 'SE' })) { /* painted vendor atlas */ }
    else window.VillagerDraw?.(g, VENDOR_KINDS[kind].look, p.x, p.y, t, { face, scale: window.placeScale() })
  } }
 }
+/* v98.946 · VENDOR POSES (pictures: assets/village-town/vendors/<kind>-<sw|se>-<pose>.webp — see js/vendor-kinds.js). An event (greeting on arrival · talk / give / offer while a station is used) wins for ~2.6 s;
+   otherwise: a short idle2 shift every ~4.5 s, and one of the two work poses (work1 / work2, alternating) for 2.6 s every ~11–15 s. Missing pictures just show the standing one. */
+const vendorEvt = {};
+function vendorSay(s, pose, ms = 2600) { if (s?.vendor?.kind) vendorEvt[s.id] = { pose, until: performance.now() + ms } }
+function vendorPoseOf(s, t, hash) {
+ const e = vendorEvt[s.id]; if (e && t < e.until) return e.pose;
+ const cyc = 11000 + Math.floor(hash * 640), ph = (t + hash * 3000) % cyc;
+ if (ph < 2600) return Math.floor((t + hash * 3000) / cyc) % 2 ? 'work2' : 'work1';
+ return (t + hash * 1000) % 4500 < 550 ? 'idle2' : ''
+}
+window.vendorSay = vendorSay;
 const EXIT_DIRS = { SE: [1, 0], NW: [-1, 0], SW: [0, 1], NE: [0, -1] };
 function exitDir() {
  const e = M.exit, F = M.floor; if (!e) return 'SW'; if (EXIT_DIRS[e.dir]) return e.dir;
@@ -1307,6 +1306,7 @@ function arrive() {
  if (!s) return;
  hero.dir = s.v < hero.v ? (s.u < hero.u ? 'NW' : 'NE') : (s.u < hero.u ? 'SW' : 'SE');
  const acts = stationActs(s);
+ vendorSay(s, 'wave', 1800);   /* v98.946 · greeting */
  if (acts.length === 1) use(tg.i, acts[0]);
  else showPick(tg.i)
 }
@@ -1314,6 +1314,7 @@ function arrive() {
 function use(i, id) {
  hidePick();
  lastSt = i;
+ vendorSay(M.stations[i], id === 'buy' ? 'give' : id === 'sell' ? 'offer' : 'talk');   /* v98.946 */
  const a = actionInfo(id),
   s = M.stations[i];
  if (a?.reason) {
