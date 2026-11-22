@@ -22,7 +22,11 @@
     return trail[0];
   }
   let lastT = 0;
+  /* v98.943 · the follower is the OTHER look: the callers pass the size of the lead (with the lead look's ⚖ Lineup factor) → correct it to this look's own factor (hero ↔ hero-female). */
+  const lkey = l => l === 'female' ? 'hero-female' : 'hero';
+  function lookFix() { const C = root.CharScaleAdjust, D = root.CHARACTER_SCALE_ADJUST; if (!C || !D) return 1; const me = other() === 'female' ? 'male' : 'female', a = C.factor('village', lkey(other()), D), b = C.factor('village', lkey(me), D); return b > 0 ? a / b : 1 }
   function objects(hero, dt, t, o) {
+    if (o && o.size) o = { ...o, size: o.size * lookFix() };
     if (dt == null) { dt = Math.min(.08, Math.max(0, (t - (lastT || t)) / 1000)); lastT = t }   /* pages without their own dt (interior) */
     if (!o.show) { trail = []; pos = null; return [] }
     const a0 = o.project(0, 0), a1 = o.project(1, 0), dpc = Math.max(1e-6, Math.hypot(a1.x - a0.x, a1.y - a0.y)), gap = o.size ? o.size * .5 / dpc : GAP * .5, jump = 110 / dpc, minStep = 2 / dpc;   // dpc = screen px per map unit   // one body length behind, whatever the page's map scale
@@ -44,5 +48,5 @@
   }
   /* v98.352 · the follower's walk cycle runs HALF a cycle behind the leader's: both stepping with the same foot at the same instant looked mechanical */
   function cycleOf(m, d) { try { const w = (m.directions[d] || m.directions.SE).walk || []; const sum = w.reduce((a, f) => a + (f.ms || 100), 0); return sum > 0 ? sum : 900 } catch (e) { return 900 } }
-  root.HeroFollower = { objects, reset() { trail = []; pos = null } };
+  root.HeroFollower = { objects, lookFix, reset() { trail = []; pos = null } };
 })(globalThis);
