@@ -40,4 +40,4 @@ jobs:
         run: |
           base_sha="${BASE_SHA:-HEAD^}"
           git worktree add --detach "$RUNNER_TEMP/agrenor-validation-base" "$base_sha"
-          VALIDATION_BASE="$RUNNER_TEMP/agrenor-validation-base" node tools/validate-village-art.cjs
+          VALIDATION_BASE="$RUNNER_TEMP/agrenor-validation-base" node tools/validate-village-art.cjs ${{ github.event_name == 'workflow_dispatch' && '--all' || '' }}

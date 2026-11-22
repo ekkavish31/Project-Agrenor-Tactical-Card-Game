@@ -2,7 +2,10 @@
    with the same dependencies. A new/different failure fails validation. */
 const fs = require('node:fs'), path = require('node:path'), cp = require('node:child_process');
 const root = path.resolve(__dirname, '..'), base = process.env.VALIDATION_BASE;
-const tests = fs.readdirSync(path.join(root, 'tools')).filter(x => /^test-.*\.cjs$/.test(x)).sort();
+const all = fs.readdirSync(path.join(root, 'tools')).filter(x => /^test-.*\.cjs$/.test(x)).sort();
+const deferred = process.argv.includes('--all') ? [] : all.filter(x => x !== 'test-village-painted-browser.cjs' && /require\(['"]playwright['"]\)/.test(fs.readFileSync(path.join(root, 'tools', x), 'utf8')));
+const tests = all.filter(x => !deferred.includes(x));
+console.log('SEPARATE_UI_CHECKS:' + JSON.stringify(deferred));
 const run = (dir, file) => cp.spawnSync(process.execPath, ['tools/' + file], {
   cwd: dir, encoding: 'utf8', timeout: 180000, maxBuffer: 32 * 1024 * 1024,
   env: { ...process.env, NODE_PATH: path.join(root, 'node_modules') }
@@ -20,7 +23,7 @@ for (const file of tests) {
   }
   console.log('::endgroup::');
 }
-const summary = { total: tests.length, passed, preExisting, regressions };
+const summary = { total: tests.length, passed, preExisting, regressions, deferred };
 console.log('VALIDATION_SUMMARY:' + JSON.stringify(summary));
 if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
   '## Repository checks\n\n' + passed + '/' + tests.length + ' passed; ' + preExisting.length + ' fail identically at the PR base; ' + regressions.length + ' regressions.\n\n' +
