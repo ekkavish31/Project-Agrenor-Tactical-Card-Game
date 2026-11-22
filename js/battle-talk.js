@@ -126,9 +126,9 @@
   /* v98.659 · every line is a TALK between people on the field (one thing said, one answer), in each speaker's own voice — rules are taught by the Coach panel, not by the characters reading them out */
   const scripts = {
     pumpkin: {
-      start: [{ who: 'hilda', emo: 'worry', text: 'ระวังนะ! พวกศัตรูพืชซุกอยู่ใต้ใบ' }, { who: 'sib', emo: 'worry', text: 'ตัวไหนฟักทองสุก ตัวไหนด้วงล่ะ' }, { who: 'hilda', emo: 'neutral', text: 'ลูกที่สุกแล้ว พอล้มมันจะกลายเป็นฟักทองให้เก็บเลย' }, { who: 'hilda', emo: 'happy', text: 'ข้าให้ยืมไพ่ธาตุสองใบ ติดมือทุกเทิร์น' }, { who: 'hero', emo: 'neutral', text: 'สองใบไหนบ้าง' }, { who: 'hilda', emo: 'neutral', text: '💧 คลื่นน้ำ น้ำชนะดิน เอาไว้ตีฟักทอง ส่วน ⚡ อัสนีบาต ชนะลม เอาไว้ตีด้วงกินใบ' }, { who: 'sib', emo: 'neutral', text: 'ถ้าจะตีด้วง ต้องทำยังไง' }, { who: 'hilda', emo: 'neutral', text: 'คลิกตัวมันก่อน แล้วค่อยเลือกไพ่' }, { who: 'hero', emo: 'neutral', text: 'ลูกศรที่มุมไพ่คืออะไร' }, { who: 'hilda', emo: 'happy', text: 'เขียว ▲ คือได้เปรียบ แดง ▼ คือเสียเปรียบ ดูมันเปลี่ยนตามตัวที่เจ้าเลือก' }, { who: 'hero', emo: 'angry', text: 'รับทราบ พี่ฮิลดา! ข้าจัดการเอง' }],
-      half: [{ who: 'hilda', emo: 'happy', text: 'ดีมาก! อีกนิดเดียว อย่าให้มันเหยียบแปลงข้านะ!' }, { who: 'hero', emo: 'angry', text: 'ไม่มีทาง! เหลืออีกไม่กี่ตัวแล้ว' }],
-      win: [{ who: 'hilda', emo: 'happy', text: 'เก่งจริง ๆ! เก็บลูกที่สุกไปได้เลย' }, { who: 'sib', emo: 'happy', text: 'แล้วลูกประกวดล่ะ' }, { who: 'hilda', emo: 'neutral', text: 'ข้าจะดูแลเองอีกที' }],
+      start: [{ who: 'hilda', emo: 'worry', text: 'ระวังนะ! พวกศัตรูพืชซุกอยู่ใต้ใบ' }, { who: 'sib', emo:'neutral', text: 'ตัวไหนฟักทองสุก ตัวไหนด้วงล่ะ' }, { who: 'hilda', emo: 'neutral', text: 'ลูกที่สุกแล้ว พอล้มมันจะกลายเป็นฟักทองให้เก็บเลย' }, { who: 'hilda', emo: 'happy', text: 'ข้าให้ยืมไพ่ธาตุสองใบ ติดมือทุกเทิร์น' }, { who: 'hero', emo: 'neutral', text: 'สองใบไหนบ้าง' }, { who: 'hilda', emo: 'neutral', text: '💧 คลื่นน้ำ น้ำชนะดิน เอาไว้ตีฟักทอง ส่วน ⚡ อัสนีบาต ชนะลม เอาไว้ตีด้วงกินใบ' }, { who: 'sib', emo: 'neutral', text: 'ถ้าจะตีด้วง ต้องทำยังไง' }, { who: 'hilda', emo: 'neutral', text: 'คลิกตัวมันก่อน แล้วค่อยเลือกไพ่' }, { who: 'hero', emo: 'neutral', text: 'ลูกศรที่มุมไพ่คืออะไร' }, { who: 'hilda', emo: 'happy', text: 'เขียว ▲ คือได้เปรียบ แดง ▼ คือเสียเปรียบ ดูมันเปลี่ยนตามตัวที่เจ้าเลือก' }, { who: 'hero', emo:'happy', text: 'รับทราบ พี่ฮิลดา! ข้าจัดการเอง' }],
+      half: [{ who: 'hilda', emo: 'happy', text: 'ดีมาก! อีกนิดเดียว อย่าให้มันเหยียบแปลงข้านะ!' }, { who: 'hero', emo:'happy', text: 'ไม่มีทาง! เหลืออีกไม่กี่ตัวแล้ว' }],
+      win: [{ who: 'hilda', emo: 'happy', text: 'เก่งจริง ๆ! เก็บลูกที่สุกไปได้เลย' }, { who: 'sib', emo:'neutral', text: 'แล้วลูกประกวดล่ะ' }, { who: 'hilda', emo: 'neutral', text: 'ข้าจะดูแลเองอีกที' }],
       lose: [{ who: 'hilda', emo: 'worry', text: 'พอก่อน ๆ! เดี๋ยวค่อยมาใหม่ก็ได้ ฟักทองไม่หนีไปไหนหรอก' }, { who: 'hero', emo: 'worry', text: 'ขอโทษ พี่ฮิลดา เดี๋ยวข้ากลับมาใหม่' }]
     },
     cave: {
@@ -138,14 +138,14 @@
       lose: [{ who: 'sib', emo: 'worry', text: 'พี่… ถอยก่อนเถอะ' }, { who: 'hero', emo: 'worry', text: 'ยังไม่ยอมแพ้หรอก แต่ต้องกลับไปตั้งหลักก่อน' }]
     },
     raid: {
-      start: [{ who: 'guard', emo: 'angry', text: 'โจรป่า! ทุกคนหลบเข้ามาหลังข้า' }, { who: 'boss', emo: 'angry', text: 'ฮ่า! ของมีค่าในหมู่บ้านนี้ ข้าจะเอาไปให้หมด!' }, { who: 'hero', emo: 'angry', text: 'ไม่ให้แตะต้องงานเทศกาลเด็ดขาด!' }, { who: 'guard', emo: 'angry', text: '{hero} อยู่ใกล้ ๆ ไว้ อย่าห่างกัน!' }, { who: 'sib', emo: 'worry', text: 'ฝูงหมาป่าตามมาด้วย ระวังโดนล้อมนะ' }],
+      start: [{ who: 'guard', emo: 'angry', text: 'โจรป่า! ทุกคนหลบเข้ามาหลังข้า' }, { who: 'boss', emo: 'angry', text: 'ฮ่า! ของมีค่าในหมู่บ้านนี้ ข้าจะเอาไปให้หมด!' }, { who: 'hero', emo: 'angry', text: 'ไม่ให้แตะต้องงานเทศกาลเด็ดขาด!' }, { who: 'guard', emo:'worry', text: '{hero} อยู่ใกล้ ๆ ไว้ อย่าห่างกัน!' }, { who: 'sib', emo: 'worry', text: 'ฝูงหมาป่าตามมาด้วย ระวังโดนล้อมนะ' }],
       half: [{ who: 'guard', emo: 'happy', text: 'ดีมาก! พวกมันเริ่มแตกแถวแล้ว กดต่อไป!' }, { who: 'boss', emo: 'angry', text: 'อย่าถอย! แค่ยามกับเด็กเองนะ!' }, { who: 'hero', emo: 'angry', text: 'เด็กหรือไม่เด็ก ก็ไม่ยอมให้ผ่านไปหรอก!' }],
-      win: [{ who: 'guard', emo: 'happy', text: 'พวกมันหนีแล้ว! ปากดีแต่ขาไวใช้ได้' }, { who: 'hero', emo: 'happy', text: 'เทศกาลปลอดภัยแล้ว' }, { who: 'guard', emo: 'neutral', text: 'ขอบใจนะ สองคน — ข้าเองก็ซ่อนไม่อยู่ว่าเหนื่อยเหมือนกัน' }],
+      win: [{ who: 'guard', emo: 'happy', text: 'พวกมันหนีแล้ว! ปากดีแต่ขาไวใช้ได้' }, { who: 'hero', emo: 'happy', text: 'เทศกาลปลอดภัยแล้ว' }, { who: 'guard', emo:'happy', text: 'ขอบใจนะ สองคน — ข้าเองก็ซ่อนไม่อยู่ว่าเหนื่อยเหมือนกัน' }],
       lose: [{ who: 'guard', emo: 'worry', text: 'ถอยมาข้างหลังข้า! เดี๋ยวข้ารับไว้เอง' }, { who: 'hero', emo: 'worry', text: 'ข้ายังสู้ไหว…' }, { who: 'guard', emo: 'angry', text: 'ไหวหรือไม่ไหวก็ถอย! ข้าสั่ง' }]
     },
     expedition: {
       start: [{ who: 'hero', emo: 'neutral', text: 'ค่ายโจรอยู่ข้างหน้า… ต้องล้มพวกมันให้หมด เพื่อให้เฟิร์นเวลปลอดภัย' }, { who: 'kier', emo: 'neutral', text: 'พวกมันน่าจะมีมากกว่าที่เห็น ระวังรอบตัวไว้' }, { who: 'sib', emo: 'neutral', text: 'ข้าอยู่ข้างหลังเจ้า ไปกัน' }],
-      half: [{ who: 'kier', emo: 'neutral', text: 'ยังไม่จบ ตั้งหลักให้ดีก่อนบุกต่อ' }, { who: 'hero', emo: 'angry', text: 'ข้ายังไหว! อีกนิดเดียว' }],
+      half: [{ who: 'kier', emo: 'neutral', text: 'ยังไม่จบ ตั้งหลักให้ดีก่อนบุกต่อ' }, { who: 'hero', emo:'neutral', text: 'ข้ายังไหว! อีกนิดเดียว' }],
       win: [{ who: 'hero', emo: 'happy', text: 'พวกมันเงียบแล้ว — ไปดูข้างในค่ายกัน' }, { who: 'sib', emo: 'neutral', text: 'ระวังนะ อาจมีของตกอยู่ตามพื้น' }, { who: 'kier', emo: 'neutral', text: 'ข้าเฝ้าทางออกให้ รีบดูแล้วกลับกัน' }],
       lose: [{ who: 'kier', emo: 'worry', text: 'ถอย! เราเสียเปรียบแล้ว' }, { who: 'hero', emo: 'worry', text: '…ได้ ถอยไปตั้งหลักก่อน' }]
     }

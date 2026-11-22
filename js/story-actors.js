@@ -52,15 +52,19 @@
   const EMO = { happy: '♪', angry: '💢', surprised: '❗', sad: '💧', think: '💭' };
 
   /* ---------- guess the face from the line ---------- */
+  /* v98.950 · the guess is only a fallback (most lines now carry face: in the scripts). Thai has no spaces, so short words matched INSIDE longer ones:
+     'บ้า' in บ้าน (home), 'ชิ' in ชิ้น, 'อย่า' (a normal "don't"), 'โจร' (just naming the bandits) turned plain lines angry, and any '!' made a face happy.
+     Now only clear words count, and a line with none of them stays neutral. */
   function faceOf(line) {
     if (line.face) return line.face;
+    if (line.emo) return ({ worry: 'surprised', calm: 'neutral' })[line.emo] || line.emo;   /* lines written for BattleTalk use emo: */
     const t = String(line.text || '');
-    if (/(ฮ่า|ดีเลย|เก่ง|ขอบใจ|เยี่ยม|ยินดี|สนุก|ใหญ่ที่สุด|ชนะ|ในที่สุด|ดีใจ|♪)/.test(t)) return 'happy';
-    if (/(อะไรนะ|เอ๊ะ|หา\?|จริงเหรอ|จริงหรือ|!\?|\?!|ไม่จริง|ตายแล้ว|ระวัง!|หนี)/.test(t)) return 'surprised';
-    if (/(อย่า|ไอ้|หยุด|โจร|บ้า|แค้น|กล้าดี|ชิ|ไสหัว|ฆ่า|เจ้ามันตัว)/.test(t)) return 'angry';
-    if (/(เสียใจ|ขอโทษ|เศร้า|ร้องไห้|น่าสงสาร|คิดถึง)/.test(t)) return 'sad';
-    if (/^(…|\.\.\.)|(…|\.\.\.)$|(หรือเปล่า|ไม่แน่ใจ|สงสัย)/.test(t)) return 'think';
-    return /!/.test(t) ? 'happy' : 'neutral';
+    if (/(อะไรนะ|เอ๊ะ|หา\?|จริงเหรอ|จริงหรือ|!\?|\?!|ไม่จริง|ตายแล้ว|ว้าย|ระวัง!)/.test(t)) return 'surprised';
+    if (/(กล้าดียังไง|ไสหัว|แค้น|บัดซบ|เจ้ามันตัว|ไอ้(?!หนู)|บ้าเอ๊ย|บ้าจริง|อย่ามายุ่ง)/.test(t)) return 'angry';
+    if (/(เสียใจ|เศร้า|ร้องไห้|น่าสงสาร|คิดถึง)/.test(t)) return 'sad';
+    if (/(ฮ่า ?ๆ|ฮ่าฮ่า|ดีเลย|ดีใจ|เยี่ยม|ขอบใจ|ขอบคุณ|ยินดี|สนุก|♪)/.test(t)) return 'happy';
+    if (/^(…|\.\.\.)|(…|\.\.\.)$|(ไม่แน่ใจ|สงสัย)/.test(t)) return 'think';
+    return 'neutral';
   }
   const moodOf = (line, face) => line.mood || ({ happy: 'warm', angry: 'tense', surprised: 'shock', sad: 'sad' }[face] || 'calm');
 
@@ -121,11 +125,12 @@
 
   /* ---------- DOM ---------- */
   let box = null, stands = null, slots = { L: null, R: null }, recent = [], speakerSide = null, scene = null, typingFlap = null;
+  /* v98.950 · the two stands sit further apart (owner: "too close together"): each stand is 48vw / 600px wide (was 56vw / 620px) and 700px from the centre line (was 560px) */
   const css = `
   .cs-actors{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
-  .cs-actor{position:absolute;bottom:4vh;height:min(74vh,640px);width:min(56vw,620px);display:flex;align-items:flex-end;justify-content:center;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),filter .35s,opacity .35s;opacity:0;filter:brightness(.45) saturate(.7)}
-  .cs-actor.L{left:max(0px,calc(50% - 560px));transform:translateX(-60px) scale(.94);transform-origin:50% 100%}
-  .cs-actor.R{right:max(0px,calc(50% - 560px));transform:translateX(60px) scale(.94);transform-origin:50% 100%}
+  .cs-actor{position:absolute;bottom:4vh;height:min(74vh,640px);width:min(48vw,600px);display:flex;align-items:flex-end;justify-content:center;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),filter .35s,opacity .35s;opacity:0;filter:brightness(.45) saturate(.7)}
+  .cs-actor.L{left:max(0px,calc(50% - 700px));transform:translateX(-60px) scale(.94);transform-origin:50% 100%}
+  .cs-actor.R{right:max(0px,calc(50% - 700px));transform:translateX(60px) scale(.94);transform-origin:50% 100%}
   .cs-actor.in{opacity:1}.cs-actor.in.L,.cs-actor.in.R{transform:translateX(0) scale(.94)}
   .cs-actor.on{filter:none;z-index:2}.cs-actor.on.L,.cs-actor.on.R{transform:translateX(0) scale(1)}
   .cs-actor .art{position:relative;height:100%;width:100%;display:flex;align-items:flex-end;justify-content:center;animation:csBreath 3.6s ease-in-out infinite}

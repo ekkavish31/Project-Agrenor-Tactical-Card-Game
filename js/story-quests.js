@@ -465,9 +465,9 @@ const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings 
  {who:'S',text:'ดูมุมขวาบนนั่น มีไอคอน สมุดผนึก อยู่ — {S2B} ลองกดเปิดดู',target:'.hud-ico[data-hud="bag"]'},
  {who:'B',text:'ของที่สมาคมให้ใช่ไหม ข้าไม่เคยเปิดดูจริง ๆ จัง ๆ เลย'},
  {who:'S',text:'ของที่เราพกจะกลายเป็นการ์ดเก็บอยู่ในนี้แหละ ลองกดแท็บ อุปกรณ์ ก่อนสิ',target:'.cb-tabs button[data-t="gear"]'},
- {who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย'},
+ {face:'happy',who:'B',text:'มีดของพ่อ… อยู่ในนี้แล้วจริงด้วย'},
  {who:'S',text:'แตะการ์ดใบนั้นดูสิ จะเห็นรายละเอียด',target:'.cb-page[data-p="gear"] .card-thumb'},
- {who:'B',text:'ละเอียดกว่าที่คิดแฮะ เหมือนของจริงเลย'},
+ {face:'happy',who:'B',text:'ละเอียดกว่าที่คิดแฮะ เหมือนของจริงเลย'},
  {who:'S',text:'ปิดการ์ดนี้ก่อน แล้วไปดูแท็บอื่นกัน',target:'#collectionFocus button, #collectionFocus .focus-close'},
  {who:'S',text:'เหล็ก ถ่าน ไม้ ที่เก็บมาผลิตของ จะอยู่แท็บ วัตถุดิบ',target:'.cb-tabs button[data-t="mat"]',prep:()=>{if(!document.getElementById('panel').open)openPanel('bag')}},
  {who:'B',text:'การ์ดสี่ใบนี้คือวัตถุดิบสินะ ตัวเลข ×6 ตรงมุมคือจำนวนที่เรามีใช่ไหม',target:'.cb-page[data-p="mat"] .collection-grid',wait:'next'},
@@ -477,7 +477,7 @@ const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings 
  {who:'B',text:'งั้นยากับอาหารที่ทำเสร็จแล้วล่ะ อยู่ตรงไหน'},
  {who:'S',text:'แท็บ ของใช้ — ยาฟื้นฟูกับน้ำดื่มที่แม่เตรียมให้อยู่ตรงนี้ กดใช้ได้เลย',target:'.cb-tabs button[data-t="use"]'},
  {who:'B',text:'เข้าใจแล้ว ใส่ไว้ในสมุดก็ไม่ต้องหอบเป็นกอง'},
- {who:'S',text:'งั้นกดกากบาทมุมขวาบนปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .cb-close'}];
+ {face:'happy',who:'S',text:'งั้นกดกากบาทมุมขวาบนปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .cb-close'}];
 let tourBusy=false;
 async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{v.story=v.story||{};if(!v.story.bookGift){v.story.bookGift=true;const b=v.bag||(v.bag={});b.potion=(b.potion||0)+1;b.momWater=(b.momWater||0)+1;doSave()}   /* v98.668 · the ของใช้ page is not empty: 1 potion (+HP) and 1 water from mother (+stamina) */
   const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
