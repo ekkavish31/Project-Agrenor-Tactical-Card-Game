@@ -159394,6 +159394,162 @@
     "group": "npcs"
    },
    "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "portrait-clerk-neutral",
+   "file": "assets/portraits/story/clerk-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "clerk dialogue neutral",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    552,
+    713
+   ]
+  },
+  {
+   "id": "portrait-clerk-happy",
+   "file": "assets/portraits/story/clerk-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "clerk dialogue happy",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    551,
+    713
+   ]
+  },
+  {
+   "id": "portrait-clerk-angry",
+   "file": "assets/portraits/story/clerk-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "clerk dialogue angry",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    551,
+    713
+   ]
+  },
+  {
+   "id": "portrait-clerk-worry",
+   "file": "assets/portraits/story/clerk-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "clerk dialogue worry",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    552,
+    713
+   ]
+  },
+  {
+   "id": "portrait-vera-neutral",
+   "file": "assets/portraits/story/vera-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "vera dialogue neutral",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    543,
+    724
+   ]
+  },
+  {
+   "id": "portrait-vera-happy",
+   "file": "assets/portraits/story/vera-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "vera dialogue happy",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    543,
+    724
+   ]
+  },
+  {
+   "id": "portrait-vera-angry",
+   "file": "assets/portraits/story/vera-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "vera dialogue angry",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    543,
+    724
+   ]
+  },
+  {
+   "id": "portrait-vera-worry",
+   "file": "assets/portraits/story/vera-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "vera dialogue worry",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    543,
+    724
+   ]
+  },
+  {
+   "id": "portrait-boss-neutral",
+   "file": "assets/portraits/story/boss-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "boss dialogue neutral",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    543,
+    724
+   ]
+  },
+  {
+   "id": "portrait-boss-happy",
+   "file": "assets/portraits/story/boss-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "boss dialogue happy",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    543,
+    724
+   ]
+  },
+  {
+   "id": "portrait-boss-angry",
+   "file": "assets/portraits/story/boss-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "boss dialogue angry",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    543,
+    724
+   ]
+  },
+  {
+   "id": "portrait-boss-worry",
+   "file": "assets/portraits/story/boss-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "subject": "boss dialogue worry",
+   "usedIn": "StoryActors.face / StoryCast.face",
+   "size": [
+    543,
+    724
+   ]
   }
  ],
  "studioReviews": {

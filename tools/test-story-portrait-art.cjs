@@ -8,7 +8,7 @@ vm.runInNewContext(fs.readFileSync(path.join(root, 'js/story-actors.js'), 'utf8'
 const actors = context.window.StoryActors;
 const cast = require(path.join(root, 'js/story-cast.js'));
 const map = require(path.join(root, 'js/story-map-data.js'));
-const ids = ['corvin', 'helga', 'darren', 'mierris', 'lorrik', 'serrien', 'vik', 'irene'];
+const ids = ['clerk', 'vera', 'boss', 'corvin', 'helga', 'darren', 'mierris', 'lorrik', 'serrien', 'vik', 'irene'];
 const moods = { neutral: 'neutral', happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry', think: 'neutral', missing: 'neutral' };
 let cases = 0;
 for (const [speaker, id] of [...ids.map(id => [id, id]), ['third', 'corvin'], ['mage', 'serrien']]) {

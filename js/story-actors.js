@@ -22,10 +22,9 @@
   PAINTED.elder = PAINTED.oren;
   PAINTED.third = PAINTED.corvin;
   PAINTED.mage = PAINTED.serrien;
-  /* v98.946 · authored neutral portraits; other moods share the neutral picture. */
-  for (const id of ['clerk', 'vera', 'boss']) PAINTED[id] = [id, ['neutral']];
-  const portraitFile = (set, mood) => ['clerk', 'vera', 'boss'].includes(set)
-    ? 'assets/generated-village/' + set + '.png' : 'assets/portraits/' + set + '-' + mood + '.webp';
+  /* v98.1015 · four authored expressions for the three remaining speakers. */
+  for (const id of ['clerk', 'vera', 'boss']) PAINTED[id] = ['story/' + id, STORY_FACES];
+  const portraitFile = (set, mood) => 'assets/portraits/' + set + '-' + mood + '.webp';
   /* v98.204 · the hero's painted set follows the chosen look (HeroVariant): hero-<look>-<pose>.webp. Only looks that have a sheet are listed; the other keeps the code-drawn bust */
   const HERO_SETS = { male: ['hero-male', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }], female: ['hero-female', { neutral: 'talk', think: 'calm', happy: 'happy', angry: 'angry', surprised: 'worry', sad: 'sad' }] };
   /* v98.206 · which way a painted set faces as drawn (checked on every pose: hero male/female all look LEFT, mom all looks RIGHT). A speaker on the left of the stage must face right, one on the right must face left, so the picture is mirrored when its native facing is wrong for its side. */
