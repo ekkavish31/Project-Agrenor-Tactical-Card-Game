@@ -1,4 +1,4 @@
-// Village default layout — saved from the in-game editor 2026-11-21T17:25:32.376Z.
+// Village default layout — saved from the in-game editor 2026-11-23T08:27:26.872Z.
 window.VillageDefaultLayout={
   "version": 1,
   "grid": 1,
@@ -27438,7 +27438,7 @@ window.VillageDefaultLayout={
       "all": 0.75
     },
     "chars": {
-      "hero": 0.768
+      "hero": 0.8
     }
   }
 };
