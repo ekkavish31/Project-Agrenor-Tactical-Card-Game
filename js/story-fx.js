@@ -9,7 +9,7 @@
 const reduced=()=>root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const heroName=()=>{try{return (typeof s!=='undefined'&&s.village?.heroName)||'นักผจญภัย'}catch{return 'นักผจญภัย'}};
-const sibName=()=>{try{return (typeof s!=='undefined'&&s.village?.siblingName)||'น้อง'}catch{return 'น้อง'}};
+const sibName=()=>{try{return (typeof s!=='undefined'&&s.village?.siblingName)||(root.HeroVariant?.get?.()==='female'?'พี่ชาย':'น้องสาว')}catch{return 'น้องสาว'}};   /* v98.995 · fallback by role (the elder brother / the younger sister), never a bare 'น้อง' */
 /* v98.230 · {hero} lead's name · {sib} the other hero · {sibrel} พี่ชาย (when you play the sister) / น้องสาว (when you play the brother) · {polite} ครับ / ค่ะ by the lead's look */
 const leadFemale=()=>{try{return root.HeroVariant?.get?.()==='female'}catch{return false}};
 const polite=()=>{try{return root.HeroVariant?.get?.()==='female'?'ค่ะ':'ครับ'}catch{return 'ครับ'}};

@@ -721,7 +721,7 @@
   function openWard() {
     const I = window.Injury, g = window.WorldState?.game?.(); if (!I || !g) return toast('ระบบบาดเจ็บยังไม่พร้อม');
     close(); modalOpen = true; const TOWN = 'fernvale', q = I.quality(TOWN), v = g.village || {};
-    const people = [{ id: 'hero', name: heroName() }, { id: 'sib', name: v.siblingName || 'น้อง' }, ...[...(v.party || []), ...(v.bench || [])].filter(m => m.key !== 'sib').map(m => ({ id: m.key, name: m.name }))];
+    const people = [{ id: 'hero', name: heroName() }, { id: 'sib', name: v.siblingName || (window.HeroVariant?.get?.() === 'female' ? 'พี่ชาย' : 'น้องสาว') }, ...[...(v.party || []), ...(v.bench || [])].filter(m => m.key !== 'sib').map(m => ({ id: m.key, name: m.name }))];
     const day = CLK.read().day, rows = people.filter(p => I.hurt(g, p.id) || I.of(g, p.id)).map(p => {
       const r = I.of(g, p.id), heavy = I.heavyParts(g, p.id).length > 0;
       return `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin:8px 0;padding:6px 8px;background:#fff7e3;border-radius:8px"><span><b>${esc(p.name)}</b> · ${esc(I.describe(g, p.id))}${r.bed ? ' · 🛏 นอนพักอยู่' : ''}</span><span>${heavy && !r.bed ? `<button data-a="admit" data-id="${p.id}">ฝากรักษา ${q.cost}💰/วัน</button>` : ''}${r.bed ? `<button data-a="out" data-id="${p.id}">รับกลับ</button>` : ''}${r.bed && r.visitDay !== day ? `<button data-a="visit" data-id="${p.id}">เยี่ยม</button>` : ''}</span></div>`;

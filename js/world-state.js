@@ -60,7 +60,7 @@
     v.coins ??= 80; v.materials ||= {}; v.materials.food ??= 0; v.bag ||= {};
     v.party ||= []; v.bench ||= []; v.recruit ||= {}; v.battles ??= 0; v.kills ??= 0;
     /* v98.234 · minimum team of two: the other hero (พี่ชาย/น้องสาว) is always in the travelling party (new saves and old ones) */
-    { const nm = v.siblingName || 'น้อง'; let m = v.party.find(x => x.key === 'sib') || v.bench.find(x => x.key === 'sib');
+    { const nm = v.siblingName || (() => { try { return root.HeroVariant?.get?.() === 'female' ? 'พี่ชาย' : 'น้องสาว' } catch (e) { return 'น้องสาว' } })();   /* v98.995 · role fallback (was a bare 'น้อง', and it was saved into the party) */ let m = v.party.find(x => x.key === 'sib') || v.bench.find(x => x.key === 'sib');
       if (!m) { m = { key: 'sib', name: nm, hp: 50, max: 50, order: 'charge', locked: true }; v.party.unshift(m) }
       else { m.name = nm; m.locked = true; if (!v.party.includes(m)) { v.bench = v.bench.filter(x => x !== m); v.party.unshift(m) } } }
     if (!v.worldMerged) merge(g);

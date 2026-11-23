@@ -19,12 +19,15 @@
   const heroName = () => { try { return (root.WorldState?.heroName?.() || root.s?.village?.heroName) || 'นักผจญภัย' } catch (e) { return 'นักผจญภัย' } };
   const female = () => { try { return /female/.test(root.HeroVariant?.get?.() || '') } catch (e) { return false } };
   /* v98.953 · {sib} the other hero · {callhero} / {callsib} how the sibling calls the lead / how the lead calls the sibling (same as js/story-fx.js) */
-  const sibName = () => { try { return (root.WorldState?.game?.()?.village?.siblingName || root.s?.village?.siblingName) || 'น้อง' } catch (e) { return 'น้อง' } };
+  /* v98.995 · the other hero is the elder BROTHER when you lead the sister, the younger SISTER when you lead the brother — so the fallback is never a bare 'น้อง' (it was shown over the brother) */
+  const sibRel = () => female() ? 'พี่ชาย' : 'น้องสาว';
+  const sibName = () => { try { return (root.WorldState?.game?.()?.village?.siblingName || root.s?.village?.siblingName) || sibRel() } catch (e) { return sibRel() } };
   const fill = t => String(t ?? '').replace(/\{hero\}/g, heroName()).replace(/\{sib\}/g, sibName()).replace(/\{callhero\}/g, female() ? heroName() : 'พี่' + heroName()).replace(/\{callsib\}/g, female() ? 'พี่' + sibName() : sibName());
 
   function name(who) {
     if (!who) return '';
     if (who === 'hero') return heroName();
+    if (who === 'sib') return sibName();   /* v98.995 · STORY_DATA.SPEAKERS.sib reads the bare `s`, which does not exist inside the battle iframe → it always showed 'น้อง' */
     const S = root.STORY_DATA?.SPEAKERS?.[who], n = S && (typeof S.name === 'function' ? S.name() : S.name);
     return String(NAMES[who] || n || who).split(' · ')[0];
   }

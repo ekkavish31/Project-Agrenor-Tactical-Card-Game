@@ -92,7 +92,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
       for (const st of steps) {
         if (skipped) break;
         const who = resolve(C, st.who || 'S'), side = who === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('dim', side !== 'L'); $('.pic.R').classList.toggle('dim', side !== 'R');
-        nm.textContent = who === 'hero' ? (C?.fill ? C.fill('{hero}') : 'พี่') : (C?.fill ? C.fill('{sib}') : 'น้อง');
+        { const fem = root.HeroVariant?.get?.() === 'female'; nm.textContent = who === 'hero' ? (C?.fill ? C.fill('{hero}') : (fem ? 'น้องสาว' : 'พี่ชาย')) : (C?.fill ? C.fill('{sib}') : (fem ? 'พี่ชาย' : 'น้องสาว')) }
         typed = fill(st.text); say.textContent = ''; let i = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { i += 2; say.textContent = typed.slice(0, i); if (i >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 22);
         curNext = st.wait === 'next'; box.querySelector('small').textContent = st.target && !curNext ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกเพื่อไปต่อ';
         if (st.prep) { try { st.prep() } catch (e) { } await sleep(350) }   /* e.g. re-open the book if the previous click closed it */

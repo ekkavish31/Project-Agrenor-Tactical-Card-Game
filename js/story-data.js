@@ -6,8 +6,8 @@ const B={houseFront:'assets/new-game-prologue/images/hero-house.webp',home:'asse
  forest:'assets/scenes/area-forest.webp',mine:'assets/scenes/area-mine.webp',ruins:'assets/scenes/area-ruins.webp'};
 const ally=()=>{try{const c=(s.village.party||[]).find(x=>x.key!=='sib');const R=root.Companions?.ROSTER?.[c?.key];return c&&R?{name:R.name,bust:c.key,portrait:root.StoryActors?.facePic(c.key,{},'neutral')||'assets/cards/portraits/u-'+c.key+'.webp'}:null}catch{return null}};
 const SPEAKERS={
- hero:{name:()=>{try{return s.village.heroName||'นักผจญภัย'}catch{return 'นักผจญภัย'}},portrait:'assets/cards/portraits/u-hero.webp'},
- sib:{name:()=>{try{return s.village.siblingName||'น้อง'}catch{return 'น้อง'}},color:'#5a6a8a'},   /* v98.230 · the other hero: elder BROTHER (male look) / younger SISTER (female look) — same name/portrait logic as hero, see story-actors sibSet */
+ hero:{name:()=>{try{const n=window.WorldState?.heroName?.()||window.WorldState?.game?.()?.village?.heroName;if(n)return n}catch{}try{return s.village.heroName||'นักผจญภัย'}catch{return 'นักผจญภัย'}},portrait:'assets/cards/portraits/u-hero.webp'},
+ sib:{name:()=>{try{const n=window.WorldState?.game?.()?.village?.siblingName;if(n)return n}catch{}try{if(s.village.siblingName)return s.village.siblingName}catch{}try{return window.HeroVariant?.get?.()==='female'?'พี่ชาย':'น้องสาว'}catch{return 'น้องสาว'}},color:'#5a6a8a'},   /* v98.230 · the other hero: elder BROTHER (male look) / younger SISTER (female look) — same name/portrait logic as hero, see story-actors sibSet */
  mom:{name:'แม่',color:'#8a4b5c'},
  elder:{name:'ผู้ใหญ่บ้านโอเรน',color:'#56683a'},
  corvin:{name:'นายพลคอร์วิน แธเรล',color:'#8a2a2a'},helga:{name:'พี่น้องเฮลกา',color:'#7a6a8a'},darren:{name:'เซอร์ดาร์เรน',color:'#4a5a7a'},irene:{name:'หมอหญิงไอรีน',color:'#5a7a4a'},mierris:{name:'เมียร์ริส',color:'#b09a5a'},lorrik:{name:'ลอร์ริก',color:'#5a3a6a'},serrien:{name:'เซอร์เรียน',color:'#4a4a7a'},vik:{name:'วิก',color:'#6a4a2a'},   /* v98.536 · painted story cast (assets/portraits/story) */

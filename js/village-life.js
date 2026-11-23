@@ -261,7 +261,7 @@
     berg: { name: 'นายพรานเบิร์ก', hp: 50, atk: 13, move: 4, range: 4, fx: 'arrow' },
     mil: { name: 'มิล', hp: 42, atk: 10, move: 5, range: 1, fx: 'knife' },
     /* v98.234 · the other hero (พี่ชาย / น้องสาว): always in the party from the start (min. team of two). Numbers are placeholders to balance. */
-    sib: { get name() { try { return window.WorldState?.game()?.village?.siblingName || 'น้อง' } catch (e) { return 'น้อง' } }, hp: 50, atk: 11, move: 4, range: 1, fx: 'sword' }
+    sib: { get name() { try { return window.WorldState?.game()?.village?.siblingName || (window.HeroVariant?.get?.() === 'female' ? 'พี่ชาย' : 'น้องสาว') } catch (e) { return 'น้องสาว' } }, hp: 50, atk: 11, move: 4, range: 1, fx: 'sword' }
   };
 
   /* ---------- party store (v94): gold, potions, hero HP and the party live in the game save (js/world-state.js);
