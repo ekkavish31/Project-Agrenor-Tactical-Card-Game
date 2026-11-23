@@ -1731,15 +1731,15 @@
     if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
   function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px AgThai,system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
-  /* v98.573 · Mip after the goat's shape drops: the run cycle of assets/ui/mip-sheet.webp (12 cells · faces LEFT), drawn over a soft blue glint */
+  /* v98.573 · Mip after the goat's shape drops: the run cycle of assets/ui/mip-sheet.webp (12 cells · faces LEFT), drawn over a soft blue glint · v98.994 stands still (cell 3, same as js/mip-follower.js) while it is not walking, i.e. during the talk; it only runs when it flees */
   function mysteryGlint(g, u, t) {
     const p = project(u.vu, u.vv), k = .35 + Math.max(0, Math.sin(t * .004)) * .65; g.save(); g.fillStyle = '#9fd8ff'; g.strokeStyle = '#2b6fb0'; g.lineWidth = 1;
     for (const [dx, dy, r] of [[UNIT * .26, -UNIT * .95, 4.5], [-UNIT * .3, -UNIT * .62, 3.2]]) { g.globalAlpha = k; g.beginPath(); g.moveTo(p.x + dx, p.y + dy - r); g.lineTo(p.x + dx + r * .6, p.y + dy); g.lineTo(p.x + dx, p.y + dy + r); g.lineTo(p.x + dx - r * .6, p.y + dy); g.closePath(); g.fill(); g.stroke() } g.restore();
   }
   function drawMip(g, u, p0, t) {
     const sheet = im('assets/ui/mip-sheet.webp?v=2'), h = UNIT * 1.15; shadow(g, p0, UNIT * .2);
-    if (!sheet) return; const cw = sheet.naturalWidth / 12, f = Math.floor(t / 70) % 12, right = /^(SE|NE)$/.test(u.dir || ''), fade = u.deadAt ? Math.max(0, 1 - (t - u.deadAt) / 1400) : 1;
-    g.save(); g.globalAlpha = fade; g.translate(p0.x, p0.y); if (right) g.scale(-1, 1); g.drawImage(sheet, f * cw, 0, cw, sheet.naturalHeight, -h / 2, -h * .92, h, h); g.restore();
+    if (!sheet) return; const run = !!u.walking, cw = sheet.naturalWidth / 12, f = run ? Math.floor(t / 70) % 12 : 3, bob = run ? 0 : Math.abs(Math.sin(t * .004)) * 1.5, right = /^(SE|NE)$/.test(u.dir || ''), fade = u.deadAt ? Math.max(0, 1 - (t - u.deadAt) / 1400) : 1;
+    g.save(); g.globalAlpha = fade; g.translate(p0.x, p0.y - bob); if (right) g.scale(-1, 1); g.drawImage(sheet, f * cw, 0, cw, sheet.naturalHeight, -h / 2, -h * .92, h, h); g.restore();
     g.save(); g.globalAlpha = .5 * fade; g.fillStyle = '#9fd8ff'; for (let i = 0; i < 5; i++) { const a = t * .004 + i * 1.26; g.beginPath(); g.arc(p0.x + Math.cos(a) * h * .5, p0.y - h * .5 + Math.sin(a * 1.3) * h * .35, 2.2, 0, 7); g.fill() } g.restore();
   }
   /* v98.601 · defeated loot pumpkins: visible 1.6 s (the pop), fade out over 0.9 s, then gone */
