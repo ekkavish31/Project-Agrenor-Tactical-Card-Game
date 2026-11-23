@@ -129,7 +129,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
    on-screen height (UNIT = one battle cell) = silhouette height ÷ picture height × the size the game draws the picture at:
-     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.1025
+     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.1026
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
@@ -254,7 +254,7 @@ const AK = id => { const l = lookOfId(id); return l ? (l === 'female' ? 'hero-fe
 const isRefId = id => lookOfId(id) === 'male';
 const GROUPOF = {};   /* id → the studio's group (characters / npcs) so the lineup filter matches the left panel */
 async function buildChars() {
-  if (!window.ASSET_MANIFEST) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/asset-manifest.js?v=v98.1025 + (window.GAME_VERSION?.v || ''); sc.onload = sc.onerror = r; document.head.append(sc) });   /* v98.530 · the game's real hero pictures (lookPic) */
+  if (!window.ASSET_MANIFEST) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/asset-manifest.js?v=v98.1026 + (window.GAME_VERSION?.v || ''); sc.onload = sc.onerror = r; document.head.append(sc) });   /* v98.530 · the game's real hero pictures (lookPic) */
   const list = ST ? ST.lineup.entities().map(e => { const id = e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc|svc):/, ''); if (e.group) GROUPOF[id] = e.group; return { id, sid: e.id, name: e.name, clips: e.clips } }) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
   /* v98.962 · SPEED: the pictures were asked for and loaded ONE AFTER ANOTHER (≈100 round trips in a row — minutes on a slow link). Now every character's picture is looked up at the same time and
      the files are requested together; addChar() below then finds them already in the browser's cache. */
@@ -302,7 +302,7 @@ async function build() {
   if (DOCK) showNow();   /* v98.962 · the row is usable now; the monsters below keep loading and the row refreshes when they arrive */
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.1025 + (window.GAME_VERSION?.v || 'v98.959'))).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.1026 + (window.GAME_VERSION?.v || 'v98.959'))).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     const MONS = [...blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)];
     await Promise.all(MONS.map(m => load(`assets/enemies/${m[4]}.webp`)));   /* v98.962 · all at once (they were fetched one by one) */
     for (const m of MONS) {

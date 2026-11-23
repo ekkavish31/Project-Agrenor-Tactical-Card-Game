@@ -160421,6 +160421,104 @@
    ],
    "subject": "kobold boss dialogue portrait — worry",
    "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "item-mayBread",
+   "file": "assets/cards/item/mayBread.webp",
+   "category": "items",
+   "status": "final",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": false,
+   "subject": "mayBread",
+   "usedIn": "Story item card",
+   "artRevision": "v98.1026"
+  },
+  {
+   "id": "item-glowCrystal",
+   "file": "assets/cards/item/glowCrystal.webp",
+   "category": "items",
+   "status": "final",
+   "size": [
+    512,
+    512
+   ],
+   "transparent": false,
+   "subject": "glowCrystal",
+   "usedIn": "Story item card",
+   "artRevision": "v98.1026"
+  },
+  {
+   "id": "ui-status-sleep",
+   "file": "assets/ui/status/sleep.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    128,
+    128
+   ],
+   "transparent": true,
+   "subject": "sleep",
+   "usedIn": "Battle status",
+   "artRevision": "v98.1026"
+  },
+  {
+   "id": "ui-status-silence",
+   "file": "assets/ui/status/silence.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    128,
+    128
+   ],
+   "transparent": true,
+   "subject": "silence",
+   "usedIn": "Battle status",
+   "artRevision": "v98.1026"
+  },
+  {
+   "id": "ui-status-stun",
+   "file": "assets/ui/status/stun.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    128,
+    128
+   ],
+   "transparent": true,
+   "subject": "stun",
+   "usedIn": "Battle status",
+   "artRevision": "v98.1026"
+  },
+  {
+   "id": "ui-status-shock",
+   "file": "assets/ui/status/shock.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    128,
+    128
+   ],
+   "transparent": true,
+   "subject": "shock",
+   "usedIn": "Battle status",
+   "artRevision": "v98.1026"
+  },
+  {
+   "id": "ui-status-weak",
+   "file": "assets/ui/status/weak.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    128,
+    128
+   ],
+   "transparent": true,
+   "subject": "weak",
+   "usedIn": "Battle status",
+   "artRevision": "v98.1026"
   }
  ],
  "studioReviews": {

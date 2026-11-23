@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1025';
+  const V = '98.1026';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -79,8 +79,8 @@
   /* v98.492 · ?scene=<id>: a FIXED set-piece fight (js/set-pieces.js) — hand-drawn field, fixed starts, scene rules */
   const SCENE = window.SetPieces && Q.get('scene') ? window.SetPieces.get(Q.get('scene')) : null;
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
-  /* v98.281 · status icons = the user's picture set (assets/ui/status/<name>.webp, tools/build-status-icons.py); statuses with no picture yet (sleep 💤, silence 🔇) keep their emoji */
-  const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'freeze', shock: 'slow', slowed: 'slow', weak: 'disarm' };
+  /* v98.281 · status icons = the user's picture set (assets/ui/status/<name>.webp, tools/build-status-icons.py); dedicated painted icons include sleep, silence, stun, shock and weakness */
+  const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'stun', shock: 'shock', slowed: 'slow', weak: 'weak', sleep: 'sleep', silence: 'silence', bind: 'root' };
   const stiSrc = k => STI[k] ? 'assets/ui/status/' + STI[k] + '.webp' : null;
   const stiHtml = (k, title) => { const s = stiSrc(k); return s ? `<img class="sti" src="${s}" alt="" draggable="false"${title ? ` title="${title}"` : ''}>` : `<span${title ? ` title="${title}"` : ''}>${(FB.STATUS[k] || {}).icon || ''}</span>` };
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null, hoverU = null, pickU = null;   /* v98.358 · hoverU: the unit under the pointer (white edge + info window) · pickU: the unit last clicked (grey crystal over its head) */

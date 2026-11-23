@@ -7682,3 +7682,8 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - ผู้สร้างยกเลิกมุมหลัง station NPC และภาพฉากเล่าเรื่อง W11a แล้ว: ไม่นำภาพที่ทดลองไว้เข้าเกม
 - built-in image_gen: 14 separate reference-guided four-column sheets, identical identity/scale/lighting, neutral/confident/angry/worried, transparent, painterly JRPG; Pillow ใช้แยกคอลัมน์และ encode WebP เท่านั้น
 - ตรวจสอบ: node --check ทุก js ผ่าน; tools/test-*.cjs 82 ชุด ผ่าน 64, ไม่ผ่าน 18 ชุดเดิมที่พบก่อนงานนี้; test-boss-portraits ตรวจ 56 ไฟล์/4 รูปไม่ซ้ำต่อบอส/paths ทุก mood/ศัตรูทั่วไปและ code preview ผ่าน. ยังไม่ได้ยืนยัน UI ในเบราว์เซอร์ (Chromium ของเครื่องนี้เปิดไม่ได้)
+
+
+## v98.1026 · 24 พ.ย. 2026
+- เพิ่มภาพการ์ดขนมปังป้าเมย์หนึ่งก้อนแบบชิโอะปัง และผลึกเรืองแสง; migrate เฉพาะภาพยืมเดิม ไม่ทับงานที่ผู้เล่นอัปโหลด
+- เพิ่มไอคอนหลับ/ใบ้/มึนงง/ชา/อ่อนแรง และใช้ root เดิมกับ bind แทนอีโมจิ; ค่าการแจกและกติกาไม่เปลี่ยน
