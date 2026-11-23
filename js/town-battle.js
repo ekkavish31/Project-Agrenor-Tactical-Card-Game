@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1022';
+  const V = '98.1025';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -603,6 +603,7 @@
   /* v97 · FFT turn queue (top centre): who acts next, the acting unit highlighted, with its HP */
   /* v98.253 · the face picture of a fighter (queue chips + inspect card) */
   function faceFor(u) {
+    if (window.BattlePortrait?.bossPortrait(u)) return BattlePortrait.face(u, 'idle');
     const lookNow = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })(), otherLook = lookNow === 'female' ? 'male' : 'female';
     return u.side === 'monster' ? (MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' })
       : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
@@ -673,7 +674,7 @@
     if (!d) { d = document.createElement('div'); d.id = 'fbDuel'; document.body.append(d) }
     d.dataset.sig = sig; d.classList.toggle('min', min);
     const card = (R, role) => {
-      const u = R.u, foe = u.side === 'monster', f = foe && MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
+      const u = R.u, foe = u.side === 'monster', f = foe && !BP.bossPortrait(u) && MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
       const jn = !foe && window.Progression?.JOBS?.[job]?.name;
       return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}${pct > 0 && pct < 25 ? ' low' : ''}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"><b class="rd"></b>${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
     };

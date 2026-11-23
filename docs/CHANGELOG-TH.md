@@ -7673,3 +7673,12 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - **ตรวจเพิ่ม:** เควสสมาคม/ค่าหัว/โปรเจกต์หมู่บ้านให้เหรียญ ชื่อเสียง และของจากโรงตีการ์ด ไม่มีของที่ถูกเอ่ยชื่อแล้วมอบ — ไม่ต้องเพิ่มการ์ด (ดู `docs/ITEM-AUDIT-DIALOGUE-TH.md`)
 - ทดสอบ (Playwright, แทนที่หน้าชื่อเกมชั่วคราว): เรียกแสดง 3 ชิ้นต่อกัน เห็นการ์ดขนมปังป้าเมย์ ×4 พร้อมชื่อ ประเภท เรื่องสั้น "แม่นับไว้แล้ว สี่ก้อน" และกฎ · Enter ไล่ต่อจนปิด ไม่เหลือค้างบนจอ · ไม่มี error · คีย์ของ 8 ชิ้น (ยา น้ำ ขนมปัง ฟักทอง ผลึก แผนที่ เหล็ก ไม้) หาการ์ดเจอครบ
 - **ยังไม่ได้ทดสอบ:** การเรียกจริงตอนเล่นเนื้อเรื่อง (ต้องเล่นถึงจุดรับสมุดผนึก/จบเควสฟักทอง/ถ้ำ) · เสียง (ใช้ ui-confirm/ui-click ที่มีอยู่) · การบินไปปุ่มสมุดบนหน้าหมู่บ้าน (ตัวเลือกปุ่มยังเป็นการเดา)
+
+
+## v98.1025 · 23 พ.ย. 2026
+- ภาพสนทนาบอสครบ 14 ชนิด × 4 อารมณ์ (neutral/happy/angry/worry), รวม 56 WebP โปร่งใส อ้างอิงภาพศัตรูจริง: treant crystalKing bogHydra coralGolem frostQueen pumpkinBoss voidKing hunger byrexael wolf golem slime bandit kobold
+- เชื่อม BattleTalk (`b:<kind>`), StoryActors, BattlePortrait และคิว/inspect ใน town-battle; idle/guard→neutral, attack→angry, hurt/down→worry, heal/win→happy. แก้ทางลัด code-monster ที่เคยข้ามภาพจริงเฉพาะบอส; ศัตรูทั่วไปยังใช้ภาพเดิม
+- เพิ่ม manifest / image index / facing editor; คง generic speaker `boss` ผ้าคลุมเขียวและบทพูดเดิม ไม่เพิ่ม Canon
+- ผู้สร้างยกเลิกมุมหลัง station NPC และภาพฉากเล่าเรื่อง W11a แล้ว: ไม่นำภาพที่ทดลองไว้เข้าเกม
+- built-in image_gen: 14 separate reference-guided four-column sheets, identical identity/scale/lighting, neutral/confident/angry/worried, transparent, painterly JRPG; Pillow ใช้แยกคอลัมน์และ encode WebP เท่านั้น
+- ตรวจสอบ: node --check ทุก js ผ่าน; tools/test-*.cjs 82 ชุด ผ่าน 64, ไม่ผ่าน 18 ชุดเดิมที่พบก่อนงานนี้; test-boss-portraits ตรวจ 56 ไฟล์/4 รูปไม่ซ้ำต่อบอส/paths ทุก mood/ศัตรูทั่วไปและ code preview ผ่าน. ยังไม่ได้ยืนยัน UI ในเบราว์เซอร์ (Chromium ของเครื่องนี้เปิดไม่ได้)
