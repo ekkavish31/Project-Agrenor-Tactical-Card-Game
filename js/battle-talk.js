@@ -34,11 +34,8 @@
   function name(who) {
     if (!who) return '';
     if (who === 'hero') return heroName();
-<<<<<<< Updated upstream
     if (who === 'sib') return sibName();   /* v98.995 · STORY_DATA.SPEAKERS.sib reads the bare `s`, which does not exist inside the battle iframe → it always showed 'น้อง' */
-=======
     if (bossKind(who)) return BOSS_ID[bossKind(who)]?.[0] || 'บอส';
->>>>>>> Stashed changes
     const S = root.STORY_DATA?.SPEAKERS?.[who], n = S && (typeof S.name === 'function' ? S.name() : S.name);
     return String(NAMES[who] || n || who).split(' · ')[0];
   }
