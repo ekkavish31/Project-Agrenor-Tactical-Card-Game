@@ -271,7 +271,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         <div class="ps-sh">ท่าที่เลือก</div><div id="psAdjBox"></div>
         <div class="ps-row"><button type="button" class="act" id="psHide" ${act ? '' : 'disabled'} title="ซ่อนท่าที่เลือกออกจากหน้ารวม (ไม่ลบจุด)">🙈 ซ่อนท่านี้</button><button type="button" class="act" id="psUnhideAll" ${HID.size ? '' : 'disabled'}>👁 แสดงทั้งหมด${HID.size ? ' (' + HID.size + ')' : ''}</button></div>
         <button type="button" class="act" id="psClear" ${act ? '' : 'disabled'}>ล้างจุดของท่าที่เลือก</button>
-        <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label><label title="แถวล่าง: ใช้ท่าเดียวกันของแถวบนเป็นเงา"><input type="checkbox" id="psGhoSame" ${RUL.ghostSame ? 'checked' : ''}>เงาแถวล่าง = ท่าเดียวกันแถวบน</label><label title="แถวล่าง: ใช้ท่ายืนหันหลัง (idle NE) เป็นเงา"><input type="checkbox" id="psGhoBack" ${RUL.ghostBack ? 'checked' : ''}>เงาแถวล่าง = ท่ายืนหันหลัง</label><label><input type="checkbox" id="psGhoFlip" ${RUL.ghostFlip ? 'checked' : ''}>⇆ เงาสลับด้าน</label>
+        <label><input type="checkbox" id="psCen" ${RUL.center ? 'checked' : ''}>เส้นกลางช่อง</label><label><input type="checkbox" id="psGho" ${RUL.ghost ? 'checked' : ''}>เงาท่ายืน SW</label><label title="เงาสีน้ำเงินของตัวเอก (ชาย) ท่ายืน SW ซ้อนทุกช่อง — ไว้เทียบความสูง/รูปร่างกับตัวเอก (ขนาดเทียบตามที่เห็นในเกม: คูณตัวคูณ Scale Lineup แล้ว)"><input type="checkbox" id="psGhoHero" ${RUL.ghostHero ? 'checked' : ''}>เงาตัวเอก (ชาย) ท่ายืน SW</label><label title="แถวล่าง: ใช้ท่าเดียวกันของแถวบนเป็นเงา"><input type="checkbox" id="psGhoSame" ${RUL.ghostSame ? 'checked' : ''}>เงาแถวล่าง = ท่าเดียวกันแถวบน</label><label title="แถวล่าง: ใช้ท่ายืนหันหลัง (idle NE) เป็นเงา"><input type="checkbox" id="psGhoBack" ${RUL.ghostBack ? 'checked' : ''}>เงาแถวล่าง = ท่ายืนหันหลัง</label><label><input type="checkbox" id="psGhoFlip" ${RUL.ghostFlip ? 'checked' : ''}>⇆ เงาสลับด้าน</label>
         </div>
       <div class="ps-zone" id="psZone">`;
     h += `<div class="ps-grid" style="grid-template-columns:34px repeat(${POSES.length},${W}px)"><div class="ps-h"></div>${POSES.map(([, l]) => `<div class="ps-h">${l}</div>`).join('')}`;
@@ -440,10 +440,30 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (el._h !== html) { el._h = html; el.innerHTML = html }   /* only when it changed */
   }
   const paintAll = () => { updNext(); $('poseSheet')?.querySelectorAll('.ps-c[data-ck]').forEach(paint) };
+  /* v98.962 · REFERENCE GHOST: the standing SW pose of the MALE HERO (the yardstick of the whole game) as a blue silhouette behind every pose of the character on show — to see its height / build against the hero's.
+     Same picture scale (one picture px = one screen px), feet of the hero on the ground point (datum feet when it has them) · "⇆ เงาสลับด้าน" mirrors it too. */
+  let HG = null;
+  function heroGhostLoad() {
+    if (!RUL.ghostHero || HG) return;
+    const src = root.ASSET_MANIFEST?.heroVariants?.male?.studioPoses?.idle?.SW?.frames?.[0]?.src || 'assets/tactics/imported/idle-sw-mwcast2-m/frame-01.webp', im = new Image();
+    HG = {}; im.onload = () => { HG.img = im; try { paintAll() } catch (e) { } }; im.onerror = () => { HG = null }; im.src = src;
+  }
+  /* the ghost is drawn at IN-GAME relative size: (hero's drawn size × his ⚖ Lineup factor) ÷ (this character's drawn size × its Lineup factor) — hero 1.6 UNIT, people / allies 1.45 UNIT per 384 canvas (CharSize.DRAW).
+     Monsters have their own scale table → picture scale 1. The Lineup draft of this browser wins over the saved value (what you see in ⚖ Scale Lineup). */
+  function heroGhostK() {
+    try {
+      const C = root.CharScaleAdjust, D = root.CharSize?.DRAW, id = String(cur?.id || ''); if (!C || !D || /^(enemy|svc|m):/.test(id)) return 1;
+      let data = root.CHARACTER_SCALE_ADJUST; try { const d = JSON.parse(localStorage.getItem('projectA.scaleAdjustDraft') || 'null'); if (d) data = d } catch (e) { }
+      const fh = C.factor('village', 'hero', data) || 1, key = akey(id), fc = C.factor('village', key, data) || 1, dc = key === 'hero' || key === 'hero-female' ? D.hero : D.ally;
+      const k = (D.hero * fh) / (dc * fc); return isFinite(k) && k > .2 && k < 5 ? k : 1;
+    } catch (e) { return 1 }
+  }
+  const heroAnchor = () => { const P = DATA.hero?.['idle@SW']?.p; if (P?.footL && P?.footR) return [(P.footL[0] + P.footR[0]) / 2, (P.footL[1] + P.footR[1]) / 2]; return P?.footL || P?.footR || [GX, GY] };
   const ghostCache = new Map();
-  function silhouette(img, flip) { const k = img.src + (flip ? 'f' : ''); let c = ghostCache.get(k); if (c) return c; c = document.createElement('canvas'); c.width = c.height = SRC; const g = c.getContext('2d'); if (flip) { g.translate(SRC, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0, SRC, SRC); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = '#ff7a00'; g.fillRect(0, 0, SRC, SRC); ghostCache.set(k, c); return c }
+  function silhouette(img, flip, col = '#ff7a00') { const k = img.src + (flip ? 'f' : '') + col; let c = ghostCache.get(k); if (c) return c; c = document.createElement('canvas'); c.width = c.height = SRC; const g = c.getContext('2d'); if (flip) { g.translate(SRC, 0); g.scale(-1, 1) } g.drawImage(img, 0, 0, SRC, SRC); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = col; g.fillRect(0, 0, SRC, SRC); ghostCache.set(k, c); return c }
   function paint(el) {
     try { updNext() } catch (e) { console.error('pose-sheet updNext', e) }
+    heroGhostLoad();
     const ck = el.dataset.ck, c = cur.cells[ck], cv = el.querySelector('canvas'), g = cv.getContext('2d'), W = cv.width, k = kOf(c), [ox, oy] = off(ck);
     g.clearRect(0, 0, W, W); for (let y = 0; y < W; y += 14) for (let x = (y / 14) % 2 ? 14 : 0; x < W; x += 28) { g.fillStyle = '#f1efe6'; g.fillRect(x, y, 14, 14) }
     g.fillStyle = '#fff9'; { const [x0, y0] = sc(0, 0); g.fillRect(x0, y0, SRC * Z, SRC * Z) }
@@ -460,6 +480,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     /* v98.782 · the ghost = the standing SW pose (as before), or — on the lower row (NE) — the SAME pose of the row above (SW); "⇆ เงาสลับด้าน" mirrors it (flip about the ground point) */
     const gk = ghostKey(ck), gcell = cur.cells[gk];
     if (RUL.ghost && gcell?.img && ck !== gk) { const ia = anchorOf(gk) || [GX, GY], ki = kOf(gcell), mir = !!RUL.ghostFlip, iax = mir ? SRC - ia[0] : ia[0]; const ax = GX - iax * ki, ay = GY - ia[1] * ki; /* the ghost's origin so that its anchor sits on the ground point */ g.save(); const [dx, dy] = sc(ax, ay), s = SRC * ki * Z; g.globalAlpha = .38; g.drawImage(silhouette(gcell.img, !!gcell.flip !== mir), dx, dy, s, s); g.restore() }
+    if (RUL.ghostHero && HG?.img && akey(cur.id) !== 'hero') { const ia = heroAnchor(), mir = !!RUL.ghostFlip, gk2 = heroGhostK(), iax = mir ? SRC - ia[0] : ia[0], ax = GX - iax * gk2, ay = GY - ia[1] * gk2; g.save(); const [dx, dy] = sc(ax, ay), s = SRC * Z * gk2; g.globalAlpha = .34; g.drawImage(silhouette(HG.img, mir, '#1f6fe0'), dx, dy, s, s); g.restore() }
     if (c.img) { const prev = QA.ck === ck && QA.canvas; if (prev) drawImg(prev, false, ox, oy, k, 1, false, rotOf(ck)); else drawImg(c.img, c.flip, ox, oy, k, 1, false, rotOf(ck)); if (SHOW.zone && !prev) { const zo = zoneOver(ck); if (zo) drawImg(zo, false, ox, oy, k, 1, false, rotOf(ck)) } } else { g.fillStyle = '#9aa18f'; g.font = '12px sans-serif'; g.textAlign = 'center'; g.fillText('กำลังโหลด…', W / 2, W / 2) }
     /* the real 384 × 384 frame */ { const [x0, y0] = sc(0, 0); g.save(); g.strokeStyle = '#d9480f'; g.lineWidth = 1.5; g.strokeRect(x0 + .5, y0 + .5, SRC * Z, SRC * Z); g.restore() }
     /* rulers */
@@ -542,6 +563,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     $('psCartAll').onclick = () => cartAll();
     $('psCen').onchange = ev => { RUL.center = ev.target.checked; saveRul(); paintAll() };
     $('psGho').onchange = ev => { RUL.ghost = ev.target.checked; saveRul(); paintAll() };
+    $('psGhoHero').onchange = ev => { RUL.ghostHero = ev.target.checked; saveRul(); heroGhostLoad(); paintAll() };
     $('psGhoSame').onchange = ev => { RUL.ghostSame = ev.target.checked; if (RUL.ghostSame) { RUL.ghost = true; RUL.ghostBack = false } saveRul(); draw() };
     $('psGhoBack').onchange = ev => { RUL.ghostBack = ev.target.checked; if (RUL.ghostBack) { RUL.ghost = true; RUL.ghostSame = false } saveRul(); draw() };
     $('psGhoFlip').onchange = ev => { RUL.ghostFlip = ev.target.checked; if (RUL.ghostFlip) RUL.ghost = true; saveRul(); draw() };
