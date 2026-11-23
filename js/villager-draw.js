@@ -45,8 +45,11 @@
       if (a && a.status === 'final' && a.file) S[d + '-stand'] = load(a.file + (a.artRevision ? '?r=' + a.artRevision : ''));
       if (w && w.frames && w.frames.length) { w.frames.forEach((f, i) => { const fa = A.get(f.assetId); S[d + '-walk' + (i + 1)] = load((fa?.file || f.src) + (fa?.artRevision ? '?r=' + fa.artRevision : '')) }); info.wn[d] = w.frames.length; ms[d] = w.frames[0].ms || 100 }
       else {
-        const step = A.get('npc-' + name + '-' + d + '-walk1');
-        if (step?.status === 'final' && step.file) { S[d + '-walk1'] = load(step.file + (step.artRevision ? '?r=' + step.artRevision : '')); info.wn[d] = 1 }
+        /* v98.968 · a villager's walk made in Asset Studio is a row of slots (studioOwner npc:<id> · pose walk · this direction · frame 1…N): ALL of them play (ms of the first frame), not only walk1 */
+        const frs = (M.assets || []).filter(a => a.studioOwner?.id === 'npc:' + name && a.pose === 'walk' && a.view === d.toUpperCase() && a.file && !a.studioAllyWalk && !['missing', 'planned', 'unused'].includes(a.status)).sort((x, y) => (x.frame || 1) - (y.frame || 1));
+        if (frs.length > 1) { frs.forEach((a, i) => { S[d + '-walk' + (i + 1)] = load(a.file + (a.artRevision ? '?r=' + a.artRevision : '')) }); info.wn[d] = frs.length; ms[d] = frs[0].ms || 110 }
+        else { const step = A.get('npc-' + name + '-' + d + '-walk1');
+          if (step?.status === 'final' && step.file) { S[d + '-walk1'] = load(step.file + (step.artRevision ? '?r=' + step.artRevision : '')); info.wn[d] = 1 } }
       }
     }
     for (const d of base.dirs) for (const k of ['stand', ...Array.from({ length: dn(base, d) }, (_, n) => 'walk' + (n + 1))]) if (!S[d + '-' + k] && !(k !== 'stand' && info.wn[d] != null && ms[d])) S[d + '-' + k] = load('assets/village-town/npc/' + name + '/' + d + '-' + k + '.webp');
@@ -68,7 +71,7 @@
     const s = (o.scale || 1) * (L.small && !info.ageScaleBaked ? .72 : 1) * (L.spriteScale || 1), k = s * 84 / 330 * (LINEUP_ALLY.has(L.sprite) ? allyK() : 1);
     let wn = dn(info, d), wsrc = d, wflip = false; if (dn(info, MIR[d]) > wn) { wn = dn(info, MIR[d]); wsrc = MIR[d]; wflip = true }
     let procKey = null; if (walking && act === '' && wn) { const p = t * .012 + ph, N = wn >= 4 ? wn : 4, f = S.ms && S.ms[wsrc] && wn >= 4 ? Math.floor((t + ph * 1000) / S.ms[wsrc]) % wn : ((Math.round(p / (Math.PI * 2 / N)) % N) + N) % N; procKey = 'allywalk:' + L.sprite + ':' + wsrc.toUpperCase(); const _u = 0, key = wn >= 4 ? 'walk' + (f + 1) : wn === 1 ? (f % 2 === 0 ? 'walk1' : 'stand') : f === 0 ? 'walk1' : f === 2 ? 'walk2' : 'stand', W = pic(S, wsrc, key); if (W) { P = wflip ? { im: W.im, flip: !W.flip } : W; full = wn >= 8 } }
-    const proc = procKey && root.ProcMotion && (root.ProcMotion.config ? root.ProcMotion.config(procKey, { frames: wn, pose: 'walk' }) : root.ProcMotion.raw && root.ProcMotion.raw(procKey));   /* v98.646 · no saved setting → the default (single-frame walk = bob 0.3× / 0.6×) */   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
+    const proc = procKey && root.ProcMotion && (root.ProcMotion.config ? root.ProcMotion.config(procKey, { frames: wn, pose: 'walk', npc: true }) : root.ProcMotion.raw && root.ProcMotion.raw(procKey));   /* v98.646 · no saved setting → the default (single-frame walk = bob 0.3× / 0.6×) */   /* the studio's ขยับในเกม setting of that walk set (e.g. bob 0.3 / 0.6) replaces the built-in bob */
     const bob = proc ? 0 : walking ? Math.abs(Math.sin(t * .012 + ph)) * (full ? .6 : 4) * s : act === 'play' ? Math.abs(Math.sin(t * .008 + ph)) * 2 * s : Math.sin(t * .002 + ph) * .8;
     contactShadow(g, x, y, s * (info.ageScaleBaked ? .72 : 1));
     g.save(); g.translate(x, y - bob + (act === 'sit' ? 8 * s : 0)); if (proc) { try { root.ProcMotion.apply(g, procKey, { frames: wn, pose: 'walk' }, t, 384 * k * .9, L.sprite) } catch (e) { } } if (P.flip) g.scale(-1, 1);

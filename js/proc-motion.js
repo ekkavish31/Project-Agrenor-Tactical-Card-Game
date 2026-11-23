@@ -12,7 +12,8 @@ function set(key,cfg){const a={...all()};if(!cfg||cfg.type==='auto')delete a[key
 /* v98.640 · ONE-TIME reset (asked by the user): every saved walk setting in this browser becomes bob · 0.3× · 0.6×, once; the flag below stops it from ever running again */
 /* v98.866 · the one-time walk reset of v98.640 is gone: it ran in every NEW browser and overwrote the pushed values (Lin's walk 0.15/0.4 became 0.3/0.6) — the pushed settings are the truth */
 const hash=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h%1000/1000*6.283};
-function defaultFor(info){if(!info||(info.frames||1)>1)return null;if(info.pose==='idle'||info.pose==='guard')return info.skipIdle?null:{type:'breathe',amp:info.pose==='guard'?.6:1,speed:1};if(info.pose==='walk')return{type:'bob',amp:.3,speed:.6};return null}
+function defaultFor(info){if(info&&info.npc&&info.pose==='walk')return{type:'bob',amp:.3,speed:.6};   /* v98.968 · a person drawn by VillagerDraw (NPC / friend in the village) bobs with every step by default — 0.3× strength · 0.6× speed — whatever the number of walk frames */
+ if(!info||(info.frames||1)>1)return null;if(info.pose==='idle'||info.pose==='guard')return info.skipIdle?null:{type:'breathe',amp:info.pose==='guard'?.6:1,speed:1};if(info.pose==='walk')return{type:'bob',amp:.3,speed:.6};return null}
 function config(key,info){const s=all()[key];return s?(s.type==='none'?null:s):defaultFor(info)}
 // matrix [a,b,c,d,e,f] for ctx.transform, origin = feet, h = drawn sprite height in px
 function matrix(cfg,time,h,id){const A=cfg.amp??1,w=(cfg.speed??1),ph=hash(id),T=time/1000;

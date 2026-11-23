@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6064 ไฟล์ (439.7 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6068 ไฟล์ (439.8 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -18,13 +18,13 @@
 |---|---|---|---|---|---|
 | 🗣 ภาพสนทนา (portrait) | 139 | 19.4 MB | `assets/portraits` 136 · `assets/generated-village` 3 | 3 | 4 |
 | 🧑‍🎤 ตัวเอก | 2917 | 104.9 MB | `assets/tactics` 2890 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2833 | 519 |
-| 👥 ชาวบ้าน / NPC | 333 | 13.7 MB | `assets/village-town` 332 · `assets/generated-village` 1 | 221 | 23 |
-| 🤝 เพื่อนร่วมทีม | 200 | 9.7 MB | `assets/tactics` 196 · `assets/allies` 4 | 200 | 16 |
+| 👥 ชาวบ้าน / NPC | 337 | 13.8 MB | `assets/village-town` 336 · `assets/generated-village` 1 | 225 | 23 |
+| 🤝 เพื่อนร่วมทีม | 360 | 13.0 MB | `assets/tactics` 196 · `assets/village-town` 160 · `assets/allies` 4 | 360 | 16 |
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 454 | 27.8 MB | `assets/tactics` 446 · `assets/objects` 7 · `assets/generated-village` 1 | 421 | 33 |
 | 🃏 การ์ด | 168 | 44.0 MB | `assets/cards` 166 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 156 | 16 |
 | 🎛 UI · ไอคอน · เมนู | 243 | 8.6 MB | `assets/ui` 120 · `assets/icons` 82 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 90 | 11 |
-| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 304 | 24.1 MB | `assets/village-town` 289 · `assets/objects` 15 | 12 | 8 |
+| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 144 | 20.8 MB | `assets/village-town` 129 · `assets/objects` 15 | 12 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 108 | 7.0 MB | `assets/terrain` 77 · `assets/world` 27 · `assets/v03` 4 | 4 | 2 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
@@ -49,10 +49,11 @@
 - ไอคอนสถานที่ / เบ็ดเตล็ด (ระดับบนสุดของ assets) — 2
 
 ### 👥 ชาวบ้าน / NPC
-- ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 332
+- ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 336
 - พนักงานร้านและกิลด์ (atlas) — 1
 
 ### 🤝 เพื่อนร่วมทีม
+- ภาพหมู่บ้านอื่น ๆ — 160
 - ท่าของ bram — 24
 - ท่าของ kier — 24
 - ท่าของ luna — 24
@@ -91,7 +92,7 @@
 - UI / เคอร์เซอร์ — 8
 
 ### 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง
-- ภาพหมู่บ้านอื่น ๆ — 208
+- ภาพหมู่บ้านอื่น ๆ — 48
 - ของตกแต่ง — 33
 - ขอบ — 24
 - วัตถุ · รั้ว · บ้านจาก Workshop — 15

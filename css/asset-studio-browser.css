@@ -159,3 +159,8 @@ nav button .done-tag{display:inline-block;margin-top:2px;padding:0 7px;border-ra
 #grid [data-clip-index]{position:relative}
 #grid [data-clip-index] .sharp{position:absolute;top:5px;left:7px;z-index:2;padding:0 6px;border-radius:8px;background:#000a;color:#fff;font:700 10.5px/16px system-ui,AgThai,sans-serif;font-style:normal;pointer-events:none}
 #grid [data-clip-index].ms-on .sharp{left:34px}
+
+/* v98.968 · frame tiles of the walk / pose editor: a ticked tile is blue and numbered by its place in the clip, an un-ticked tile is grey and skipped; click toggles, drag swaps */
+.wi-frame.on{background:#dcebfb;border-color:#6a9fd8}.wi-frame.off{background:#e9e9e6;border-color:#c6c6c0;opacity:.62}.wi-frame.off>canvas{filter:grayscale(1)}.wi-frame.selected{border:2px solid #2f6fb8}
+.wi-frame .wi-chk{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}.wi-frame .wi-chk input{width:auto}.wi-frame .wi-n{min-width:22px;text-align:center;border-radius:11px;background:#2f6fb8;color:#fff;padding:1px 7px;font-size:13px}.wi-frame.off .wi-n{background:#8a8a84}
+#animation-review.ur-v2 .wi-frame{cursor:pointer}#animation-review.ur-v2 .wi-frame>.wi-chk,#animation-review.ur-v2 .wi-frame>canvas,#animation-review.ur-v2 .wi-frame>button{grid-column:1/-1;justify-self:center}
