@@ -107882,7 +107882,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261120-120727",
+   "artRevision": "20261123-132942",
    "usedIn": "NPC เกรเวน · ยืน",
    "studioOwner": {
     "id": "npc:graven",
@@ -107897,6 +107897,13 @@
    "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-sw-stand/20261123-132942.webp",
+     "at": "2026-11-23T06:29:42.806Z",
+     "stamp": "20261123-132942",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-sw-stand/20261120-120727.webp",
      "at": "2026-11-20T05:07:27.370Z",
@@ -107922,7 +107929,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "v98.423",
+   "artRevision": "20261123-132942",
    "usedIn": "NPC เกรเวน · ยืน",
    "studioOwner": {
     "id": "npc:graven",
@@ -107936,7 +107943,16 @@
    },
    "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
-   "mirroredFrom": "npc-graven-sw-stand"
+   "mirroredFrom": "npc-graven-sw-stand",
+   "history": [
+    {
+     "file": "assets/_versions/npc-graven-se-stand/20261123-132942.webp",
+     "at": "2026-11-23T06:29:42.881Z",
+     "stamp": "20261123-132942",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-tess-sw-stand",
@@ -108231,7 +108247,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261120-133846",
+   "artRevision": "20261123-133000",
    "usedIn": "NPC เกรเวน · ยืน",
    "studioOwner": {
     "id": "npc:graven",
@@ -108246,6 +108262,13 @@
    "sourceLibraryFile": "libfile_aebfb7f0fe148191acd153487a782d65",
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-stand/20261123-133000.webp",
+     "at": "2026-11-23T06:30:00.917Z",
+     "stamp": "20261123-133000",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-stand/20261120-133843.webp",
      "at": "2026-11-20T06:38:43.382Z",
@@ -108271,7 +108294,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261120-133843",
+   "artRevision": "20261123-133001",
    "usedIn": "NPC เกรเวน · ยืน",
    "studioOwner": {
     "id": "npc:graven",
@@ -108287,6 +108310,13 @@
    "note": "ท่ายืนจริง SW/NE; SE/NW กลับด้านและบันทึกไฟล์จริง; ยังไม่มีภาพก้าวขา",
    "mirroredFrom": "npc-graven-ne-stand",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-stand/20261123-133000.webp",
+     "at": "2026-11-23T06:30:01.029Z",
+     "stamp": "20261123-133000",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-stand/20261120-133843.webp",
      "at": "2026-11-20T06:38:43.426Z",
@@ -110068,7 +110098,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133031",
    "usedIn": "NPC เกรเวน · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:graven",
@@ -110087,6 +110117,13 @@
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "ms": 100,
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk1/20261123-133030.webp",
+     "at": "2026-11-23T06:30:30.966Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk1/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.408Z",
@@ -110120,7 +110157,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261120-134129",
+   "artRevision": "20261123-133031",
    "usedIn": "NPC เกรเวน · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:graven",
@@ -110140,6 +110177,13 @@
    "mirroredFrom": "npc-graven-ne-walk1",
    "ms": 100,
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk1/20261123-133030.webp",
+     "at": "2026-11-23T06:30:31.084Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk1/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.461Z",
@@ -137903,8 +137947,15 @@
    },
    "frame": 2,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133031",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk2/20261123-133030.webp",
+     "at": "2026-11-23T06:30:31.173Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk2/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.514Z",
@@ -137938,8 +137989,15 @@
    },
    "frame": 3,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133031",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk3/20261123-133030.webp",
+     "at": "2026-11-23T06:30:31.436Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk3/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.640Z",
@@ -137973,8 +138031,15 @@
    },
    "frame": 4,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133031",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk4/20261123-133030.webp",
+     "at": "2026-11-23T06:30:31.699Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk4/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.774Z",
@@ -138008,8 +138073,15 @@
    },
    "frame": 5,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133032",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk5/20261123-133030.webp",
+     "at": "2026-11-23T06:30:32.029Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk5/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.904Z",
@@ -138043,8 +138115,15 @@
    },
    "frame": 6,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133032",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk6/20261123-133030.webp",
+     "at": "2026-11-23T06:30:32.347Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk6/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.045Z",
@@ -138078,8 +138157,15 @@
    },
    "frame": 7,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133032",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk7/20261123-133030.webp",
+     "at": "2026-11-23T06:30:32.730Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk7/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.187Z",
@@ -138113,8 +138199,15 @@
    },
    "frame": 8,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133033",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk8/20261123-133030.webp",
+     "at": "2026-11-23T06:30:33.015Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk8/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.342Z",
@@ -138148,8 +138241,15 @@
    },
    "frame": 9,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133033",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk9/20261123-133030.webp",
+     "at": "2026-11-23T06:30:33.336Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk9/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.535Z",
@@ -138183,8 +138283,15 @@
    },
    "frame": 10,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133033",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk10/20261123-133030.webp",
+     "at": "2026-11-23T06:30:33.611Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk10/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.706Z",
@@ -138218,8 +138325,15 @@
    },
    "frame": 11,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133034",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk11/20261123-133030.webp",
+     "at": "2026-11-23T06:30:33.953Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk11/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.864Z",
@@ -138253,8 +138367,15 @@
    },
    "frame": 12,
    "ms": 100,
-   "artRevision": "20261120-134132",
+   "artRevision": "20261123-133034",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-ne-walk12/20261123-133030.webp",
+     "at": "2026-11-23T06:30:34.255Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-ne-walk12/20261120-134129.webp",
      "at": "2026-11-20T06:41:31.047Z",
@@ -138288,8 +138409,15 @@
    },
    "frame": 2,
    "ms": 100,
-   "artRevision": "20261120-134129",
+   "artRevision": "20261123-133031",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk2/20261123-133030.webp",
+     "at": "2026-11-23T06:30:31.304Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk2/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.574Z",
@@ -138323,8 +138451,15 @@
    },
    "frame": 3,
    "ms": 100,
-   "artRevision": "20261120-134129",
+   "artRevision": "20261123-133031",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk3/20261123-133030.webp",
+     "at": "2026-11-23T06:30:31.572Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk3/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.709Z",
@@ -138358,8 +138493,15 @@
    },
    "frame": 4,
    "ms": 100,
-   "artRevision": "20261120-134129",
+   "artRevision": "20261123-133031",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk4/20261123-133030.webp",
+     "at": "2026-11-23T06:30:31.863Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk4/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.837Z",
@@ -138393,8 +138535,15 @@
    },
    "frame": 5,
    "ms": 100,
-   "artRevision": "20261120-134129",
+   "artRevision": "20261123-133032",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk5/20261123-133030.webp",
+     "at": "2026-11-23T06:30:32.168Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk5/20261120-134129.webp",
      "at": "2026-11-20T06:41:29.977Z",
@@ -138428,8 +138577,15 @@
    },
    "frame": 6,
    "ms": 100,
-   "artRevision": "20261120-134130",
+   "artRevision": "20261123-133032",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk6/20261123-133030.webp",
+     "at": "2026-11-23T06:30:32.562Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk6/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.112Z",
@@ -138463,8 +138619,15 @@
    },
    "frame": 7,
    "ms": 100,
-   "artRevision": "20261120-134130",
+   "artRevision": "20261123-133032",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk7/20261123-133030.webp",
+     "at": "2026-11-23T06:30:32.887Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk7/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.261Z",
@@ -138498,8 +138661,15 @@
    },
    "frame": 8,
    "ms": 100,
-   "artRevision": "20261120-134130",
+   "artRevision": "20261123-133033",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk8/20261123-133030.webp",
+     "at": "2026-11-23T06:30:33.207Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk8/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.431Z",
@@ -138533,8 +138703,15 @@
    },
    "frame": 9,
    "ms": 100,
-   "artRevision": "20261120-134130",
+   "artRevision": "20261123-133033",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk9/20261123-133030.webp",
+     "at": "2026-11-23T06:30:33.508Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk9/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.624Z",
@@ -138568,8 +138745,15 @@
    },
    "frame": 10,
    "ms": 100,
-   "artRevision": "20261120-134130",
+   "artRevision": "20261123-133033",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk10/20261123-133030.webp",
+     "at": "2026-11-23T06:30:33.806Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk10/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.782Z",
@@ -138603,8 +138787,15 @@
    },
    "frame": 11,
    "ms": 100,
-   "artRevision": "20261120-134130",
+   "artRevision": "20261123-133034",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk11/20261123-133030.webp",
+     "at": "2026-11-23T06:30:34.085Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk11/20261120-134129.webp",
      "at": "2026-11-20T06:41:30.956Z",
@@ -138638,8 +138829,15 @@
    },
    "frame": 12,
    "ms": 100,
-   "artRevision": "20261120-134131",
+   "artRevision": "20261123-133034",
    "history": [
+    {
+     "file": "assets/_versions/npc-graven-nw-walk12/20261123-133030.webp",
+     "at": "2026-11-23T06:30:34.474Z",
+     "stamp": "20261123-133030",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/npc-graven-nw-walk12/20261120-134129.webp",
      "at": "2026-11-20T06:41:31.134Z",
@@ -164557,52 +164755,46 @@
    "at": 1795151244106
   },
   "[\"npc-graven-se-stand\",\"SE\",true,[[\"npc-graven-se-stand\",\"assets/village-town/npc/graven/se-stand.webp\",0,\"v98.423\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-20T05:07:28.084Z",
-   "at": 1795151248110
+   "at": 1795415339176
   },
   "[\"npc-graven-sw-stand\",\"SW\",true,[[\"npc-graven-sw-stand\",\"assets/village-town/npc/graven/sw-stand.webp\",0,\"20261120-120727\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-20T05:07:28.084Z",
-   "at": 1795151248110
+   "at": 1795415339176
   },
   "[\"npcwalk:npc:graven:SW\",\"SW\",true,[[\"npc-graven-sw-walk1\",\"assets/village-town/npc/graven/sw-walk1.webp\",0,\"20261120-121059\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk2\",\"assets/village-town/npc/graven/sw-walk2.webp\",0,\"20261120-121059\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk3\",\"assets/village-town/npc/graven/sw-walk3.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk4\",\"assets/village-town/npc/graven/sw-walk4.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk5\",\"assets/village-town/npc/graven/sw-walk5.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk6\",\"assets/village-town/npc/graven/sw-walk6.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk7\",\"assets/village-town/npc/graven/sw-walk7.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk8\",\"assets/village-town/npc/graven/sw-walk8.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk9\",\"assets/village-town/npc/graven/sw-walk9.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk10\",\"assets/village-town/npc/graven/sw-walk10.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk11\",\"assets/village-town/npc/graven/sw-walk11.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-sw-walk12\",\"assets/village-town/npc/graven/sw-walk12.webp\",0,\"20261120-121100\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-20T05:11:09.874Z",
-   "at": 1795151469898
+   "at": 1795415443588,
+   "approvedAt": "2026-11-23T06:30:43.529Z"
   },
   "[\"npcwalk:npc:graven:SE\",\"SE\",true,[[\"npc-graven-se-walk1\",\"assets/village-town/npc/graven/se-walk1.webp\",0,\"20261120-121025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk2\",\"assets/village-town/npc/graven/se-walk2.webp\",0,\"20261120-121028\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk3\",\"assets/village-town/npc/graven/se-walk3.webp\",0,\"20261120-121031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk4\",\"assets/village-town/npc/graven/se-walk4.webp\",0,\"20261120-121034\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk5\",\"assets/village-town/npc/graven/se-walk5.webp\",0,\"20261120-121037\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk6\",\"assets/village-town/npc/graven/se-walk6.webp\",0,\"20261120-121040\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk7\",\"assets/village-town/npc/graven/se-walk7.webp\",0,\"20261120-121042\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk8\",\"assets/village-town/npc/graven/se-walk8.webp\",0,\"20261120-121046\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk9\",\"assets/village-town/npc/graven/se-walk9.webp\",0,\"20261120-121048\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk10\",\"assets/village-town/npc/graven/se-walk10.webp\",0,\"20261120-121051\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk11\",\"assets/village-town/npc/graven/se-walk11.webp\",0,\"20261120-121054\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-se-walk12\",\"assets/village-town/npc/graven/se-walk12.webp\",0,\"20261120-121058\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-20T05:11:09.874Z",
-   "at": 1795151469898
+   "at": 1795415443589,
+   "approvedAt": "2026-11-23T06:30:43.529Z"
   },
   "[\"npc-graven-ne-stand\",\"NE\",true,[[\"npc-graven-ne-stand\",\"assets/village-town/npc/graven/ne-stand.webp\",0,\"20261120-133846\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-20T06:38:49.718Z",
-   "at": 1795156729745
+   "at": 1795415331215
   },
   "[\"npc-graven-nw-stand\",\"NW\",true,[[\"npc-graven-nw-stand\",\"assets/village-town/npc/graven/nw-stand.webp\",0,\"20261120-133843\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-20T06:38:49.718Z",
-   "at": 1795156729745
+   "at": 1795415331215
   },
   "[\"npcwalk:npc:graven:NE\",\"NE\",true,[[\"npc-graven-ne-walk1\",\"assets/village-town/npc/graven/ne-walk1.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk2\",\"assets/village-town/npc/graven/ne-walk2.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk3\",\"assets/village-town/npc/graven/ne-walk3.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk4\",\"assets/village-town/npc/graven/ne-walk4.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk5\",\"assets/village-town/npc/graven/ne-walk5.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk6\",\"assets/village-town/npc/graven/ne-walk6.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk7\",\"assets/village-town/npc/graven/ne-walk7.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk8\",\"assets/village-town/npc/graven/ne-walk8.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk9\",\"assets/village-town/npc/graven/ne-walk9.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk10\",\"assets/village-town/npc/graven/ne-walk10.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk11\",\"assets/village-town/npc/graven/ne-walk11.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk12\",\"assets/village-town/npc/graven/ne-walk12.webp\",0,\"20261120-134132\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-20T06:41:32.853Z",
-   "at": 1795156892882
+   "at": 1795415334198
   },
   "[\"npcwalk:npc:graven:NW\",\"NW\",true,[[\"npc-graven-nw-walk1\",\"assets/village-town/npc/graven/nw-walk1.webp\",0,\"20261120-134129\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk2\",\"assets/village-town/npc/graven/nw-walk2.webp\",0,\"20261120-134129\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk3\",\"assets/village-town/npc/graven/nw-walk3.webp\",0,\"20261120-134129\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk4\",\"assets/village-town/npc/graven/nw-walk4.webp\",0,\"20261120-134129\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk5\",\"assets/village-town/npc/graven/nw-walk5.webp\",0,\"20261120-134129\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk6\",\"assets/village-town/npc/graven/nw-walk6.webp\",0,\"20261120-134130\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk7\",\"assets/village-town/npc/graven/nw-walk7.webp\",0,\"20261120-134130\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk8\",\"assets/village-town/npc/graven/nw-walk8.webp\",0,\"20261120-134130\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk9\",\"assets/village-town/npc/graven/nw-walk9.webp\",0,\"20261120-134130\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk10\",\"assets/village-town/npc/graven/nw-walk10.webp\",0,\"20261120-134130\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk11\",\"assets/village-town/npc/graven/nw-walk11.webp\",0,\"20261120-134130\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk12\",\"assets/village-town/npc/graven/nw-walk12.webp\",0,\"20261120-134131\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-20T06:41:32.853Z",
-   "at": 1795156892882
+   "at": 1795415334198
   },
   "[\"allywalk:berg:SW\",\"SW\",true,[[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-1\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-01.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-2\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-02.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-3\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-03.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-4\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-04.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-5\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-05.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-6\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-06.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-7\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-07.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-8\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-08.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-9\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-09.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-10\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-10.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-11\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-11.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-berg-sw-walk-mwp1lew8-6y0h-12\",\"assets/tactics/imported/ally-berg-walk-sw-mwp1lew8-6y0h/frame-12.webp\",0,\"mwp1lew8-6y0h\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
@@ -165713,6 +165905,42 @@
    "frames": {},
    "approvedAt": "2026-11-23T06:17:40.945Z",
    "at": 1795414660979
+  },
+  "[\"npc-graven-sw-stand\",\"SW\",true,[[\"npc-graven-sw-stand\",\"assets/village-town/npc/graven/sw-stand.webp\",0,\"20261123-132942\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T06:30:41.469Z",
+   "at": 1795415441548
+  },
+  "[\"npc-graven-se-stand\",\"SE\",true,[[\"npc-graven-se-stand\",\"assets/village-town/npc/graven/se-stand.webp\",0,\"20261123-132942\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T06:30:41.469Z",
+   "at": 1795415441548
+  },
+  "[\"npcwalk:npc:graven:NE\",\"NE\",true,[[\"npc-graven-ne-walk1\",\"assets/village-town/npc/graven/ne-walk1.webp\",0,\"20261123-133031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk2\",\"assets/village-town/npc/graven/ne-walk2.webp\",0,\"20261123-133031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk3\",\"assets/village-town/npc/graven/ne-walk3.webp\",0,\"20261123-133031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk4\",\"assets/village-town/npc/graven/ne-walk4.webp\",0,\"20261123-133031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk5\",\"assets/village-town/npc/graven/ne-walk5.webp\",0,\"20261123-133032\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk6\",\"assets/village-town/npc/graven/ne-walk6.webp\",0,\"20261123-133032\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk7\",\"assets/village-town/npc/graven/ne-walk7.webp\",0,\"20261123-133032\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk8\",\"assets/village-town/npc/graven/ne-walk8.webp\",0,\"20261123-133033\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk9\",\"assets/village-town/npc/graven/ne-walk9.webp\",0,\"20261123-133033\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk10\",\"assets/village-town/npc/graven/ne-walk10.webp\",0,\"20261123-133033\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk11\",\"assets/village-town/npc/graven/ne-walk11.webp\",0,\"20261123-133034\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-ne-walk12\",\"assets/village-town/npc/graven/ne-walk12.webp\",0,\"20261123-133034\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T06:30:45.835Z",
+   "at": 1795415445916
+  },
+  "[\"npcwalk:npc:graven:NW\",\"NW\",true,[[\"npc-graven-nw-walk1\",\"assets/village-town/npc/graven/nw-walk1.webp\",0,\"20261123-133031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk2\",\"assets/village-town/npc/graven/nw-walk2.webp\",0,\"20261123-133031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk3\",\"assets/village-town/npc/graven/nw-walk3.webp\",0,\"20261123-133031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk4\",\"assets/village-town/npc/graven/nw-walk4.webp\",0,\"20261123-133031\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk5\",\"assets/village-town/npc/graven/nw-walk5.webp\",0,\"20261123-133032\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk6\",\"assets/village-town/npc/graven/nw-walk6.webp\",0,\"20261123-133032\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk7\",\"assets/village-town/npc/graven/nw-walk7.webp\",0,\"20261123-133032\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk8\",\"assets/village-town/npc/graven/nw-walk8.webp\",0,\"20261123-133033\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk9\",\"assets/village-town/npc/graven/nw-walk9.webp\",0,\"20261123-133033\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk10\",\"assets/village-town/npc/graven/nw-walk10.webp\",0,\"20261123-133033\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk11\",\"assets/village-town/npc/graven/nw-walk11.webp\",0,\"20261123-133034\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-graven-nw-walk12\",\"assets/village-town/npc/graven/nw-walk12.webp\",0,\"20261123-133034\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T06:30:45.835Z",
+   "at": 1795415445916
+  },
+  "[\"npc-graven-ne-stand\",\"NE\",true,[[\"npc-graven-ne-stand\",\"assets/village-town/npc/graven/ne-stand.webp\",0,\"20261123-133000\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T06:30:47.117Z",
+   "at": 1795415447181
+  },
+  "[\"npc-graven-nw-stand\",\"NW\",true,[[\"npc-graven-nw-stand\",\"assets/village-town/npc/graven/nw-stand.webp\",0,\"20261123-133001\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T06:30:47.117Z",
+   "at": 1795415447181
   }
  },
  "studioClipHistory": {
