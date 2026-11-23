@@ -105408,6 +105408,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-oren-sw-walk1/mwspmf61-99fa.webp",
+     "at": "2026-11-23T03:32:14.425Z",
+     "stamp": "mwspmf61-99fa",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
      "file": "assets/_versions/npc-oren-sw-walk1/20261123-092633.webp",
      "at": "2026-11-23T02:26:33.643Z",
      "stamp": "20261123-092633",
@@ -105415,7 +105422,8 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261123-092634"
+   "artRevision": "20261123-103214",
+   "ms": 100
   },
   {
    "id": "npc-oren-ne-stand",
@@ -105515,7 +105523,17 @@
     "name": "ผู้ใหญ่บ้านโอเรน",
     "group": "npcs"
    },
-   "artRevision": "20261123-092633"
+   "artRevision": "20261123-103215",
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-oren-se-walk1/mwspmf61-99fa.webp",
+     "at": "2026-11-23T03:32:15.149Z",
+     "stamp": "mwspmf61-99fa",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "npc-oren-nw-stand",
@@ -148272,6 +148290,1874 @@
     "name": "ไนลา · ผู้ดูแลกระดานประกาศ",
     "group": "svc"
    }
+  },
+  {
+   "id": "npc-oren-sw-walk2",
+   "file": "assets/village-town/npc/oren/sw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk3",
+   "file": "assets/village-town/npc/oren/sw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk4",
+   "file": "assets/village-town/npc/oren/sw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk5",
+   "file": "assets/village-town/npc/oren/sw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk6",
+   "file": "assets/village-town/npc/oren/sw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk7",
+   "file": "assets/village-town/npc/oren/sw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk8",
+   "file": "assets/village-town/npc/oren/sw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk9",
+   "file": "assets/village-town/npc/oren/sw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk10",
+   "file": "assets/village-town/npc/oren/sw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-103214"
+  },
+  {
+   "id": "npc-oren-sw-walk11",
+   "file": "assets/village-town/npc/oren/sw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-sw-walk12",
+   "file": "assets/village-town/npc/oren/sw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk2",
+   "file": "assets/village-town/npc/oren/se-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk3",
+   "file": "assets/village-town/npc/oren/se-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk4",
+   "file": "assets/village-town/npc/oren/se-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk5",
+   "file": "assets/village-town/npc/oren/se-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk6",
+   "file": "assets/village-town/npc/oren/se-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk7",
+   "file": "assets/village-town/npc/oren/se-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk8",
+   "file": "assets/village-town/npc/oren/se-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk9",
+   "file": "assets/village-town/npc/oren/se-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-103215"
+  },
+  {
+   "id": "npc-oren-se-walk10",
+   "file": "assets/village-town/npc/oren/se-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-103216"
+  },
+  {
+   "id": "npc-oren-se-walk11",
+   "file": "assets/village-town/npc/oren/se-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-103216"
+  },
+  {
+   "id": "npc-oren-se-walk12",
+   "file": "assets/village-town/npc/oren/se-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ผู้ใหญ่บ้านโอเรน",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-103216"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-1",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-2",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-3",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-4",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-5",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-6",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-7",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-8",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-9",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-10",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-11",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-sw-walk-12",
+   "file": "assets/tactics/imported/ally-oren-walk-sw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "ally:oren",
+    "name": "Oren",
+    "group": "characters"
+   },
+   "artRevision": "mwspv81v"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-1",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-2",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-3",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-4",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-5",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-6",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-7",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-8",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-9",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-10",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-11",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-se-walk-12",
+   "file": "assets/tactics/imported/ally-oren-walk-se/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspvdxn"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-1",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-2",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-3",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-4",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-5",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-6",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-7",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-8",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-9",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-10",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-11",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-ne-walk-12",
+   "file": "assets/tactics/imported/ally-oren-walk-ne/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwgys"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-1",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-2",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-3",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-4",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-5",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-6",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-7",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-8",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-9",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-10",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-11",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
+  },
+  {
+   "id": "studio-ally-oren-nw-walk-12",
+   "file": "assets/tactics/imported/ally-oren-walk-nw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:oren",
+    "name": "ผู้ใหญ่บ้านโอเรน",
+    "group": "npcs"
+   },
+   "artRevision": "mwspwmmx"
   }
  ],
  "studioReviews": {
@@ -154226,14 +156112,16 @@
    "approvedAt": "2026-11-22T01:39:05.677Z"
   },
   "[\"tactics.walk.se\",\"SE\",true,[[\"studio-hero-sw-walk-mwr6501b-z1ea-1\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-01.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-2\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-02.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-3\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-03.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-4\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-04.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-5\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-05.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-6\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-06.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-7\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-07.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-8\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-08.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-9\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-09.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-10\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-10.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-11\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-11.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-12\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-12.webp\",0,\"20261122-084102\",null,100,true,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
+   "status": "approved",
    "frames": {},
-   "at": 1795404432600
+   "at": 1795404559909,
+   "approvedAt": "2026-11-23T03:29:19.909Z"
   },
   "[\"tactics.walk.sw\",\"SW\",true,[[\"studio-hero-sw-walk-mwr6501b-z1ea-1\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-01.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-2\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-02.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-3\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-03.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-4\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-04.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-5\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-05.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-6\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-06.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-7\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-07.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-8\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-08.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-9\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-09.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-10\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-10.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-11\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-11.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-sw-walk-mwr6501b-z1ea-12\",\"assets/tactics/imported/walk-sw-mwr6501b-z1ea/frame-12.webp\",0,\"20261122-084102\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
+   "status": "approved",
    "frames": {},
-   "at": 1795404432600
+   "at": 1795404559909,
+   "approvedAt": "2026-11-23T03:29:19.909Z"
   },
   "[\"tactics.walk.ne\",\"NE\",true,[[\"studio-hero-ne-walk-mwr5bcw1-oks7-1\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-01.webp\",0,\"20261122-084231\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-2\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-02.webp\",0,\"20261122-084231\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-3\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-03.webp\",0,\"20261122-084231\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-4\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-04.webp\",0,\"20261122-084231\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-5\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-05.webp\",0,\"20261122-084231\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-6\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-06.webp\",0,\"20261122-084232\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-7\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-07.webp\",0,\"20261122-084232\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-8\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-08.webp\",0,\"20261122-084232\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-9\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-09.webp\",0,\"20261122-084232\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-10\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-10.webp\",0,\"20261122-084232\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-11\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-11.webp\",0,\"20261122-084232\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-hero-ne-walk-mwr5bcw1-oks7-12\",\"assets/tactics/imported/walk-ne-mwr5bcw1-oks7/frame-12.webp\",0,\"20261122-084232\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -154659,26 +156547,52 @@
   "[\"npc-oren-ne-walk1\",\"NE\",true,[[\"npc-oren-ne-walk1\",\"assets/village-town/npc/oren/ne-walk1.webp\",0,\"20261123-100901\",null,100,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T03:09:08.957Z",
-   "at": 1795403349013
+   "approvedAt": "2026-11-23T03:40:06.102Z",
+   "at": 1795405206102
   },
   "[\"npc-oren-nw-walk1\",\"NW\",true,[[\"npc-oren-nw-walk1\",\"assets/village-town/npc/oren/nw-walk1.webp\",0,\"20261123-100900\",null,100,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
    "approvedAt": "2026-11-23T03:09:08.957Z",
-   "at": 1795403349013
+   "at": 1795405209860
   },
   "[\"tactics.idle.se\",\"SE\",true,[[\"studio-hero-sw-idle-mwfkzn64-62zu-1\",\"assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261123-102647\",null,120,true,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T03:26:49.349Z",
-   "at": 1795404409414
+   "approvedAt": "2026-11-23T03:28:59.359Z",
+   "at": 1795404539447
   },
   "[\"tactics.idle.sw\",\"SW\",true,[[\"studio-hero-sw-idle-mwfkzn64-62zu-1\",\"assets/tactics/imported/idle-sw-mwfkzn64-62zu/frame-01.webp\",0,\"20261123-102647\",null,120,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "at": 1795404409414,
-   "approvedAt": "2026-11-23T03:26:49.349Z"
+   "at": 1795404539447,
+   "approvedAt": "2026-11-23T03:28:59.359Z"
+  },
+  "[\"npcwalk:npc:oren:SW\",\"SW\",true,[[\"npc-oren-sw-walk1\",\"assets/village-town/npc/oren/sw-walk1.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk2\",\"assets/village-town/npc/oren/sw-walk2.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk3\",\"assets/village-town/npc/oren/sw-walk3.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk4\",\"assets/village-town/npc/oren/sw-walk4.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk5\",\"assets/village-town/npc/oren/sw-walk5.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk6\",\"assets/village-town/npc/oren/sw-walk6.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk7\",\"assets/village-town/npc/oren/sw-walk7.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk8\",\"assets/village-town/npc/oren/sw-walk8.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk9\",\"assets/village-town/npc/oren/sw-walk9.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk10\",\"assets/village-town/npc/oren/sw-walk10.webp\",0,\"20261123-103214\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk11\",\"assets/village-town/npc/oren/sw-walk11.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-sw-walk12\",\"assets/village-town/npc/oren/sw-walk12.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795404881757,
+   "approvedAt": "2026-11-23T03:34:41.757Z"
+  },
+  "[\"allywalk:oren:SW\",\"SW\",true,[[\"studio-ally-oren-sw-walk-1\",\"assets/tactics/imported/ally-oren-walk-sw/frame-01.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-2\",\"assets/tactics/imported/ally-oren-walk-sw/frame-02.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-3\",\"assets/tactics/imported/ally-oren-walk-sw/frame-03.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-4\",\"assets/tactics/imported/ally-oren-walk-sw/frame-04.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-5\",\"assets/tactics/imported/ally-oren-walk-sw/frame-05.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-6\",\"assets/tactics/imported/ally-oren-walk-sw/frame-06.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-7\",\"assets/tactics/imported/ally-oren-walk-sw/frame-07.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-8\",\"assets/tactics/imported/ally-oren-walk-sw/frame-08.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-9\",\"assets/tactics/imported/ally-oren-walk-sw/frame-09.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-10\",\"assets/tactics/imported/ally-oren-walk-sw/frame-10.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-11\",\"assets/tactics/imported/ally-oren-walk-sw/frame-11.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-12\",\"assets/tactics/imported/ally-oren-walk-sw/frame-12.webp\",0,\"mwsppjs6\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"allywalk:oren:SW\",\"SW\",true,[[\"studio-ally-oren-sw-walk-1\",\"assets/tactics/imported/ally-oren-walk-sw/frame-01.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-2\",\"assets/tactics/imported/ally-oren-walk-sw/frame-02.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-3\",\"assets/tactics/imported/ally-oren-walk-sw/frame-03.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-4\",\"assets/tactics/imported/ally-oren-walk-sw/frame-04.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-5\",\"assets/tactics/imported/ally-oren-walk-sw/frame-05.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-6\",\"assets/tactics/imported/ally-oren-walk-sw/frame-06.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-7\",\"assets/tactics/imported/ally-oren-walk-sw/frame-07.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-8\",\"assets/tactics/imported/ally-oren-walk-sw/frame-08.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-9\",\"assets/tactics/imported/ally-oren-walk-sw/frame-09.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-10\",\"assets/tactics/imported/ally-oren-walk-sw/frame-10.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-11\",\"assets/tactics/imported/ally-oren-walk-sw/frame-11.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-sw-walk-12\",\"assets/tactics/imported/ally-oren-walk-sw/frame-12.webp\",0,\"mwspv81v\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795405146399,
+   "approvedAt": "2026-11-23T03:39:06.399Z"
+  },
+  "[\"npcwalk:npc:oren:SE\",\"SE\",true,[[\"npc-oren-se-walk1\",\"assets/village-town/npc/oren/se-walk1.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk2\",\"assets/village-town/npc/oren/se-walk2.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk3\",\"assets/village-town/npc/oren/se-walk3.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk4\",\"assets/village-town/npc/oren/se-walk4.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk5\",\"assets/village-town/npc/oren/se-walk5.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk6\",\"assets/village-town/npc/oren/se-walk6.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk7\",\"assets/village-town/npc/oren/se-walk7.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk8\",\"assets/village-town/npc/oren/se-walk8.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk9\",\"assets/village-town/npc/oren/se-walk9.webp\",0,\"20261123-103215\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk10\",\"assets/village-town/npc/oren/se-walk10.webp\",0,\"20261123-103216\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk11\",\"assets/village-town/npc/oren/se-walk11.webp\",0,\"20261123-103216\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-oren-se-walk12\",\"assets/village-town/npc/oren/se-walk12.webp\",0,\"20261123-103216\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795405154552,
+   "approvedAt": "2026-11-23T03:39:14.552Z"
+  },
+  "[\"allywalk:oren:NE\",\"NE\",true,[[\"studio-ally-oren-ne-walk-1\",\"assets/tactics/imported/ally-oren-walk-ne/frame-01.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-2\",\"assets/tactics/imported/ally-oren-walk-ne/frame-02.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-3\",\"assets/tactics/imported/ally-oren-walk-ne/frame-03.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-4\",\"assets/tactics/imported/ally-oren-walk-ne/frame-04.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-5\",\"assets/tactics/imported/ally-oren-walk-ne/frame-05.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-6\",\"assets/tactics/imported/ally-oren-walk-ne/frame-06.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-7\",\"assets/tactics/imported/ally-oren-walk-ne/frame-07.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-8\",\"assets/tactics/imported/ally-oren-walk-ne/frame-08.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-9\",\"assets/tactics/imported/ally-oren-walk-ne/frame-09.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-10\",\"assets/tactics/imported/ally-oren-walk-ne/frame-10.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-11\",\"assets/tactics/imported/ally-oren-walk-ne/frame-11.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-oren-ne-walk-12\",\"assets/tactics/imported/ally-oren-walk-ne/frame-12.webp\",0,\"mwspwgys\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
   }
  },
  "studioClipHistory": {
@@ -165125,6 +167039,308 @@
      {
       "assetId": "studio-ally-hilda-nw-walk-12",
       "src": "assets/tactics/imported/ally-hilda-walk-nw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "oren": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T03:39:04.963Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-oren-sw-walk-1",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-2",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-3",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-4",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-5",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-6",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-7",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-8",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-9",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-10",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-11",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-sw-walk-12",
+      "src": "assets/tactics/imported/ally-oren-walk-sw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T03:39:12.587Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-oren-se-walk-1",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-2",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-3",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-4",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-5",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-6",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-7",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-8",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-9",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-10",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-11",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-se-walk-12",
+      "src": "assets/tactics/imported/ally-oren-walk-se/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T03:40:03.172Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-oren-ne-walk-1",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-2",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-3",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-4",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-5",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-6",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-7",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-8",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-9",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-10",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-11",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-ne-walk-12",
+      "src": "assets/tactics/imported/ally-oren-walk-ne/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T03:40:10.521Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-oren-nw-walk-1",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-2",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-3",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-4",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-5",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-6",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-7",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-8",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-9",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-10",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-11",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-oren-nw-walk-12",
+      "src": "assets/tactics/imported/ally-oren-walk-nw/frame-12.webp",
       "ms": 100
      }
     ]
