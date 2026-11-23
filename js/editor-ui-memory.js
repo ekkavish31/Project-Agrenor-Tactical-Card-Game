@@ -12,8 +12,8 @@
   const inEditor = (() => { try { return /editor\.html$/.test(root.top.location.pathname) } catch (e) { return false } })();
   const Q = new URLSearchParams(LOC.search);
   if (!(TOOL_ONLY.test(LOC.pathname.split('/').pop()) || Q.get('edit') === '1' || Q.has('editor') || inEditor)) return;
-  const NAV = '[role=tab],[data-tab],[data-m],[data-mode],[data-view],[data-entity],[data-sub],[data-cat],[data-group],[data-page],[data-f],.tabs>button,.tab,[role=tablist] button,#sheetSwitch button,#managerTab,#animTab,#lineupTab,#workshopTab';
-  const ACTIVE = /(^|\s)(on|active|sel|selected|current|is-on|is-active)(\s|$)/;
+  const NAV = '[role=tab],[data-tab],[data-m],[data-mode],[data-view],[data-entity],[data-sub],[data-cat],[data-group],[data-page],[data-f],.tabs>button,.tab,[role=tablist] button,#sheetSwitch button,nav>button[data-id],#stages>button,#mode>button,#managerTab,#animTab,#lineupTab,#workshopTab';
+  const ACTIVE = /(^|\s)(on|active|sel|selected|current|cur|is-on|is-active)(\s|$)/;
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) { return {} } };
   const save = o => { try { localStorage.setItem(KEY, JSON.stringify(o)) } catch (e) { } };
   let replaying = false;
