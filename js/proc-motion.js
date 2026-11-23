@@ -21,7 +21,7 @@ function matrix(cfg,time,h,id){const A=cfg.amp??1,w=(cfg.speed??1),ph=hash(id),T
   case'breathe':{const s=Math.sin(T*2.6*w+ph);return[1-.008*A*s,0,0,1+.02*A*s,0,0]}
   case'sway':{const r=.035*A*Math.sin(T*2.1*w+ph),c=Math.cos(r),n=Math.sin(r);return[c,n,-n,c,0,0]}
   case'float':return[1,0,0,1,0,-h*.045*A*(1+Math.sin(T*2.2*w+ph))/2];
-  case'bob':{const s=Math.sin(T*12*w+ph),r=.02*A*s;return[1,r*.5,-r,1-.012*A*Math.abs(s),0,-h*.03*A*Math.abs(s)]}
+  case'bob':{const s=Math.sin(T*12*w+ph),r=.02*A*s,a=s*s;return[1,r*.5,-r,1-.012*A*a,0,-h*.03*A*a]}   /* v98.1011 · sin² instead of |sin|: |sin| has a sharp V at every step (the foot touches down) — that was a tiny 'tick' each step; sin² has the same rhythm and peak without the corner */
   case'wind':return[1,0,.05*A*Math.sin(T*1.7*w+ph)+.02*A*Math.sin(T*4.3*w+ph*2),1,0,0];
   case'pulse':{const s=Math.max(0,Math.sin(T*4*w+ph))**3;return[1+.03*A*s,0,0,1+.03*A*s,0,0]}}
  return null}

@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6068 ไฟล์ (439.8 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6410 ไฟล์ (446.8 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -16,12 +16,12 @@
 ## จำนวนต่อหมวดหมู่
 | หมวดหมู่ | ไฟล์ | ขนาด | โฟลเดอร์หลัก | ลงทะเบียน slot | ไฟล์ซ้ำ (เนื้อหาเหมือนกัน) |
 |---|---|---|---|---|---|
-| 🗣 ภาพสนทนา (portrait) | 139 | 19.4 MB | `assets/portraits` 136 · `assets/generated-village` 3 | 3 | 4 |
+| 🗣 ภาพสนทนา (portrait) | 151 | 21.0 MB | `assets/portraits` 148 · `assets/generated-village` 3 | 15 | 4 |
 | 🧑‍🎤 ตัวเอก | 2917 | 104.9 MB | `assets/tactics` 2890 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2833 | 519 |
-| 👥 ชาวบ้าน / NPC | 337 | 13.8 MB | `assets/village-town` 336 · `assets/generated-village` 1 | 225 | 23 |
+| 👥 ชาวบ้าน / NPC | 499 | 16.5 MB | `assets/village-town` 498 · `assets/generated-village` 1 | 387 | 23 |
 | 🤝 เพื่อนร่วมทีม | 360 | 13.0 MB | `assets/tactics` 196 · `assets/village-town` 160 · `assets/allies` 4 | 360 | 16 |
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
-| ⚔ ท่าต่อสู้ในสนาม (tactics) | 454 | 27.8 MB | `assets/tactics` 446 · `assets/objects` 7 · `assets/generated-village` 1 | 421 | 33 |
+| ⚔ ท่าต่อสู้ในสนาม (tactics) | 622 | 30.6 MB | `assets/tactics` 614 · `assets/objects` 7 · `assets/generated-village` 1 | 589 | 33 |
 | 🃏 การ์ด | 168 | 44.0 MB | `assets/cards` 166 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 156 | 16 |
 | 🎛 UI · ไอคอน · เมนู | 243 | 8.6 MB | `assets/ui` 120 · `assets/icons` 82 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 90 | 11 |
 | 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 144 | 20.8 MB | `assets/village-town` 129 · `assets/objects` 15 | 12 | 8 |
@@ -39,7 +39,7 @@
 
 ### 🗣 ภาพสนทนา (portrait)
 - ตัวเอก · ชาวบ้าน — 104
-- ตัวละครเนื้อเรื่อง (4 อารมณ์) — 32
+- ตัวละครเนื้อเรื่อง (4 อารมณ์) — 44
 - ภาพสนทนาหมู่บ้าน — 3
 
 ### 🧑‍🎤 ตัวเอก
@@ -49,7 +49,7 @@
 - ไอคอนสถานที่ / เบ็ดเตล็ด (ระดับบนสุดของ assets) — 2
 
 ### 👥 ชาวบ้าน / NPC
-- ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 336
+- ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 498
 - พนักงานร้านและกิลด์ (atlas) — 1
 
 ### 🤝 เพื่อนร่วมทีม
@@ -70,7 +70,7 @@
 - มอนสเตอร์ (หน้า/หลัง) — 104
 
 ### ⚔ ท่าต่อสู้ในสนาม (tactics)
-- ท่าที่นำเข้าจากสตูดิโอ (idle/walk/ท่า) — 264
+- ท่าที่นำเข้าจากสตูดิโอ (idle/walk/ท่า) — 432
 - ท่าต่อสู้ · อาวุธในมือ — 182
 - วัตถุ · รั้ว · บ้านจาก Workshop — 7
 - ของฟาร์มและไอคอน (atlas) — 1
