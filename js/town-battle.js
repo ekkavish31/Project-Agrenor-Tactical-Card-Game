@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1006';
+  const V = '98.1007';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -181,7 +181,7 @@
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ fp: FP, bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true, bag: bagForBattle(),
       hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
-    if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
+    if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], noBad: {}, force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = SCENE ? (u.side === 'monster' ? (u.ct ?? u.speed * 3) : 40) : u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
@@ -857,6 +857,9 @@
   }
 
   /* ---------- playing cards ---------- */
+  /* v98.1007 · the companion (sib) scolds the first wrong-element card, then refuses every later one (pumpkin quest only: loan.noBad) */
+  const SCOLD_FIRST = [{ who: 'sib', emo: 'angry', text: '{callhero}! ฮิลด้าสอนแล้วไม่ใช่เหรอ ธาตุแพ้ทางตีไปก็เสียแรงเปล่า ๆ' }, { who: 'sib', emo: 'worry', text: 'ครั้งนี้ผ่านไป แต่คราวหน้าข้าไม่ให้ใช้ไพ่แพ้ทางอีกแล้วนะ' }];
+  const SCOLD_NO = [{ who: 'sib', emo: 'angry', text: 'หยุดก่อน! ไพ่ใบนั้นแพ้ทางมัน ฮิลด้าสอนแล้วนะ — เลือกไพ่ธาตุที่ชนะทางสิ' }];
   async function cardClick(b) {
     if (!st || st.turn !== 'hero') return;
     const group = b.dataset.group, i = +b.dataset.i, id = b.dataset.id, why = cardBlock(group, i);
@@ -868,10 +871,12 @@
       await wait(650); await show.done(); busy = false; refresh(); return;
     }
     const show = showPlay(group, id, cardLine(group, id), b), r = FB.playCombat(st, i);
+    if (!r.ok && r.scold) {   /* v98.1007 · wrong-element card after the first time: the companion refuses, nothing is spent */
+      show.el.remove(); b.style.visibility = ''; busy = true; hudSync(); await runTalk(SCOLD_NO, FB.hero(st)); busy = false; refresh(); flash(r.reason); return }
     if (!r.ok) { show.el.remove(); b.style.visibility = ''; flash(r.reason); return }
     busy = true; hudSync(); if (!r.self) walks = []; pend = null; markAuto();
     await heroAction(r);
-    await show.done(); busy = false; refresh();
+    await show.done(); if (r.scoldFirst) await runTalk(SCOLD_FIRST, FB.hero(st)); busy = false; refresh();
     if (st.outcome) finish();
   }
   async function chargeAttack(unit, duration = 560) {

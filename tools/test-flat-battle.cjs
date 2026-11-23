@@ -142,6 +142,14 @@ test('crystal → +15 stamina (1 crystal, or both); full stamina refuses', () =>
   assert.equal(B.crystalStamina(st).ok, true); assert.equal(B.hero(st).stamina, 70); assert.equal(B.crystals(st), 0); assert.equal(B.crystalStamina(st).ok, false);
   const full = mkC({ hero: { stamina: 100 } }); assert.equal(B.crystalStamina(full).ok, false); assert.equal(B.crystals(full), 2);
 });
+test('pumpkin lesson: first wrong-element card works (scoldFirst), later ones are refused without cost; right element is fine', () => {
+  const st = mkC({ hero: { u: 7, v: 8 }, monster: { kind: 'pumpkin', el: 'earth' } }); B.setLoan(st, { cards: ['tide', 'thunder'], noBad: {} });
+  const find = id => st.deck.combat.hand.findIndex(c => c.id === id);
+  const cr0 = B.crystals(st), n0 = st.deck.combat.hand.length, r1 = B.playCombat(st, find('thunder')); assert.equal(r1.ok, true); assert.equal(r1.scoldFirst, true); assert.equal(B.crystals(st), cr0 - 1);
+  st.deck.combat.hand.push({ id: 'thunder', uid: 't2', used: false }); const cr1 = B.crystals(st), hp1 = B.monster(st).hp, hl = st.deck.combat.hand.length, r2 = B.playCombat(st, st.deck.combat.hand.length - 1);
+  assert.equal(r2.ok, false); assert.equal(r2.scold, true); assert.equal(B.crystals(st), cr1); assert.equal(B.monster(st).hp, hp1); assert.equal(st.deck.combat.hand.length, hl);
+  const r3 = B.playCombat(st, find('tide')); assert.equal(r3.ok, true); assert.ok(!r3.scoldFirst);
+});
 test('crystal → redraw the whole hand, once per turn, loaned cards stay', () => {
   const st = mkC(); B.setLoan(st, { cards: ['tide', 'thunder'] }); const before = st.deck.combat.hand.map(c => c.uid).join();
   const r = B.redrawHand(st); assert.equal(r.ok, true); assert.equal(B.crystals(st), 1); assert.equal(st.deck.combat.hand.length, 6); assert.equal(st.deck.movement.hand.length, 4);

@@ -697,8 +697,13 @@
   function playCombat(st, index) {
     const why = combatBlock(st, index); if (why) return { ok: false, reason: why };
     const TD = deckLib(), h = hero(st), t = pickTarget(st, CARD[st.deck.combat.hand[index].id]) || foe(st, h), c0 = st.deck.combat.hand[index], id = c0.id, rule = CARD[id], name = TD.COMBAT[id].name;
+    /* v98.1007 · Hilda's pumpkin lesson: the FIRST card played at the wrong element (any card, any pumpkin / pest) works and the companion scolds; every later one is refused —
+       no effect, no crystal, no card spent — until the fight ends. loan.noBad = {} switches it on. */
+    const NB = st.loan?.noBad;
+    if (NB && !rule.self && t && elMult(st, cardEl(id, h), t, []) < 1) { if (NB.used) return { ok: false, scold: true, card: id, kind: t.kind, reason: 'ยังไม่ได้ใช้ไพ่ · ไม่เสียคริสตัลและไพ่' }; NB.fresh = 1 }
     spend(st, 'combat', index); st.spent++; h.stamina -= rule.st;
     const out = { ok: true, card: id, uid: c0.uid, name, fx: rule.fx, self: !!rule.self, big: rule.big || 1, hits: [] };
+    if (NB?.fresh) { NB.fresh = 0; NB.used = 1; out.scoldFirst = true }
     if (rule.self) {
       if (rule.guard) { h.guard = Math.max(h.guard, Math.round((rule.guard + (h.guardPlus || 0)) * (h.supportMult || 1))); out.guard = h.guard }
       if (rule.restore) { h.stamina = Math.min(h.stMax || 100, h.stamina + rule.restore); out.restore = rule.restore }
