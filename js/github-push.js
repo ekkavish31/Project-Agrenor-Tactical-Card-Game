@@ -203,7 +203,7 @@ async function cartStage(message,build,onStatus){const c=config(),say=t=>{try{on
  if(sf.length)await cartFiles(sf);await cartLog(message,sf.map(f=>f.path),us.keys);BUILD.set(message+'#'+Date.now(),{fn:build});
  if(files.some(f=>/asset-manifest\.json$/.test(f.path))&&!(await idbGet('repo-staged-base'))){try{const t=await readText('data/asset-manifest.json',head);if(t)await idbSet('repo-staged-base',{text:t,sha:head,at:Date.now()})}catch(e){}}
  cartToast(message);cartNotify();say('🛒 ใส่ Cart แล้ว (ยังไม่ push)');return '🛒 อยู่ใน Cart (ยังไม่ push)'}
-async function cartPush(){const s=await cartSummary();if(!s.n)return null;if(!config().token){openSettings(()=>cartPush());return null}
+async function cartPush(){const T0=Date.now(),B0=new Set(BUILD.keys()),s=await cartSummary();if(!s.n)return null;if(!config().token){openSettings(()=>cartPush());return null}
  const labels=[...new Set(s.meta.log.map(l=>l.label.replace(/\s*\(.*\)$/,'')))],staged=s.staged.length;
  const msg='Cart: '+(labels.slice(0,4).join(' · ')||'Asset Studio')+(labels.length>4?' +'+(labels.length-4):'')+' ('+s.all.size+' ไฟล์'+(s.meta.keys.length?' · '+s.meta.keys.length+' ค่า':'')+')';
  FLUSH=true;let tag=null;
@@ -218,9 +218,17 @@ async function cartPush(){const s=await cartSummary();if(!s.n)return null;if(!co
    return files},()=>{},{now:true});
   if(tag){const at=Date.now(),old=await idbGet('repo-recent'),keep=(Array.isArray(old)?old:[]).filter(([p,,t])=>at-t<36e5&&!s.all.has(p));await idbSet('repo-recent',[...keep,...[...s.all].map(([p,b])=>[p,b,at])]);
    try{if(window.EditorStore){for(const k of s.meta.keys)EditorStore.markPushed(k,localStorage.getItem(k))}else{const seen=JSON.parse(localStorage.getItem('project-a-settings-seen')||'{}');for(const k of s.meta.keys){const v=localStorage.getItem(k);if(v!==null)seen[k]=hashStr(v)}localStorage.setItem('project-a-settings-seen',JSON.stringify(seen))}}catch(e){}   /* v98.858 · what was pushed is the new base (js/editor-store.js) */
-   await idbSet('repo-staged',[]);await idbSet('repo-staged-base',null);await idbSet('cart-files',[]);await idbSet('cart-meta',{log:[],keys:[]});BUILD.clear();
+   await cartClearPushed(s,T0,B0);
    try{stagedBc&&stagedBc.postMessage({pushed:true})}catch(e){}try{window.RepoDir?.afterExternal?.()}catch(e){}}
  }catch(e){if(e&&e.cancelled){tag=null}else throw e}finally{FLUSH=false;cartNotify()}return tag}   /* v98.876 · cancelled from the progress dialog: the cart is untouched (it is cleared only after a successful push) */
+/* v98.975 · after a push, remove from the cart ONLY what was pushed. Things put into the cart while the push was running (you carried on with picture B) stay in it:
+   a staged/cart file is dropped only when it is still byte-identical to the copy that was pushed; log entries newer than the push start and settings keys added meanwhile stay. */
+async function sameBlob(a,b){if(a===b)return true;if(!a||!b||a.size!==b.size)return false;try{const x=new Uint8Array(await a.arrayBuffer()),y=new Uint8Array(await b.arrayBuffer());for(let i=0;i<x.length;i++)if(x[i]!==y[i])return false;return true}catch(e){return false}}
+async function keepNewer(store,pushed){const cur=await idbGet(store);if(!Array.isArray(cur))return[];const was=new Map(pushed||[]),keep=[];for(const[p,b]of cur){if(was.has(p)&&await sameBlob(was.get(p),b))continue;keep.push([p,b])}await idbSet(store,keep);return keep}
+async function cartClearPushed(s,T0,B0){const st=await keepNewer('repo-staged',s.staged);await keepNewer('cart-files',s.files);
+ const m=await idbGet('cart-meta')||{log:[],keys:[]};m.log=(m.log||[]).filter(l=>l.at>T0);m.keys=(m.keys||[]).filter(k=>!s.meta.keys.includes(k));await idbSet('cart-meta',m);
+ if(!st.some(([p])=>/asset-manifest\.(json|js)$/.test(p)))await idbSet('repo-staged-base',null);
+ for(const k of [...BUILD.keys()])if(B0.has(k))BUILD.delete(k)}
 async function cartDrop(paths,keys){try{const es=ES();if(es&&keys)for(const k of keys)if(es.drafts({all:true}).includes(k)||k===es.LAYOUT)await es.discard(k)}catch(e){}const st=await idbGet('repo-staged'),cf=await idbGet('cart-files'),m=await idbGet('cart-meta')||{log:[],keys:[]};const P=new Set(paths||[]);
  if(Array.isArray(st))await idbSet('repo-staged',st.filter(([p])=>!P.has(p)));if(Array.isArray(cf))await idbSet('cart-files',cf.filter(([p])=>!P.has(p)));if(keys)m.keys=m.keys.filter(k=>!keys.includes(k));await idbSet('cart-meta',m);
  try{stagedBc&&stagedBc.postMessage({reload:true})}catch(e){}cartNotify()}
