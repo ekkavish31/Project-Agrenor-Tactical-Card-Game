@@ -16,10 +16,9 @@ h2{margin:0 0 4px;font-size:17px;color:#f6d79b}h3{margin:18px 0 8px;font-size:14
 .tog{display:flex;align-items:center;gap:10px;margin:10px 0;font-size:14px}.tog button{padding:5px 14px;border-radius:8px;border:1px solid var(--line);background:#252b36;color:var(--ink);cursor:pointer;font:inherit}.tog button.on{background:var(--gold);color:#241a07;font-weight:700;border-color:var(--gold)}
 .hands{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0}.hands figure{margin:0;text-align:center;font-size:12px;color:var(--muted)}.hands img{height:56px;display:block;margin:0 auto 4px}
 </style></head><body>
-<!-- v98.690 · Editor › Visual › HUD:  ไอคอนเมนู (the old Editor menu tab) · เคอร์เซอร์ · ลูกศรชี้ (Head arrow).  Choices are saved in localStorage 'projectA.visual' = {arrow, cursorArrow, hands} and pushed with the editor's ⬆ Push; the game reads them on load. -->
-<nav><button data-id="icons" aria-pressed="true">🎛 ไอคอนเมนู</button><button data-id="cursor">🖱 เคอร์เซอร์</button><button data-id="arrow">⬇ ลูกศรชี้ (Head arrow)</button><span class="sp"></span><span id="msg"></span><button id="push" title="ส่งค่าเคอร์เซอร์/ลูกศรขึ้นเกม (ไอคอนเมนูมีปุ่ม Push ของตัวเองในแท็บนั้น)">⬆ Push เคอร์เซอร์ + ลูกศร</button></nav>
+<!-- v98.690 · Editor › Visual › HUD: เคอร์เซอร์ · ลูกศรชี้ (Head arrow) (v98.1012: the old 'ไอคอนเมนู' tab was removed).  Choices are saved in localStorage 'projectA.visual' = {arrow, cursorArrow, hands} and pushed with the editor's ⬆ Push; the game reads them on load. -->
+<nav><button data-id="cursor" aria-pressed="true">🖱 เคอร์เซอร์</button><button data-id="arrow">⬇ ลูกศรชี้ (Head arrow)</button><span class="sp"></span><span id="msg"></span><button id="push" title="ส่งค่าเคอร์เซอร์/ลูกศรขึ้นเกม (ไอคอนเมนูมีปุ่ม Push ของตัวเองในแท็บนั้น)">⬆ Push เคอร์เซอร์ + ลูกศร</button></nav>
 <main>
- <iframe id="fIcons" data-id="icons" title="ไอคอนเมนู"></iframe>
  <section id="sCursor" data-id="cursor">
   <h2>เคอร์เซอร์</h2><p class="help">เลือกลูกศรเมาส์พื้นฐาน และเลือกว่าจะใช้มือวาด (มือชี้ · มือกาง/กำ · แว่นขยาย) หรือไม่ · วางเมาส์บนกล่องทดสอบเพื่อดูของจริง · บันทึกอัตโนมัติ เกมเห็นเมื่อรีโหลด</p>
   <div class="cards" id="curCards"></div>
@@ -38,9 +37,9 @@ h2{margin:0 0 4px;font-size:17px;color:#f6d79b}h3{margin:18px 0 8px;font-size:14
 const KEY='projectA.visual',get=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}},set=o=>{localStorage.setItem(KEY,JSON.stringify({...get(),...o}));draw()};
 const $=id=>document.getElementById(id);
 /* ---- tabs ---- */
-let tab='icons';try{tab=localStorage.getItem('hud-tab-sub')||'icons'}catch(e){}
+let tab='cursor';try{tab=localStorage.getItem('hud-tab-sub')||'cursor';if(tab==='icons')tab='cursor'}catch(e){}   /* v98.1012 · the old 'ไอคอนเมนู' tab (index.html?editor=menu in a frame) is gone */
 function show(id){tab=id;try{localStorage.setItem('hud-tab-sub',id)}catch(e){}document.querySelectorAll('nav button[data-id]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
- $('fIcons').hidden=id!=='icons';if(id==='icons'&&!$('fIcons').src)$('fIcons').src='index.html?editor=menu&build='+Date.now().toString(36);$('sCursor').classList.toggle('on',id==='cursor');$('sArrow').classList.toggle('on',id==='arrow');$('push').hidden=id==='icons'}
+ $('sCursor').classList.toggle('on',id==='cursor');$('sArrow').classList.toggle('on',id==='arrow')}
 document.querySelector('nav').onclick=e=>{const b=e.target.closest('button[data-id]');if(b)show(b.dataset.id)};
 /* ---- cursor ---- */
 const CUR={gold:{name:'ทอง (ใหม่)',note:'ลูกศรทองสามมิติ (ค่าเริ่มต้น)',img:'assets/cursor/gold-arrow@2x.png',css:"url(assets/cursor/gold-arrow.png) 9 9,default"},fantasy:{name:'แฟนตาซี (เดิม)',note:'ลูกศรเดิมของเกม (cursor-fantasy.png)',img:'assets/cursor-fantasy.png',css:"url(assets/cursor-fantasy.png) 4 3,default"},system:{name:'ของระบบ',note:'ลูกศรปกติของ Windows / Mac',img:'',css:'default'}};
