@@ -22,11 +22,22 @@
   const PER_PAGE = 6, PER_SPREAD = PER_PAGE * 2, SIDE_CAP = 6;
   /* v98.904 · page-turn pictures: the owner's 20-frame turn (assets/ui/bookturn/turn-01..20.webp, same 1672×941 as the open book, top-right ornament removed to match): forward = frames 1→20 (the right page lifts and falls to the left), backward = the same frames in reverse. The content is swapped (mid) when the turning page stands over the spine (about frame 10). */
   const FLIP = Array.from({ length: 20 }, (_, i) => `assets/ui/bookturn/turn-${String(i + 1).padStart(2, '0')}.webp`), FLIP_MS = 26, FLIP_MID = 9;
-  const warm = () => { for (const f of FLIP) { const im = new Image(); im.decoding = 'async'; im.src = f } };
-  try { (window.requestIdleCallback || setTimeout)(warm, 1500) } catch (e) { }
+  /* v98.1001 · the first flip flickered / the book showed up late: (1) the loading screen fetched the OLD book picture only (js/title-screen.js BOOK_ART) — the new book + the 20 frames were downloaded at the first flip;
+     (2) a frame that is fetched but not yet DECODED paints as nothing for a moment (1672×941 each) → the turn blinked.
+     Now: the pictures are fetched during loading · every time the book opens the frames are decoded ahead (kept referenced) · a flip that is asked before they are ready waits (max 450 ms), then simply switches the page without the animation. */
+  const BOOK_BASE = 'assets/ui/cardbook2-open.webp', IMGS = [BOOK_BASE, ...FLIP].map(f => { const im = new Image(); im.decoding = 'async'; im.src = f; return im });
+  let READY = false, DEC = null;
+  const decodeWarm = () => { READY = false; DEC = Promise.all(IMGS.map(im => (im.decode ? im.decode() : new Promise(r => { im.complete ? r() : (im.onload = im.onerror = r) })).catch(() => { }))).then(() => { READY = true }); return DEC };
+  try { (window.requestIdleCallback || setTimeout)(decodeWarm, 600) } catch (e) { }
   const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches } catch (e) { return false } };
   /* play the turn on `el` (its background is the book), call `mid` when the old page is covered, `done` at the end */
-  function pageTurn(el, dir, mid, done) { if (!el || reduced()) { mid?.(); done?.(); return } const fr = dir < 0 ? [...FLIP].reverse() : FLIP; el.classList.add('cb-turning'); let i = 0, midDone = false;
+  function pageTurn(el, dir, mid, done) {
+    if (!el || reduced()) { mid?.(); done?.(); return }
+    if (READY) return play(el, dir, mid, done);
+    let fired = false; const t = setTimeout(() => { if (fired) return; fired = true; mid?.(); done?.() }, 450);   /* not ready in time: no animation (never a blinking one) */
+    (DEC || decodeWarm()).then(() => { if (fired) return; fired = true; clearTimeout(t); play(el, dir, mid, done) });
+  }
+  function play(el, dir, mid, done) { const fr = dir < 0 ? [...FLIP].reverse() : FLIP; el.classList.add('cb-turning'); let i = 0, midDone = false;
     const step = () => { if (i < fr.length) { el.style.setProperty('--cb-page', `url("${new URL(fr[i], document.baseURI).href}")`); if (i === FLIP_MID && !midDone) { midDone = true; mid?.() } i++; setTimeout(step, FLIP_MS) } else { if (!midDone) mid?.(); el.style.removeProperty('--cb-page'); el.classList.remove('cb-turning'); done?.() } };
     step() }
   window.CardBookTurn = pageTurn;
@@ -35,7 +46,7 @@
   const kindOf = t => /^ของใช้ ·/.test(t) ? 'use' : /^การ์ดเหตุการณ์/.test(t) ? 'event' : /^ไอเทมทั่วไป/.test(t) ? 'goods' : /^วัตถุดิบและของใช้/.test(t) ? 'mat' : /^อุปกรณ์/.test(t) ? 'gear' : '';
   const prev = renderBag;
   renderBag = function () {
-    prev();
+    prev(); decodeWarm();
     try { rebuild() } catch (e) { console.error('card-book', e) }
     try { window.Story?.bookFirst?.() } catch (e) { }   /* v98.589 · the first-time lesson (story scene bookFirst) */
   };
