@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1007';
+  const V = '98.1009';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -409,6 +409,31 @@
   #fbDuel.min .dc{min-width:0;padding:4px}#fbDuel.min .nm{display:none}#fbDuel.min .pf,#fbDuel.min .dc.t .pf{width:60px;height:60px}#fbDuel.min .dc.t{margin-right:8px}#fbDuel.min .vs{margin-right:20px}
   @keyframes fbDuelFlash{0%{opacity:0;transform:scale(.5)}25%{opacity:1}100%{opacity:0;transform:scale(1.15)}}@keyframes fbDuelPush{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes fbDuelShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-2deg)}45%{transform:translateX(5px) rotate(2deg)}70%{transform:translateX(-3px)}}
   @media (max-width:860px),(max-height:560px){#fbDuel{top:auto;bottom:226px;right:6px}#fbDuel .dc{min-width:0}#fbDuel .nm{display:none}#fbDuel .pf{width:64px;height:64px}#fbDuel .dc.t .pf{width:54px;height:54px}#fbDuel .dc.t{margin-right:8px}}
+  /* v98.1009 · BIG duel portraits (≈3× the old 108 / 88 px): actor and target side by side with a clash effect between them; the ▭ button folds back to the small stacked cards.
+     Struck fighter: red light pulses 3× per hit; below 25% HP the frame throbs red. --pw = portrait size (fits the screen). */
+  #fbDuel:not(.min){--pw:min(324px,21vw,38vh);top:84px;right:12px;flex-direction:row;align-items:flex-start;gap:0}
+  #fbDuel:not(.min) .dc{flex-direction:column;align-items:stretch;gap:6px;min-width:0;max-width:none;padding:8px 10px 10px;width:calc(var(--pw) + 22px)}
+  #fbDuel:not(.min) .dc.t{margin-right:0;width:calc(var(--pw) * .82 + 22px);margin-top:calc(var(--pw) * .18)}
+  #fbDuel:not(.min) .pf{width:var(--pw);height:var(--pw);border-radius:16px}#fbDuel:not(.min) .dc.t .pf{width:calc(var(--pw) * .82);height:calc(var(--pw) * .82)}
+  #fbDuel:not(.min) .nm b{font-size:16px}#fbDuel:not(.min) .nm small{font-size:12px}#fbDuel:not(.min) .hp{height:9px}#fbDuel:not(.min) .mo{font-size:15px;min-height:19px}
+  #fbDuel:not(.min) .tools{position:absolute;right:0;bottom:-28px}
+  #fbDuel .cl{align-self:center;position:relative;width:70px;height:70px;margin:0 -14px;z-index:5;pointer-events:none;display:grid;place-items:center;font-size:30px;filter:drop-shadow(0 2px 4px #000)}
+  #fbDuel .cl i{font-style:normal;opacity:.55}
+  #fbDuel .cl.on i{opacity:1;animation:fbClash .55s ease-out}
+  #fbDuel .cl.on::before,#fbDuel .cl.on::after{content:'';position:absolute;left:50%;top:50%;width:92px;height:5px;margin:-2px 0 0 -46px;border-radius:3px;background:linear-gradient(90deg,#0000,#fff8d8,#0000);animation:fbSlash .5s ease-out}
+  #fbDuel .cl.on::after{transform:rotate(-52deg);animation-delay:.07s}#fbDuel .cl.on::before{transform:rotate(38deg)}
+  #fbDuel .cl.k-guard i{color:#9fd4ff}#fbDuel .cl.k-heal i{color:#9fefaa}
+  #fbDuel .dc.m-hurt .pf .rd,#fbDuel .dc.low .pf .rd{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;background:radial-gradient(circle,#ff3a2a00 30%,#ff2a1ab0 100%)}
+  #fbDuel .dc.m-hurt .pf .rd{animation:fbRed .6s ease-in-out 1}
+  #fbDuel .dc.low:not(.m-down) .pf .rd{animation:fbThrob 1.1s ease-in-out infinite}
+  @keyframes fbRed{0%,100%{opacity:0}16%,50%,84%{opacity:1}33%,67%{opacity:.15}}
+  @keyframes fbThrob{0%,100%{opacity:.1}50%{opacity:.75}}
+  @keyframes fbClash{0%{transform:scale(.3) rotate(-30deg)}40%{transform:scale(1.5) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
+  @keyframes fbSlash{0%{opacity:0;width:20px}30%{opacity:1}100%{opacity:0;width:130px}}
+  #fbDuel:not(.min) .dc.m-attack .pf{animation:fbDuelLunge .5s ease-out}#fbDuel:not(.min) .dc.t.m-attack .pf{animation:fbDuelLungeL .5s ease-out}
+  @keyframes fbDuelLunge{0%{transform:translateX(0)}35%{transform:translateX(26px) scale(1.04)}100%{transform:translateX(0)}}@keyframes fbDuelLungeL{0%{transform:translateX(0)}35%{transform:translateX(-26px) scale(1.04)}100%{transform:translateX(0)}}
+  @media (max-width:860px),(max-height:560px){#fbDuel:not(.min){--pw:96px;top:auto;bottom:226px;right:6px}}
+  @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}#fbDuel .rd,#fbDuel .cl i,#fbDuel .cl::before,#fbDuel .cl::after{animation:none!important}}
   @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}}
   #fbItems{position:fixed;left:50%;bottom:208px;transform:translateX(-50%);z-index:42;display:flex;gap:10px;align-items:flex-end;padding:10px 14px 8px;border-radius:14px;background:#14110fe8;border:1px solid #fff3;box-shadow:0 8px 24px #000a}#fbItems[hidden]{display:none}
   #fbItems .lbl{position:absolute;left:14px;top:-10px;font:700 11px AgThai,system-ui,sans-serif;background:#2a2118;color:#f6d79b;padding:1px 9px;border-radius:8px;border:1px solid #fff3}
@@ -651,9 +676,10 @@
     const card = (R, role) => {
       const u = R.u, foe = u.side === 'monster', f = foe && MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
       const jn = !foe && window.Progression?.JOBS?.[job]?.name;
-      return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}">${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
+      return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}${pct > 0 && pct < 25 ? ' low' : ''}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"><b class="rd"></b>${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
     };
-    d.innerHTML = card(A, 'a') + (T ? '<span class="vs">▾</span>' + card(T, 't') : '') + `<div class="tools"><button data-k="Min" title="ย่อ/ขยายพอร์เทรต">${min ? '▣' : '▭'}</button><button data-k="Code" title="สลับภาพจริง ↔ ภาพวาดตามอาชีพ (โค้ด)">${code ? '🖼' : '✎'}</button></div>`;
+    const clash = T ? (A.m === 'attack' || T.m === 'hurt' ? 'attack' : A.m === 'guard' || T.m === 'guard' ? 'guard' : A.m === 'heal' ? 'heal' : '') : '', cIcon = clash === 'guard' ? '🛡' : clash === 'heal' ? '✚' : '⚔';
+    d.innerHTML = card(A, 'a') + (T ? (min ? '<span class="vs">▾</span>' : `<span class="cl ${clash ? 'on k-' + clash : ''}"><i>${cIcon}</i></span>`) + card(T, 't') : '') + `<div class="tools"><button data-k="Min" title="ย่อ/ขยายพอร์เทรต">${min ? '▣' : '▭'}</button><button data-k="Code" title="สลับภาพจริง ↔ ภาพวาดตามอาชีพ (โค้ด)">${code ? '🖼' : '✎'}</button></div>`;
     d.querySelectorAll('.tools button').forEach(b => b.onclick = () => { try { localStorage.setItem('projectA.fbDuel' + b.dataset.k, duelPref(b.dataset.k) ? '0' : '1') } catch (e) { } d.dataset.sig = ''; });
   }
   addEventListener('keydown', e => { if (e.key === 'Escape' && inspectU) { e.preventDefault(); e.stopImmediatePropagation(); setInspect(null) } }, true);
