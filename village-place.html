@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th"><meta charset="utf-8"><script src="js/vendor-kinds.js?v=v98.947"></script><script src="js/editor-store.js?v=v98.1002"></script><script src="js/play-guard.js?v=v98.894"></script><script src="js/perf-scale.js?v=v98.574"></script><script src="js/asset-size.js?v=v98.894"></script><script src="js/tilt-shift.js?v=v98.663"></script><script src="js/game-cursor.js?v=v98.1016"></script><script src="js/texel.js?v=v98.894"></script><script src="js/piece-geometry.js?v=v98.500"></script><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
+<html lang="th"><meta charset="utf-8"><script src="js/vendor-kinds.js?v=v98.947"></script><script src="js/editor-store.js?v=v98.1002"></script><script src="js/play-guard.js?v=v98.894"></script><script src="js/perf-scale.js?v=v98.574"></script><script src="js/asset-size.js?v=v98.894"></script><script src="js/tilt-shift.js?v=v98.663"></script><script src="js/game-cursor.js?v=v98.1018"></script><script src="js/texel.js?v=v98.894"></script><script src="js/piece-geometry.js?v=v98.500"></script><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สถานที่ · Project A</title>
 <script src="js/img-gate.js?v=v98.352"></script><script src="js/walk-speed.js?v=v98.894"></script><script src="js/sfx.js?v=98.298"></script><script src="js/key-layout.js?v=1"></script><script src="js/touch.js?v=94.02"></script><script src="js/interactables.js?v=98.31"></script><script src="js/touch-controls.js?v=98.32"></script><script src="js/webp-redirect.js?v=v98.946"></script><script src="js/staged-preview.js?v=v98.387"></script><link rel="stylesheet" href="css/thai-font.css?v=1"><style>
 @font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2)}@font-face{font-family:TownThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2)}
 *{box-sizing:border-box}body{margin:0;overflow:hidden;background:#2c3d2e;color:#f6edce;font:14px TownThai,system-ui,sans-serif}canvas{width:100vw;height:100dvh;display:block;touch-action:none}
@@ -985,7 +985,7 @@ function resize() {
 /* v98.570 · the sub-map zoom is whatever draws the hero as big on screen as on the village map (CharSize.heroScreenPx) — needs the fit scale, so it is computed in fitView */
 const PLACE_ZOOM = 1.65;   /* fallback only */
 /* characters keep the same size relative to the floor grid as on the village map (that grid is 56 px wide per cell, this one 90) */
-let camHold = 0;
+let camHold = 0, offT = 0;
 function fitView() {
  const F = M.floor,
   spanX = (F.w * 2 + F.d * 2 + 2) * S,
@@ -1026,12 +1026,13 @@ const vendorWorld = s => { const df = vendorDefault(s), v = s.vendor || {}; retu
 function vendorObj(s, i) {
  if (!s.vendor?.kind || !VENDOR_KINDS[s.vendor.kind]) return null;
  const w = vendorWorld(s), p = project(w.u, w.v), face = vendorFace(s), kind = s.vendor.kind, hash = [...kind + s.id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % 628 / 100,
-  px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale();
+  fk = window.CharScaleAdjust?.factor('village', kind) || 1,   /* v98.1010 · the seller's ⚖ Scale Lineup factor (its own kind: m1…g4) like every villager (place-people.js castScale) */
+  px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale() * fk;
  hits.push({ type: 'station', i, r: { x: p.x - px * .22, y: p.y - px * .9, w: px * .44, h: px * .95 } });   /* a click on the seller = the station */
  return { y: p.y, vendor: true, wu: w.u, wv: w.v, draw: (t = performance.now()) => {
   const stand = TownArt.image(vendorFile(kind, face.toLowerCase())), pk = stand && vendorPoseOf(s, t, hash),   /* v98.961 · the soft semi-SD vendor pictures (8 poses) come FIRST; the realistic painted atlas (generated-village/vendors.png) is only the fallback for a kind that has no picture */ pim = pk && TownArt.image(vendorFile(kind, face.toLowerCase(), pk)),
    im = pim && pim.complete && pim.naturalWidth ? pim : stand, bob = Math.sin(t * .0018 + hash) * 1.1;   /* v98.947 · the pose picture if it exists, else the standing one (not when the painted village art replaces vendors) */
-  if (im && im.complete && im.naturalWidth) { g.fillStyle = 'rgba(20,16,10,.28)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7); g.fill(); g.drawImage(im, p.x - px / 2, p.y - px * 360 / 384 - bob, px, px) }
+  if (im && im.complete && im.naturalWidth) { g.fillStyle = 'rgba(20,16,10,.28)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * PLACE_CHAR_K * fk, 6 * PLACE_CHAR_K * fk, 0, 0, 7); g.fill(); g.drawImage(im, p.x - px / 2, p.y - px * 360 / 384 - bob, px, px) }
   else if (stand && !stand.complete) { /* the picture is still loading: draw nothing for a moment instead of flashing the other version */ }
   else if (window.VillagePaintedArt?.draw(g, kind, p.x, p.y - bob, px, { height: px * .88, flip: face === 'SE' })) { /* painted vendor atlas */ }
    else window.VillagerDraw?.(g, VENDOR_KINDS[kind].look, p.x, p.y, t, { face, scale: window.placeScale() })
@@ -1118,7 +1119,16 @@ function draw(t) {
   }
  }
  window.joyPlaceWalk?.(dt);
- if (!editing && !drag && performance.now() > camHold) { const hq = project(hero.u, hero.v), tx = -(hq.x - 1100) * scale * zoom, ty = H * .12 - (hq.y - 700) * scale * zoom, kf = 1 - Math.exp(-dt * 11); pan = { x: pan.x + (tx - pan.x) * kf, y: pan.y + (ty - pan.y) * kf } }
+ /* v98.1012 · THE CAMERA ALWAYS COMES BACK TO THE HERO. It follows unless you are really dragging the map (the pointer moved lately) or hold-after-drag (3.5 s) is running; a press that did not move no longer stops it,
+    a drag with no pointer movement for 1.2 s is dead (stale) and is dropped, and if the hero has been off the screen for 0.8 s the hold / drag are dropped and the view snaps back. */
+ if (!editing) {
+  const now = performance.now(), hq0 = project(hero.u, hero.v), sx = W / 2 + pan.x + (hq0.x - 1100) * scale * zoom, sy = H / 2 + pan.y + (hq0.y - 700) * scale * zoom, off = sx < -30 || sx > W + 30 || sy < -30 || sy > H + 30;
+  if (drag && drag.moved && now - (drag.t || 0) > 1200) drag = null;
+  if (camHold > now + 3600) camHold = now + 3500;
+  if (off && !(drag && drag.moved)) { offT = offT || now; if (now - offT > 800) { camHold = 0; drag = null } } else offT = 0;
+  if (!isFinite(pan.x) || !isFinite(pan.y)) focus();
+ }
+ if (!editing && !(drag && drag.moved) && performance.now() > camHold) { const hq = project(hero.u, hero.v), tx = -(hq.x - 1100) * scale * zoom, ty = H * .12 - (hq.y - 700) * scale * zoom, kf = 1 - Math.exp(-dt * 11); pan = { x: pan.x + (tx - pan.x) * kf, y: pan.y + (ty - pan.y) * kf } }
  g.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
  g.fillStyle = '#2c3d2e';
  g.fillRect(0, 0, W, H);
@@ -1411,13 +1421,17 @@ cv.onpointerdown = e => {
   pan: {
    ...pan
   },
-  moved: false
+  moved: false,
+  t: performance.now()
  };
- cv.setPointerCapture(e.pointerId)
+ /* v98.1012 · a pointer that cannot be captured (already gone / stale id) used to THROW here with `drag` already set → no pointerup ever cleared it and the camera stopped following the hero for good */
+ try { cv.setPointerCapture(e.pointerId) } catch (err) { }
 };
 cv.onpointermove = e => {
  if (!drag && !editing && e.pointerType !== 'touch') { const w = world(e), h = hitAt(w), it = h?.type === 'station' ? { id: 'st:' + h.i, label: 'กำลังเลือก · ' + M.stations[h.i].name, x: e.clientX, y: e.clientY } : window.Interactables?.at(w.x, w.y); window.Interactables?.setHover(it?.id); window.Interactables?.showTip(it ? { ...it, x: 0 } : null, e.clientX, e.clientY) }
+ if (drag && e.buttons === 0 && e.pointerType === 'mouse') { drag = null; return }   /* v98.1012 · the button was let go outside the page / window: the pointerup never came */
  if (!drag) return;
+ drag.t = performance.now();
  const dx = e.clientX - drag.x,
   dy = e.clientY - drag.y;
  if (Math.hypot(dx, dy) > 5) drag.moved = true;
@@ -1453,6 +1467,8 @@ cv.onpointerup = e => {
  $('status').textContent = path.length ? 'กำลังเดิน…' : 'เดินไปจุดนี้ไม่ได้'
 };
 cv.onpointercancel = () => drag = null;
+cv.onlostpointercapture = () => { if (drag) drag = null };   /* v98.1012 */
+addEventListener('blur', () => { drag = null }); document.addEventListener('visibilitychange', () => { drag = null });
 cv.onwheel = e => {
  e.preventDefault();
  const old = zoom;
@@ -1793,4 +1809,4 @@ window.TouchControls?.attach({
  act(c) { if (c.option?.run) c.option.run(c); else c.run?.(c) },
  buttons: [{ id: 'bag', icon: 'cardbook', title: 'สมุดผนึก', run: () => send('menu', { id: 'bag' }) }, { id: 'menu', icon: 'settings', title: 'เมนู', run: () => send('menu', { id: 'settings' }) }, ...(KIND === 'forge' ? [{ id: 'wip', icon: 'forge', title: 'ซ่อน/แสดงการ์ดงาน', run: () => send('wip-toggle') }] : [])]
 });
-</script><script src="js/place-catalog.js?v=v98.526"></script><script src="js/art-frames.js?v=v98.917"></script><script src="js/art-lights.js?v=v98.894"></script><script src="js/day-light.js?v=v98.894"></script><script src="js/place-build.js?v=v98.894"></script><script src="js/depth-style.js?v=v98.894"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=v98.894"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=v98.1016"></script><script src="js/name-plate.js?v=v98.606"></script><script src="js/villager-draw.js?v=v98.1004"></script><script src="js/village-life.js?v=v98.1016"></script><script src="js/village-lines.js?v=v98.953"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/place-people.js?v=v98.1004"></script><script src="js/editor-tools.js?v=98.99"></script></html>
+</script><script src="js/place-catalog.js?v=v98.526"></script><script src="js/art-frames.js?v=v98.917"></script><script src="js/art-lights.js?v=v98.894"></script><script src="js/day-light.js?v=v98.894"></script><script src="js/place-build.js?v=v98.894"></script><script src="js/depth-style.js?v=v98.894"></script><script src="js/test-lab.js?v=98.293"></script><script src="js/editor-dock.js?v=98.293"></script><script src="js/piece-detail.js?v=v98.894"></script><script src="js/injury.js?v=v98.332"></script><script src="js/world-state.js?v=v98.1018"></script><script src="js/name-plate.js?v=v98.606"></script><script src="js/villager-draw.js?v=v98.1004"></script><script src="js/village-life.js?v=v98.1018"></script><script src="js/village-lines.js?v=v98.953"></script><script src="js/village-mind.js?v=97.34"></script><script src="js/quest-gem.js?v=v98.1017"></script><script src="js/place-people.js?v=v98.1017"></script><script src="js/editor-tools.js?v=98.99"></script></html>

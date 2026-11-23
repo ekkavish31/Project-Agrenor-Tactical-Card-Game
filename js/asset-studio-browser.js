@@ -218,7 +218,7 @@
   await doApply(slot,{path:tile.file},{note:'ก่อนเปลี่ยนเป็น '+tile.id},true);state.arm=null;rebuild();render()}
  const filesOpen=()=>{try{return localStorage.getItem('studio.filesOpen')==='1'}catch(x){return false}};
  /* v98.392 · each cell of a character's table: datum status (own points / 11 · face vs standing pose) + ✔ checked, and 📍 / 📐 shortcuts that open the Scale Lineup row on THIS pose · direction */
- const lidOf=e=>e.id==='hero'?'hero':String(e.id).replace(/^(ally|npc):/,'');
+ const lidOf=e=>e.id==='hero'?'hero':String(e.id).replace(/^(ally|npc|svc):/,'');
  /* v98.415 · DRAG TO SWAP two animation cells of one character. The slots keep their files; the PICTURES change places, frame by frame
     (different frame counts: the first n frames swap, the rest stay). What belongs to a picture travels with it: datum points, the ✔ / ✎ tick,
     the review status. Each slot's previous picture goes to its history as usual. A cell that only mirrors its partner direction (no file of
@@ -386,6 +386,7 @@
  function standingOf(id,view){
   const opp=view==='SW'?'SE':'SW';
   if(id==='hero'){const D=runtime.tactics?.directions||{},a=D[view]?.idle,b=D[opp]?.idle,o=[];if(a?.src)o.push([a.src,!!a.flipImage]);if(b?.src)o.push([b.src,!b.flipImage]);return o}
+  if(/^svc:/.test(id)&&window.vendorFile){const k=id.slice(4),v=view.toLowerCase(),w=opp.toLowerCase();return [...studioStand(id,view),[window.vendorFile(k,v),false],[window.vendorFile(k,w),true]]}   /* v98.1010 · NPC ร้านค้า/สมาคม: assets/village-town/vendors/<kind>-<sw|se>.webp */
   const k=id.replace(/^ally:/,''),v=view.toLowerCase(),w=opp.toLowerCase();
   return [...studioStand(id,view),[`assets/village-town/npc/${k}/${v}-stand.webp`,false],[`assets/village-town/npc/${k}/${w}-stand.webp`,true],[`assets/tactics/${k}_${v}_idle.webp`,false],[`assets/tactics/${k}_${w}_idle.webp`,true]];
  }
@@ -394,7 +395,7 @@
   look(){return window.StudioVariants?.active||'classic'},
   setLook(id){setLook(id);return window.StudioVariants?.active===id},
   /* the characters of the Animation tab (same list): id, name, and the clips that have frames */
-  entities(){return state.model.filter(e=>e.group==='characters'||e.group==='npcs').map(e=>({id:e.id,name:e.name,group:e.group,clips:e.clips.filter(c=>c.frames?.length).map(c=>({id:c.id,action:c.action,view:c.view,n:c.frames.length}))}))},
+  entities(){return state.model.filter(e=>e.group==='characters'||e.group==='npcs'||e.group==='svc').map(e=>({id:e.id,name:e.name,group:e.group,clips:e.clips.filter(c=>c.frames?.length).map(c=>({id:c.id,action:c.action,view:c.view,n:c.frames.length}))}))},
   /* a picture of that character: a chosen clip frame, or the standing picture. → {url,file,flip,label} or null */
   async picture(id,view,clipId,index){
    const e=state.model.find(x=>x.id===id);if(!e)return null;

@@ -60,7 +60,7 @@
       out.push({ y: pt.y, wu: a.u, wv: a.v, npc: a.p.id, draw: () => {
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
         root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, poseAdj: true, scale: castScale('npc:' + a.p.id) });
-        if (questNpc(a.p.id)) mark(g, pt, t);
+        if (questNpc(a.p.id)) mark(g, pt, t, castScale('npc:' + a.p.id));
         if (bubble?.a === a && now < bubble.until) say(g, pt, bubble.text);
       } });
     }
@@ -69,7 +69,7 @@
   /* v95.01 · gold ◆ over the villager the current intro quest wants you to talk to (js/story-quests.js) */
   let qT = null, qAt = 0;
   function questNpc(id) { const n = performance.now(); if (n > qAt) { qAt = n + 500; try { qT = parent !== window ? parent.Story?.questTargets?.() : null } catch (e) { qT = null } } return !!qT?.npc?.includes(id) }
-  function mark(g, pt, t) { const y = pt.y - 128 - Math.sin(t * .006) * 5; g.save(); g.shadowColor = 'rgba(255,200,60,.9)'; g.shadowBlur = 14; g.beginPath(); g.moveTo(pt.x, y - 18); g.lineTo(pt.x + 11, y); g.lineTo(pt.x, y + 18); g.lineTo(pt.x - 11, y); g.closePath(); g.fillStyle = '#ffd34d'; g.fill(); g.shadowBlur = 0; g.lineWidth = 2; g.strokeStyle = '#5a3a0a'; g.stroke(); g.restore() }
+  function mark(g, pt, t, sc) { root.QuestGem?.draw(g, pt.x, pt.y - 84 * (sc || 1), t, { k: Math.max(.8, Math.min(1.4, sc || 1)) }) }   /* v98.1017 · the painted crystal, floating just above that villager's head (was a flat code-drawn diamond at a fixed height) */
   function say(g, pt, txt) {
     g.save(); g.font = '13px TownThai,VillageThai,system-ui'; const max = 230, words = [...txt], lines = []; let cur = '';
     for (const ch of words) { if (g.measureText(cur + ch).width > max) { lines.push(cur); cur = ch } else cur += ch } if (cur) lines.push(cur);
