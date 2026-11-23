@@ -334,6 +334,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const isLocked = ck => !!ck && okOf(ck);
   let flashT = 0;
   function flash(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#a4341c">🔒 ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2200) }
+  function flashWarn(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#b86a00">⚠ ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 3600) }
   function flashOk(text) { const el = $('psNext'); if (!el) return; el._h = ''; el.innerHTML = `<b style="background:#2e6b4f">✔ ${esc(text)}</b>`; clearTimeout(flashT); flashT = setTimeout(() => { try { updNext() } catch (e) { } }, 2600) }
   const LOCKMSG = 'ท่านี้ล็อกอยู่ — เอาติ๊ก “ล็อก” ออกก่อนจึงจะแก้ได้';
   /* v98.782 · no chin point: the cut rows come from the NECK LINE (its middle) and the CROTCH LINE (its middle); an old chin / crotch point is still honoured when a pose has one */
@@ -585,8 +586,12 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
         if (tool === 'hand') { drag = { kind: 'hand', ck, sx, sy, ox: rec.ox || 0, oy: rec.oy || 0 }; cv.setPointerCapture(ev.pointerId); return }
         /* v98.816 · ⬚ ย้าย Datum Set: the picture stays, every point of the pose moves together */
         if (tool === 'dset') { const [fx0, fy0] = unsc(sx, sy); drag = { kind: 'dset', ck, from: fromFrame(c, ck, fx0, fy0), orig: JSON.parse(JSON.stringify(P)) }; cv.setPointerCapture(ev.pointerId); return }
+        /* v98.964 · the points on the picture are the PREVIEW ones while a quick adjust (หัว / ลำตัว / ขา …) is live, so a click could neither hit them nor show a change: say so instead of editing the hidden stored points */
+        if (QA.ck === ck && (QA.P || qaDirty())) { paintAll(); flashWarn('มีการปรับสัดส่วนค้างอยู่ (พรีวิวบนภาพ) — กด “รีเซ็ต” หรือ “ใส่ Cart” ก่อน จึงจะย้าย/วางจุดได้'); return }
         let key = hitPoint(c, ck, P, sx, sy);
         if (!key) {
+          /* v98.964 · every point is placed: a click in empty space used to MOVE THE FIRST POINT (eye L) silently — now it moves nothing; pick a point in the list first (then click the new place) or drag the point itself */
+          if (!(pinned && stepsOf(ck).some(s => s[0] === step)) && !firstMissing(P, ck)) { paintAll(); flashWarn('จุดครบแล้ว — ลากที่ตัวจุดเพื่อย้าย · หรือเลือกจุดจากรายการซ้ายก่อน แล้วคลิกตำแหน่งใหม่'); return }
           let k = pinned && stepsOf(ck).some(s => s[0] === step) ? step : (firstMissing(P, ck) || stepsOf(ck)[0][0]); pinned = false; const [fx, fy] = unsc(sx, sy), [x, y] = fromFrame(c, ck, fx, fy), q = [Math.round(x), Math.round(y)];
           if (LINES[k]) {   /* a cut line: this click is its next point; a click-and-HOLD (0.55 s) ends the line */
             const lk = LINES[k]; if (!P[lk] || P[k + 'Done'] !== false) { P[lk] = []; P[k + 'Done'] = false }   /* a finished line asked again starts a new one */
