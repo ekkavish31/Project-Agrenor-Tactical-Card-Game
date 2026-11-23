@@ -192,7 +192,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
 #poseSheet .ps-side{grid-area:side;position:sticky;top:56px;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:6px;background:#f8f6ee;border:1px solid #d6dccb;border-radius:10px}
 #poseSheet .ps-side .ps-sh{font-weight:700;font-size:12.5px;color:#4a5b3f;margin-top:4px}#poseSheet .ps-side .ps-row{display:flex;flex-wrap:wrap;gap:4px}#poseSheet .ps-side label{font-size:13px;display:flex;gap:6px;align-items:center}
 #poseSheet .ps-side .ps-steps{display:flex;flex-direction:column;gap:3px}#poseSheet .ps-side .ps-steps button{display:flex;align-items:center;gap:7px;text-align:left;padding:4px 8px;font-size:13px}#poseSheet .ps-side .ps-steps .n{font-weight:700;opacity:.6;min-width:16px}
-#poseSheet .qa-r{border-top:1px solid #e4e6da;padding-top:4px}#poseSheet .qa-h{display:flex;justify-content:space-between;font-size:12.5px}#poseSheet .qa-b{display:flex;gap:4px;margin-top:2px}#poseSheet .qa-b button{flex:1;padding:3px 0}
+#poseSheet details.qa-g{border-top:1px solid #e4e6da;margin-top:4px}#poseSheet details.qa-g>summary{cursor:pointer;font-size:12.5px;font-weight:700;padding:4px 0;color:#315d46}#poseSheet .qa-r{border-top:1px solid #e4e6da;padding-top:4px}#poseSheet .qa-h{display:flex;justify-content:space-between;font-size:12.5px}#poseSheet .qa-b{display:flex;gap:4px;margin-top:2px}#poseSheet .qa-b button{flex:1;padding:3px 0}
 #poseSheet .ps-zone{grid-area:zone;min-width:0;overflow-x:auto}
 #poseSheet .ps-c .ctl button.on{background:#ffe3c2;border-color:#e07b00;font-weight:700}#poseSheet .ps-c{position:relative}#poseSheet .ps-c[data-ck]>.vals{position:absolute;top:calc(var(--pz,0px) + 6px);left:calc(var(--pz,0px) + 6px);width:auto;min-width:172px;margin:0;font-size:11px;background:#fffdf6ec;border:1.5px solid #b9c48a;border-radius:8px;padding:3px 5px;box-shadow:0 1px 4px #0003;pointer-events:none;z-index:4}#poseSheet .ps-c[data-ck]>.vals td{padding:1px 4px}#poseSheet .ps-c.locked{outline:12px solid #2f9e44;outline-offset:-12px}   /* v98.811 · green frame of a locked pose 3 → 9 → 12 px, drawn inward */#poseSheet .ps-c.locked::after{content:'🔒';position:absolute;top:16px;left:16px;font-size:24px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px #0008)}body:not(.ps-sel) #poseSheet .ps-c.locked canvas{cursor:not-allowed}#poseSheet .ps-loupe{position:absolute;top:98px;right:98px;width:180px;height:180px;border:3px solid #8a4fff;border-radius:10px;background:#fff;box-shadow:0 3px 12px #0006;pointer-events:none;z-index:5}
 #poseSheet:fullscreen{overflow:auto;background:#eef0e6;padding:0 10px 10px}#poseSheet:fullscreen .ps-top{top:0}
@@ -363,6 +363,9 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
   const QD = () => ({ head: 100, torso: 100, wTorso: 100, shoulder: 100, legs: 100, wLegs: 100 });
   const QA = { ck: null, S: QD(), keep: true, canvas: null, P: null, t: 0, busy: false, msg: '' };
   const QROWS = [['head', 'หัว ใหญ่-เล็ก'], ['torso', 'ลำตัว สูง (แนวตั้ง)'], ['wTorso', 'ลำตัว หนา (แนวนอน)'], ['legs', 'ขา ยาว (แนวตั้ง)'], ['wLegs', 'ท่อนขา หนา (แนวนอน)']];
+  /* v98.1001 · two groups: ↔ size / width (head · torso width · leg width) always open · ↕ vertical (torso height · leg length) collapsed — the open/closed state is remembered on this device */
+  const QGROUPS = [['', ['head', 'wTorso', 'wLegs']], ['↕ แนวตั้ง (ลำตัวสูง · ขายาว)', ['torso', 'legs']]], QV_KEY = 'pose-sheet-qa-vert-open';
+  const qvOpen = () => { try { return localStorage.getItem(QV_KEY) === '1' } catch (e) { return false } };
   const qaDirty = () => Object.values(QA.S).some(v => v !== 100);
   const qaScale = () => Object.fromEntries(Object.entries(QA.S).map(([k, v]) => [k, v / 100]));
   /* v98.782 · LYING pose (down): rotate the picture about its centre so that the line skull-top → feet points down, run the same re-proportion there (the head / torso / legs cut by the neck LINE and the crotch LINE, which turn with it), then rotate back */
@@ -407,6 +410,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     } catch (e) { QA.busy = false; say('ไม่สำเร็จ: ' + e.message); return false }
   }
   function qaClick(e) {
+    if (e.target.closest('#qaVert > summary')) setTimeout(() => { try { localStorage.setItem(QV_KEY, document.getElementById('qaVert')?.open ? '1' : '0') } catch (x) { } }, 0);
     const b = e.target.closest('[data-qd]'); if (b) { const [k, d] = b.dataset.qd.split(','); QA.S[k] = Math.max(60, Math.min(150, QA.S[k] + +d)); QA.msg = ''; qaLive(); updNext(); return }
     if (e.target.closest('#qaReset')) { QA.S = QD(); QA.canvas = null; QA.P = null; QA.msg = ''; paintAll(); refreshVals(QA.ck); return }
     if (e.target.closest('#qaSave')) return cartAll(); if (e.target.closest('#qaWin')) return openAdjust(act);
@@ -420,7 +424,7 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     if (isLocked(act)) return `<div style="font-size:13px;color:#2f7a3a">🔒 ท่า <b>${esc(name)}</b> ล็อกอยู่ — เอาติ๊ก “ล็อก” ที่ใต้ภาพออกก่อนจึงจะปรับ/แก้จุดได้</div>`;
     if (!(withChin(P).chin && withChin(P).crotch)) return `<div style="font-size:13px;color:#7a5a00">ท่า <b>${esc(name)}</b> · วาง <b>เส้นตัดหัว (คอ)</b> กับ <b>เส้นตัดขา</b> ให้ครบก่อน จึงจะมีโซนสีและปุ่มปรับสัดส่วน</div>`;
     return `<div style="font-size:13.5px">ท่า <b style="background:#2e6b4f;color:#fff;padding:1px 8px;border-radius:6px">${esc(name)}</b> · 🛠 ปรับสัดส่วน (ดูผลสดบนภาพ)</div>`
-      + QROWS.map(([k, l]) => `<div class="qa-r"><div class="qa-h"><span>${l}</span><b>${QA.S[k]}%</b></div><div class="qa-b">${[-5, -1, 1, 5].map(d => `<button type="button" data-qd="${k},${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</div></div>`).join('')
+      + QGROUPS.map(([title, ks]) => { const rows = ks.map(k => [k, QROWS.find(r => r[0] === k)[1]]).map(([k, l]) => `<div class="qa-r"><div class="qa-h"><span>${l}</span><b>${QA.S[k]}%</b></div><div class="qa-b">${[-5, -1, 1, 5].map(d => `<button type="button" data-qd="${k},${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</div></div>`).join(''); return title ? `<details class="qa-g" id="qaVert" ${qvOpen() ? 'open' : ''}><summary>${title}</summary>${rows}</details>` : `<div class="qa-g">${rows}</div>` }).join('')
       + `<label style="font-size:12.5px"><input type="checkbox" id="qaKeep" ${QA.keep ? 'checked' : ''}>คงความสูงตัวเท่าเดิม</label>`
       + `<div class="ps-row"><button type="button" class="act" id="qaReset" ${qaDirty() ? '' : 'disabled'}>↺ รีเซ็ต</button><button type="button" class="act main" id="qaSave" ${qaDirty() && !QA.busy ? '' : 'disabled'} title="เหมือนปุ่ม 🛒 ใส่ Cart ด้านบน — ใส่ทั้งหมดที่เปลี่ยน">🛒 ใส่ Cart</button><button type="button" class="act" id="qaWin" title="หน้าต่างใหญ่ก่อน/หลัง">🔍</button></div><div id="qaMsg" style="font-size:12px;color:#315d46">${esc(QA.msg)}</div>`;
   }
