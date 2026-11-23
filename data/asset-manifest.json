@@ -155225,8 +155225,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120303",
+   "artRevision": "20261123-121242",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-1/20261123-121242.webp",
+     "at": "2026-11-23T05:12:42.593Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-1/20261123-120111.png",
      "at": "2026-11-23T05:01:50.668Z",
@@ -155261,8 +155268,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120304",
+   "artRevision": "20261123-121242",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-2/20261123-121242.webp",
+     "at": "2026-11-23T05:12:42.699Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-2/20261123-120111.png",
      "at": "2026-11-23T05:01:52.354Z",
@@ -155297,8 +155311,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120305",
+   "artRevision": "20261123-121242",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-3/20261123-121242.webp",
+     "at": "2026-11-23T05:12:42.782Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-3/20261123-120111.png",
      "at": "2026-11-23T05:01:54.120Z",
@@ -155333,8 +155354,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120307",
+   "artRevision": "20261123-121242",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-4/20261123-121242.webp",
+     "at": "2026-11-23T05:12:42.884Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-4/20261123-120111.png",
      "at": "2026-11-23T05:01:56.413Z",
@@ -155369,8 +155397,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120308",
+   "artRevision": "20261123-121243",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-5/20261123-121242.webp",
+     "at": "2026-11-23T05:12:43.002Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-5/20261123-120111.png",
      "at": "2026-11-23T05:01:58.441Z",
@@ -155405,8 +155440,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120310",
+   "artRevision": "20261123-121243",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-6/20261123-121242.webp",
+     "at": "2026-11-23T05:12:43.125Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-6/20261123-120111.png",
      "at": "2026-11-23T05:02:00.692Z",
@@ -155441,8 +155483,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120312",
+   "artRevision": "20261123-121243",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-7/20261123-121242.webp",
+     "at": "2026-11-23T05:12:43.306Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-7/20261123-120111.png",
      "at": "2026-11-23T05:02:03.286Z",
@@ -155477,8 +155526,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120313",
+   "artRevision": "20261123-121243",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-8/20261123-121242.webp",
+     "at": "2026-11-23T05:12:43.467Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-8/20261123-120111.png",
      "at": "2026-11-23T05:02:05.509Z",
@@ -155513,8 +155569,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120313",
+   "artRevision": "20261123-121243",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-9/20261123-121242.webp",
+     "at": "2026-11-23T05:12:43.568Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-9/20261123-120111.png",
      "at": "2026-11-23T05:02:07.911Z",
@@ -155549,8 +155612,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120314",
+   "artRevision": "20261123-121243",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-10/20261123-121242.webp",
+     "at": "2026-11-23T05:12:43.735Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-10/20261123-120111.png",
      "at": "2026-11-23T05:02:10.339Z",
@@ -155585,8 +155655,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120314",
+   "artRevision": "20261123-121243",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-11/20261123-121242.webp",
+     "at": "2026-11-23T05:12:43.902Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-11/20261123-120111.png",
      "at": "2026-11-23T05:02:13.408Z",
@@ -155621,8 +155698,15 @@
     "name": "เทส",
     "group": "npcs"
    },
-   "artRevision": "20261123-120315",
+   "artRevision": "20261123-121244",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-tess-sw-walk-12/20261123-121242.webp",
+     "at": "2026-11-23T05:12:44.048Z",
+     "stamp": "20261123-121242",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-tess-sw-walk-12/20261123-120111.png",
      "at": "2026-11-23T05:02:15.716Z",
@@ -162736,8 +162820,8 @@
   "[\"npcwalk:npc:tess:SE\",\"SE\",true,[[\"npc-tess-se-walk1\",\"assets/village-town/npc/tess/se-walk1.webp\",0,\"20261123-120304\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk2\",\"assets/village-town/npc/tess/se-walk2.webp\",0,\"20261123-120304\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk3\",\"assets/village-town/npc/tess/se-walk3.webp\",0,\"20261123-120306\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk4\",\"assets/village-town/npc/tess/se-walk4.webp\",0,\"20261123-120307\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk5\",\"assets/village-town/npc/tess/se-walk5.webp\",0,\"20261123-120309\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk6\",\"assets/village-town/npc/tess/se-walk6.webp\",0,\"20261123-120311\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk7\",\"assets/village-town/npc/tess/se-walk7.webp\",0,\"20261123-120313\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk8\",\"assets/village-town/npc/tess/se-walk8.webp\",0,\"20261123-120313\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk9\",\"assets/village-town/npc/tess/se-walk9.webp\",0,\"20261123-120314\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk10\",\"assets/village-town/npc/tess/se-walk10.webp\",0,\"20261123-120314\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk11\",\"assets/village-town/npc/tess/se-walk11.webp\",0,\"20261123-120315\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-se-walk12\",\"assets/village-town/npc/tess/se-walk12.webp\",0,\"20261123-120315\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T05:03:28.400Z",
-   "at": 1795410208456
+   "approvedAt": "2026-11-23T05:12:48.354Z",
+   "at": 1795410768411
   },
   "[\"allywalk:may:NE\",\"NE\",true,[[\"studio-ally-may-ne-walk-1\",\"assets/tactics/imported/ally-may-walk-ne/frame-01.webp\",0,\"20261123-120549\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-2\",\"assets/tactics/imported/ally-may-walk-ne/frame-02.webp\",0,\"20261123-120549\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-3\",\"assets/tactics/imported/ally-may-walk-ne/frame-03.webp\",0,\"20261123-120549\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-4\",\"assets/tactics/imported/ally-may-walk-ne/frame-04.webp\",0,\"20261123-120549\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-5\",\"assets/tactics/imported/ally-may-walk-ne/frame-05.webp\",0,\"20261123-120550\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-6\",\"assets/tactics/imported/ally-may-walk-ne/frame-06.webp\",0,\"20261123-120550\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-7\",\"assets/tactics/imported/ally-may-walk-ne/frame-07.webp\",0,\"20261123-120550\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-8\",\"assets/tactics/imported/ally-may-walk-ne/frame-08.webp\",0,\"20261123-120550\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-9\",\"assets/tactics/imported/ally-may-walk-ne/frame-09.webp\",0,\"20261123-120551\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-10\",\"assets/tactics/imported/ally-may-walk-ne/frame-10.webp\",0,\"20261123-120551\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-11\",\"assets/tactics/imported/ally-may-walk-ne/frame-11.webp\",0,\"20261123-120551\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-12\",\"assets/tactics/imported/ally-may-walk-ne/frame-12.webp\",0,\"20261123-120551\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -162750,6 +162834,24 @@
    "frames": {},
    "approvedAt": "2026-11-23T05:11:26.042Z",
    "at": 1795410686102
+  },
+  "[\"allywalk:tess:NE\",\"NE\",true,[[\"studio-ally-tess-ne-walk-1\",\"assets/tactics/imported/ally-tess-walk-ne/frame-01.webp\",0,\"20261123-120421\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-2\",\"assets/tactics/imported/ally-tess-walk-ne/frame-02.webp\",0,\"20261123-120421\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-3\",\"assets/tactics/imported/ally-tess-walk-ne/frame-03.webp\",0,\"20261123-120421\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-4\",\"assets/tactics/imported/ally-tess-walk-ne/frame-04.webp\",0,\"20261123-120421\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-5\",\"assets/tactics/imported/ally-tess-walk-ne/frame-05.webp\",0,\"20261123-120421\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-6\",\"assets/tactics/imported/ally-tess-walk-ne/frame-06.webp\",0,\"20261123-120422\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-7\",\"assets/tactics/imported/ally-tess-walk-ne/frame-07.webp\",0,\"20261123-120422\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-8\",\"assets/tactics/imported/ally-tess-walk-ne/frame-08.webp\",0,\"20261123-120422\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-9\",\"assets/tactics/imported/ally-tess-walk-ne/frame-09.webp\",0,\"20261123-120422\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-10\",\"assets/tactics/imported/ally-tess-walk-ne/frame-10.webp\",0,\"20261123-120422\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-11\",\"assets/tactics/imported/ally-tess-walk-ne/frame-11.webp\",0,\"20261123-120422\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-ne-walk-12\",\"assets/tactics/imported/ally-tess-walk-ne/frame-12.webp\",0,\"20261123-120422\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:12:07.531Z",
+   "at": 1795410727612
+  },
+  "[\"npcwalk:npc:tess:NW\",\"NW\",true,[[\"npc-tess-nw-walk1\",\"assets/village-town/npc/tess/nw-walk1.webp\",0,\"20261123-120418\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk2\",\"assets/village-town/npc/tess/nw-walk2.webp\",0,\"20261123-120418\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk3\",\"assets/village-town/npc/tess/nw-walk3.webp\",0,\"20261123-120418\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk4\",\"assets/village-town/npc/tess/nw-walk4.webp\",0,\"20261123-120418\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk5\",\"assets/village-town/npc/tess/nw-walk5.webp\",0,\"20261123-120418\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk6\",\"assets/village-town/npc/tess/nw-walk6.webp\",0,\"20261123-120419\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk7\",\"assets/village-town/npc/tess/nw-walk7.webp\",0,\"20261123-120419\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk8\",\"assets/village-town/npc/tess/nw-walk8.webp\",0,\"20261123-120419\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk9\",\"assets/village-town/npc/tess/nw-walk9.webp\",0,\"20261123-120419\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk10\",\"assets/village-town/npc/tess/nw-walk10.webp\",0,\"20261123-120419\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk11\",\"assets/village-town/npc/tess/nw-walk11.webp\",0,\"20261123-120420\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-nw-walk12\",\"assets/village-town/npc/tess/nw-walk12.webp\",0,\"20261123-120420\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:12:07.531Z",
+   "at": 1795410727612
+  },
+  "[\"allywalk:tess:SW\",\"SW\",true,[[\"studio-ally-tess-sw-walk-1\",\"assets/tactics/imported/ally-tess-walk-sw/frame-01.webp\",0,\"20261123-121242\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-2\",\"assets/tactics/imported/ally-tess-walk-sw/frame-02.webp\",0,\"20261123-121242\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-3\",\"assets/tactics/imported/ally-tess-walk-sw/frame-03.webp\",0,\"20261123-121242\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-4\",\"assets/tactics/imported/ally-tess-walk-sw/frame-04.webp\",0,\"20261123-121242\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-5\",\"assets/tactics/imported/ally-tess-walk-sw/frame-05.webp\",0,\"20261123-121243\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-6\",\"assets/tactics/imported/ally-tess-walk-sw/frame-06.webp\",0,\"20261123-121243\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-7\",\"assets/tactics/imported/ally-tess-walk-sw/frame-07.webp\",0,\"20261123-121243\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-8\",\"assets/tactics/imported/ally-tess-walk-sw/frame-08.webp\",0,\"20261123-121243\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-9\",\"assets/tactics/imported/ally-tess-walk-sw/frame-09.webp\",0,\"20261123-121243\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-10\",\"assets/tactics/imported/ally-tess-walk-sw/frame-10.webp\",0,\"20261123-121243\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-11\",\"assets/tactics/imported/ally-tess-walk-sw/frame-11.webp\",0,\"20261123-121243\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-tess-sw-walk-12\",\"assets/tactics/imported/ally-tess-walk-sw/frame-12.webp\",0,\"20261123-121244\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:12:48.354Z",
+   "at": 1795410768410
   }
  },
  "studioClipHistory": {
