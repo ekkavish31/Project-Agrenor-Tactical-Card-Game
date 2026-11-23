@@ -51,6 +51,11 @@ code{font-size:12px}
 .lgd i{display:inline-block;width:18px;border-top:2px solid;vertical-align:middle;margin:0 3px 0 8px}
 /* v98.383 · docked in the Animation tab: compact header, no left list, the strip and the inspector side by side */
 body.dock{background:#f7f5ee}body.dock header{padding:6px 10px;gap:6px;position:sticky;top:0;z-index:5}body.dock header h1{display:none}
+/* v98.962 · the right-hand size panel folds to a thin strip on the right (button ▶ ยุบ / ◀) so the lineup can use the whole width; remembered */
+#inspToggle{display:block;margin:0 0 6px auto;padding:3px 10px;font:600 12px AgThai,system-ui,sans-serif;border:1px solid #b49a5a;border-radius:8px;background:#fff6dc;cursor:pointer}
+body.insp-folded main{grid-template-columns:minmax(0,1fr) 34px!important}body.insp-folded.ratio-layout main{grid-template-columns:1fr!important}
+body.insp-folded aside.card{padding:4px!important;overflow:hidden}body.insp-folded #inspBody{display:none}body.insp-folded #inspToggle{writing-mode:vertical-rl;margin:0 auto;padding:10px 4px;line-height:1.2}
+body.insp-folded:not(.dock) main{grid-template-columns:230px minmax(0,1fr) 34px!important}
 body.dock main{grid-template-columns:minmax(0,1fr) 600px;max-width:none;padding:8px 10px;gap:10px;align-items:start}body.dock main>section:first-child{display:none}
 body.dock #stage{height:330px}body.dock #note{display:none}body.dock aside.card{position:sticky;top:46px;max-height:calc(100vh - 56px);overflow:auto}.info{font-size:11px;color:var(--muted);border-bottom:1px dotted var(--muted);cursor:help;margin-left:6px}body.dock .card{padding:8px}
 /* v98.401 · 📐 สัดส่วน tab layout: lineup strip full-width on top, then canvas (pinned) | controls (scrolls) side by side below, instead of a narrow side column stacked underneath everything */
@@ -117,7 +122,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 <section class="card"><b id="listTitle">ตัวละคร</b><div id="list" role="list"></div></section>
 <section class="card" id="lineupOverview"><div id="toolbar"></div><div id="stageWrap"><div id="stage"></div></div>
 <p class="hint" id="note"></p></section>
-<aside class="card"><div id="insp"></div><div id="ctl"></div></aside>
+<aside class="card"><button id="inspToggle" type="button" aria-expanded="true" title="ยุบหน้าต่างปรับขนาดไปด้านขวา เพื่อดู Scale Lineup เต็ม ๆ">▶ ยุบ</button><div id="inspBody"><div id="insp"></div><div id="ctl"></div></div></aside>
 </main>
 <script src="js/village-layout-v67.js?v=v98.920"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/game-settings.js?v=v98.894"></script><script src="js/char-size.js?v=v98.572"></script><script src="js/character-scale-adjust-data.js?v=v98.894"></script><script src="js/character-scale-adjust.js?v=v98.948"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.937"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.936"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
@@ -200,7 +205,7 @@ const QS = new URLSearchParams(location.search), DOCK = QS.get('dock') === '1', 
    Internally tab 'char' is still that ruler view (so the old code keeps working); it is simply not offered as a tab of its own. */
 const TABS_ALL = [['ratio', '📐 สัดส่วน'], ['maps', '🗺 บนแผนที่จริง'],   /* v98.389 · '⚔ สนามรบ · Grid จริง' merged in here: the สนามรบ row of this tab IS the real battle grid */ ['building', 'อาคาร'], ['prop', 'ของประดับ'], ['nature', 'ธรรมชาติ']];
 const TABS = DOCK ? TABS_ALL.filter(t => ['ratio', 'maps'].includes(t[0])) : WORLD_ONLY ? TABS_ALL.filter(t => ['building', 'prop', 'nature'].includes(t[0])) : TABS_ALL;
-let tab = TABS[0][0];
+let tab = DOCK ? 'char' : TABS[0][0];   /* v98.962 · the docked row opens on the real-height ruler (the 'compare proportions' view is gone) */
 if (DOCK) document.body.classList.add('dock'); if (WORLD_ONLY) document.body.classList.add('world');
 const ENTRIES = []; // {id,name,kind,ctx:{battle:{img,m,units,src,formula},village:{...}}}
 const RANK = { hero: 0, ally: 1, monster: 2 };
@@ -251,25 +256,35 @@ const GROUPOF = {};   /* id → the studio's group (characters / npcs) so the li
 async function buildChars() {
   if (!window.ASSET_MANIFEST) await new Promise(r => { const sc = document.createElement('script'); sc.src = 'js/asset-manifest.js?v=' + (window.GAME_VERSION?.v || 'v98.946'); sc.onload = sc.onerror = r; document.head.append(sc) });   /* v98.530 · the game's real hero pictures (lookPic) */
   const list = ST ? ST.lineup.entities().map(e => { const id = e.id === 'hero' ? 'hero' : e.id.replace(/^(ally|npc):/, ''); if (e.group) GROUPOF[id] = e.group; return { id, sid: e.id, name: e.name, clips: e.clips } }) : [{ id: 'hero', sid: 'hero' }, ...Object.keys(ALLIES).map(k => ({ id: k, sid: 'ally:' + k }))];
-  for (const c of list) {
+  /* v98.962 · SPEED: the pictures were asked for and loaded ONE AFTER ANOTHER (≈100 round trips in a row — minutes on a slow link). Now every character's picture is looked up at the same time and
+     the files are requested together; addChar() below then finds them already in the browser's cache. */
+  const getPic = async c => {
     let pic, vp = null;
     if (ST) { const own = null, clip = own ? null : (c.clips || []).find(x => x.action === VP.action && x.view === VP.view) || (VP.action === 'idle' ? null : (c.clips || []).find(x => x.action === VP.action && x.view === OPPV[VP.view]));
       pic = await ST.lineup.picture(c.sid, VP.view, own?.clip || clip?.id, own ? own.index : Math.min(VP.index, (clip?.n || 1) - 1)); vp = { sid: c.sid, action: own ? 'pick' : VP.action, view: VP.view, index: own ? own.index : VP.index, clips: c.clips || [] };
       if (!pic) pic = await ST.lineup.picture(c.sid, 'SW') }
     else pic = { src: c.id === 'hero' ? lookPic(heroLook(), 'SW').src : `assets/village-town/npc/${c.id}/sw-stand.webp` };
     if (pic) pic.vp = vp;
+    return pic };
+  const PICS = await Promise.all(list.map(c => getPic(c).catch(() => null)));
+  PICS.forEach(p => { if (p) load(p.url || p.src) });   /* warm the cache — not awaited */
+  for (const [ci, c] of list.entries()) {
+    const pic = ci < PICS.length ? PICS[ci] : await getPic(c);   /* an entry added to the list while looping (the other hero look) is looked up when its turn comes */
     if (!pic) continue; await addChar(c.id, c.id === 'hero' ? 'ตัวหลัก · ' + (heroLook() === 'female' ? 'หญิง' : 'ชาย') : (ALLIES[c.id] || c.name), c.id === 'hero' ? 'hero' : 'ally', pic, c.id === 'hero' ? DS.hero : DS.ally);
     /* v98.452 · the hero's two looks side by side: the open look is `hero` (everything keeps working on it), the other look is its own entry `hero-<look>` (standing picture of that look) */
     if (c.id === 'hero') { const other = heroLook() === 'female' ? 'male' : 'female', oid = 'hero-' + other; await addChar(oid, 'ตัวหลัก · ' + (other === 'female' ? 'หญิง' : 'ชาย'), 'ally', { ...lookPic(other, VP.view || 'SW'), label: 'ท่ายืน ' + (VP.view || 'SW') }, DS.hero); list.push({ id: oid }) }
   }
   /* v98.265 · villagers drawn from pictures (VillagerDraw SPR_INFO) are in the lineup too, so every person is compared in one place */
   const VILLAGERS = { may: 'ป้าเมย์', tom: 'ลุงทอม', lin: 'คุณยายลิน', guard: 'ทหารยาม', bryn: 'บริน', gus: 'กัส', hilda: 'ฮิลดา', marta: 'มาร์ธา', mira: 'ครูมิรา', saf: 'หมอยาซาฟ', mother: 'แม่', ella: 'เอลลา', joe: 'โจ', oren: 'ผู้ใหญ่บ้านโอเรน' };
+  for (const id of Object.keys(VILLAGERS)) if (!list.some(c => c.id === id)) load(`assets/village-town/npc/${id}/sw-stand.webp`);   /* v98.962 · request them all at once */
   for (const [id, name] of Object.entries(VILLAGERS)) { if (list.some(c => c.id === id)) continue; const pic = { src: `assets/village-town/npc/${id}/sw-stand.webp` }; await addChar(id, name, 'ally', pic, DS.ally); list.push({ id }) }
   const have = new Set(list.map(c => c.id)); for (let i = ENTRIES.length - 1; i >= 0; i--) if ((ENTRIES[i].kind === 'hero' || ENTRIES[i].kind === 'ally') && !have.has(ENTRIES[i].id)) ENTRIES.splice(i, 1);
   ENTRIES.sort((a, b) => (RANK[a.kind] ?? 3) - (RANK[b.kind] ?? 3));
   { const mi = ENTRIES.findIndex(e => lookOfId(e.id) === 'male'), fi = ENTRIES.findIndex(e => lookOfId(e.id) === 'female'); if (mi >= 0 && fi >= 0) { const male = ENTRIES[mi], female = ENTRIES[fi]; ENTRIES.splice(Math.max(mi, fi), 1); ENTRIES.splice(Math.min(mi, fi), 1); ENTRIES.unshift(male, female) } }   /* v98.457/458 · the two hero looks stand side by side at the front: male first, female second — always */
   finalizeBasis();   /* v98.942 */
 }
+let shown = false;
+function showNow() { if (shown) { try { viewCtl(); render() } catch (e) { } return } shown = true; ready = true; viewCtl(); render(); wireStudio(); window.__lineupReady = true; $('lineupLoadState').hidden = true }
 async function build() {
   const add = async (id, name, kind, ctx, src, factor, formula, file) => {
     const img = await load(src); if (!img) return; const m = measure(img); if (!m) return;
@@ -282,18 +297,21 @@ async function build() {
     ENTRIES.push({ id: grp + ':' + id, name, kind: grp, group: grp, ref: ref || G.ref, fixed: !!(dr.w || dr.h), ctx: { village: { img, m, src, units: px, px, formula: how } } });
   }
   await buildChars();
-  if(DOCK){viewCtl();render();}
+  if (DOCK) showNow();   /* v98.962 · the row is usable now; the monsters below keep loading and the row refreshes when they arrive */
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.959')).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
-    for (const m of blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)) {
+    const src = await (await fetch('js/town-battle.js?v=' + (window.GAME_VERSION?.v || 'v98.959'))).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const MONS = [...blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)];
+    await Promise.all(MONS.map(m => load(`assets/enemies/${m[4]}.webp`)));   /* v98.962 · all at once (they were fetched one by one) */
+    for (const m of MONS) {
       const [, k, name, sc, im] = m; await add('m:' + k, name, 'monster', 'battle', `assets/enemies/${im}.webp`, CharSize.MON.base * CharSize.MON.k, `สูง ÷ สูงภาพ × ${CharSize.MON.base} × ${CharSize.MON.k}`);
     }
   } catch (e) { console.warn('monsters not read', e) }
   /* v98.322 · every other monster that has an animation set in the asset manifest (the battle only wires the MON table above) — measured from its first idle frame */
   try {
-    const man = await (await fetch('data/asset-manifest.json')).json(), by = {};
+    const man = window.ASSET_MANIFEST?.assets ? window.ASSET_MANIFEST : await (await fetch('data/asset-manifest.json')).json(), by = {};   /* v98.962 · the manifest is already in memory (js/asset-manifest.js) — no second 5 MB download */
     for (const a of man.assets || []) if (a.category === 'enemy-animations' && a.enemy) (by[a.enemy] ||= []).push(a);
+    { const warm = []; for (const [k, list] of Object.entries(by)) { if (ENTRIES.some(x => x.id === 'm:' + k)) continue; const a = list.find(x => x.pose === 'idle' && x.view === 'SE') || list.find(x => x.pose === 'idle') || list[0]; if (a) warm.push(load(a.file)) } await Promise.all(warm) }   /* v98.962 */
     for (const [k, list] of Object.entries(by)) {
       if (ENTRIES.some(x => x.id === 'm:' + k)) continue;
       const a = list.find(x => x.pose === 'idle' && x.view === 'SE') || list.find(x => x.pose === 'idle') || list[0], im = await load(a.file); if (!im) continue;
@@ -347,7 +365,7 @@ function render() {
     $('vpCtl').innerHTML = `<span class="vp" title="ล็อกไว้: เทียบเฉพาะท่ายืน ทิศ SW เฟรมแรก — ท่าอื่นทำให้สูงเท่ากันต่อตัวที่หน้า เรียงท่า">🧍 ท่ายืน · ทิศ SW <small>(ล็อก)</small></span>`;
   } else $('vpCtl').innerHTML = '';
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button data-t="${k}" aria-pressed="${tab === k || (k === 'ratio' && tab === 'char')}">${t}</button>`).join(' ');
-  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t; sel = tab === 'char' || tab === 'ratio' || tab === 'field' ? (visible()[0]?.id || 'hero') : (visible()[1]?.id || 'hero'); viewCtl(); render() });
+  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = b.dataset.t === 'ratio' ? 'char' : b.dataset.t;   /* v98.962 · 'ratio' is no longer a view of its own */ sel = tab === 'char' || tab === 'ratio' || tab === 'field' ? (visible()[0]?.id || 'hero') : (visible()[1]?.id || 'hero'); viewCtl(); render() });
   $('ctxBtns').style.display = 'none';   /* v98.95 · one set of proportions for every scene; the % per scene is done in each scene later */ $('listTitle').textContent = (TABS.find(t => t[0] === tab) || TABS[0])[1];
   $('ctxBtns').innerHTML = [['battle', 'สนามรบ'], ['village', 'หมู่บ้าน']].map(([k, t]) => `<button data-x="${k}" aria-pressed="${ctx === k}">${t}</button>`).join(' ');
   $('ctxBtns').querySelectorAll('button').forEach(b => b.onclick = () => { ctx = b.dataset.x; if (!ENTRIES.find(e => e.id === sel)?.ctx[ctx]) sel = 'hero'; render() });
@@ -1114,10 +1132,10 @@ function viewCtl() {
   if (!world && !DOCK) h += `<div class="tg"><small>แสดงหมวด (ใช้กับทุกแท็บ)</small><div class="tr">${CATS.map(([k, t, tip]) => `<button data-f="${k}" aria-pressed="${FILTER[k]}" title="${tip}">${t}</button>`).join('')}</div></div>`;
   if (!world && FILTER.mon) h += `<div class="tg"><small>มอนสเตอร์ · แยกชนิด</small><div class="tr">${MGROUPS.map(([k, t]) => `<button data-sf="${k}" aria-pressed="${SUBF[k]}">${t}</button>`).join('')}<button data-sf="wired" aria-pressed="${SUBF.wired}" title="ตัวที่สนามรบใช้อยู่แล้ว (ตาราง MON)">✔ ใช้ในเกมแล้ว</button><button data-sf="unwired" aria-pressed="${SUBF.unwired}" title="มีภาพ/อนิเมชันใน asset แล้ว แต่ยังไม่ได้ต่อเข้าสนามรบ — ปรับขนาดเก็บไว้ล่วงหน้าได้">⏳ ยังไม่ต่อเกม</button></div></div>`;
   if (tab === 'char' || tab === 'ratio' || tab === 'field') { const nv = visible().filter(e => PICKED.has(e.id)).length; h += `<div class="tg"><small>ปรับหลายตัวพร้อมกัน</small><div class="tr"><button id="bMulti" aria-pressed="${MULTI}" title="เปิดแล้วคลิกตัวละครเพื่อติ๊กเลือก จากนั้นปุ่ม −5 −1 +1 +5 ที่แผงขวาจะปรับทุกตัวที่เลือก">☑ เลือกหลายตัว</button>${MULTI ? `<button id="bPickAll" title="ติ๊กทุกตัวที่เห็นอยู่ (ตามตัวกรอง)">เลือกทั้งหมดที่เห็น</button><button id="bPickNone">ล้าง</button><span class="zv">เลือกแล้ว ${nv} ตัว</span>` : ''}</div></div>` }
-  if (tab === 'ratio' || tab === 'char') h = `<div class="tg"><small>มุมมอง</small><div class="tr"><button id="vwCmp" aria-pressed="${tab === 'ratio'}" title="เทียบสัดส่วนหัว/ลำตัว/ขา ด้วยจุด Datum + ปรับขนาดภาพ">📐 เทียบสัดส่วน</button><button id="vwRul" aria-pressed="${tab === 'char'}" title="ยืนเทียบความสูงจริงบนไม้บรรทัด (เมตร) · ซูม · เงาตัวเอก · เส้นนำสายตา">📏 ไม้วัดความสูงจริง</button></div></div>` + h;
+  if (tab === 'ratio') h = `<div class="tg"><small>มุมมอง</small><div class="tr"><button id="vwRul" aria-pressed="false" title="กลับไปไม้วัดความสูงจริง">📏 กลับไม้วัดความสูงจริง</button></div></div>` + h;   /* v98.962 · only the ruler remains; the datum view (opened by 📍 / 📐 on a pose cell) keeps a way back */
   if (!world && tab !== 'maps') { const nh = [...HIDDEN].filter(id => ENTRIES.some(x => x.id === id)).length, tgt = MULTI ? [...PICKED] : [sel], can = tgt.some(id => id && id !== 'hero' && !HIDDEN.has(id));
     h += `<div class="tg"><small>ซ่อนตัว</small><div class="tr"><button id="bHide" ${can ? '' : 'disabled'} title="ซ่อนตัวที่เลือกออกจาก Lineup (ตัวหลักซ่อนไม่ได้ เพราะเป็นไม้วัด)">🙈 ซ่อน${MULTI ? 'ตัวที่ติ๊ก' : 'ตัวนี้'}</button><button id="bShowAll" ${nh ? '' : 'disabled'} title="เอาตัวที่ซ่อนไว้กลับมาแสดงทั้งหมด">👁 แสดงทั้งหมด${nh ? ' (ซ่อนอยู่ ' + nh + ')' : ''}</button></div></div>` }
-  if (!world && tab !== 'maps' && window.ProportionDatum) h += `<div class="tg"><small>Datum อัตโนมัติ</small><div class="tr"><button id="bAutoAll" title="เดาจุด/เส้น Datum (ตา คาง ยอดกะโหลก ไหล่ เส้นตัดหัว/ขา พื้น) ให้ตัวละครและ NPC ทุกท่า ทุกทิศ (เฟรมแรกของแต่ละชุด) ที่ยังไม่มี — เป็นค่าแนะนำ ⚙ ไม่ทับจุดที่วางเอง ต้องยืนยันก่อนใช้จริง">⚙ Auto Datum ทั้งหมด</button><span id="autoAllMsg" class="hint"></span></div></div>`
+  /* v98.962 · the 'Datum อัตโนมัติ / Auto Datum ทั้งหมด' button is removed (owner 23 Nov) */
   if (tab !== 'maps') h += `<div class="tg"><small>จัดเรียง</small><div class="tr"><button id="bSort" aria-pressed="${sorted}" title="เรียงจากสูงสุดไปต่ำสุด แทนลำดับปกติ">↕ เรียงตามความสูง</button></div></div>`;
   if (zoomTab) h += `<div class="tg"><small>ซูม</small><div class="tr"><button class="sq" id="zOut" title="ซูมออก">−</button><span class="zv">${Math.round(ZOOM * 100)}%</span><button class="sq" id="zIn" title="ซูมเข้า">+</button></div></div>`;
   if (stageTab) h += `<div class="tg"><small>ตัวช่วยดู</small><div class="tr"><button id="vGhost" aria-pressed="${ghost}" title="เงาจางของตัวเอกซ้อนหลังทุกตัว ไว้เทียบความสูง">👤 เงาตัวเอก</button><button id="vShadow" aria-pressed="${SHADOW}" title="วงเงาใต้เท้า">◔ เงาพื้น</button><button id="vFoot" aria-pressed="${FOOT}" title="ขีดแนวตั้งที่จุดเท้า">┃ จุดเท้า</button><button id="vGuides" aria-pressed="${GUIDES}" title="เส้นนอนบอกระดับ หัว/ตา/ไหล่/เอว/เข่า ของตัวเอก">≡ เส้นระดับตัวเอก</button></div></div>`;
@@ -1136,7 +1154,7 @@ function viewCtl() {
       msg.textContent = `⚙ เดาแล้ว ${n} ภาพ · ข้าม ${skipped} (มีจุดที่วางเองครบ) · ภาพโหลดไม่ได้ ${bad}`; render() } catch (er) { msg.textContent = 'ผิดพลาด: ' + er.message } btn.disabled = false };
   if (el('bHide')) el('bHide').onclick = () => { for (const id of (MULTI ? [...PICKED] : [sel])) if (id && id !== 'hero') HIDDEN.add(id); saveHidden(); PICKED.clear(); const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() };
   if (el('bShowAll')) el('bShowAll').onclick = () => { HIDDEN.clear(); saveHidden(); re() };
-  if (el('vwCmp')) { el('vwCmp').onclick = () => { tab = 'ratio'; re() }; el('vwRul').onclick = () => { tab = 'char'; re() } }
+  if (el('vwRul')) el('vwRul').onclick = () => { tab = 'char'; re() }
   if (el('bMulti')) el('bMulti').onclick = () => { MULTI = !MULTI; if (MULTI && !PICKED.size && sel && sel !== 'hero') PICKED.add(sel); re() };
   if (el('bPickAll')) el('bPickAll').onclick = () => { for (const e of visible()) PICKED.add(e.id); re() };
   if (el('bPickNone')) el('bPickNone').onclick = () => { PICKED.clear(); re() };
@@ -1217,6 +1235,8 @@ $('lineupFullscreen').onclick=async()=>{if(document.fullscreenElement){await doc
 function exitLineupFullscreen(){document.body.classList.remove('lineup-expanded');$('lineupFullscreen').setAttribute('aria-pressed','false');$('lineupFullscreen').textContent='⛶ เต็มจอ'}
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)exitLineupFullscreen()});addEventListener('keydown',ev=>{if(ev.key==='Escape')exitLineupFullscreen()});
 let ready = false; addEventListener('resize', () => ready && render());
+{ const KEY = 'lineup.inspFolded', t = document.getElementById('inspToggle'), apply = f => { document.body.classList.toggle('insp-folded', f); t.textContent = f ? '◀ ขยาย' : '▶ ยุบ'; t.setAttribute('aria-expanded', String(!f)); t.title = f ? 'ขยายหน้าต่างปรับขนาดกลับมา' : 'ยุบหน้าต่างปรับขนาดไปด้านขวา เพื่อดู Scale Lineup เต็ม ๆ'; try { localStorage.setItem(KEY, f ? '1' : '0') } catch (e) { } if (ready) setTimeout(() => render(), 60) };
+  let f0 = false; try { f0 = localStorage.getItem(KEY) === '1' } catch (e) { } apply(f0); t.onclick = () => apply(!document.body.classList.contains('insp-folded')) }
 /* v98.399 · which FILTER chips (char/npc/mon) the left panel's group tab implies — keeps the dock's row in step with it instead of a second, overlapping filter */
 const GROUP_FILTER = { characters: { char: true, npc: false, mon: false }, npcs: { char: false, npc: true, mon: false }, monsters: { char: false, npc: false, mon: true }, bosses: { char: false, npc: false, mon: true } };
 function wireStudio() {   /* inside Asset Studio: follow the Animation tab */
@@ -1236,5 +1256,5 @@ if (DOCK) { const post = () => { try { const c = document.querySelector('main > 
 window.dockGoto = async ({ id, action, view, frame = 0, open = 'ratio' }) => { delete PICK[id]; tab = 'ratio';   /* v98.942 · the pose / direction stay locked to idle · SW */ await buildChars(); sel = id; viewCtl(); render(); const e = ENTRIES.find(x => x.id === id); if (e && open === 'datum') openDatum(e) };
 /* v98.470 · show which version this page runs (the live game-version.js, never from cache) + the scale data it loaded, so an old cached page is obvious */
 fetch('js/game-version.js', { cache: 'no-store' }).then(r => r.text()).then(t => { const v = (t.match(/v:\s*'([^']+)'/) || [])[1] || '?', el = document.getElementById('lineupVer'); if (el) el.textContent = '· ' + v + ' · หน้า ' + LINEUP_BUILD + ' · ข้อมูลสเกล ' + Object.keys(SAVED.global || {}).length + ' ตัว' + (SAVED.pose ? ' + ท่า' : '') }).catch(() => { });
-build().then(() => { ready = true; viewCtl(); render(); wireStudio(); window.__lineupReady = true; $('lineupLoadState').hidden=true }).catch(err=>{console.error('Scale Lineup load failed',err);window.lineupLoading('โหลด Scale Lineup ไม่สำเร็จ: '+err.message,true)});
+build().then(() => showNow()).catch(err=>{console.error('Scale Lineup load failed',err);window.lineupLoading('โหลด Scale Lineup ไม่สำเร็จ: '+err.message,true)});
 </script></body></html>
