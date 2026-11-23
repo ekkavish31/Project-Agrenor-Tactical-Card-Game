@@ -159628,6 +159628,71 @@
    ],
    "subject": "Exploration marker prize",
    "usedIn": "js/world-map.js"
+  },
+  {
+   "id": "settlement-lakenhold",
+   "file": "assets/world/settlements/lakenhold.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "lakenhold unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "settlement-willowshore",
+   "file": "assets/world/settlements/willowshore.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "willowshore unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "settlement-deepcairn",
+   "file": "assets/world/settlements/deepcairn.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "deepcairn unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "settlement-thornwatch",
+   "file": "assets/world/settlements/thornwatch.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "thornwatch unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "settlement-vinehollow",
+   "file": "assets/world/settlements/vinehollow.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "vinehollow unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
   }
  ],
  "studioReviews": {
