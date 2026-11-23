@@ -320,6 +320,12 @@
     label(g, (S.done[d.id] ? '✔ ' : '') + d.name, p.x, p.y + 30, S.done[d.id] ? '#bfffd0' : '#ffe2a8');
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
+  /* v98.1019 · painted markers shared by world and area exploration. */
+  const EXPLORE_ICONS = Object.fromEntries(['foe', 'chest', 'lore', 'spring', 'lair', 'prize'].map(k => { const im = new Image(); im.src = 'assets/icons/exploration/' + k + '.webp'; return [k, im] }));
+  function drawExploreIcon(ctx, kind, x, y, size) {
+    const im = EXPLORE_ICONS[kind]; if (!im || !im.complete || !im.naturalWidth) return false;
+    ctx.drawImage(im, x - size / 2, y - size / 2, size, size); return true;
+  }
   const ENC_ICON = { hamlet: '🏘', outpost: '🚩', tower: '🗼', ruins: '🏛', chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
   /* v97.90 · W2 travellers on the road: villagers who come from another town (VillageLife P.from + P.visit) walk the real road
      the day before they arrive (town → Fernvale) and the day after they leave (Fernvale → town), between 7:00 and 19:00.
@@ -360,6 +366,7 @@
       { const nm = { hamlet: 'village', tower: 'watchtower', outpost: 'watchtower', ruins: 'ruins', camp: 'frost-camp', shrine: 'standing-stones' }[h.enc.type], im = nm && LMIMG[nm], m = nm && LM[nm];
         if (im && im.complete && im.naturalWidth) { const pul = (Math.sin(now * .003 + h.c * 2) + 1) / 2, kk = HW * 1.25 / m[4], gr = g.createRadialGradient(p.x, p.y, 4, p.x, p.y, HW * .75); g.save(); g.globalCompositeOperation = 'lighter'; gr.addColorStop(0, 'rgba(255,220,140,0)'); gr.addColorStop(.7, `rgba(255,220,140,${.12 + pul * .1})`); gr.addColorStop(1, 'rgba(255,220,140,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, HW * .75, 0, 7); g.fill(); g.restore();
           g.save(); g.translate(p.x, p.y + bob * .4); g.scale(kk, kk); g.drawImage(im, -m[2], -m[3]); g.restore(); if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue } }
+      if (h.enc.type === 'chest' && drawExploreIcon(g, 'chest', x, y, 34)) { if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue; }
       const painted = { chest: 'bin', oldmap: 'oldmap', merchant: 'm2' }[h.enc.type];
       if (painted && window.VillagePaintedArt?.draw(g, painted, x, y + 12, 28, h.enc.type === 'merchant' ? { height: 40 } : {})) { if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue; }
       g.save(); g.fillStyle = lmk ? 'rgba(70,50,20,.85)' : 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, lmk ? 14 : 12, 0, 7); g.fill(); g.strokeStyle = lmk ? '#ffd27a' : '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
@@ -376,9 +383,11 @@
   /* v98.52 · landmarks (sheet W3): hand-painted hex tiles for the village, towns and destinations, standing out with a pulsing halo, rising sparkles, a gentle breathing scale and a pop when the hero is near.
      LM[name] = [w, h, centre x, centre y, hex width] of the picture; they are drawn live (not baked) so they can move. */
   const LM = {"village": [369, 377, 184, 188, 358], "town": [384, 410, 192, 213, 373], "harbor": [368, 381, 184, 190, 357], "watchtower": [361, 387, 180, 207, 350], "ruins": [376, 365, 188, 182, 365], "mine": [365, 366, 182, 182, 354], "den": [365, 360, 182, 180, 354], "frost-camp": [372, 364, 186, 182, 361], "standing-stones": [368, 358, 184, 178, 357]}, LMIMG = {};
-  for (const n in LM) { const im = LMIMG[n] = new Image(); im.src = 'assets/world/' + n + '.webp' }
+  const CITY_ART = new Set(['lakenhold', 'willowshore', 'deepcairn', 'thornwatch', 'vinehollow']);
+  for (const id of CITY_ART) LM[id] = [1024, 1024, 512, 512, 960];
+  for (const n in LM) { const im = LMIMG[n] = new Image(); im.src = 'assets/world/' + (CITY_ART.has(n) ? 'settlements/' : '') + n + '.webp' }
   const LM_COL = { village: '255,214,120', town: '140,200,255', harbor: '120,220,255', mine: '255,190,110', den: '255,120,100', 'frost-camp': '190,230,255', ruins: '190,255,190', watchtower: '255,200,120', 'standing-stones': '210,170,255' };
-  const lmName = (poi, tw) => poi.id === 'home' ? 'village' : tw ? (tw.icon === 'city' ? 'town' : tw.side === 'lake' || tw.side === 'coast' ? 'harbor' : 'village') : ({ mine: 'mine', ruin: 'ruins' }[poi.icon] || (poi.id === 'frost' ? 'frost-camp' : 'den'));
+  const lmName = (poi, tw) => poi.id === 'home' ? 'village' : tw ? (CITY_ART.has(tw.id) ? tw.id : tw.icon === 'city' ? 'town' : tw.side === 'lake' || tw.side === 'coast' ? 'harbor' : 'village') : ({ mine: 'mine', ruin: 'ruins' }[poi.icon] || (poi.id === 'frost' ? 'frost-camp' : 'den'));
   function drawLandmark(now, c, r, name, done, label2) {
     const im = LMIMG[name], m = LM[name]; if (!im || !im.complete || !im.naturalWidth) return false;
     const p = center(c, r), near = G.dist(S.pos, { c, r }) <= 2, breathe = 1 + Math.sin(now * .002 + c * 1.7) * .012, pop = near ? 1.1 : 1;
@@ -693,7 +702,7 @@
       const ST = window.Settlements, pInn = ST ? ST.price(id, 'inn', 12) : 12, pFood = ST ? ST.price(id, 'food', 10) : 10, pPot = ST ? ST.price(id, 'potion', 18) : 18;
       const tev = window.TownEvents?.card(S, id);
       const locals = (window.StoryCast ? StoryCast.locals(WS.game(), id, ST?.LOCALS?.[id] || []) : (ST?.LOCALS?.[id] || [])).map(([n, role, ls, pid]) => `<p>${faceBox(pid, 42, 48)}👤 <b>${esc(n)}</b> <small>${esc(role)}</small><br>“${esc(String(ls[Math.floor(Math.random() * ls.length)]).replace(/\{name\}/g, window.WorldState?.heroName() || ''))}”</p>`).join('');
-      let v = await modal(`${TOWN_PIC[id] ? `<img src="assets/village-town/decor/gate-${TOWN_PIC[id]}.webp" alt="" style="float:right;width:150px;margin:-6px 0 4px 10px;filter:drop-shadow(0 4px 8px #0006)">` : ''}<h2>${ST?.SETTLEMENTS?.[id]?.capital ? '🏰' : '🏘'} ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}${tev ? tev.html : ''}${locals ? '<h3 style="margin:8px 0 2px;font-size:14px">ผู้คนที่นี่</h3>' + locals : ''}${folk.length || !locals ? '<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>' + people : ''}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
+      let v = await modal(`${CITY_ART.has(id) ? `<img src="assets/world/settlements/${id}.webp" alt="${esc(poi.name)}" style="display:block;width:min(100%,420px);height:auto;max-height:300px;object-fit:contain;margin:0 auto 12px">` : TOWN_PIC[id] ? `<img src="assets/village-town/decor/gate-${TOWN_PIC[id]}.webp" alt="" style="float:right;width:150px;margin:-6px 0 4px 10px;filter:drop-shadow(0 4px 8px #0006)">` : ''}<h2>${ST?.SETTLEMENTS?.[id]?.capital ? '🏰' : '🏘'} ${esc(poi.name)}</h2><p>${esc(TOWN_TEXT[id] || '')}</p>${ST ? ST.card(id) : ''}${tev ? tev.html : ''}${locals ? '<h3 style="margin:8px 0 2px;font-size:14px">ผู้คนที่นี่</h3>' + locals : ''}${folk.length || !locals ? '<h3 style="margin:8px 0 2px;font-size:14px">คนรู้จักจากเฟิร์นเวล</h3>' + people : ''}<p style="font-size:12px;opacity:.75">💰 ${S.gold} · 🍞 ${S.food} · 🧪 ${S.potions} · HP ${S.hp}/${S.maxHp}</p>`,
         [...(tev?.button ? [tev.button] : []), ...(window.TownServices ? TownServices.list(S, id).map(o => ({ label: o.label + (o.disabled && o.title ? ' (' + o.title + ')' : ''), value: 'svc:' + o.key, disabled: o.disabled })) : []), { label: '🛏 พักโรงเตี๊ยม · ' + pInn + ' 💰', value: 'inn', disabled: S.gold < pInn }, { label: 'เสบียง 4 ห่อ · ' + pFood + ' 💰', value: 'food', disabled: S.gold < pFood }, { label: 'ยาฟื้นฟู · ' + pPot + ' 💰', value: 'pot', disabled: S.gold < pPot }, ...(ST ? [{ label: '🛒 ซื้อขายสินค้า', value: 'trade' }] : []), ...(window.Estates || ST || window.Offices ? [{ label: '🏛 ศาลากลาง', value: 'hall' }] : []), { label: '📜 ฟังข่าวลือ', value: 'rumor' }, { label: 'ออกเดินทางต่อ', value: null, ghost: true }]);
       /* v97.76 · land, petitions and offices sit behind the town hall so the card keeps to the everyday things */
       if (v === 'hall') window.Tips?.once('hall', 'ศาลากลาง', ['🏡 ที่ดิน: เช่าที่ในเมืองหรือจับจองที่ดินนอกเมือง สร้างบ้าน ร้านสาขา หรือไร่ (ไร่สร้างได้เฉพาะหมู่บ้านที่มีทุ่งนา หรือนอกเมือง)', '📜 ยื่นคำร้อง: เปลี่ยนนโยบายของเมือง เมื่อชื่อเสียงถึง "นับถือ"', '🏛 รับราชการ: ตำแหน่งตามอาชีพ มีเงินเดือนรายสัปดาห์'], 'assets/icons/menu/castle.webp');   /* v97.89 */
@@ -949,7 +958,7 @@
           gA.restore();
           if (!seen.has(KK(c, r))) { gA.save(); gA.translate(p.x, p.y); gA.scale(sc, sc); hexPath(gA, 0, 0, RAD + 1); gA.fillStyle = 'rgba(5,6,10,.88)'; gA.fill(); gA.restore() }
         }
-        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px AgThai,system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
+        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px AgThai,system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; if (!drawExploreIcon(gA, s.kind, p.x, p.y - 7 * sc + bob, 34 * sc)) gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
         const pe = ctr(entry.c, entry.r); gA.save(); gA.font = `700 ${12 * sc}px VillageThai,system-ui`; gA.fillStyle = '#e8d8a8'; gA.textAlign = 'center'; gA.fillText('ทางเข้า', pe.x, pe.y + 26 * sc); gA.restore();
         const pp = ctr(pos.c, pos.r), im = heroImgs[Math.floor(now / 160) % 4]; if (im.complete && im.naturalWidth) { const h = 70 * sc, w = h * im.naturalWidth / im.naturalHeight; gA.drawImage(im, pp.x - w / 2, pp.y - h + 10 * sc, w, h) } else { gA.fillStyle = '#ffd36a'; gA.beginPath(); gA.arc(pp.x, pp.y - 10, 8, 0, 7); gA.fill() }
         requestAnimationFrame(frame);

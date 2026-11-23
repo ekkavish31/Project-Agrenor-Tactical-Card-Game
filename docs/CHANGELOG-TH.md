@@ -7643,3 +7643,21 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - **ลบโค้ดโหมด `?editor=menu`** (ตัวเลือกไอคอนเมนูเก่า) ออกจาก `js/editor-mode.js` — ค่าที่เคยเลือก (`menu-icons-v1`) ยังถูกอ่านใช้ในเกมเหมือนเดิม (`js/town-hud.js` `js/nav-icons.js`)
 - **เอกสารข้อเสนอ `docs/PROPOSAL-CARDS-MONSTERS-ITEMS-TH.md`** (ยังไม่ลงเกม): การ์ดใหม่ 32 ใบ (เคลื่อนที่โจมตี 6 · ตีแล้วขยับ 7 · ธาตุ 9 · เวท/สถานะ 8 · ทีม 2 · ดัดแปลงแนว Disgaea/ท่าสถานะแบบ Pokémon) พร้อมข้อความบนการ์ด แหล่งได้ และป้ายงานเอนจิน E0–E8 · มอนสเตอร์ใหม่ 16 · ไอเทมใหม่ 20 · ชิ้นส่วนใหม่ · ลำดับลงมือ 5 รอบ · คำถาม 5 ข้อรอเจ้าของ
 - เทสต์ใหม่ `tools/test-signature.cjs` (13 ข้อ ผ่าน) · เทสต์ชุดเดิมไม่เสียเพิ่ม · **ยังไม่ได้ลองเล่นฉากเนื้อเรื่อง/การ์ดในเกมจริง** · ภาพการ์ด Signature ยังไม่มี (ใช้ภาพทดแทน `dash` `skill` `spell` `thunder`)
+
+## v98.1019 · 23 พ.ย. 2026
+- สร้างภาพไอคอนสำรวจ 6 แบบด้วย built-in image_gen: crossed swords, treasure chest, ancient stone tablet, healing spring, monster cave, violet gem reward. Prompt: warm hand-painted JRPG, strong silhouette, transparent, no frame/text
+- เชื่อมภาพในจุดสำรวจและหีบแผนที่โลก ลงทะเบียน manifest; เก็บ glyph สำรองเมื่อภาพยังโหลดไม่เสร็จ
+
+
+## v98.1020 · 23 พ.ย. 2026
+- ภาพเมืองเฉพาะ 5 แห่งตามข้อมูล Settlements และ Canon ที่มีอยู่ ไม่เพิ่มประวัติ/เควสใหม่ เชื่อมทั้ง landmark และ town panel
+- built-in image_gen prompts: warm painterly isometric hex tile; Lakenhold lakeside walled capital; Willowshore willow fishing piers; Deepcairn crystal mining; Thornwatch wooden guild palisade; Vinehollow vineyards hot spring shrine
+
+## v98.1021 — เนื้อเรื่องตอนเจอบอส: บทสนทนา + อีเวนต์กลางสู้ + ช่อง portrait บอส (ข้อเสนอ ไม่ใช่ Canon)
+- รายละเอียดและข้อจำกัดอยู่ใน `docs/PROPOSAL-BOSS-ENCOUNTERS-TH.md` · ไม่แตะ `CURRENT-ERA-CANON.md` · บอสไม่พูดเป็นคำ ไม่แต่งที่มา
+- **ตรวจก่อนเขียน (แก้ที่เคยบอกผิด):** ฉากตายตัว `hungerPit` `convoyPass` `dragonLair` มี intro/cut/half/win/lose อยู่แล้ว ไม่ใช่แค่ "ตอนตัดปม"
+- **อีเวนต์กลางสู้ใหม่** ใน `js/set-pieces.js` (`talk.rounds`): ก้อนหิวรอบ 4 (คลื่นสัตว์รอยหมอง) · ขบวนนักโทษรอบ 3 (แตรเรียกกำลังเสริม) · ปล่องมังกรรอบ 5 (ตะกอนหลุดจากรอยแตก)
+- **บทบอสแผนที่โลก 6 ตัว** (จ่าฝูงหมาป่า โกเล็มหิน สไลม์ยักษ์ ราชินีน้ำแข็ง หัวหน้าโจร หัวหน้าโคโบลด์) `BattleTalk.bosses` ใน `js/battle-talk.js` · `BOSS_KIND` ใน `js/town-battle.js` เลือกใช้เมื่อสู้ด้วย `title=บอส…` ที่ไม่มีฉาก/`tut`
+- **ผู้พูดแบบบอส** `who:'b:<kind>'`: แผ่นชื่อ+ไอคอน แล้วเปลี่ยนเป็นรูปเมื่อมีไฟล์ `assets/portraits/boss-<kind>-<neutral|angry|worry|happy>.webp` (ตรวจไฟล์อัตโนมัติ ไม่ต้องแก้โค้ด)
+- ทดสอบ: `test-set-pieces` 67 ผ่าน · เปิดสนามบอสหมาป่าใน Playwright เห็นบทเปิด พร้อมแผ่นชื่อ "จ่าฝูงหมาป่า" + ไอคอน 🐺 (ยังไม่มีรูป portrait) · ไม่มี error
+- **ยังไม่ได้ทดสอบ:** บทครึ่งเลือด/ชนะ/แพ้ของบอสแผนที่โลกในการสู้จริง · อีเวนต์ `rounds` ของ 3 ฉากตายตัวในการสู้จริง · การเปลี่ยนเป็น portrait เมื่อไฟล์มา

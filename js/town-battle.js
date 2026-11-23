@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1020';
+  const V = '98.1022';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -789,7 +789,8 @@
      then back to the party. Skipped when the arena is only warming up and with reduced motion (CINE off). */
   /* ---------- v98.573 · battle conversations (js/battle-talk.js) ---------- */
   const TALKED = new Set();
-  const scriptOf = key => (SCENE?.talk?.[key]) || (window.BattleTalk?.scripts?.[TUT]?.[key]) || null;
+  const BOSS_KIND = !SCENE && !Q.get('tut') && TITLE.startsWith('บอส') ? GROUP[0]?.kind || null : null;   /* v98.1021 · a world-map boss fight with no scene of its own → js/battle-talk.js `bosses` */
+  const scriptOf = key => (SCENE?.talk?.[key]) || (window.BattleTalk?.scripts?.[TUT]?.[key]) || (BOSS_KIND && window.BattleTalk?.bosses?.[BOSS_KIND]?.[key]) || null;
   async function runTalk(lines, focus) {
     if (!lines?.length || !window.BattleTalk || EDIT) return;
     const f = focus && focus.vu !== undefined ? focus : null;
@@ -802,7 +803,7 @@
   }
   /* once-only reactions in story fights: a friend goes down · the hero is hurt · the enemy side is half gone */
   async function eventTalk() {
-    if (!(SCENE || TUT) || !st || st.outcome) return;
+    if (!(SCENE || TUT || BOSS_KIND) || !st || st.outcome) return;
     const once = (k, fn) => { if (TALKED.has(k)) return null; const r = fn(); if (r) TALKED.add(k); return r };
     const hero = FB.hero(st), L = [];
     const down = FB.allies(st).find(a => a.hp <= 0 && !TALKED.has('down' + a.key)); if (down) { TALKED.add('down' + down.key); const t = window.PartyTalk?.line(down.key, 'down'); if (t) L.push({ who: down.key, emo: 'worry', text: t }); L.push({ who: 'hero', emo: 'worry', text: 'ล้มไปแล้วหรือ… ไหวไหม? ข้าจะจัดการเอง!' }) }

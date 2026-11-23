@@ -6,6 +6,8 @@
              who = null → narration (no portrait, centred box)
      The hero stands on the left, everybody else on the right (override with side). Unknown ids show a name plate + icon only.
    Click / Space / Enter = next (first press completes the typing) · Esc or "ข้าม ▸▸" = skip the rest · the battle waits meanwhile.
+   BOSS SPEAKERS (v98.1021): who:'b:<kind>' (e.g. 'b:wolf', 'b:frostQueen') = a boss in its own plate. Its picture is assets/portraits/boss-<kind>-<neutral|angry|worry|happy>.webp when that file exists (probed once; until then the plate shows the boss icon).
+     Bosses do not speak in words (their lines are sounds / actions in brackets, written only from what the player can see — no new lore). BattleTalk.bosses[kind] = { start, half, win, lose } is used by town-battle for the world-map boss fights that have no scene of their own.
    BattleTalk.name(who) · BattleTalk.portrait(who, emo) → image path or null · BattleTalk.busy() */
 (function (root) {
   'use strict';
@@ -16,6 +18,11 @@
   const NAMES = { elder: 'ผู้ใหญ่บ้านโอเรน', mip: 'Mip', unknown: '???', goat: 'แพะ', murk: 'สัตว์รอยหมอง', mom: 'แม่' };
   const ICONS = { goat: '🐐', murk: '🐺', unknown: '❔', boss: '👁' };
   const MOODS = { neutral: 'neutral', happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry', calm: 'neutral' };
+  /* v98.1021 · boss speakers: who = 'b:<kind>' */
+  const BOSS_ID = { wolf: ['จ่าฝูงหมาป่า', '🐺'], golem: ['โกเล็มหิน', '🗿'], slime: ['สไลม์ยักษ์', '🟢'], frostQueen: ['ราชินีน้ำแข็งแห่งศาลหิมะ', '❄'], bandit: ['หัวหน้าโจร', '🗡'], kobold: ['หัวหน้าโคโบลด์', '⛏'], hunger: ['ก้อนหิว', '🩸'], byrexael: ['มังกรดำจ้าววิญญาณ', '🐉'], pumpkinBoss: ['บอสฟักทอง', '🎃'] };
+  const bossKind = who => /^b:/.test(who || '') ? String(who).slice(2) : null;
+  const bossSrc = (who, emo) => `assets/portraits/boss-${bossKind(who)}-${({ angry: 'angry', worry: 'worry', sad: 'worry', happy: 'happy' })[emo] || 'neutral'}.webp`;
+  const bossOk = new Map();   /* src → true/false, filled by the probe in play() */
   const heroName = () => { try { return (root.WorldState?.heroName?.() || root.s?.village?.heroName) || 'นักผจญภัย' } catch (e) { return 'นักผจญภัย' } };
   const female = () => { try { return /female/.test(root.HeroVariant?.get?.() || '') } catch (e) { return false } };
   /* v98.953 · {sib} the other hero · {callhero} / {callsib} how the sibling calls the lead / how the lead calls the sibling (same as js/story-fx.js) */
@@ -28,6 +35,7 @@
     if (!who) return '';
     if (who === 'hero') return heroName();
     if (who === 'sib') return sibName();   /* v98.995 · STORY_DATA.SPEAKERS.sib reads the bare `s`, which does not exist inside the battle iframe → it always showed 'น้อง' */
+    if (bossKind(who)) return BOSS_ID[bossKind(who)]?.[0] || 'บอส';
     const S = root.STORY_DATA?.SPEAKERS?.[who], n = S && (typeof S.name === 'function' ? S.name() : S.name);
     return String(NAMES[who] || n || who).split(' · ')[0];
   }
@@ -35,6 +43,7 @@
   function portrait(who, emo = 'neutral') {
     if (!who) return null; who = ALIAS[who] || who; const m = MOODS[emo] || 'neutral';
     if (who === 'hero') { const g = female() ? 'female' : 'male', e = ({ neutral: 'neutral', happy: 'happy', angry: 'angry', worry: 'worry', sad: 'sad', calm: 'calm' })[emo] || 'neutral'; return `assets/portraits/hero-${g}-${e}.webp` }
+    if (bossKind(who)) { const src = bossSrc(who, emo); return bossOk.get(src) === true ? src : null }
     if (who === 'boss') return 'assets/cards/portraits/en-bandit.webp';
     if (who === 'mip') return 'mip'; if (who === 'sib') return female() ? 'assets/portraits/hero-male-' + m + '.webp' : 'assets/portraits/hero-female-' + m + '.webp';
     if (STORY.has(who)) return `assets/portraits/story/${who}-${m}.webp`;
@@ -75,7 +84,8 @@
     if (running) return running.then(() => play(lines, opt));
     css();
     /* v98.621 · every portrait of this conversation is decoded first (it used to be requested when the person first spoke → an empty stand for a moment) */
-    const pre = Promise.race([Promise.all([...new Set((lines || []).map(l => l.who && portrait(l.who, l.emo)).filter(x => x && x !== 'mip'))].map(src => { const im = new Image(); im.src = src; return im.decode ? im.decode().catch(() => { }) : Promise.resolve() })), new Promise(r => setTimeout(r, 1200))]);
+    const probe = Promise.all([...new Set((lines || []).filter(l => bossKind(l.who)).map(l => bossSrc(l.who, l.emo)))].filter(src => !bossOk.has(src)).map(src => new Promise(r => { const im = new Image(); im.onload = () => { bossOk.set(src, true); r() }; im.onerror = () => { bossOk.set(src, false); r() }; im.src = src })));   /* v98.1021 · is the boss picture there yet? (they are being generated) */
+    const pre = Promise.race([probe.then(() => Promise.all([...new Set((lines || []).map(l => l.who && portrait(l.who, l.emo)).filter(x => x && x !== 'mip'))].map(src => { const im = new Image(); im.src = src; return im.decode ? im.decode().catch(() => { }) : Promise.resolve() }))), new Promise(r => setTimeout(r, 1200))]);
     running = pre.then(() => new Promise(resolve => {
       el = document.createElement('div'); el.id = 'btTalk';
       el.innerHTML = '<button type="button" class="bt-skip">ข้าม ▸▸</button><div class="bt-row"></div><div class="bt-box"><div class="bt-name"></div><div class="bt-text"></div><div class="bt-next">▼</div></div>';
@@ -95,7 +105,7 @@
         const src = portrait(w, l.emo);
         if (src === 'mip') p.innerHTML = '<div class="bt-sprite"></div>';
         else if (src) { const im = new Image(); im.alt = ''; im.draggable = false; im.onerror = () => { if (!im.dataset.fb) { im.dataset.fb = 1; im.src = src.replace(/-[a-z]+\.webp$/, /portraits\/mom-/.test(src) ? '-calm.webp' : '-neutral.webp') } else if (!im.dataset.fb2) { im.dataset.fb2 = 1; im.src = src.replace(/-[a-z]+\.webp$/, '-surprised.webp') } else im.remove() }; im.src = src; if (window.PortraitFacing ? PortraitFacing.flip(src, side) : ((w === 'mom' ? 'right' : 'left') === (side === 'L' ? 'left' : 'right'))) im.style.transform = 'scaleX(-1)'; /* v98.593 · portraits face the other speaker (painted facing left by default) */ const pk = window.PortraitScale ? PortraitScale.k(w) : 1; if (pk < 1) im.style.maxHeight = Math.round(100 * pk) + '%'; p.replaceChildren(im) }
-        else p.innerHTML = '<span class="bt-icon">' + (ICONS[w] || '💬') + '</span>';
+        else p.innerHTML = '<span class="bt-icon">' + (bossKind(w) ? (BOSS_ID[bossKind(w)]?.[1] || '👁') : (ICONS[w] || '💬')) + '</span>';
         p.classList.remove('dim'); if (l.shake) { p.classList.remove('shake'); void p.offsetWidth; p.classList.add('shake') }
         setTimeout(() => p.classList.remove('in'), 340);
       }
@@ -155,5 +165,47 @@
       lose: [{ who: 'kier', emo: 'worry', text: 'ถอย! เราเสียเปรียบแล้ว' }, { who: 'hero', emo: 'worry', text: '…ได้ ถอยไปตั้งหลักก่อน' }]
     }
   };
-  root.BattleTalk = { play, name, portrait, scripts, busy: () => !!running };
+  /* v98.1021 · BOSS ENCOUNTERS of the world-map dungeons (js/world-gen.js DESTS) and bandit chiefs — used when the fight has no scene / ?tut= script of its own (js/town-battle.js scriptOf).
+     PROPOSAL, NOT CANON (docs/PROPOSAL-BOSS-ENCOUNTERS-TH.md): written only from what the player can see and from the rumours in js/world-gen.js; the boss makes sounds / acts in [brackets], never speaks words and has no
+     origin story here. The two heroes react in their own voices ({callhero} = how the sibling calls the lead). Keys: start · half · win · lose. */
+  const B = (kind, text, emo) => ({ who: 'b:' + kind, emo: emo || 'angry', text });
+  const bosses = {
+    wolf: {
+      start: [{ who: null, text: 'ถ้ำลึกกลางป่า — ได้กลิ่นสัตว์ฉุนจัดและได้ยินเสียงหอนก้องมาจากด้านใน ตามที่พรานเล่าไว้ไม่มีผิด' }, { who: 'sib', emo: 'worry', text: '{callhero}… รอยเท้าเต็มพื้นไปหมด ตัวที่ใหญ่สุดอยู่ข้างใน' }, B('wolf', '[ ขู่คำรามต่ำ ๆ — ฝูงขยับเข้าล้อมช้า ๆ ]'), { who: 'hero', emo: 'neutral', text: 'อย่าแยกกัน แล้วระวังข้างหลัง' }],
+      half: [B('wolf', '[ หอนยาวจนผนังถ้ำสะเทือน ]'), { who: 'sib', emo: 'worry', text: 'มันเรียกพวกมาเพิ่มหรือเปล่า!' }],
+      win: [{ who: null, text: 'เสียงหอนขาดหาย ถ้ำเงียบลงในที่สุด' }, { who: 'sib', emo: 'happy', text: 'ผ่านไปแล้ว… ไปบอกพรานได้ว่าเสียงนั้นไม่มีอีกแล้ว' }],
+      lose: [{ who: 'sib', emo: 'worry', text: 'ถอยก่อน! ในถ้ำมันได้เปรียบเรา' }]
+    },
+    golem: {
+      start: [{ who: null, text: 'ในเหมืองร้าง ก้อนหินก้อนหนึ่งขยับ — คนงานที่หนีออกมาพูดจริง หินที่นี่ลุกขึ้นเดินได้' }, { who: 'hero', emo: 'worry', text: 'ตัวใหญ่กว่าที่เล่า' }, B('golem', '[ เสียงหินครูดกันก้องเหมือง — ดวงตาเรืองแสงเปิดขึ้นช้า ๆ ]'), { who: 'sib', emo: 'neutral', text: 'มันช้า แต่ถ้าโดนทีคงไม่ไหว อย่ายืนให้มันถึงตัว' }],
+      half: [B('golem', '[ รอยร้าวขยายกว้าง เศษหินร่วงกราว ]'), { who: 'sib', emo: 'neutral', text: 'ตรงรอยร้าวนั่น! ซ้ำตรงนั้น' }],
+      win: [{ who: null, text: 'ก้อนหินทรุดลงเป็นกองนิ่งสนิท' }, { who: 'hero', emo: 'neutral', text: 'หยุดแล้ว… ไม่รู้ว่าอะไรทำให้มันตื่น' }],
+      lose: [{ who: 'sib', emo: 'worry', text: 'ถอยออกจากเหมือง! เกิดอะไรขึ้นข้างบนเรายังไม่รู้' }]
+    },
+    slime: {
+      start: [{ who: null, text: 'หมอกในบึงหนาจนมองไม่เห็นเท้า ระฆังวิหารเก่าดังขึ้นเองหนึ่งครั้ง แล้วพื้นตรงหน้าก็ยุบลง' }, { who: 'sib', emo: 'worry', text: 'อะไรอยู่ใต้น้ำนั่น… ใหญ่มาก' }, B('slime', '[ ก้อนเหนียวใสผุดขึ้นมาจากบึง — สั่นระลอก ]'), { who: 'hero', emo: 'neutral', text: 'ระวังพื้น อย่ายืนใกล้น้ำ' }],
+      half: [B('slime', '[ แตกตัวเป็นก้อนเล็กกระเด็นไปรอบ ๆ ]'), { who: 'sib', emo: 'worry', text: 'มันยังรวมตัวกลับได้ — จัดการก้อนใหญ่ก่อน' }],
+      win: [{ who: null, text: 'ก้อนเหนียวละลายหายลงบึง ระฆังเงียบลงเหมือนไม่เคยดัง' }, { who: 'sib', emo: 'neutral', text: 'ระฆังไม่ดังแล้วนะ… แต่แล้วมันดังเองได้ยังไงกันนะ' }],
+      lose: [{ who: 'hero', emo: 'worry', text: 'ถอยขึ้นฝั่ง! ตรงนี้เราสู้ยาก' }]
+    },
+    frostQueen: {
+      start: [{ who: null, text: 'บนยอดหิมะ ปากถ้ำที่มีลมเย็นเยียบพัดออกมา ข้างในมีเสาหินสลักลาย และบางอย่างยืนอยู่ท่ามกลางเสาเหล่านั้น' }, { who: 'sib', emo: 'worry', text: '{callhero}… ลมหายใจเราเป็นไอขาวหมดแล้ว ตัวมันยังไม่ขยับด้วยซ้ำ' }, B('frostQueen', '[ น้ำแข็งแตกเป็นเสียงกริ๊ง — มันหันมามองทางพวกเรา ]', 'neutral'), { who: 'hero', emo: 'neutral', text: 'อย่าอยู่ห่าง มันตีไกลได้ — ยิ่งอยู่ห่างยิ่งอันตราย' }],
+      half: [B('frostQueen', '[ เสาน้ำแข็งงอกขึ้นรอบตัว ลมหนาวรุนแรงขึ้น ]'), { who: 'sib', emo: 'worry', text: 'หนาวจนมือชา… ต้องรีบจบ!' }],
+      win: [{ who: null, text: 'น้ำแข็งแตกออกเป็นเสี่ยง ลมในถ้ำค่อย ๆ อุ่นขึ้น' }, { who: 'hero', emo: 'neutral', text: 'ไม่รู้ว่าศาลนี้เป็นของใคร … แต่เราผ่านมาได้แล้ว' }],
+      lose: [{ who: 'sib', emo: 'worry', text: 'ถอยออกจากถ้ำ! ก่อนเราจะแข็งไปกว่านี้' }]
+    },
+    bandit: {
+      start: [{ who: null, text: 'หัวหน้าโจรยืนกางแขนขวางทาง ลูกน้องกระจายตามที่สูงรอบ ๆ' }, { who: 'hero', emo: 'neutral', text: 'วางของแล้วหลบไป เราไม่อยากสู้' }, B('bandit', '[ หัวเราะแค่นในลำคอ — ชักอาวุธออกมา ]'), { who: 'sib', emo: 'worry', text: 'มันไม่ฟังหรอก {callhero}' }],
+      half: [B('bandit', '[ เสียงตะโกนสั่งลูกน้องให้ล้อมเข้ามา ]'), { who: 'sib', emo: 'neutral', text: 'ยืนให้หลังชิดกำแพงไว้ จะได้ไม่โดนล้อม' }],
+      win: [{ who: null, text: 'หัวหน้าโจรทรุดลง ลูกน้องที่เหลือถอยหนีเข้าป่า' }, { who: 'hero', emo: 'neutral', text: 'เก็บของคืนเจ้าของแล้วไปกันต่อ' }],
+      lose: [{ who: 'sib', emo: 'worry', text: 'ถอยก่อน! พวกมันเยอะเกิน' }]
+    },
+    kobold: {
+      start: [{ who: null, text: 'เสียงเคาะหินดังถี่ ๆ ในอุโมงค์ — หัวหน้าโคโบลด์ยืนอยู่หน้ากองแร่ ลูกน้องถือพลั่วถือจอบล้อมไว้' }, { who: 'sib', emo: 'neutral', text: 'พวกมันหวงแร่กองนี้แน่ ๆ' }, B('kobold', '[ เห่าสั้น ๆ — ลูกน้องชูพลั่วขึ้นพร้อมกัน ]'), { who: 'hero', emo: 'neutral', text: 'ล้มหัวหน้าก่อน ที่เหลือจะแตก' }],
+      half: [B('kobold', '[ ตะโกนเสียงแหลม — อีกกลุ่มวิ่งออกมาจากอุโมงค์ ]'), { who: 'sib', emo: 'worry', text: 'มีอีกกลุ่ม! ระวังด้านข้าง' }],
+      win: [{ who: null, text: 'หัวหน้าโคโบลด์ล้มลง พลั่วจอบกระจัดกระจายเต็มพื้น' }, { who: 'sib', emo: 'happy', text: 'เสียงเคาะหยุดแล้ว เหมืองเงียบสักที' }],
+      lose: [{ who: 'hero', emo: 'worry', text: 'ถอย! อุโมงค์แคบเกินไปสำหรับเรา' }]
+    }
+  };
+  root.BattleTalk = { play, name, portrait, scripts, bosses, busy: () => !!running };
 })(typeof window !== 'undefined' ? window : globalThis);

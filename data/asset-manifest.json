@@ -159550,6 +159550,149 @@
     543,
     724
    ]
+  },
+  {
+   "id": "explore-icon-foe",
+   "file": "assets/icons/exploration/foe.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    512,
+    512
+   ],
+   "subject": "Exploration marker foe",
+   "usedIn": "js/world-map.js"
+  },
+  {
+   "id": "explore-icon-chest",
+   "file": "assets/icons/exploration/chest.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    512,
+    512
+   ],
+   "subject": "Exploration marker chest",
+   "usedIn": "js/world-map.js"
+  },
+  {
+   "id": "explore-icon-lore",
+   "file": "assets/icons/exploration/lore.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    512,
+    512
+   ],
+   "subject": "Exploration marker lore",
+   "usedIn": "js/world-map.js"
+  },
+  {
+   "id": "explore-icon-spring",
+   "file": "assets/icons/exploration/spring.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    512,
+    512
+   ],
+   "subject": "Exploration marker spring",
+   "usedIn": "js/world-map.js"
+  },
+  {
+   "id": "explore-icon-lair",
+   "file": "assets/icons/exploration/lair.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    512,
+    512
+   ],
+   "subject": "Exploration marker lair",
+   "usedIn": "js/world-map.js"
+  },
+  {
+   "id": "explore-icon-prize",
+   "file": "assets/icons/exploration/prize.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    512,
+    512
+   ],
+   "subject": "Exploration marker prize",
+   "usedIn": "js/world-map.js"
+  },
+  {
+   "id": "settlement-lakenhold",
+   "file": "assets/world/settlements/lakenhold.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "lakenhold unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "settlement-willowshore",
+   "file": "assets/world/settlements/willowshore.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "willowshore unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "settlement-deepcairn",
+   "file": "assets/world/settlements/deepcairn.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "deepcairn unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "settlement-thornwatch",
+   "file": "assets/world/settlements/thornwatch.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "thornwatch unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "settlement-vinehollow",
+   "file": "assets/world/settlements/vinehollow.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "subject": "vinehollow unique settlement",
+   "usedIn": "js/world-map.js landmarks and town panel"
   }
  ],
  "studioReviews": {
