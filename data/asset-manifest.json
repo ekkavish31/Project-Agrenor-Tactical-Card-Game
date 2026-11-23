@@ -152935,8 +152935,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115301",
+   "artRevision": "20261123-121120",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-1/20261123-121120.webp",
+     "at": "2026-11-23T05:11:20.902Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-1/20261123-115216.webp",
      "at": "2026-11-23T04:52:16.984Z",
@@ -152971,8 +152978,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115301",
+   "artRevision": "20261123-121121",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-2/20261123-121120.webp",
+     "at": "2026-11-23T05:11:21.032Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-2/20261123-115216.webp",
      "at": "2026-11-23T04:52:17.217Z",
@@ -153007,8 +153021,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115302",
+   "artRevision": "20261123-121121",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-3/20261123-121120.webp",
+     "at": "2026-11-23T05:11:21.168Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-3/20261123-115216.webp",
      "at": "2026-11-23T04:52:17.452Z",
@@ -153043,8 +153064,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115302",
+   "artRevision": "20261123-121121",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-4/20261123-121120.webp",
+     "at": "2026-11-23T05:11:21.269Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-4/20261123-115216.webp",
      "at": "2026-11-23T04:52:17.850Z",
@@ -153079,8 +153107,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115302",
+   "artRevision": "20261123-121121",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-5/20261123-121120.webp",
+     "at": "2026-11-23T05:11:21.375Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-5/20261123-115216.webp",
      "at": "2026-11-23T04:52:18.364Z",
@@ -153115,8 +153150,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115302",
+   "artRevision": "20261123-121121",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-6/20261123-121120.webp",
+     "at": "2026-11-23T05:11:21.456Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-6/20261123-115216.webp",
      "at": "2026-11-23T04:52:18.743Z",
@@ -153151,8 +153193,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115302",
+   "artRevision": "20261123-121121",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-7/20261123-121120.webp",
+     "at": "2026-11-23T05:11:21.615Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-7/20261123-115216.webp",
      "at": "2026-11-23T04:52:19.211Z",
@@ -153187,8 +153236,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115302",
+   "artRevision": "20261123-121121",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-8/20261123-121120.webp",
+     "at": "2026-11-23T05:11:21.810Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-8/20261123-115216.webp",
      "at": "2026-11-23T04:52:19.599Z",
@@ -153223,8 +153279,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115303",
+   "artRevision": "20261123-121122",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-9/20261123-121120.webp",
+     "at": "2026-11-23T05:11:22.006Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-9/20261123-115216.webp",
      "at": "2026-11-23T04:52:20.073Z",
@@ -153259,8 +153322,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115303",
+   "artRevision": "20261123-121122",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-10/20261123-121120.webp",
+     "at": "2026-11-23T05:11:22.103Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-10/20261123-115216.webp",
      "at": "2026-11-23T04:52:20.507Z",
@@ -153295,8 +153365,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115303",
+   "artRevision": "20261123-121122",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-11/20261123-121120.webp",
+     "at": "2026-11-23T05:11:22.249Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-11/20261123-115216.webp",
      "at": "2026-11-23T04:52:20.948Z",
@@ -153331,8 +153408,15 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "20261123-115303",
+   "artRevision": "20261123-121122",
    "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-12/20261123-121120.webp",
+     "at": "2026-11-23T05:11:22.356Z",
+     "stamp": "20261123-121120",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
     {
      "file": "assets/_versions/studio-ally-may-ne-walk-12/20261123-115216.webp",
      "at": "2026-11-23T04:52:21.365Z",
@@ -162468,26 +162552,26 @@
   "[\"npc-may-se-stand\",\"SE\",true,[[\"npc-may-se-stand\",\"assets/village-town/npc/may/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:47:16.830Z",
-   "at": 1795409236904
+   "approvedAt": "2026-11-23T05:09:38.248Z",
+   "at": 1795410578332
   },
   "[\"npc-may-sw-stand\",\"SW\",true,[[\"npc-may-sw-stand\",\"assets/village-town/npc/may/sw-stand.webp\",0,\"20261123-113012\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:47:16.830Z",
-   "at": 1795409236904
+   "approvedAt": "2026-11-23T05:09:38.248Z",
+   "at": 1795410578332
   },
   "[\"npc-may-ne-stand\",\"NE\",true,[[\"npc-may-ne-stand\",\"assets/village-town/npc/may/ne-stand.webp\",0,\"20261123-113929\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:47:26.756Z",
-   "at": 1795409246865
+   "approvedAt": "2026-11-23T05:09:38.248Z",
+   "at": 1795410578332
   },
   "[\"npc-may-nw-stand\",\"NW\",true,[[\"npc-may-nw-stand\",\"assets/village-town/npc/may/nw-stand.webp\",0,\"20261123-113928\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:47:26.756Z",
-   "at": 1795409246866
+   "approvedAt": "2026-11-23T05:09:38.248Z",
+   "at": 1795410578332
   },
   "[\"npcwalk:npc:may:SW\",\"SW\",true,[[\"npc-may-sw-walk1\",\"assets/village-town/npc/may/sw-walk1.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk2\",\"assets/village-town/npc/may/sw-walk2.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk3\",\"assets/village-town/npc/may/sw-walk3.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk4\",\"assets/village-town/npc/may/sw-walk4.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk5\",\"assets/village-town/npc/may/sw-walk5.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk6\",\"assets/village-town/npc/may/sw-walk6.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk7\",\"assets/village-town/npc/may/sw-walk7.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk8\",\"assets/village-town/npc/may/sw-walk8.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk9\",\"assets/village-town/npc/may/sw-walk9.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk10\",\"assets/village-town/npc/may/sw-walk10.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk11\",\"assets/village-town/npc/may/sw-walk11.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk12\",\"assets/village-town/npc/may/sw-walk12.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -162536,14 +162620,14 @@
   "[\"allywalk:may:SW\",\"SW\",true,[[\"studio-ally-may-sw-walk-1\",\"assets/tactics/imported/ally-may-walk-sw/frame-01.webp\",0,\"20261123-114700\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-2\",\"assets/tactics/imported/ally-may-walk-sw/frame-02.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-3\",\"assets/tactics/imported/ally-may-walk-sw/frame-03.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-4\",\"assets/tactics/imported/ally-may-walk-sw/frame-04.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-5\",\"assets/tactics/imported/ally-may-walk-sw/frame-05.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-6\",\"assets/tactics/imported/ally-may-walk-sw/frame-06.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-7\",\"assets/tactics/imported/ally-may-walk-sw/frame-07.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-8\",\"assets/tactics/imported/ally-may-walk-sw/frame-08.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-9\",\"assets/tactics/imported/ally-may-walk-sw/frame-09.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-10\",\"assets/tactics/imported/ally-may-walk-sw/frame-10.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-11\",\"assets/tactics/imported/ally-may-walk-sw/frame-11.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-12\",\"assets/tactics/imported/ally-may-walk-sw/frame-12.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "at": 1795409590545,
-   "approvedAt": "2026-11-23T04:53:10.471Z"
+   "at": 1795410578329,
+   "approvedAt": "2026-11-23T05:09:38.248Z"
   },
   "[\"allywalk:may:SE\",\"SE\",true,[[\"studio-ally-may-se-walk-1\",\"assets/tactics/imported/ally-may-walk-se/frame-01.webp\",0,\"20261123-114700\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-2\",\"assets/tactics/imported/ally-may-walk-se/frame-02.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-3\",\"assets/tactics/imported/ally-may-walk-se/frame-03.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-4\",\"assets/tactics/imported/ally-may-walk-se/frame-04.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-5\",\"assets/tactics/imported/ally-may-walk-se/frame-05.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-6\",\"assets/tactics/imported/ally-may-walk-se/frame-06.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-7\",\"assets/tactics/imported/ally-may-walk-se/frame-07.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-8\",\"assets/tactics/imported/ally-may-walk-se/frame-08.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-9\",\"assets/tactics/imported/ally-may-walk-se/frame-09.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-10\",\"assets/tactics/imported/ally-may-walk-se/frame-10.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-11\",\"assets/tactics/imported/ally-may-walk-se/frame-11.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-12\",\"assets/tactics/imported/ally-may-walk-se/frame-12.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "at": 1795409590546,
-   "approvedAt": "2026-11-23T04:53:10.471Z"
+   "at": 1795410578331,
+   "approvedAt": "2026-11-23T05:09:38.248Z"
   },
   "[\"allywalk:may:NE\",\"NE\",true,[[\"studio-ally-may-ne-walk-1\",\"assets/tactics/imported/ally-may-walk-ne/frame-01.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-2\",\"assets/tactics/imported/ally-may-walk-ne/frame-02.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-3\",\"assets/tactics/imported/ally-may-walk-ne/frame-03.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-4\",\"assets/tactics/imported/ally-may-walk-ne/frame-04.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-5\",\"assets/tactics/imported/ally-may-walk-ne/frame-05.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-6\",\"assets/tactics/imported/ally-may-walk-ne/frame-06.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-7\",\"assets/tactics/imported/ally-may-walk-ne/frame-07.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-8\",\"assets/tactics/imported/ally-may-walk-ne/frame-08.webp\",0,\"20261123-115219\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-9\",\"assets/tactics/imported/ally-may-walk-ne/frame-09.webp\",0,\"20261123-115220\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-10\",\"assets/tactics/imported/ally-may-walk-ne/frame-10.webp\",0,\"20261123-115220\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-11\",\"assets/tactics/imported/ally-may-walk-ne/frame-11.webp\",0,\"20261123-115221\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-12\",\"assets/tactics/imported/ally-may-walk-ne/frame-12.webp\",0,\"20261123-115221\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -162560,14 +162644,14 @@
   "[\"allywalk:may:NE\",\"NE\",true,[[\"studio-ally-may-ne-walk-1\",\"assets/tactics/imported/ally-may-walk-ne/frame-01.webp\",0,\"20261123-115301\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-2\",\"assets/tactics/imported/ally-may-walk-ne/frame-02.webp\",0,\"20261123-115301\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-3\",\"assets/tactics/imported/ally-may-walk-ne/frame-03.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-4\",\"assets/tactics/imported/ally-may-walk-ne/frame-04.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-5\",\"assets/tactics/imported/ally-may-walk-ne/frame-05.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-6\",\"assets/tactics/imported/ally-may-walk-ne/frame-06.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-7\",\"assets/tactics/imported/ally-may-walk-ne/frame-07.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-8\",\"assets/tactics/imported/ally-may-walk-ne/frame-08.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-9\",\"assets/tactics/imported/ally-may-walk-ne/frame-09.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-10\",\"assets/tactics/imported/ally-may-walk-ne/frame-10.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-11\",\"assets/tactics/imported/ally-may-walk-ne/frame-11.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-12\",\"assets/tactics/imported/ally-may-walk-ne/frame-12.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:53:37.421Z",
-   "at": 1795409617497
+   "at": 1795410674584,
+   "approvedAt": "2026-11-23T05:11:14.494Z"
   },
   "[\"allywalk:may:NW\",\"NW\",true,[[\"studio-ally-may-nw-walk-1\",\"assets/tactics/imported/ally-may-walk-nw/frame-01.webp\",0,\"20261123-115301\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-2\",\"assets/tactics/imported/ally-may-walk-nw/frame-02.webp\",0,\"20261123-115301\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-3\",\"assets/tactics/imported/ally-may-walk-nw/frame-03.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-4\",\"assets/tactics/imported/ally-may-walk-nw/frame-04.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-5\",\"assets/tactics/imported/ally-may-walk-nw/frame-05.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-6\",\"assets/tactics/imported/ally-may-walk-nw/frame-06.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-7\",\"assets/tactics/imported/ally-may-walk-nw/frame-07.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-8\",\"assets/tactics/imported/ally-may-walk-nw/frame-08.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-9\",\"assets/tactics/imported/ally-may-walk-nw/frame-09.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-10\",\"assets/tactics/imported/ally-may-walk-nw/frame-10.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-11\",\"assets/tactics/imported/ally-may-walk-nw/frame-11.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-12\",\"assets/tactics/imported/ally-may-walk-nw/frame-12.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:53:37.421Z",
-   "at": 1795409617498
+   "at": 1795410686103,
+   "approvedAt": "2026-11-23T05:11:26.042Z"
   },
   "[\"npc-tess-ne-stand\",\"NE\",true,[[\"npc-tess-ne-stand\",\"assets/village-town/npc/tess/ne-stand.webp\",0,\"20261115-080003\",null,1000,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -162654,6 +162738,18 @@
    "frames": {},
    "approvedAt": "2026-11-23T05:03:28.400Z",
    "at": 1795410208456
+  },
+  "[\"allywalk:may:NE\",\"NE\",true,[[\"studio-ally-may-ne-walk-1\",\"assets/tactics/imported/ally-may-walk-ne/frame-01.webp\",0,\"20261123-120549\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-2\",\"assets/tactics/imported/ally-may-walk-ne/frame-02.webp\",0,\"20261123-120549\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-3\",\"assets/tactics/imported/ally-may-walk-ne/frame-03.webp\",0,\"20261123-120549\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-4\",\"assets/tactics/imported/ally-may-walk-ne/frame-04.webp\",0,\"20261123-120549\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-5\",\"assets/tactics/imported/ally-may-walk-ne/frame-05.webp\",0,\"20261123-120550\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-6\",\"assets/tactics/imported/ally-may-walk-ne/frame-06.webp\",0,\"20261123-120550\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-7\",\"assets/tactics/imported/ally-may-walk-ne/frame-07.webp\",0,\"20261123-120550\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-8\",\"assets/tactics/imported/ally-may-walk-ne/frame-08.webp\",0,\"20261123-120550\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-9\",\"assets/tactics/imported/ally-may-walk-ne/frame-09.webp\",0,\"20261123-120551\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-10\",\"assets/tactics/imported/ally-may-walk-ne/frame-10.webp\",0,\"20261123-120551\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-11\",\"assets/tactics/imported/ally-may-walk-ne/frame-11.webp\",0,\"20261123-120551\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-12\",\"assets/tactics/imported/ally-may-walk-ne/frame-12.webp\",0,\"20261123-120551\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:05:54.415Z",
+   "at": 1795410354448
+  },
+  "[\"allywalk:may:NE\",\"NE\",true,[[\"studio-ally-may-ne-walk-1\",\"assets/tactics/imported/ally-may-walk-ne/frame-01.webp\",0,\"20261123-121120\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-2\",\"assets/tactics/imported/ally-may-walk-ne/frame-02.webp\",0,\"20261123-121121\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-3\",\"assets/tactics/imported/ally-may-walk-ne/frame-03.webp\",0,\"20261123-121121\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-4\",\"assets/tactics/imported/ally-may-walk-ne/frame-04.webp\",0,\"20261123-121121\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-5\",\"assets/tactics/imported/ally-may-walk-ne/frame-05.webp\",0,\"20261123-121121\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-6\",\"assets/tactics/imported/ally-may-walk-ne/frame-06.webp\",0,\"20261123-121121\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-7\",\"assets/tactics/imported/ally-may-walk-ne/frame-07.webp\",0,\"20261123-121121\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-8\",\"assets/tactics/imported/ally-may-walk-ne/frame-08.webp\",0,\"20261123-121121\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-9\",\"assets/tactics/imported/ally-may-walk-ne/frame-09.webp\",0,\"20261123-121122\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-10\",\"assets/tactics/imported/ally-may-walk-ne/frame-10.webp\",0,\"20261123-121122\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-11\",\"assets/tactics/imported/ally-may-walk-ne/frame-11.webp\",0,\"20261123-121122\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-12\",\"assets/tactics/imported/ally-may-walk-ne/frame-12.webp\",0,\"20261123-121122\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:11:26.042Z",
+   "at": 1795410686102
   }
  },
  "studioClipHistory": {
