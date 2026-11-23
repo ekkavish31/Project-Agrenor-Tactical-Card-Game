@@ -105960,7 +105960,17 @@
     "id": "npc:hilda",
     "name": "ชาวนาฮิลดา",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-hilda-sw-stand/20261123-155350.webp",
+     "at": "2026-11-23T08:53:50.235Z",
+     "stamp": "20261123-155350",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261123-155350"
   },
   {
    "id": "npc-hilda-sw-walk1",
@@ -166228,6 +166238,12 @@
    "frames": {},
    "approvedAt": "2026-11-23T07:06:10.641Z",
    "at": 1795417570671
+  },
+  "[\"allywalk:hilda:SE\",\"SE\",true,[[\"studio-ally-hilda-se-walk-1\",\"assets/tactics/imported/ally-hilda-walk-se/frame-01.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-2\",\"assets/tactics/imported/ally-hilda-walk-se/frame-02.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-3\",\"assets/tactics/imported/ally-hilda-walk-se/frame-03.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-4\",\"assets/tactics/imported/ally-hilda-walk-se/frame-04.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-5\",\"assets/tactics/imported/ally-hilda-walk-se/frame-05.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-6\",\"assets/tactics/imported/ally-hilda-walk-se/frame-06.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-7\",\"assets/tactics/imported/ally-hilda-walk-se/frame-07.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-8\",\"assets/tactics/imported/ally-hilda-walk-se/frame-08.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-9\",\"assets/tactics/imported/ally-hilda-walk-se/frame-09.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-10\",\"assets/tactics/imported/ally-hilda-walk-se/frame-10.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-11\",\"assets/tactics/imported/ally-hilda-walk-se/frame-11.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-hilda-se-walk-12\",\"assets/tactics/imported/ally-hilda-walk-se/frame-12.webp\",0,\"mwke5190\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T08:54:09.498Z",
+   "at": 1795424049534
   }
  },
  "studioClipHistory": {
