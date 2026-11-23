@@ -109630,7 +109630,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261115-141403",
+   "artRevision": "20261123-114405",
    "usedIn": "NPC เทส · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:tess",
@@ -109649,13 +109649,28 @@
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "history": [
     {
+     "file": "assets/_versions/npc-tess-sw-walk1/mwss6tfh-u0xi.webp",
+     "at": "2026-11-23T04:44:05.260Z",
+     "stamp": "mwss6tfh-u0xi",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
+     "file": "assets/_versions/npc-tess-sw-walk1/mwss5d01-jsld.webp",
+     "at": "2026-11-23T04:42:57.296Z",
+     "stamp": "mwss5d01-jsld",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
      "file": "assets/_versions/npc-tess-sw-walk1/20261115-141403.webp",
      "at": "2026-11-15T07:14:03.245Z",
      "stamp": "20261115-141403",
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-tess-se-walk1",
@@ -109674,7 +109689,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261115-141403",
+   "artRevision": "20261123-114406",
    "usedIn": "NPC เทส · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:tess",
@@ -109694,13 +109709,28 @@
    "mirroredFrom": "npc-tess-sw-walk1",
    "history": [
     {
+     "file": "assets/_versions/npc-tess-se-walk1/mwss6tfh-u0xi.webp",
+     "at": "2026-11-23T04:44:06.254Z",
+     "stamp": "mwss6tfh-u0xi",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
+     "file": "assets/_versions/npc-tess-se-walk1/mwss5d01-jsld.webp",
+     "at": "2026-11-23T04:42:57.689Z",
+     "stamp": "mwss5d01-jsld",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
      "file": "assets/_versions/npc-tess-se-walk1/20261115-141403.webp",
      "at": "2026-11-15T07:14:03.289Z",
      "stamp": "20261115-141403",
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-ash-sw-walk1",
@@ -110037,7 +110067,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261115-141432",
+   "artRevision": "20261123-114345",
    "usedIn": "NPC เทส · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:tess",
@@ -110056,13 +110086,21 @@
    "note": "1 ภาพก้าวขาต่อทิศ สลับกับภาพยืนเดิมใน runtime; ยังไม่ใช่วงจรเดินเต็ม; SE/NW เป็นไฟล์กลับด้าน",
    "history": [
     {
+     "file": "assets/_versions/npc-tess-ne-walk1/mwss6dw6-r25n.webp",
+     "at": "2026-11-23T04:43:45.114Z",
+     "stamp": "mwss6dw6-r25n",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
      "file": "assets/_versions/npc-tess-ne-walk1/20261115-141431.webp",
      "at": "2026-11-15T07:14:32.102Z",
      "stamp": "20261115-141431",
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-tess-nw-walk1",
@@ -110081,7 +110119,7 @@
     0.5,
     0.9375
    ],
-   "artRevision": "20261115-141432",
+   "artRevision": "20261123-114345",
    "usedIn": "NPC เทส · เดินก้าวสั้น",
    "studioOwner": {
     "id": "npc:tess",
@@ -110101,13 +110139,21 @@
    "mirroredFrom": "npc-tess-ne-walk1",
    "history": [
     {
+     "file": "assets/_versions/npc-tess-nw-walk1/mwss6dw6-r25n.webp",
+     "at": "2026-11-23T04:43:45.427Z",
+     "stamp": "mwss6dw6-r25n",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
      "file": "assets/_versions/npc-tess-nw-walk1/20261115-141431.webp",
      "at": "2026-11-15T07:14:32.029Z",
      "stamp": "20261115-141431",
      "status": "final",
      "note": "ก่อนใส่ภาพใหม่"
     }
-   ]
+   ],
+   "ms": 100
   },
   {
    "id": "npc-ash-ne-walk1",
@@ -153267,6 +153313,1798 @@
     "group": "npcs"
    },
    "artRevision": "mwss22c4"
+  },
+  {
+   "id": "npc-tess-sw-walk2",
+   "file": "assets/village-town/npc/tess/sw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk3",
+   "file": "assets/village-town/npc/tess/sw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk4",
+   "file": "assets/village-town/npc/tess/sw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk5",
+   "file": "assets/village-town/npc/tess/sw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk6",
+   "file": "assets/village-town/npc/tess/sw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk7",
+   "file": "assets/village-town/npc/tess/sw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk8",
+   "file": "assets/village-town/npc/tess/sw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk9",
+   "file": "assets/village-town/npc/tess/sw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk10",
+   "file": "assets/village-town/npc/tess/sw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk11",
+   "file": "assets/village-town/npc/tess/sw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-114405"
+  },
+  {
+   "id": "npc-tess-sw-walk12",
+   "file": "assets/village-town/npc/tess/sw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-114406"
+  },
+  {
+   "id": "npc-tess-se-walk2",
+   "file": "assets/village-town/npc/tess/se-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-114406"
+  },
+  {
+   "id": "npc-tess-se-walk3",
+   "file": "assets/village-town/npc/tess/se-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-114406"
+  },
+  {
+   "id": "npc-tess-se-walk4",
+   "file": "assets/village-town/npc/tess/se-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-114406"
+  },
+  {
+   "id": "npc-tess-se-walk5",
+   "file": "assets/village-town/npc/tess/se-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-114406"
+  },
+  {
+   "id": "npc-tess-se-walk6",
+   "file": "assets/village-town/npc/tess/se-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-114406"
+  },
+  {
+   "id": "npc-tess-se-walk7",
+   "file": "assets/village-town/npc/tess/se-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-114406"
+  },
+  {
+   "id": "npc-tess-se-walk8",
+   "file": "assets/village-town/npc/tess/se-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-114406"
+  },
+  {
+   "id": "npc-tess-se-walk9",
+   "file": "assets/village-town/npc/tess/se-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-114407"
+  },
+  {
+   "id": "npc-tess-se-walk10",
+   "file": "assets/village-town/npc/tess/se-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-114407"
+  },
+  {
+   "id": "npc-tess-se-walk11",
+   "file": "assets/village-town/npc/tess/se-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-114407"
+  },
+  {
+   "id": "npc-tess-se-walk12",
+   "file": "assets/village-town/npc/tess/se-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-114407"
+  },
+  {
+   "id": "npc-tess-ne-walk2",
+   "file": "assets/village-town/npc/tess/ne-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk3",
+   "file": "assets/village-town/npc/tess/ne-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk4",
+   "file": "assets/village-town/npc/tess/ne-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk5",
+   "file": "assets/village-town/npc/tess/ne-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk6",
+   "file": "assets/village-town/npc/tess/ne-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk7",
+   "file": "assets/village-town/npc/tess/ne-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk8",
+   "file": "assets/village-town/npc/tess/ne-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk9",
+   "file": "assets/village-town/npc/tess/ne-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk10",
+   "file": "assets/village-town/npc/tess/ne-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk11",
+   "file": "assets/village-town/npc/tess/ne-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-ne-walk12",
+   "file": "assets/village-town/npc/tess/ne-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk2",
+   "file": "assets/village-town/npc/tess/nw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk3",
+   "file": "assets/village-town/npc/tess/nw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk4",
+   "file": "assets/village-town/npc/tess/nw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk5",
+   "file": "assets/village-town/npc/tess/nw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk6",
+   "file": "assets/village-town/npc/tess/nw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk7",
+   "file": "assets/village-town/npc/tess/nw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk8",
+   "file": "assets/village-town/npc/tess/nw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk9",
+   "file": "assets/village-town/npc/tess/nw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk10",
+   "file": "assets/village-town/npc/tess/nw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk11",
+   "file": "assets/village-town/npc/tess/nw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "npc-tess-nw-walk12",
+   "file": "assets/village-town/npc/tess/nw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC เทส",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-114345"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-1",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-2",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-3",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-4",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-5",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-6",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-7",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-8",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-9",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-10",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-11",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-sw-walk-12",
+   "file": "assets/tactics/imported/ally-tess-walk-sw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss75jl"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-1",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-2",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-3",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-4",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-5",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-6",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-7",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-8",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-9",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-10",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-11",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
+  },
+  {
+   "id": "studio-ally-tess-ne-walk-12",
+   "file": "assets/tactics/imported/ally-tess-walk-ne/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:tess",
+    "name": "เทส",
+    "group": "npcs"
+   },
+   "artRevision": "mwss7ck2"
   }
  ],
  "studioReviews": {
@@ -159804,9 +161642,21 @@
    "frames": {}
   },
   "[\"npcwalk:npc:may:NW\",\"NW\",true,[[\"npc-may-nw-walk1\",\"assets/village-town/npc/may/nw-walk1.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk2\",\"assets/village-town/npc/may/nw-walk2.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk3\",\"assets/village-town/npc/may/nw-walk3.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk4\",\"assets/village-town/npc/may/nw-walk4.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk5\",\"assets/village-town/npc/may/nw-walk5.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk6\",\"assets/village-town/npc/may/nw-walk6.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk7\",\"assets/village-town/npc/may/nw-walk7.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk8\",\"assets/village-town/npc/may/nw-walk8.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk9\",\"assets/village-town/npc/may/nw-walk9.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk10\",\"assets/village-town/npc/may/nw-walk10.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk11\",\"assets/village-town/npc/may/nw-walk11.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk12\",\"assets/village-town/npc/may/nw-walk12.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795408825299,
+   "approvedAt": "2026-11-23T04:40:25.299Z"
+  },
+  "[\"npcwalk:npc:tess:SW\",\"SW\",true,[[\"npc-tess-sw-walk1\",\"assets/village-town/npc/tess/sw-walk1.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk2\",\"assets/village-town/npc/tess/sw-walk2.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk3\",\"assets/village-town/npc/tess/sw-walk3.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk4\",\"assets/village-town/npc/tess/sw-walk4.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk5\",\"assets/village-town/npc/tess/sw-walk5.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk6\",\"assets/village-town/npc/tess/sw-walk6.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk7\",\"assets/village-town/npc/tess/sw-walk7.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk8\",\"assets/village-town/npc/tess/sw-walk8.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk9\",\"assets/village-town/npc/tess/sw-walk9.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk10\",\"assets/village-town/npc/tess/sw-walk10.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk11\",\"assets/village-town/npc/tess/sw-walk11.webp\",0,\"20261123-114405\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-sw-walk12\",\"assets/village-town/npc/tess/sw-walk12.webp\",0,\"20261123-114406\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795409062418,
+   "approvedAt": "2026-11-23T04:44:22.418Z"
+  },
+  "[\"npcwalk:npc:tess:NE\",\"NE\",true,[[\"npc-tess-ne-walk1\",\"assets/village-town/npc/tess/ne-walk1.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk2\",\"assets/village-town/npc/tess/ne-walk2.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk3\",\"assets/village-town/npc/tess/ne-walk3.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk4\",\"assets/village-town/npc/tess/ne-walk4.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk5\",\"assets/village-town/npc/tess/ne-walk5.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk6\",\"assets/village-town/npc/tess/ne-walk6.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk7\",\"assets/village-town/npc/tess/ne-walk7.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk8\",\"assets/village-town/npc/tess/ne-walk8.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk9\",\"assets/village-town/npc/tess/ne-walk9.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk10\",\"assets/village-town/npc/tess/ne-walk10.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk11\",\"assets/village-town/npc/tess/ne-walk11.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk12\",\"assets/village-town/npc/tess/ne-walk12.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "unreviewed",
    "frames": {},
-   "at": 1795408822451
+   "at": 1795409067718
   }
  },
  "studioClipHistory": {
@@ -170857,6 +172707,158 @@
      {
       "assetId": "studio-ally-may-nw-walk-12",
       "src": "assets/tactics/imported/ally-may-walk-nw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "tess": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T04:44:20.817Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-tess-sw-walk-1",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-2",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-3",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-4",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-5",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-6",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-7",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-8",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-9",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-10",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-11",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-sw-walk-12",
+      "src": "assets/tactics/imported/ally-tess-walk-sw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T04:44:29.906Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-tess-ne-walk-1",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-2",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-3",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-4",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-5",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-6",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-7",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-8",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-9",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-10",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-11",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-tess-ne-walk-12",
+      "src": "assets/tactics/imported/ally-tess-walk-ne/frame-12.webp",
       "ms": 100
      }
     ]
