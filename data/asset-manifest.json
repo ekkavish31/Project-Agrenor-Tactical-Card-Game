@@ -106633,6 +106633,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-mother-sw-walk1/mwsv8frq-mikg.webp",
+     "at": "2026-11-23T06:09:19.710Z",
+     "stamp": "mwsv8frq-mikg",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
      "file": "assets/_versions/npc-mother-sw-walk1/20261123-122750.webp",
      "at": "2026-11-23T05:27:50.189Z",
      "stamp": "20261123-122750",
@@ -106647,7 +106654,8 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261123-122753"
+   "artRevision": "20261123-130919",
+   "ms": 100
   },
   {
    "id": "npc-mother-ne-stand",
@@ -106713,6 +106721,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-mother-ne-walk1/mwsv9uia-1xg2.webp",
+     "at": "2026-11-23T06:10:25.516Z",
+     "stamp": "mwsv9uia-1xg2",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    },
+    {
      "file": "assets/_versions/npc-mother-ne-walk1/20261123-130159.webp",
      "at": "2026-11-23T06:01:59.253Z",
      "stamp": "20261123-130159",
@@ -106727,7 +106742,8 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261123-130411"
+   "artRevision": "20261123-131025",
+   "ms": 100
   },
   {
    "id": "npc-mother-se-stand",
@@ -106768,7 +106784,17 @@
     "name": "แม่",
     "group": "npcs"
    },
-   "artRevision": "20261123-122750"
+   "artRevision": "20261123-130919",
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-mother-se-walk1/mwsv8frq-mikg.webp",
+     "at": "2026-11-23T06:09:19.974Z",
+     "stamp": "mwsv8frq-mikg",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "npc-mother-nw-stand",
@@ -106818,7 +106844,17 @@
     "name": "แม่",
     "group": "npcs"
    },
-   "artRevision": "20261123-130410"
+   "artRevision": "20261123-131026",
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-mother-nw-walk1/mwsv9uia-1xg2.webp",
+     "at": "2026-11-23T06:10:26.592Z",
+     "stamp": "mwsv9uia-1xg2",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ]
   },
   {
    "id": "iron-fence2",
@@ -156196,6 +156232,2446 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ]
+  },
+  {
+   "id": "npc-mother-sw-walk2",
+   "file": "assets/village-town/npc/mother/sw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk3",
+   "file": "assets/village-town/npc/mother/sw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk4",
+   "file": "assets/village-town/npc/mother/sw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk5",
+   "file": "assets/village-town/npc/mother/sw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk6",
+   "file": "assets/village-town/npc/mother/sw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk7",
+   "file": "assets/village-town/npc/mother/sw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk8",
+   "file": "assets/village-town/npc/mother/sw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk9",
+   "file": "assets/village-town/npc/mother/sw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk10",
+   "file": "assets/village-town/npc/mother/sw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk11",
+   "file": "assets/village-town/npc/mother/sw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-sw-walk12",
+   "file": "assets/village-town/npc/mother/sw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-130919"
+  },
+  {
+   "id": "npc-mother-se-walk2",
+   "file": "assets/village-town/npc/mother/se-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk3",
+   "file": "assets/village-town/npc/mother/se-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk4",
+   "file": "assets/village-town/npc/mother/se-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk5",
+   "file": "assets/village-town/npc/mother/se-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk6",
+   "file": "assets/village-town/npc/mother/se-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk7",
+   "file": "assets/village-town/npc/mother/se-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk8",
+   "file": "assets/village-town/npc/mother/se-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk9",
+   "file": "assets/village-town/npc/mother/se-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk10",
+   "file": "assets/village-town/npc/mother/se-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk11",
+   "file": "assets/village-town/npc/mother/se-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "npc-mother-se-walk12",
+   "file": "assets/village-town/npc/mother/se-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-130920"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-1",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-2",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-3",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-4",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-5",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-6",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-7",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-8",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-9",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-10",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-11",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-sw-walk-12",
+   "file": "assets/tactics/imported/ally-mother-walk-sw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv8xyw"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-1",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-2",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-3",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-4",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-5",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-6",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-7",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-8",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-9",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-10",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-11",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "studio-ally-mother-se-walk-12",
+   "file": "assets/tactics/imported/ally-mother-walk-se/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsv96ak"
+  },
+  {
+   "id": "npc-mother-ne-walk2",
+   "file": "assets/village-town/npc/mother/ne-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-131025"
+  },
+  {
+   "id": "npc-mother-ne-walk3",
+   "file": "assets/village-town/npc/mother/ne-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-131025"
+  },
+  {
+   "id": "npc-mother-ne-walk4",
+   "file": "assets/village-town/npc/mother/ne-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-131025"
+  },
+  {
+   "id": "npc-mother-ne-walk5",
+   "file": "assets/village-town/npc/mother/ne-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-131025"
+  },
+  {
+   "id": "npc-mother-ne-walk6",
+   "file": "assets/village-town/npc/mother/ne-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-131025"
+  },
+  {
+   "id": "npc-mother-ne-walk7",
+   "file": "assets/village-town/npc/mother/ne-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-131025"
+  },
+  {
+   "id": "npc-mother-ne-walk8",
+   "file": "assets/village-town/npc/mother/ne-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-131026"
+  },
+  {
+   "id": "npc-mother-ne-walk9",
+   "file": "assets/village-town/npc/mother/ne-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-131026"
+  },
+  {
+   "id": "npc-mother-ne-walk10",
+   "file": "assets/village-town/npc/mother/ne-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-131026"
+  },
+  {
+   "id": "npc-mother-ne-walk11",
+   "file": "assets/village-town/npc/mother/ne-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-131026"
+  },
+  {
+   "id": "npc-mother-ne-walk12",
+   "file": "assets/village-town/npc/mother/ne-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-131026"
+  },
+  {
+   "id": "npc-mother-nw-walk2",
+   "file": "assets/village-town/npc/mother/nw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-131026"
+  },
+  {
+   "id": "npc-mother-nw-walk3",
+   "file": "assets/village-town/npc/mother/nw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-131026"
+  },
+  {
+   "id": "npc-mother-nw-walk4",
+   "file": "assets/village-town/npc/mother/nw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "npc-mother-nw-walk5",
+   "file": "assets/village-town/npc/mother/nw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "npc-mother-nw-walk6",
+   "file": "assets/village-town/npc/mother/nw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "npc-mother-nw-walk7",
+   "file": "assets/village-town/npc/mother/nw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "npc-mother-nw-walk8",
+   "file": "assets/village-town/npc/mother/nw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "npc-mother-nw-walk9",
+   "file": "assets/village-town/npc/mother/nw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "npc-mother-nw-walk10",
+   "file": "assets/village-town/npc/mother/nw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "npc-mother-nw-walk11",
+   "file": "assets/village-town/npc/mother/nw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "npc-mother-nw-walk12",
+   "file": "assets/village-town/npc/mother/nw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC แม่",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-131027"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-1",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-2",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-3",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-4",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-5",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-6",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-7",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-8",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-9",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-10",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-11",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-ne-walk-12",
+   "file": "assets/tactics/imported/ally-mother-walk-ne/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsva9qz"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-1",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-2",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-3",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-4",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-5",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-6",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-7",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-8",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-9",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-10",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-11",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
+  },
+  {
+   "id": "studio-ally-mother-nw-walk-12",
+   "file": "assets/tactics/imported/ally-mother-walk-nw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:mother",
+    "name": "แม่",
+    "group": "npcs"
+   },
+   "artRevision": "mwsvajmx"
   }
  ],
  "studioReviews": {
@@ -162965,6 +165441,37 @@
    "frames": {},
    "approvedAt": "2026-11-23T06:04:22.969Z",
    "at": 1795413863045
+  },
+  "[\"npcwalk:npc:mother:SW\",\"SW\",true,[[\"npc-mother-sw-walk1\",\"assets/village-town/npc/mother/sw-walk1.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk2\",\"assets/village-town/npc/mother/sw-walk2.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk3\",\"assets/village-town/npc/mother/sw-walk3.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk4\",\"assets/village-town/npc/mother/sw-walk4.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk5\",\"assets/village-town/npc/mother/sw-walk5.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk6\",\"assets/village-town/npc/mother/sw-walk6.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk7\",\"assets/village-town/npc/mother/sw-walk7.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk8\",\"assets/village-town/npc/mother/sw-walk8.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk9\",\"assets/village-town/npc/mother/sw-walk9.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk10\",\"assets/village-town/npc/mother/sw-walk10.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk11\",\"assets/village-town/npc/mother/sw-walk11.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-sw-walk12\",\"assets/village-town/npc/mother/sw-walk12.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795414184957,
+   "approvedAt": "2026-11-23T06:09:44.957Z"
+  },
+  "[\"allywalk:mother:SW\",\"SW\",true,[[\"studio-ally-mother-sw-walk-1\",\"assets/tactics/imported/ally-mother-walk-sw/frame-01.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-2\",\"assets/tactics/imported/ally-mother-walk-sw/frame-02.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-3\",\"assets/tactics/imported/ally-mother-walk-sw/frame-03.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-4\",\"assets/tactics/imported/ally-mother-walk-sw/frame-04.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-5\",\"assets/tactics/imported/ally-mother-walk-sw/frame-05.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-6\",\"assets/tactics/imported/ally-mother-walk-sw/frame-06.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-7\",\"assets/tactics/imported/ally-mother-walk-sw/frame-07.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-8\",\"assets/tactics/imported/ally-mother-walk-sw/frame-08.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-9\",\"assets/tactics/imported/ally-mother-walk-sw/frame-09.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-10\",\"assets/tactics/imported/ally-mother-walk-sw/frame-10.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-11\",\"assets/tactics/imported/ally-mother-walk-sw/frame-11.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-sw-walk-12\",\"assets/tactics/imported/ally-mother-walk-sw/frame-12.webp\",0,\"mwsv8xyw\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npcwalk:npc:mother:SE\",\"SE\",true,[[\"npc-mother-se-walk1\",\"assets/village-town/npc/mother/se-walk1.webp\",0,\"20261123-130919\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk2\",\"assets/village-town/npc/mother/se-walk2.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk3\",\"assets/village-town/npc/mother/se-walk3.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk4\",\"assets/village-town/npc/mother/se-walk4.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk5\",\"assets/village-town/npc/mother/se-walk5.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk6\",\"assets/village-town/npc/mother/se-walk6.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk7\",\"assets/village-town/npc/mother/se-walk7.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk8\",\"assets/village-town/npc/mother/se-walk8.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk9\",\"assets/village-town/npc/mother/se-walk9.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk10\",\"assets/village-town/npc/mother/se-walk10.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk11\",\"assets/village-town/npc/mother/se-walk11.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-se-walk12\",\"assets/village-town/npc/mother/se-walk12.webp\",0,\"20261123-130920\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795414195800,
+   "approvedAt": "2026-11-23T06:09:55.800Z"
+  },
+  "[\"npcwalk:npc:mother:NE\",\"NE\",true,[[\"npc-mother-ne-walk1\",\"assets/village-town/npc/mother/ne-walk1.webp\",0,\"20261123-131025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk2\",\"assets/village-town/npc/mother/ne-walk2.webp\",0,\"20261123-131025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk3\",\"assets/village-town/npc/mother/ne-walk3.webp\",0,\"20261123-131025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk4\",\"assets/village-town/npc/mother/ne-walk4.webp\",0,\"20261123-131025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk5\",\"assets/village-town/npc/mother/ne-walk5.webp\",0,\"20261123-131025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk6\",\"assets/village-town/npc/mother/ne-walk6.webp\",0,\"20261123-131025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk7\",\"assets/village-town/npc/mother/ne-walk7.webp\",0,\"20261123-131025\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk8\",\"assets/village-town/npc/mother/ne-walk8.webp\",0,\"20261123-131026\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk9\",\"assets/village-town/npc/mother/ne-walk9.webp\",0,\"20261123-131026\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk10\",\"assets/village-town/npc/mother/ne-walk10.webp\",0,\"20261123-131026\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk11\",\"assets/village-town/npc/mother/ne-walk11.webp\",0,\"20261123-131026\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-ne-walk12\",\"assets/village-town/npc/mother/ne-walk12.webp\",0,\"20261123-131026\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795414247519,
+   "approvedAt": "2026-11-23T06:10:47.519Z"
+  },
+  "[\"allywalk:mother:NE\",\"NE\",true,[[\"studio-ally-mother-ne-walk-1\",\"assets/tactics/imported/ally-mother-walk-ne/frame-01.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-2\",\"assets/tactics/imported/ally-mother-walk-ne/frame-02.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-3\",\"assets/tactics/imported/ally-mother-walk-ne/frame-03.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-4\",\"assets/tactics/imported/ally-mother-walk-ne/frame-04.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-5\",\"assets/tactics/imported/ally-mother-walk-ne/frame-05.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-6\",\"assets/tactics/imported/ally-mother-walk-ne/frame-06.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-7\",\"assets/tactics/imported/ally-mother-walk-ne/frame-07.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-8\",\"assets/tactics/imported/ally-mother-walk-ne/frame-08.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-9\",\"assets/tactics/imported/ally-mother-walk-ne/frame-09.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-10\",\"assets/tactics/imported/ally-mother-walk-ne/frame-10.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-11\",\"assets/tactics/imported/ally-mother-walk-ne/frame-11.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-mother-ne-walk-12\",\"assets/tactics/imported/ally-mother-walk-ne/frame-12.webp\",0,\"mwsva9qz\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npcwalk:npc:mother:NW\",\"NW\",true,[[\"npc-mother-nw-walk1\",\"assets/village-town/npc/mother/nw-walk1.webp\",0,\"20261123-131026\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk2\",\"assets/village-town/npc/mother/nw-walk2.webp\",0,\"20261123-131026\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk3\",\"assets/village-town/npc/mother/nw-walk3.webp\",0,\"20261123-131026\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk4\",\"assets/village-town/npc/mother/nw-walk4.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk5\",\"assets/village-town/npc/mother/nw-walk5.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk6\",\"assets/village-town/npc/mother/nw-walk6.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk7\",\"assets/village-town/npc/mother/nw-walk7.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk8\",\"assets/village-town/npc/mother/nw-walk8.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk9\",\"assets/village-town/npc/mother/nw-walk9.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk10\",\"assets/village-town/npc/mother/nw-walk10.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk11\",\"assets/village-town/npc/mother/nw-walk11.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-mother-nw-walk12\",\"assets/village-town/npc/mother/nw-walk12.webp\",0,\"20261123-131027\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "at": 1795414257228
   }
  },
  "studioClipHistory": {
@@ -174173,6 +176680,308 @@
      {
       "assetId": "studio-ally-tess-ne-walk-12",
       "src": "assets/tactics/imported/ally-tess-walk-ne/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "mother": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T06:09:43.160Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-mother-sw-walk-1",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-2",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-3",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-4",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-5",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-6",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-7",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-8",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-9",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-10",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-11",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-sw-walk-12",
+      "src": "assets/tactics/imported/ally-mother-walk-sw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T06:09:53.948Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-mother-se-walk-1",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-2",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-3",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-4",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-5",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-6",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-7",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-8",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-9",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-10",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-11",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-se-walk-12",
+      "src": "assets/tactics/imported/ally-mother-walk-se/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T06:10:45.083Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-mother-ne-walk-1",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-2",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-3",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-4",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-5",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-6",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-7",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-8",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-9",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-10",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-11",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-ne-walk-12",
+      "src": "assets/tactics/imported/ally-mother-walk-ne/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T06:10:57.897Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-mother-nw-walk-1",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-2",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-3",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-4",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-5",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-6",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-7",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-8",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-9",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-10",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-11",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-mother-nw-walk-12",
+      "src": "assets/tactics/imported/ally-mother-walk-nw/frame-12.webp",
       "ms": 100
      }
     ]
