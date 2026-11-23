@@ -194,7 +194,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
  talkStep({id:'saf',chapter:'การเดินทางครั้งแรก · รังโจรป่า',outro:'safTalk',title:'ร้านยาของซาฟ',talk:'saf',goal:'แวะหาหมอยาซาฟก่อนออกเดินทาง',hint:'ซาฟอยู่ร้านยา 6 โมงเช้าถึง 6 โมงเย็น · '+HINT_WALK,
   reward:()=>{try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}}}),
  {id:'sibSword',tag:'real',intro:'sibSwordIntro',outro:'sibSwordDone',title:'ดาบเหล็กของตัวตาม',goal:'ตีดาบเหล็ก 1 เล่มที่โรงตีเหล็ก ให้ตัวตามใช้ในการเดินทาง',hint:'เตา: หลอมให้ร้อน → ทั่ง: ตีขึ้นรูปจนครบ 100 → ถังน้ำ: ชุบแข็ง · ดาบใช้เหล็ก 2 ถ่าน 1 ไม้ 1 ซื้อวัตถุดิบที่ตลาด · ตัวเอกพกมีดสั้นของพ่ออยู่แล้ว',
-  place:'forge',begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next&&x.kind==='sword'),acts:[guideBtn],reward:d=>giveSibSword(d)},
+  place:'forge',begin:d=>{d.next=G().nextId},check:d=>(G().inventory||[]).some(x=>x.id>=d.next&&x.kind==='sword'),acts:[guideBtn],reward:async d=>{giveSibSword(d);await root.StarterKit?.unlockSignature?.(1)}},
  {id:'potions',tag:'real',outro:'potionsDone',title:'ซื้อยาก่อนออกเดินทาง',goal:'ซื้อยาอย่างน้อย 2 ขวดที่ร้านค้าของเวร่า',hint:'ร้านค้าเปิด 7 โมงเช้าถึงหนึ่งทุ่ม · เข้าไปในร้านแล้วกด "🧪 ซื้อยา" · ซื้อที่หมอยา/ตลาดก็นับ',
   place:['shop','healer','market'],begin:d=>{d.p=potionCount()},progress:d=>Math.min(1,(potionCount()-(d.p||0))/2),check:d=>potionCount()-(d.p||0)>=2,acts:[guideBtn]},
  {id:'prep',tag:'real',title:'เตรียมตัวออกเดินทาง',goal:'ซื้อเสบียงอย่างน้อย 1 ชิ้นที่ตลาด',hint:'เดินไปที่โต๊ะซื้อวัตถุดิบในตลาด · เสบียงใช้กินฟื้นความสดชื่นระหว่างทาง · จัดสำรับได้ที่โต๊ะในบ้าน',
@@ -209,7 +209,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
   place:'healer',skip:()=>!V().story.kierHurt,check:()=>!!root.Injury?.of?.(root.WorldState?.game?.()||G(),'kier')?.bed,acts:[guideBtn]},
  {id:'sellLoot',tag:'real',intro:()=>V().story.kierHurt?'homeKier':null,reward:()=>{addCoins(20);try{const b=V().bag||(V().bag={});b.potion=(b.potion||0)+1}catch{}toast('รางวัล: +20 เหรียญ · ยา 1 ขวด')},title:'ขายของจากการเดินทาง',goal:'ขายของที่ได้มาที่ตลาด 1 ครั้ง',hint:'ของป่า (เขี้ยวหมาป่า สมุนไพร เหรียญโบราณ) ขายได้ที่ตลาด',place:'market',check:d=>d.sales>0,acts:[guideBtn]},
  {id:'rest',tag:'real',outro:'finale',title:'พักฟื้น',goal:'กลับบ้านแล้วนอนพัก',hint:'ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก"',place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn],
-  reward:async()=>{addCoins(30);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1},{group:'combat',id:'rockfall',n:1},{group:'combat',id:'perch',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
+  reward:async()=>{addCoins(30);await root.StarterKit?.unlockSignature?.(2);await root.StarterKit?.unlock?.([{group:'combat',id:'backstab',n:1},{group:'combat',id:'ambush',n:1},{group:'combat',id:'rockfall',n:1},{group:'combat',id:'perch',n:1}],{kicker:'จบบทนำ',title:'ไพ่ของนักผจญภัย',text:'+30 เหรียญ · การ์ดใบอื่นหาได้จากการเดินทาง'});toast('จบบทนำ · เล่นอิสระได้แล้ว','quest')}}];
 const byId=id=>STEPS.findIndex(x=>x.id===id);
 
 /* ---------- pumpkin (temp farming) ---------- */
@@ -373,7 +373,10 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
    const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 
-function boot(){Object.assign(root.Cutscene.speakers,D().SPEAKERS);hookActions();
+/* v98.1019 · a save that is ALREADY past the Light / Heavy unlock point (before this version) gets the signature cards once, with a note in the reveal */
+function sigCatchUp(){try{const st=story(),v=V();if(!st||!v||st.mode==='offer')return;const lvl=(st.mode==='done'||st.i>byId('rest'))?2:(st.i>byId('sibSword'))?1:0;
+ if(lvl&&(v.sigLevel||0)<lvl)(async()=>{for(let l=(v.sigLevel||0)+1;l<=lvl;l++)await root.StarterKit?.unlockSignature?.(l,{catchUp:true})})()}catch(e){}}
+function boot(){setTimeout(sigCatchUp,4000);Object.assign(root.Cutscene.speakers,D().SPEAKERS);hookActions();
  if(new URLSearchParams(location.search).get('story')==='reset'&&V()){delete V().story;doSave()}
  // editor / tool pages never run the story
  if(/[?&](editor|skipStory)/.test(location.search)||root.EDITOR_MODE||root.top!==root)return;

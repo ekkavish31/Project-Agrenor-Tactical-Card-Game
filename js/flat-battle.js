@@ -117,7 +117,11 @@
     volley: { range: 4, dmg: 8, st: 14, hits: 2, fx: 'spear' }, snipe: { range: 5, dmg: 22, st: 18, fx: 'rapier' },
     smite: { range: 3, dmg: 18, st: 14, fx: 'arcane' }, bless: { self: true, guard: 10, heal: 8, st: 8, fx: 'heal' },
     shadowStep: { range: 3, dmg: 14, st: 14, behind: 10, leap: 1, fx: 'knife' }, emberBurst: { range: 3, dmg: 13, st: 14, aoe: 'splash', fx: 'fire' },
-    warCry: { self: true, guard: 6, restore: 30, st: 0, fx: 'shield' }
+    warCry: { self: true, guard: 6, restore: 30, st: 0, fx: 'shield' },
+    /* v98.1019 · SIGNATURE cards of the two siblings (story unlocks, js/starter-kit.js unlockSignature) — every rule uses mechanics that already exist
+       brother: rush in (leap) — Light = one target, hits hard · Heavy = splash round the target, a little harder · sister: special magic from afar — Light = one target + a status · Heavy = splash + a status on everyone hit */
+    sigLightM: { range: 3, dmg: 24, st: 14, leap: 1, behind: 6, fx: 'sigLightM' }, sigHeavyM: { range: 3, dmg: 26, st: 20, leap: 1, aoe: 'splash', big: 1.4, fx: 'sigHeavyM' },
+    sigLightF: { range: 4, dmg: 20, st: 14, fx: 'sigLightF' }, sigHeavyF: { range: 4, dmg: 22, st: 20, aoe: 'splash', statusAll: 1, big: 1.3, fx: 'sigHeavyF' }
   };
   const hero = st => st.units[0];
   const monsters = st => st.units.filter(u => u.side === 'monster'), allies = st => st.units.filter((u, i) => i && u.side === 'hero');
@@ -230,7 +234,7 @@
      burn 🔥 / poison ☠: HP lost at the start of the unit's own turn · sleep 💤: skips its turns, a hit wakes it · silence 🔇: no element
      cards or skills · weak ⬇: hits ×0.75 · freeze and shock reuse the old stun (skip a turn) and slow (−2 move). */
   const STATUS = { burn: { name: 'ไหม้', icon: '🔥', dot: 4, turns: 2 }, poison: { name: 'พิษ', icon: '☠', dot: 3, turns: 3 }, sleep: { name: 'หลับ', icon: '💤', turns: 2 }, silence: { name: 'ใบ้', icon: '🔇', turns: 2 }, weak: { name: 'อ่อนแรง', icon: '⬇', turns: 2 }, freeze: { name: 'แข็ง', icon: '❄' }, shock: { name: 'ชา', icon: '⚡' }, bind: { name: 'ติดเถาวัลย์', icon: '🌿', turns: 1 } };   /* v98.331 · bind: no walking until it ends */
-  const CARD_STATUS = { flame: ['burn', .5], emberBurst: ['burn', .6], snipe: ['weak', .35], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3], chaosBolt: ['weak', .5], chaosRend: ['silence', .4] };
+  const CARD_STATUS = { flame: ['burn', .5], emberBurst: ['burn', .6], snipe: ['weak', .35], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3], chaosBolt: ['weak', .5], chaosRend: ['silence', .4], sigLightF: ['weak', .75], sigHeavyF: ['shock', .6] };
   /* v98.955 · CARD FORGE (js/card-forge.js): stars / element / mod chip change a card's rule. CARD, CARD_STATUS and CARD_EL are rebuilt from the untouched originals each time a battle is created, so nothing sticks between fights. */
   const CARD_BASE = JSON.parse(JSON.stringify(CARD)), CARD_STATUS_BASE = JSON.parse(JSON.stringify(CARD_STATUS)), CARD_EL_BASE = { ...CARD_EL };
   function applyForge() {
@@ -535,8 +539,16 @@
     olwen: { id: 'flame', name: 'ระเบิดไฟนิรันดร์', range: 4, dmg: 14, aoe: 'splash', fx: 'fire' },
     nadia: { id: 'backstab', name: 'แทงเงา', range: 1, dmg: 26, fx: 'knife' },
     orla: { id: 'mendAll', name: 'พรแห่งผืนดิน', healAll: 15, fx: 'heal' },
-    berg: { id: 'snare', name: 'ลูกดอกตรึง', range: 4, dmg: 12, stun: 1, fx: 'arrow' }
+    berg: { id: 'snare', name: 'ลูกดอกตรึง', range: 4, dmg: 12, stun: 1, fx: 'arrow' },
+    /* v98.1019 · the OTHER sibling (key 'sib') fights with the signature the lead does not use — set per battle by setSignature(level, leadIsFemale) */
+    get sib() {
+      if (!SIG.level) return undefined;
+      if (SIG.femaleLead) return SIG.level >= 2 ? { id: 'sigHeavyM', name: 'ฟันทลายแนว', range: 1, dmg: 20, aoe: 'splash', fx: 'sigHeavyM' } : { id: 'sigLightM', name: 'ก้าวแหวกแนว', range: 1, dmg: 20, fx: 'sigLightM' };
+      return SIG.level >= 2 ? { id: 'sigHeavyF', name: 'คลื่นเวทตรึงศัตรู', range: 4, dmg: 15, aoe: 'splash', status: ['shock', .5], fx: 'sigHeavyF' } : { id: 'sigLightF', name: 'ศรเวทตามติด', range: 4, dmg: 14, status: ['weak', .7], fx: 'sigLightF' };
+    }
   };
+  const SIG = { level: 0, femaleLead: false };
+  const setSignature = (level, femaleLead) => { SIG.level = Math.max(0, Math.min(2, level | 0)); SIG.femaleLead = !!femaleLead };
   const SKILL_CD = 3;
   function skillBlock(st, a) {
     if (!st.cards) return 'ไม่ได้เปิดโหมดไพ่'; if (st.outcome) return 'จบการต่อสู้แล้ว'; if (st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
@@ -556,6 +568,7 @@
     const list = sk.aoe === 'self' ? inR.filter(o => dist(o, a) <= 1) : sk.aoe === 'splash' ? opponents(st, a).filter(o => o === t || dist(o, t) <= 1) : [t];
     for (const o of list) for (let i = 0; i < (sk.hits || 1); i++) { if (!alive(o)) break; const crit = (st.rng || Math.random)() < CRIT.ally, en = [], r = hurt(st, o, sk.dmg * heightMult(st, a, o) * elMult(st, FX_EL[sk.fx] || a.el, o, en) * (crit ? CRIT.mult : 1)); r.notes.push(...en); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit }) }
     if (sk.stun && alive(t)) { t.stun = 1; out.stun = t }
+    if (sk.status) { out.statuses = []; for (const o of list) { const k = alive(o) && inflict(st, o, sk.status[0], sk.status[1]); if (k) out.statuses.push({ unit: o, kind: k }) } }   /* v98.1019 */
     if (sk.push && alive(t)) out.moved = shove(st, t, a, 1);
     st.log.push(a.name + ' ' + sk.name + ' −' + out.hits.reduce((x, h) => x + h.damage, 0)); checkOutcome(st);
     return out;
@@ -737,6 +750,7 @@
     if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2 && !t.fly) { const fd = Math.min(t.hp - (t.immortal ? 1 : 0), Math.round(5 * drop)); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
     if (rule.slow && alive(t)) { t.slowed = 1; out.slowed = t }
     if (CARD_STATUS[id] && out.hits.some(x => x.target === t && x.damage > 0)) { const k = inflict(st, t, CARD_STATUS[id][0], CARD_STATUS[id][1]); if (k) out.status = { unit: t, kind: k } }   /* v97.19 */
+    if (CARD_STATUS[id] && rule.statusAll) { out.statuses = []; for (const o of new Set(out.hits.filter(x => x.damage > 0 && x.target !== t).map(x => x.target))) { const k = inflict(st, o, CARD_STATUS[id][0], CARD_STATUS[id][1]); if (k) out.statuses.push({ unit: o, kind: k }) } }   /* v98.1019 · splash cards that mark everyone they hit */
     checkOutcome(st);
     return out;
   }
@@ -896,6 +910,6 @@
     const cards = []; st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (!m || h.stamina < m.stamina) return; const e = reach(st, h, st.mp + m.move).get(key); if (e && e.cost > 0) cards.push({ index: i, uid: c.uid, id: c.id, name: m.name, move: m.move, stamina: m.stamina, cost: e.cost }) });
     return { cards };
   }
-  const api = { applyForge, cardEl, baseRule: id => CARD_BASE[id] || null, ITEM, ITEM_NAME, itemRule, itemDraw, itemBlock, useItem, free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, CRYSTAL_STAMINA, HAND, crystals, refill, crystalStamina, redrawHand, emergencyOk, playEmergency, attackWhy, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { setSignature, applyForge, cardEl, baseRule: id => CARD_BASE[id] || null, ITEM, ITEM_NAME, itemRule, itemDraw, itemBlock, useItem, free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, CRYSTAL_STAMINA, HAND, crystals, refill, crystalStamina, redrawHand, emergencyOk, playEmergency, attackWhy, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

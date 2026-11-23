@@ -44,6 +44,17 @@ function reveal(list,opt,legacy){return new Promise(done=>{const el=document.cre
  const close=()=>{el.classList.remove('on');el.classList.add('off');setTimeout(()=>{el.remove();done()},380)};
  el.querySelector('button').onclick=close;el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='Escape')close()});setTimeout(()=>el.querySelector('button')?.focus(),400)})}
 
+/* v98.1019 · SIGNATURE cards (story unlocks): level 1 = Light (mid prologue) · level 2 = Heavy (end of prologue). Both siblings get them at the same moment:
+   the sibling who LEADS gets his / her own card in the deck (brother: rush-in melee · sister: ranged special magic + status); the other one's card waits in the collection
+   (it is used when that sibling leads) and is also the follower's commanded skill in battle (js/flat-battle.js ALLY_SKILL.sib, set from v.sigLevel). Names are provisional, not canon. */
+const SIG={1:{M:'sigLightM',F:'sigLightF'},2:{M:'sigHeavyM',F:'sigHeavyF'}};
+async function unlockSignature(level,opt={}){const v=V();if(!v)return;for(let l=(v.sigLevel||0)+1;l<=level;l++)await sigOne(l,opt)}   // a skipped Light is handed over before the Heavy
+function sigOne(level,opt={}){const v=V();if(!v||(v.sigLevel||0)>=level)return Promise.resolve();
+ const fem=/female/.test(root.HeroVariant?.get?.()||''),mine=SIG[level][fem?'F':'M'],other=SIG[level][fem?'M':'F'];v.sigLevel=level;
+ if(v.cardPool){v.cardPool.combat||={};v.cardPool.combat[other]=(v.cardPool.combat[other]||0)+2}
+ const light=level===1,name=D.COMBAT[mine]?.name||mine;
+ return unlock([{group:'combat',id:mine,n:2}],{kicker:opt.catchUp?'ท่าประจำตัว (ของที่ควรได้ไปแล้ว)':(light?'ท่าประจำตัว':'ท่าประจำตัว · ขั้นสอง'),title:name,
+  text:(fem?(light?'เวทพิเศษพุ่งไกลใส่เป้าเดี่ยว ทำให้อ่อนแรง':'เวทวงกว้างใส่เป้าและศัตรูรอบ ทำให้ชาทุกตัวที่โดน'):(light?'พุ่งเข้าประชิดแล้วฟันเป้าเดี่ยวหนักแน่น':'พุ่งเข้าประชิดแล้วฟันวงกว้าง โดนศัตรูรอบเป้า'))+' · ทั้งสองพี่น้องได้ท่าประจำตัวพร้อมกัน — อีกคนใช้เป็นท่าพิเศษตอนสั่งในการต่อสู้'})}
 apply();setTimeout(apply,0);// the save is loaded by the time this runs; the second call covers a late village init
-root.StarterKit={unlock,apply,freshSave};
+root.StarterKit={unlock,unlockSignature,apply,freshSave};
 })(globalThis);

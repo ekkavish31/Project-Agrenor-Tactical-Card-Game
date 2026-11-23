@@ -20,7 +20,7 @@
   const WHEEL = ['light', 'wind', 'water', 'chaos', 'fire', 'nature', 'ice', 'dark', 'earth'];
   /* the element a card has on its own (same as CARD_EL in js/flat-battle.js; cards not listed follow the weapon) */
   const BASE_EL = { thunder: 'chaos', frost: 'ice', flame: 'fire', gust: 'wind', quake: 'earth', aimed: 'light', tide: 'water', push: 'earth', pull: 'wind', rockfall: 'earth', whirl: 'wind', chaosBolt: 'chaos', chaosRend: 'chaos', chaosWard: 'chaos' };
-  const RARE = ['thunder', 'quake', 'backstab', 'dive', 'counter', 'ambush', 'rockfall', 'perch', 'cleave', 'snipe', 'shadowStep'], UNCOMMON = ['twin', 'whirl', 'flame', 'frost', 'spell', 'tide', 'formation', 'evade', 'firstAid', 'climb', 'volley', 'smite', 'bless', 'emberBurst'];
+  const RARE = ['sigLightM', 'sigHeavyM', 'sigLightF', 'sigHeavyF', 'thunder', 'quake', 'backstab', 'dive', 'counter', 'ambush', 'rockfall', 'perch', 'cleave', 'snipe', 'shadowStep'], UNCOMMON = ['twin', 'whirl', 'flame', 'frost', 'spell', 'tide', 'formation', 'evade', 'firstAid', 'climb', 'volley', 'smite', 'bless', 'emberBurst'];
   const dustOf = id => RARE.includes(id) ? 3 : UNCOMMON.includes(id) ? 2 : 1;
   const G = () => { try { return root.WorldState?.game?.() || (typeof s !== 'undefined' ? s : null) } catch (e) { return typeof s !== 'undefined' ? s : null } };
   const V = () => G()?.village;
