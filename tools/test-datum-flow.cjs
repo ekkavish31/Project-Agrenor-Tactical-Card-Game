@@ -25,5 +25,11 @@ const server = http.createServer((q, r) => { let p = decodeURIComponent(q.url.sp
   assert.ok(await p.evaluate(() => document.getElementById('dtMsg').textContent.includes('📏 คลิก 2 จุด')), 'after the leg line the thickness measurement starts'); assert.equal(await stage(), '④'); await p.keyboard.press('Escape'); await p.waitForTimeout(150);
   const own = await p.evaluate(() => { const r = ProportionDatum.get('hero', VP.action, VP.index); return { crown: !!r?.pts?.SW?.crown, neck: r?.cuts?.SW?.neck?.length, hip: r?.cuts?.SW?.hip?.length } }); assert.ok(own.crown && own.neck === 2 && own.hip === 2, 'crown + both lines stored ' + JSON.stringify(own));
   await p.click('#dtClearDir'); await p.waitForTimeout(400); for (const [, x, y] of pts) await click(x, y); assert.equal(await stage(), '②'); await p.keyboard.press('Escape'); await p.waitForTimeout(150); assert.equal(await stage(), '③', 'Esc skips the head line');
+  /* v98.980 · start in the middle of the list: after placing a point the NEXT point in the list is selected (not the first unset one) */
+  await p.keyboard.press('Escape'); await p.click('#dtClearDir'); await p.waitForTimeout(400);
+  const order = await p.evaluate(() => [...document.querySelectorAll('#dtList [data-dk]')].map(b => b.dataset.dk)), mid = order.indexOf('shL');
+  assert.ok(mid > 0, 'shL is inside the list');
+  await p.click('#dtList [data-dk="shL"]'); await click(.33, .33);  assert.equal(await sel(), order[mid + 1], 'after placing shL (not first) the next point in the list is selected');
+  await p.click('#dtList [data-dk="' + order[0] + '"]'); await click(.44, .2); assert.equal(await sel(), order[1], 'placing the first point selects the second');
   await b.close(); server.close(); for (const e of errs) console.log('✗ page error: ' + e); if (errs.length) process.exit(1); console.log('✓ datum flow: all points → head line → leg line → thickness (hold to end a line) · specks ignored');
 })().catch(e => { console.log('✗', e.message); process.exit(1) });
