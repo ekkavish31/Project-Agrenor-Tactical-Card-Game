@@ -27,11 +27,12 @@ iframe[hidden]{display:none}
  <h1>✎ Project A · Editor</h1>
  <nav id="tabs"></nav><span id="deployStatus">กำลังตรวจสถานะเว็บ…</span>
  <button class="tool" id="stagedPush" disabled title="ส่งภาพ/ไฟล์ที่แก้ค้างไว้ (จาก Asset Studio / Workshop ทุกแท็บ) ขึ้น GitHub เป็น commit เดียว" style="background:#496b3b;border-color:#6f9a5a;font-weight:700">⬆ รอ Push (0)</button><button class="tool" id="stagedDrop" hidden title="ทิ้งงานที่ยังไม่ push ทั้งหมด">ทิ้ง</button>
+ <button class="tool" id="hardReload" title="เหมือน Ctrl+Shift+R: โหลดทุกไฟล์ของ Editor และทุกแท็บใหม่จากเซิร์ฟเวอร์ (ไม่ใช้แคช) แล้วกลับมาหน้าเดิม · งานใน Cart / ที่ยังไม่ push ไม่หาย">↻ รีโหลดสด</button>
  <a href="index.html" target="_blank" title="เปิดเกมในแท็บใหม่">▶ เปิดเกม</a>
 </header>
 <div class="note" id="note"></div><div id="editorConflict" hidden role="status"></div>
 <main id="frames"></main>
-<script src="js/webp-redirect.js?v=v98.946"></script><script src="js/game-version.js?v=v98.946"></script><script src="js/game-settings.js?v=v98.894"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.993"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
+<script src="js/webp-redirect.js?v=v98.946"></script><script src="js/game-version.js?v=v98.994"></script><script src="js/game-settings.js?v=v98.894"></script><script src="js/layout-sync.js?v=98.96"></script><script src="js/editor-deploy-status.js?v=91.45"></script><script src="js/game-dialog.js"></script><script src="js/github-push.js?v=v98.993"></script><script src="js/manifest-merge.js?v=v98.444"></script><script>
 // Editor shell: every tool runs in its own frame; the game opens in "editor mode" (no play-save writes).
 // All tools share this browser's storage with the game — reload the game to see changes.
 const TABS=[
@@ -56,7 +57,17 @@ function show(id){let T=TABS.find(t=>t.id===id)||TABS[0];cur=T.id;history.replac
  if(!frames.querySelector(`[data-id="${T.id}"]`)){let f=document.createElement('iframe');f.dataset.id=T.id;f.src=busted(savedUrl(T));f.title=T.name;f.allow='fullscreen';f.setAttribute('allowfullscreen','');frames.appendChild(f)}}
 tabs.innerHTML=TABS.map(t=>`<button data-id="${t.id}" title="${t.note.replace(/"/g,'&quot;')} · ค่าที่แก้บันทึกในเบราว์เซอร์นี้ เกมเห็นเมื่อรีโหลด">${t.name}</button>`).join('');
 tabs.onclick=e=>{let b=e.target.closest('button');if(b)show(b.dataset.id)};
-/* v98.894 · the ↻ โหลดใหม่ button is removed — use Ctrl+Shift+R */
+/* v98.994 · ↻ รีโหลดสด = Ctrl+Shift+R as a button: every file the editor and its tabs loaded (scripts, styles, pages, images, data; same origin) is fetched again with cache:'reload'
+   — that REPLACES the browser's cached copy with the server's — and the Cache Storage is emptied, then the page reloads and the tabs come back where they were (editor-ui-memory). Files the browser cached for other pages are not touched. */
+document.getElementById('hardReload').onclick=async function(){const b=this;if(b.disabled)return;b.disabled=true;const say=t=>{b.textContent=t};
+ try{const urls=new Set([location.href]),add=w=>{try{for(const r of w.performance.getEntriesByType('resource'))if(r.name.startsWith(location.origin))urls.add(r.name);urls.add(w.location.href)}catch(e){}};
+  add(window);for(const f of frames.querySelectorAll('iframe'))add(f.contentWindow);
+  const list=[...urls].map(u=>u.replace(/#.*$/,'')),total=list.length;let done=0;const q=[...list];
+  await Promise.all(Array.from({length:8},async()=>{while(q.length){const u=q.shift();try{await fetch(u,{cache:'reload'})}catch(e){}say('↻ '+(++done)+'/'+total)}}));
+  try{if(window.caches){for(const k of await caches.keys())await caches.delete(k)}}catch(e){}
+  try{for(const r of await (navigator.serviceWorker?.getRegistrations?.()||[]))await r.unregister()}catch(e){}
+ }catch(e){console.warn('hard reload',e)}
+ location.reload()};
 show((()=>{const h=location.hash.slice(1);if(TABS.some(t=>t.id===h))return h;try{const s=localStorage.getItem('editor-last-tab');if(TABS.some(t=>t.id===s))return s}catch(e){}return'assets'})());
 /* v91.55 · ⬆ Push of everything staged by Asset Studio / Object Workshop, from any tab (staged files live in IndexedDB, shared by all frames) */
 (function(){const sp=document.getElementById('stagedPush'),sd=document.getElementById('stagedDrop');let bc=null;try{bc=new BroadcastChannel('project-a-staged')}catch(e){}
