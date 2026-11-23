@@ -106669,6 +106669,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-mother-ne-stand/20261123-130243.webp",
+     "at": "2026-11-23T06:02:43.896Z",
+     "stamp": "20261123-130243",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
      "file": "assets/_versions/npc-mother-ne-stand/20261123-122347.webp",
      "at": "2026-11-23T05:23:47.209Z",
      "stamp": "20261123-122347",
@@ -106683,7 +106690,7 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261123-122348"
+   "artRevision": "20261123-130245"
   },
   {
    "id": "npc-mother-ne-walk1",
@@ -106706,6 +106713,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-mother-ne-walk1/20261123-130159.webp",
+     "at": "2026-11-23T06:01:59.253Z",
+     "stamp": "20261123-130159",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
      "file": "assets/_versions/npc-mother-ne-walk1/20261115-221030.webp",
      "at": "2026-11-15T15:10:30.311Z",
      "stamp": "20261115-221030",
@@ -106713,7 +106727,7 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-221030"
+   "artRevision": "20261123-130411"
   },
   {
    "id": "npc-mother-se-stand",
@@ -106774,13 +106788,22 @@
     "name": "แม่",
     "group": "npcs"
    },
-   "artRevision": "20261123-122347"
+   "artRevision": "20261123-130244",
+   "history": [
+    {
+     "file": "assets/_versions/npc-mother-nw-stand/20261123-130243.webp",
+     "at": "2026-11-23T06:02:43.993Z",
+     "stamp": "20261123-130243",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-mother-nw-walk1",
    "file": "assets/village-town/npc/mother/nw-walk1.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -106794,7 +106817,8 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "artRevision": "20261123-130410"
   },
   {
    "id": "iron-fence2",
@@ -162897,16 +162921,14 @@
    "at": 1795411324478
   },
   "[\"npc-mother-ne-stand\",\"NE\",true,[[\"npc-mother-ne-stand\",\"assets/village-town/npc/mother/ne-stand.webp\",0,\"20261123-122348\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-23T05:23:53.459Z",
-   "at": 1795411433550
+   "at": 1795413732449
   },
   "[\"npc-mother-nw-stand\",\"NW\",true,[[\"npc-mother-nw-stand\",\"assets/village-town/npc/mother/nw-stand.webp\",0,\"20261123-122347\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
-   "approvedAt": "2026-11-23T05:23:53.459Z",
-   "at": 1795411433550
+   "at": 1795413732450
   },
   "[\"npc-mother-sw-walk1\",\"SW\",true,[[\"npc-mother-sw-walk1\",\"assets/village-town/npc/mother/sw-walk1.webp\",0,\"20261123-122753\",null,100,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -162919,6 +162941,30 @@
    "frames": {},
    "approvedAt": "2026-11-23T05:28:02.291Z",
    "at": 1795411682365
+  },
+  "[\"npc-mother-ne-stand\",\"NE\",true,[[\"npc-mother-ne-stand\",\"assets/village-town/npc/mother/ne-stand.webp\",0,\"20261123-130245\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795413784705,
+   "approvedAt": "2026-11-23T06:03:04.627Z"
+  },
+  "[\"npc-mother-nw-stand\",\"NW\",true,[[\"npc-mother-nw-stand\",\"assets/village-town/npc/mother/nw-stand.webp\",0,\"20261123-130244\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795413784705,
+   "approvedAt": "2026-11-23T06:03:04.627Z"
+  },
+  "[\"npc-mother-ne-walk1\",\"NE\",true,[[\"npc-mother-ne-walk1\",\"assets/village-town/npc/mother/ne-walk1.webp\",0,\"20261123-130411\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T06:04:22.969Z",
+   "at": 1795413863045
+  },
+  "[\"npc-mother-nw-walk1\",\"NW\",true,[[\"npc-mother-nw-walk1\",\"assets/village-town/npc/mother/nw-walk1.webp\",0,\"20261123-130410\",null,100,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T06:04:22.969Z",
+   "at": 1795413863045
   }
  },
  "studioClipHistory": {
