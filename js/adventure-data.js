@@ -8,6 +8,7 @@ const CONSUMABLES={
  bigPotion:{name:'ยาฟื้นฟูชั้นดี',element:'nature',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:50,stamina:0,price:45,text:'ฟื้น HP 50'},
  tonic:{name:'ชาเรี่ยวแรง',element:'fire',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:0,stamina:40,price:15,text:'ฟื้นแรง 40'},
  smallPumpkin:{name:'ฟักทองลูกเล็ก',element:'earth',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:30,stamina:30,price:14,text:'ฟื้น HP 30 และแรง 30 · ของขวัญจากฮิลดา'},
+ mayBread:{name:'ขนมปังป้าเมย์',element:'earth',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:10,stamina:20,price:8,gift:true,art:'bread',text:'ฟื้น HP 10 และแรง 20 · ขนมปังป้าเมย์ที่แม่นับไว้ให้ 4 ก้อนก่อนออกจากบ้าน'},   /* v98.1022 · the 4 loaves of the prologue morning (js/story-data.js: "แม่นับขนมปังไว้แล้ว สี่ก้อน") · picture = the travel bread's until its own is made */
  momWater:{name:'น้ำดื่มจากแม่',element:'water',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:0,stamina:30,price:6,gift:true,text:'ฟื้นแรง 30 · น้ำต้มสุกใส่กระติกที่แม่เตรียมให้'},
  bread:{name:'ขนมปังเดินทาง',element:'earth',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:10,stamina:20,price:8,text:'ฟื้น HP 10 และแรง 20'},
  firebomb:{name:'ระเบิดไฟ',element:'fire',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:22,range:4,price:30,text:'ขว้างใส่ศัตรูในระยะ 4 ช่อง ความเสียหาย 22'},
@@ -29,6 +30,7 @@ const CONSUMABLES={
 };
 // ---------- goods: sell at the market or hand in for quests ----------
 const GOODS={
+ glowCrystal:{name:'ผลึกเรืองแสง',element:'fusion',rarity:'good',use:'เควส · ทำโคม',price:20,art:'crystalShard',text:'ผลึกจากอุโมงค์ที่อุ่นเมื่อแตะ · ใช้ทำโคมไฟเทศกาลที่โรงตีเหล็ก'},   /* v98.1022 · "ได้รับ ผลึกเรืองแสง ×3" (cave quest) — was only a counter (story.crystals), now a card in the book */
  wolfFang:{name:'เขี้ยวหมาป่า',element:'dark',rarity:'common',use:'ขาย',price:12,text:'ของป่าที่พ่อค้ารับซื้อ'},
  herb:{name:'สมุนไพรป่า',element:'nature',rarity:'common',use:'ขาย',price:10,text:'ร้านยาในหมู่บ้านต้องการเสมอ'},
  oldCoin:{name:'เหรียญโบราณ',element:'light',rarity:'good',use:'สะสม',price:40,text:'เหรียญจากยุคก่อน มีราคาสำหรับนักสะสม'},
