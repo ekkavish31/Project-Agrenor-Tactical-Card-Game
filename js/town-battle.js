@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1019';
+  const V = '98.1020';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1035,7 +1035,7 @@
   async function playSkill(r) {
     const a = r.ally; sfx('cast', .5); toast(a.name + ' · ' + r.name);
     if (r.heals) {
-      await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.heals) { fx('heal', x.unit, x.unit, { color: '#7fe08a' }); impact(x.unit, 'heal', false); x.unit.flashUntil = 0; floatText(x.unit, '+' + x.heal, '#7fe08a'); x.unit.shown = x.unit.hp; hudSync(); await wait(140) } await wait(500); a.pose = 'idle' }, { z: 1.4, bars: false, lead: 220, tail: 120 });
+      await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.heals) { STAT.healed[statId(a)] = (STAT.healed[statId(a)] || 0) + (x.heal | 0); fx('heal', x.unit, x.unit, { color: '#7fe08a' }); impact(x.unit, 'heal', false); x.unit.flashUntil = 0; floatText(x.unit, '+' + x.heal, '#7fe08a'); x.unit.shown = x.unit.hp; hudSync(); await wait(140) } await wait(500); a.pose = 'idle' }, { z: 1.4, bars: false, lead: 220, tail: 120 });
     } else if (r.shielded.length) {
       await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.shielded) { fx('shield', x.unit, x.unit, {}); impact(x.unit, 'shield', false); floatText(x.unit, 'GUARD ' + x.guard, '#9cc8ff', true); await wait(140) } shake(6, 220); await wait(500); a.pose = 'idle' }, { z: 1.5, bars: false, lead: 220, tail: 120 });
     } else {
@@ -1136,7 +1136,7 @@
       if (s.type === 'move') await walkAnim(s.unit, s.path);
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
       else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
-      else if (s.type === 'dot') { const S = FB.STATUS[s.kind] || {}; if (s.kind === 'burn') smokeUp(s.unit, 250); s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
+      else if (s.type === 'dot') { { const d0 = s.damage | 0; if (s.unit.side === 'monster') STAT.dotFoe += d0; else { STAT.dotUs += d0; const k0 = statId(s.unit); STAT.taken[k0] = (STAT.taken[k0] || 0) + d0 } } const S = FB.STATUS[s.kind] || {};   /* v98.1019 · poison / burn damage counted for the report */ if (s.kind === 'burn') smokeUp(s.unit, 250); s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
       else if (s.type === 'evolve') await playEvolve(s)
       else if (s.type === 'phase') { actUnit = s.unit; banner('ENRAGED!', 'crit'); screenFlash('255,90,58', .35, 420); shake(16, 520); floatText(s.unit, 'คลั่ง! ATK ↑', '#ff8a6a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,90,60', r: UNIT * 1.8, t0: now(), dur: 900 }); await wait(800) }
       else if (s.type === 'charge') { floatText(s.unit, '⚠ กำลังรวบรวมพลัง', '#ffd25a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,210,90', r: UNIT * 1.5, t0: now(), dur: 1100 }); hint('⚠ ' + s.unit.name + ' จะใช้ท่าใหญ่ในตาหน้า · กระจายตัว หรือถอยออกจากระยะ'); await wait(700) }
@@ -1172,7 +1172,7 @@
   }
   /* embedded in the world map: hand the result back (also automatically a moment after the end) */
   /* v98.996 · battle statistics for the Victory report (page 2). Counted where each REAL hit is shown (never from previews). Ids: 'hero' · the party key · 'foe' */
-  const STAT = { t0: Date.now(), dealt: {}, taken: {}, kills: {}, healed: {}, cards: {}, crit: 0, adv: 0, dis: 0, flank: 0, high: 0, max: null };
+  const STAT = { dotFoe: 0, dotUs: 0, t0: Date.now(), dealt: {}, taken: {}, kills: {}, healed: {}, cards: {}, crit: 0, adv: 0, dis: 0, flank: 0, high: 0, max: null };
   const statId = u => u.side === 'monster' ? 'foe' : (u === FB.hero(st) ? 'hero' : (u.key || u.id));
   function tally(att, tgt, x, down) {
     try {
@@ -1185,7 +1185,7 @@
   }
   function statOut() {
     try { const cards = Object.entries(STAT.cards).map(([id, n]) => [cardName('combat', id), n]).sort((a, b) => b[1] - a[1]);
-      return { turns: st.turns, secs: Math.round((Date.now() - STAT.t0) / 1000), dealt: STAT.dealt, taken: STAT.taken, kills: STAT.kills, healed: STAT.healed, crit: STAT.crit, adv: STAT.adv, dis: STAT.dis, flank: STAT.flank, high: STAT.high, cards, items: Object.values(st.itemsUsed || {}).reduce((a, n) => a + n, 0), maxHit: STAT.max } } catch (e) { return null }
+      return { turns: st.turns, secs: Math.round((Date.now() - STAT.t0) / 1000), dealt: STAT.dealt, taken: STAT.taken, kills: STAT.kills, healed: STAT.healed, dotFoe: STAT.dotFoe, dotUs: STAT.dotUs, crit: STAT.crit, adv: STAT.adv, dis: STAT.dis, flank: STAT.flank, high: STAT.high, cards, items: Object.values(st.itemsUsed || {}).reduce((a, n) => a + n, 0), maxHit: STAT.max } } catch (e) { return null }
   }
   let reported = false;
   function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), used: st.itemsUsed || {}, goal: (() => { try { return FB.objText(st) } catch (e) { return '' } })(), turns: st.turns, stat: statOut(), evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }

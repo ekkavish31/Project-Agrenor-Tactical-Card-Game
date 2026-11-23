@@ -281,7 +281,7 @@ function questBattle(d,o){return new Promise(resolve=>{
   if(win){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);if(root.Progression){const xp=Progression.battleXp({dang:.25,kills:r.kills});xpGot=xp;gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}
   const cleanup=()=>{fr.remove();doRender();heroBack(spot);VS?.fightUI?.(false)};
   /* v98.996 · the Victory report opens OVER the battle scene (the frame is removed only after its Continue button). v98.597 · the "fighting" lock stays ON while it is up — otherwise another goat standing next to the hero started a second fight behind it */
-  if(win&&VS)VS.show({title:o.title,goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,before,xpGot,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(()=>{cleanup();d.fighting=false;doSave();resolve('win')});else if(win){cleanup();d.fighting=false;doSave();resolve('win')}else{cleanup();d.fighting=false;doSave();resolve('out')}};
+  if(win&&VS)VS.show({title:o.title,goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,before,xpGot,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(()=>{cleanup();d.fighting=false;doSave();resolve('win')});else if(win){cleanup();d.fighting=false;doSave();resolve('win')}else if(r.outcome==='lose'&&VS)VS.show({defeat:true,title:o.title,goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,null,0,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(()=>{cleanup();d.fighting=false;doSave();resolve('out')});else{cleanup();d.fighting=false;doSave();resolve('out')}};
  {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);root.VictoryScreen?.fightUI?.(true);document.body.appendChild(fr)})}
 
 /* ---------- raid battle (v94: the flat card battle drawn on the village square, in a frame over the game) ---------- */
@@ -297,7 +297,7 @@ function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับห�
   const VS=root.VictoryScreen,before=r.outcome==='win'&&VS?VS.snap(g):null;let xpGot=0;
   if(r.outcome==='win'){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);d.won=true;if(root.Progression){const xp=Progression.battleXp({dang:.4,kills:r.kills});xpGot=xp;gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}else toast(r.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');
   const cleanup=()=>{d.fighting=false;doSave();fr.remove();doRender();heroBack(spot);VS?.fightUI?.(false)};
-  if(r.outcome==='win'&&VS)VS.show({title:'คืนเทศกาล · โจรป่าบุก',goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,before,xpGot,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(cleanup);else cleanup()};
+  if(r.outcome==='win'&&VS)VS.show({title:'คืนเทศกาล · โจรป่าบุก',goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,before,xpGot,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(cleanup);else if(r.outcome==='lose'&&VS)VS.show({defeat:true,title:'คืนเทศกาล · โจรป่าบุก',goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,null,0,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(cleanup);else cleanup()};
  {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);root.VictoryScreen?.fightUI?.(true);document.body.appendChild(fr)}
 
 /* ---------- sales detector (coins up while an item or goods left the bag at the market) ---------- */

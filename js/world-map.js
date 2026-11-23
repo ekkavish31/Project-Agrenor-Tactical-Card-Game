@@ -1072,6 +1072,11 @@
     const res = await resP; try { localStorage.removeItem('projectA.wmFight'); localStorage.removeItem('projectA.battleSnap') } catch (e) { }
     /* v98.996 · a WIN keeps the battle frame under the Victory report (js/victory-screen.js) until its Continue button; every other result closes it now as before */
     const dropFrame = async () => { if (!fr.isConnected) return; fr.classList.remove('on'); await wait(380); fr.remove() };
+    if (res.outcome === 'lose' && window.VictoryScreen) {   /* v98.1019 · the defeat report, over the battle scene, before the "หมดสติ" window */
+      const fem = (() => { try { return window.HeroVariant?.get?.() === 'female' } catch (e) { return false } })();
+      await VictoryScreen.show({ defeat: true, title, goal: res.goal, kills: res.kills || 0, turns: res.turns, stat: res.stat, notes: ['ถูกพากลับหมู่บ้าน'],
+        members: [{ id: 'hero', name: WS.heroName?.() || 'ตัวเอก', pic: fem ? 'hero-female' : 'hero-male', hp: Math.max(0, res.hp ?? 0), max: S.maxHp, gain: 0 },
+          ...(res.party || []).map(x => { const p = S.party.find(q => q.key === x.key); return p && { id: p.key, name: p.name, pic: p.key === 'sib' ? (fem ? 'hero-male' : 'hero-female') : p.key, hp: Math.max(0, x.hp), max: p.max, gain: 0 } }).filter(Boolean)] }) }
     if (res.outcome !== 'win') { await dropFrame(); window.VictoryScreen?.fightUI?.(false) }
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
     /* v98.496 · bag cards spent in the fight leave the real bag */
