@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.959';
+  const V = '98.1005';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1767,7 +1767,7 @@
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
     shadow(g, p0, UNIT * .26 * T.scale * (lift ? .7 - lift / UNIT * .3 : 1));
     if (af) {
-      const h = UNIT * CharSize.MON.base * CharSize.MON.k * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * monNorm(kind, T) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
+      const h = UNIT * CharSize.MON.base * CharSize.MON.k * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * monNorm(kind, T) * (af.renderHeight || 1) * (window.CharScaleAdjust?.poseFactor('enemy:' + kind, String(af.clipId || '').split('-').pop() || 'idle', null, u.dir) || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];   /* v98.1005 · the size set for this pose in 📐 เรียงท่า (entity enemy:<kind>) */
       evoAura(g, u, p, h, t);
       const ec = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? 1 + .06 * Math.sin(t * .05) : 1, ex = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? Math.sin(t * .09) * 3 : 0;
       g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0 && !isLoot) g.globalAlpha *= .55;
