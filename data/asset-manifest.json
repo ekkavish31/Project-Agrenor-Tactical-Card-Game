@@ -159693,6 +159693,734 @@
    ],
    "subject": "vinehollow unique settlement",
    "usedIn": "js/world-map.js landmarks and town panel"
+  },
+  {
+   "id": "portrait-boss-treant-neutral",
+   "file": "assets/portraits/boss-treant-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "treant boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-treant-happy",
+   "file": "assets/portraits/boss-treant-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "treant boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-treant-angry",
+   "file": "assets/portraits/boss-treant-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "treant boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-treant-worry",
+   "file": "assets/portraits/boss-treant-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "treant boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-crystalKing-neutral",
+   "file": "assets/portraits/boss-crystalKing-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "crystalKing boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-crystalKing-happy",
+   "file": "assets/portraits/boss-crystalKing-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "crystalKing boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-crystalKing-angry",
+   "file": "assets/portraits/boss-crystalKing-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "crystalKing boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-crystalKing-worry",
+   "file": "assets/portraits/boss-crystalKing-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "crystalKing boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-bogHydra-neutral",
+   "file": "assets/portraits/boss-bogHydra-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "bogHydra boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-bogHydra-happy",
+   "file": "assets/portraits/boss-bogHydra-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "bogHydra boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-bogHydra-angry",
+   "file": "assets/portraits/boss-bogHydra-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "bogHydra boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-bogHydra-worry",
+   "file": "assets/portraits/boss-bogHydra-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "bogHydra boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-coralGolem-neutral",
+   "file": "assets/portraits/boss-coralGolem-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "coralGolem boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-coralGolem-happy",
+   "file": "assets/portraits/boss-coralGolem-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "coralGolem boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-coralGolem-angry",
+   "file": "assets/portraits/boss-coralGolem-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "coralGolem boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-coralGolem-worry",
+   "file": "assets/portraits/boss-coralGolem-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "coralGolem boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-frostQueen-neutral",
+   "file": "assets/portraits/boss-frostQueen-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "frostQueen boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-frostQueen-happy",
+   "file": "assets/portraits/boss-frostQueen-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "frostQueen boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-frostQueen-angry",
+   "file": "assets/portraits/boss-frostQueen-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "frostQueen boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-frostQueen-worry",
+   "file": "assets/portraits/boss-frostQueen-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "frostQueen boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-pumpkinBoss-neutral",
+   "file": "assets/portraits/boss-pumpkinBoss-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "pumpkinBoss boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-pumpkinBoss-happy",
+   "file": "assets/portraits/boss-pumpkinBoss-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "pumpkinBoss boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-pumpkinBoss-angry",
+   "file": "assets/portraits/boss-pumpkinBoss-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "pumpkinBoss boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-pumpkinBoss-worry",
+   "file": "assets/portraits/boss-pumpkinBoss-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "pumpkinBoss boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-voidKing-neutral",
+   "file": "assets/portraits/boss-voidKing-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "voidKing boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-voidKing-happy",
+   "file": "assets/portraits/boss-voidKing-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "voidKing boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-voidKing-angry",
+   "file": "assets/portraits/boss-voidKing-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "voidKing boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-voidKing-worry",
+   "file": "assets/portraits/boss-voidKing-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "voidKing boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-hunger-neutral",
+   "file": "assets/portraits/boss-hunger-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "hunger boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-hunger-happy",
+   "file": "assets/portraits/boss-hunger-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "hunger boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-hunger-angry",
+   "file": "assets/portraits/boss-hunger-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "hunger boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-hunger-worry",
+   "file": "assets/portraits/boss-hunger-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "hunger boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-byrexael-neutral",
+   "file": "assets/portraits/boss-byrexael-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "byrexael boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-byrexael-happy",
+   "file": "assets/portraits/boss-byrexael-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "byrexael boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-byrexael-angry",
+   "file": "assets/portraits/boss-byrexael-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "byrexael boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-byrexael-worry",
+   "file": "assets/portraits/boss-byrexael-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "byrexael boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-wolf-neutral",
+   "file": "assets/portraits/boss-wolf-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "wolf boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-wolf-happy",
+   "file": "assets/portraits/boss-wolf-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "wolf boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-wolf-angry",
+   "file": "assets/portraits/boss-wolf-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "wolf boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-wolf-worry",
+   "file": "assets/portraits/boss-wolf-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "wolf boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-golem-neutral",
+   "file": "assets/portraits/boss-golem-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "golem boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-golem-happy",
+   "file": "assets/portraits/boss-golem-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "golem boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-golem-angry",
+   "file": "assets/portraits/boss-golem-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "golem boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-golem-worry",
+   "file": "assets/portraits/boss-golem-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "golem boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-slime-neutral",
+   "file": "assets/portraits/boss-slime-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "slime boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-slime-happy",
+   "file": "assets/portraits/boss-slime-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "slime boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-slime-angry",
+   "file": "assets/portraits/boss-slime-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "slime boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-slime-worry",
+   "file": "assets/portraits/boss-slime-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "slime boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-bandit-neutral",
+   "file": "assets/portraits/boss-bandit-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "bandit boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-bandit-happy",
+   "file": "assets/portraits/boss-bandit-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "bandit boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-bandit-angry",
+   "file": "assets/portraits/boss-bandit-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "bandit boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-bandit-worry",
+   "file": "assets/portraits/boss-bandit-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "bandit boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-kobold-neutral",
+   "file": "assets/portraits/boss-kobold-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "kobold boss dialogue portrait — neutral",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-kobold-happy",
+   "file": "assets/portraits/boss-kobold-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "kobold boss dialogue portrait — happy",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-kobold-angry",
+   "file": "assets/portraits/boss-kobold-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "kobold boss dialogue portrait — angry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
+  },
+  {
+   "id": "portrait-boss-kobold-worry",
+   "file": "assets/portraits/boss-kobold-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    544,
+    768
+   ],
+   "subject": "kobold boss dialogue portrait — worry",
+   "usedIn": "BattleTalk / BattlePortrait / StoryActors"
   }
  ],
  "studioReviews": {

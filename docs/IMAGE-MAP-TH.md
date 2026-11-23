@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6423 ไฟล์ (449.3 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6479 ไฟล์ (457.3 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -16,7 +16,7 @@
 ## จำนวนต่อหมวดหมู่
 | หมวดหมู่ | ไฟล์ | ขนาด | โฟลเดอร์หลัก | ลงทะเบียน slot | ไฟล์ซ้ำ (เนื้อหาเหมือนกัน) |
 |---|---|---|---|---|---|
-| 🗣 ภาพสนทนา (portrait) | 151 | 21.0 MB | `assets/portraits` 148 · `assets/generated-village` 3 | 15 | 4 |
+| 🗣 ภาพสนทนา (portrait) | 207 | 29.0 MB | `assets/portraits` 204 · `assets/generated-village` 3 | 71 | 4 |
 | 🧑‍🎤 ตัวเอก | 2917 | 104.9 MB | `assets/tactics` 2890 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2833 | 519 |
 | 👥 ชาวบ้าน / NPC | 499 | 16.5 MB | `assets/village-town` 498 · `assets/generated-village` 1 | 387 | 23 |
 | 🤝 เพื่อนร่วมทีม | 360 | 13.0 MB | `assets/tactics` 196 · `assets/village-town` 160 · `assets/allies` 4 | 360 | 16 |
@@ -38,7 +38,7 @@
 ## หมวดย่อยในแต่ละหมวด
 
 ### 🗣 ภาพสนทนา (portrait)
-- ตัวเอก · ชาวบ้าน — 104
+- ตัวเอก · ชาวบ้าน — 160
 - ตัวละครเนื้อเรื่อง (4 อารมณ์) — 44
 - ภาพสนทนาหมู่บ้าน — 3
 
