@@ -320,6 +320,12 @@
     label(g, (S.done[d.id] ? '✔ ' : '') + d.name, p.x, p.y + 30, S.done[d.id] ? '#bfffd0' : '#ffe2a8');
   }
   function label(ctx, txt, x, y, col = '#f6e7c1', size = 13) { ctx.save(); ctx.font = `700 ${size}px VillageThai,system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(15,10,5,.85)'; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y); ctx.restore() }
+  /* v98.1019 · painted markers shared by world and area exploration. */
+  const EXPLORE_ICONS = Object.fromEntries(['foe', 'chest', 'lore', 'spring', 'lair', 'prize'].map(k => { const im = new Image(); im.src = 'assets/icons/exploration/' + k + '.webp'; return [k, im] }));
+  function drawExploreIcon(ctx, kind, x, y, size) {
+    const im = EXPLORE_ICONS[kind]; if (!im || !im.complete || !im.naturalWidth) return false;
+    ctx.drawImage(im, x - size / 2, y - size / 2, size, size); return true;
+  }
   const ENC_ICON = { hamlet: '🏘', outpost: '🚩', tower: '🗼', ruins: '🏛', chest: '🎁', camp: '⛺', shrine: '✦', merchant: '💰', oldmap: '📜' };
   /* v97.90 · W2 travellers on the road: villagers who come from another town (VillageLife P.from + P.visit) walk the real road
      the day before they arrive (town → Fernvale) and the day after they leave (Fernvale → town), between 7:00 and 19:00.
@@ -360,6 +366,7 @@
       { const nm = { hamlet: 'village', tower: 'watchtower', outpost: 'watchtower', ruins: 'ruins', camp: 'frost-camp', shrine: 'standing-stones' }[h.enc.type], im = nm && LMIMG[nm], m = nm && LM[nm];
         if (im && im.complete && im.naturalWidth) { const pul = (Math.sin(now * .003 + h.c * 2) + 1) / 2, kk = HW * 1.25 / m[4], gr = g.createRadialGradient(p.x, p.y, 4, p.x, p.y, HW * .75); g.save(); g.globalCompositeOperation = 'lighter'; gr.addColorStop(0, 'rgba(255,220,140,0)'); gr.addColorStop(.7, `rgba(255,220,140,${.12 + pul * .1})`); gr.addColorStop(1, 'rgba(255,220,140,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, HW * .75, 0, 7); g.fill(); g.restore();
           g.save(); g.translate(p.x, p.y + bob * .4); g.scale(kk, kk); g.drawImage(im, -m[2], -m[3]); g.restore(); if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue } }
+      if (h.enc.type === 'chest' && drawExploreIcon(g, 'chest', x, y, 34)) { if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue; }
       const painted = { chest: 'bin', oldmap: 'oldmap', merchant: 'm2' }[h.enc.type];
       if (painted && window.VillagePaintedArt?.draw(g, painted, x, y + 12, 28, h.enc.type === 'merchant' ? { height: 40 } : {})) { if (lmk && visible.has(k)) label(g, h.enc.name, x, y + 24, '#ffe6b0', 11); continue; }
       g.save(); g.fillStyle = lmk ? 'rgba(70,50,20,.85)' : 'rgba(25,30,40,.75)'; g.beginPath(); g.arc(x, y, lmk ? 14 : 12, 0, 7); g.fill(); g.strokeStyle = lmk ? '#ffd27a' : '#e8d8a8'; g.lineWidth = 1.5; g.stroke();
@@ -949,7 +956,7 @@
           gA.restore();
           if (!seen.has(KK(c, r))) { gA.save(); gA.translate(p.x, p.y); gA.scale(sc, sc); hexPath(gA, 0, 0, RAD + 1); gA.fillStyle = 'rgba(5,6,10,.88)'; gA.fill(); gA.restore() }
         }
-        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px AgThai,system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
+        for (const k in spots) { if (!seen.has(k)) continue; const s = spots[k], p = ctr(s.c, s.r), bob = Math.sin(now * .004 + s.c) * 3 * sc; gA.save(); gA.fillStyle = s.kind === 'foe' || s.kind === 'lair' ? 'rgba(150,30,25,.85)' : 'rgba(25,30,40,.75)'; gA.beginPath(); gA.arc(p.x, p.y - 8 * sc + bob, 15 * sc, 0, 7); gA.fill(); gA.font = `${18 * sc}px AgThai,system-ui,"Segoe UI Emoji","Apple Color Emoji",sans-serif`; gA.textAlign = 'center'; gA.textBaseline = 'middle'; if (!drawExploreIcon(gA, s.kind, p.x, p.y - 7 * sc + bob, 34 * sc)) gA.fillText(ICON[s.kind], p.x, p.y - 7 * sc + bob); gA.restore() }
         const pe = ctr(entry.c, entry.r); gA.save(); gA.font = `700 ${12 * sc}px VillageThai,system-ui`; gA.fillStyle = '#e8d8a8'; gA.textAlign = 'center'; gA.fillText('ทางเข้า', pe.x, pe.y + 26 * sc); gA.restore();
         const pp = ctr(pos.c, pos.r), im = heroImgs[Math.floor(now / 160) % 4]; if (im.complete && im.naturalWidth) { const h = 70 * sc, w = h * im.naturalWidth / im.naturalHeight; gA.drawImage(im, pp.x - w / 2, pp.y - h + 10 * sc, w, h) } else { gA.fillStyle = '#ffd36a'; gA.beginPath(); gA.arc(pp.x, pp.y - 10, 8, 0, 7); gA.fill() }
         requestAnimationFrame(frame);
