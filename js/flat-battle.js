@@ -644,6 +644,7 @@
   /* ---------- v98.496 · bag cards in battle ("การ์ดกระเป๋า": the adventurers' guild enchants a bag so each consumable becomes a card — docs/lore) ----------
      st.bag = { key: count } handed in by the page · st.itemHand = up to 3 keys drawn from it · using one costs a crystal (one item per turn) · st.itemsUsed = what to take out of the real bag afterwards */
   const ITEM = {
+    mayBread: { heal: 10, restore: 20, fx: 'heal' },   /* v98.1022 · ขนมปังป้าเมย์ (4 ก้อนตอนเริ่มเกม) = กฎเดียวกับขนมปังเดินทาง */
     potion: { heal: 25, fx: 'heal' }, bigPotion: { heal: 50, fx: 'heal' }, elixir: { heal: 80, restore: 50, fx: 'heal' }, tonic: { restore: 40, fx: 'heal' }, bread: { heal: 10, restore: 20, fx: 'heal' },
     mushroomSoup: { heal: 20, restore: 30, fx: 'heal' }, energyDrink: { restore: 70, fx: 'heal' }, bandage: { heal: 16, cure: 1, fx: 'heal' }, antidote: { heal: 6, cure: 1, fx: 'heal' },
     stoneSkin: { guard: 30, fx: 'shield' }, guardCharm: { guard: 20, fx: 'shield' }, smokeBomb: { evade: 1, fx: 'wind' }, whetstone: { ambush: 1.6, fx: 'arcane' },
@@ -651,7 +652,7 @@
     holyWater: { el: 'light', range: 3, dmg: 24, fx: 'arcane' }, poisonDart: { el: 'nature', range: 5, dmg: 14, fx: 'spear', status: ['poison', .85] }, oilFlask: { el: 'fire', range: 3, dmg: 12, fx: 'fire', aoe: 1, status: ['burn', .8] },
     flashPowder: { el: 'light', range: 3, dmg: 6, fx: 'arcane', status: ['freeze', 1] }
   };
-  const ITEM_NAME = { potion: 'ยาฟื้นฟู', bigPotion: 'ยาฟื้นฟูชั้นดี', elixir: 'น้ำอมฤต', tonic: 'ชาเรี่ยวแรง', bread: 'ขนมปังเดินทาง', mushroomSoup: 'ซุปเห็ดอุ่น ๆ', energyDrink: 'น้ำผึ้งป่าเข้มข้น', bandage: 'ผ้าพันแผลสะอาด', antidote: 'ยาถอนพิษ', stoneSkin: 'ยาผิวศิลา', guardCharm: 'เครื่องรางคุ้มกัน', smokeBomb: 'ระเบิดควัน', whetstone: 'หินลับมีด', firebomb: 'ระเบิดไฟ', iceBomb: 'ระเบิดน้ำแข็ง', thunderJar: 'โถสายฟ้า', holyWater: 'น้ำมนต์', poisonDart: 'ลูกดอกพิษ', oilFlask: 'ขวดน้ำมันไฟ', flashPowder: 'ผงแสงวาบ' };
+  const ITEM_NAME = { mayBread: 'ขนมปังป้าเมย์', potion: 'ยาฟื้นฟู', bigPotion: 'ยาฟื้นฟูชั้นดี', elixir: 'น้ำอมฤต', tonic: 'ชาเรี่ยวแรง', bread: 'ขนมปังเดินทาง', mushroomSoup: 'ซุปเห็ดอุ่น ๆ', energyDrink: 'น้ำผึ้งป่าเข้มข้น', bandage: 'ผ้าพันแผลสะอาด', antidote: 'ยาถอนพิษ', stoneSkin: 'ยาผิวศิลา', guardCharm: 'เครื่องรางคุ้มกัน', smokeBomb: 'ระเบิดควัน', whetstone: 'หินลับมีด', firebomb: 'ระเบิดไฟ', iceBomb: 'ระเบิดน้ำแข็ง', thunderJar: 'โถสายฟ้า', holyWater: 'น้ำมนต์', poisonDart: 'ลูกดอกพิษ', oilFlask: 'ขวดน้ำมันไฟ', flashPowder: 'ผงแสงวาบ' };
   const itemRule = k => ITEM[k] || null;
   function itemDraw(st) {
     const bag = st.bag || {}, held = {}; for (const k of st.itemHand || []) held[k] = (held[k] || 0) + 1;

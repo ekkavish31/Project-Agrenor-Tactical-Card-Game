@@ -168,7 +168,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
  talkStep({id:'guard',chapter:'วันที่ 2 · ทำของ และหาคน',outro:'guardTalk',reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'push',n:1}],{kicker:'คำแนะนำของยามดอร์ก',title:'ผลัก',text:'ผลักศัตรูถอยหนึ่งช่อง · ผลักตกที่สูงเสีย HP เพิ่ม'}),title:'ยามประตูหมู่บ้าน',talk:'dork',goal:'ไปคุยกับยามดอร์กก่อนออกนอกหมู่บ้าน',hint:'ยามดอร์กเฝ้าอยู่ที่ลานกลางหมู่บ้านทั้งวัน · '+HINT_WALK}),
  {id:'cave',tag:'real',outro:'crystal',title:'ผลึกในถ้ำเหมืองเก่า',goal:'เดินออกทางออกหมู่บ้าน ไปทางเหมืองเก่า แล้วชนะการต่อสู้ 1 ครั้ง',hint:'บนแผนที่โลกเดินทีละช่อง · ระหว่างทางมีศัตรูดักอยู่ · สนามรบมีเนินและหน้าผา ยืนที่สูงตีแรงกว่า',
   exit:true,begin:d=>{d.base=V().battles||0},check:d=>(V().battles||0)>d.base,acts:[guideBtn],
-  reward:()=>{V().story.crystals=(V().story.crystals||0)+3;return root.StarterKit?.unlock?.([{group:'combat',id:'skill',n:2}],{kicker:'บทเรียนจากถ้ำ',title:'ท่าโจมตีหนัก',text:'ตีแรงกว่าปกติ แต่ใช้แรงมากขึ้น · เพิ่มเข้าสำรับแล้ว'})}},
+  reward:()=>{crystalBag();const gb=V().bag;gb.glowCrystal=(gb.glowCrystal||0)+3;return root.StarterKit?.unlock?.([{group:'combat',id:'skill',n:2}],{kicker:'บทเรียนจากถ้ำ',title:'ท่าโจมตีหนัก',text:'ตีแรงกว่าปกติ แต่ใช้แรงมากขึ้น · เพิ่มเข้าสำรับแล้ว'})}},
  {id:'caveBack',tag:'real',title:'กลับหมู่บ้าน',goal:'เดินทางกลับเฟิร์นเวล',hint:'บนแผนที่โลก กด "กลับหมู่บ้าน" เดินย้อนทางที่รู้จัก หรือเดินกลับเองทีละช่อง',
   check:()=>!onWorld(),acts:[]},
  talkStep({id:'gus',outro:'gusLantern',title:'ช่างตีเหล็กกัส',talk:'gus',goal:'เอาผลึกไปให้กัสที่โรงตีเหล็กดู',hint:'กัสอยู่ที่โรงตีเหล็ก 6 โมงเช้าถึง 1 ทุ่ม · '+HINT_WALK}),
@@ -226,11 +226,13 @@ async function questEvent(ev){const step=cur();if(!step||!ev)return null;const d
  return null}
 function talked(id){const step=cur();if(!step)return false;const d=dataOf(step);if(step.talk===id&&!d.talked){d.talked=true;doSave();setTimeout(()=>tick().catch(()=>{}),50);return true}return false}
 /* lanterns are made at the forge's anvil like any other station work (village-place.html joins actions with `with` to that station) */
-function lanternAction(){const step=cur();if(step?.id!=='lanterns'||V()?.location!=='forge')return null;const m=mats(),c=V().story.crystals||0,d=dataOf(step);
+/* v98.1022 · the glowing crystals are a card in the book (bag.glowCrystal); an old save's counter (story.crystals) is moved into the bag once */
+function crystalBag(){const v=V(),b=v.bag||(v.bag={});if(v.story&&v.story.crystals>0){b.glowCrystal=(b.glowCrystal||0)+v.story.crystals;v.story.crystals=0}return b}
+function lanternAction(){const step=cur();if(step?.id!=='lanterns'||V()?.location!=='forge')return null;const m=mats(),c=crystalBag().glowCrystal||0,d=dataOf(step);
  const reason=(m.wood||0)<1||(m.coal||0)<1?'ต้องมีไม้ 1 และถ่าน 1 · ซื้อที่ตลาด':c<1?'ผลึกเรืองแสงหมด':(d.n||0)>=3?'ครบ 3 ดวงแล้ว':(typeof activityReason==='function'?activityReason(4,20,2):'');
  return {id:'lantern',name:'ทำโคมไฟเทศกาล',image:'action-recipes',kind:'story',value:'lantern',cost:'ϟ 4 · ◷ 20 · ไม้ 1 ถ่าน 1 ผลึก 1',effect:'โคม '+(d.n||0)+'/3 · ผลึกเหลือ '+c,reason,with:['forge','smelt','water']}}
 function makeLantern(){const a=lanternAction();if(!a)return;if(a.reason){toast(esc(a.reason));return}const step=cur(),d=dataOf(step),m=mats();
- const why=spend(4,20,2);if(why){toast(esc(why));return}m.wood--;m.coal--;V().story.crystals--;d.n=(d.n||0)+1;doSave();doRender();toast('🏮 โคมดวงที่ '+d.n+' เสร็จแล้ว','good')}
+ const why=spend(4,20,2);if(why){toast(esc(why));return}m.wood--;m.coal--;{const cb=crystalBag();cb.glowCrystal=(cb.glowCrystal||1)-1;if(cb.glowCrystal<=0)delete cb.glowCrystal}d.n=(d.n||0)+1;doSave();doRender();toast('🏮 โคมดวงที่ '+d.n+' เสร็จแล้ว','good')}
 function hookActions(){if(typeof placeActions!=='function'||placeActions.storyHooked)return;const base=placeActions;
  placeActions=function(){const list=base.apply(this,arguments);try{const a=lanternAction();if(a)list.push(a)}catch{}return list};placeActions.storyHooked=true;
  if(typeof runPlaceAction==='function'){const run=runPlaceAction;runPlaceAction=async function(id){if(id==='lantern'){makeLantern();return}return run.apply(this,arguments)}}}
@@ -448,7 +450,7 @@ const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings 
  {face:'think',who:'B',text:'…ทำไมทุกเรื่องวกมาที่ข้าทำของหายตลอดเลย'},
  {face:'happy',who:'S',text:'งั้นกดกากบาทมุมขวาบนปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .cb-close'}];
 let tourBusy=false;
-async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{v.story=v.story||{};if(!v.story.bookGift){v.story.bookGift=true;const b=v.bag||(v.bag={});b.potion=(b.potion||0)+1;b.momWater=(b.momWater||0)+1;doSave()}   /* v98.668 · the ของใช้ page is not empty: 1 potion (+HP) and 1 water from mother (+stamina) */
+async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{v.story=v.story||{};if(!v.story.bookGift){v.story.bookGift=true;const b=v.bag||(v.bag={});b.potion=(b.potion||0)+1;b.momWater=(b.momWater||0)+1;b.mayBread=(b.mayBread||0)+4;doSave()}   /* v98.668 · the ของใช้ page is not empty: 1 potion (+HP) and 1 water from mother (+stamina) · v98.1022 · + the 4 loaves of Aunt May's bread that mother counted ("แม่นับขนมปังไว้แล้ว สี่ก้อน") */
   const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
 async function bookFirst(){return false}   /* v98.613 · the book lesson now plays at the end of the opening scene */
 async function bookFirstOld(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
