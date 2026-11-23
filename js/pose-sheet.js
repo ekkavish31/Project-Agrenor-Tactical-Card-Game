@@ -556,6 +556,8 @@ body.sheet-mode #filters,body.sheet-mode #grid{display:none!important}body.sheet
     $('psShowPts').onclick = () => { SHOW.pts = !SHOW.pts; saveShow(); draw() }; $('psShowZone').onclick = () => { SHOW.zone = !SHOW.zone; saveShow(); draw() }; $('psShowVals').onclick = () => { SHOW.vals = !SHOW.vals; saveShow(); draw() };
     $('psFull').onclick = () => { const e = document.fullscreenElement; if (e === ps) document.exitFullscreen?.(); else (ps.requestFullscreen?.() || Promise.reject()).catch(() => msg('เปิดเต็มจอไม่ได้ในหน้านี้ — ลองกด F11 ของเบราว์เซอร์')) };
     if (!ps._rz) { ps._rz = 1; addEventListener('resize', () => { try { updNext() } catch (e) { } }) }
+    /* v98.965 · the grid's max height is measured from the area you can see — but folding / unfolding / dragging the height of the ⚖ Scale Lineup bar changes that area WITHOUT a window resize, so the old (small) height stayed and the freed space was left empty (and the sheet cut short). Watch the grid area and the dock themselves. */
+    if (!ps._ro && root.ResizeObserver) { ps._ro = 1; let t = 0; const ro = new ResizeObserver(() => { clearTimeout(t); t = setTimeout(() => { try { updNext() } catch (e) { } }, 60) }); for (const n of [$('gridWrap'), $('lineupDock')]) if (n) ro.observe(n) }
     if (!ps._fs) { ps._fs = 1; document.addEventListener('fullscreenchange', () => { const b = $('psFull'); if (b) b.textContent = document.fullscreenElement === ps ? '⛶ ออกจากเต็มจอ' : '⛶ เต็มจอ'; updNext() }) }
     $('psHand').onclick = () => { tool = tool === 'hand' ? 'mark' : 'hand'; draw() };
     $('psDset').onclick = () => { tool = tool === 'dset' ? 'mark' : 'dset'; draw() };
