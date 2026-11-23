@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6416 ไฟล์ (447.2 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6423 ไฟล์ (449.3 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -23,10 +23,10 @@
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 622 | 30.6 MB | `assets/tactics` 614 · `assets/objects` 7 · `assets/generated-village` 1 | 589 | 33 |
 | 🃏 การ์ด | 168 | 44.0 MB | `assets/cards` 166 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 156 | 16 |
-| 🎛 UI · ไอคอน · เมนู | 249 | 9.0 MB | `assets/ui` 120 · `assets/icons` 88 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 96 | 11 |
+| 🎛 UI · ไอคอน · เมนู | 251 | 9.1 MB | `assets/ui` 120 · `assets/icons` 90 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 96 | 11 |
 | 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 144 | 20.8 MB | `assets/village-town` 129 · `assets/objects` 15 | 12 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
-| ⛰ ภูมิประเทศ · แผนที่โลก | 108 | 7.0 MB | `assets/terrain` 77 · `assets/world` 27 · `assets/v03` 4 | 4 | 2 |
+| ⛰ ภูมิประเทศ · แผนที่โลก | 113 | 9.0 MB | `assets/terrain` 77 · `assets/world` 32 · `assets/v03` 4 | 9 | 2 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
 | ✨ เอฟเฟกต์ | 68 | 4.0 MB | `assets/fx` 68 | 0 | 0 |
 | 🎒 ไอเทม · อาวุธ · พืชผล | 61 | 5.3 MB | `assets/crops` 36 · `assets/weapons` 7 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 25 | 1 |
@@ -87,7 +87,7 @@
 
 ### 🎛 UI · ไอคอน · เมนู
 - UI — 120
-- ไอคอน — 88
+- ไอคอน — 90
 - เคอร์เซอร์เกม — 33
 - UI / เคอร์เซอร์ — 8
 
@@ -104,7 +104,7 @@
 
 ### ⛰ ภูมิประเทศ · แผนที่โลก
 - ภูมิประเทศ (สนามรบ) — 77
-- วัตถุบนแผนที่โลก — 27
+- วัตถุบนแผนที่โลก — 32
 - พื้นหลัง · HUD เก่า — 4
 
 ### 🌲 ฉากสนามรบ

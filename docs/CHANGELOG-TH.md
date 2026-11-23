@@ -7638,3 +7638,8 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v98.1019 · 23 พ.ย. 2026
 - สร้างภาพไอคอนสำรวจ 6 แบบด้วย built-in image_gen: crossed swords, treasure chest, ancient stone tablet, healing spring, monster cave, violet gem reward. Prompt: warm hand-painted JRPG, strong silhouette, transparent, no frame/text
 - เชื่อมภาพในจุดสำรวจและหีบแผนที่โลก ลงทะเบียน manifest; เก็บ glyph สำรองเมื่อภาพยังโหลดไม่เสร็จ
+
+
+## v98.1020 · 23 พ.ย. 2026
+- ภาพเมืองเฉพาะ 5 แห่งตามข้อมูล Settlements และ Canon ที่มีอยู่ ไม่เพิ่มประวัติ/เควสใหม่ เชื่อมทั้ง landmark และ town panel
+- built-in image_gen prompts: warm painterly isometric hex tile; Lakenhold lakeside walled capital; Willowshore willow fishing piers; Deepcairn crystal mining; Thornwatch wooden guild palisade; Vinehollow vineyards hot spring shrine
