@@ -106589,6 +106589,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-mother-sw-stand/20261123-122156.webp",
+     "at": "2026-11-23T05:21:57.019Z",
+     "stamp": "20261123-122156",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
      "file": "assets/_versions/npc-mother-sw-stand/20261123-083837.webp",
      "at": "2026-11-23T01:38:41.801Z",
      "stamp": "20261123-083837",
@@ -106603,7 +106610,7 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261123-083841"
+   "artRevision": "20261123-122157"
   },
   {
    "id": "npc-mother-sw-walk1",
@@ -106655,6 +106662,13 @@
    },
    "history": [
     {
+     "file": "assets/_versions/npc-mother-ne-stand/20261123-122347.webp",
+     "at": "2026-11-23T05:23:47.209Z",
+     "stamp": "20261123-122347",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    },
+    {
      "file": "assets/_versions/npc-mother-ne-stand/20261115-221030.webp",
      "at": "2026-11-15T15:10:30.189Z",
      "stamp": "20261115-221030",
@@ -106662,7 +106676,7 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ],
-   "artRevision": "20261115-221030"
+   "artRevision": "20261123-122348"
   },
   {
    "id": "npc-mother-ne-walk1",
@@ -106698,7 +106712,7 @@
    "id": "npc-mother-se-stand",
    "file": "assets/village-town/npc/mother/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -106711,7 +106725,8 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "artRevision": "20261123-122157"
   },
   {
    "id": "npc-mother-se-walk1",
@@ -106737,7 +106752,7 @@
    "id": "npc-mother-nw-stand",
    "file": "assets/village-town/npc/mother/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -106750,7 +106765,8 @@
     "id": "npc:mother",
     "name": "แม่",
     "group": "npcs"
-   }
+   },
+   "artRevision": "20261123-122347"
   },
   {
    "id": "npc-mother-nw-walk1",
@@ -162853,6 +162869,36 @@
    "frames": {},
    "approvedAt": "2026-11-23T05:12:48.354Z",
    "at": 1795410768410
+  },
+  "[\"npc-may-se-stand\",\"SE\",true,[[\"npc-may-se-stand\",\"assets/village-town/npc/may/se-stand.webp\",0,\"mwst8piq\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795410814726,
+   "approvedAt": "2026-11-23T05:13:34.726Z"
+  },
+  "[\"npc-mother-sw-stand\",\"SW\",true,[[\"npc-mother-sw-stand\",\"assets/village-town/npc/mother/sw-stand.webp\",0,\"20261123-122157\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:22:04.426Z",
+   "at": 1795411324478
+  },
+  "[\"npc-mother-se-stand\",\"SE\",true,[[\"npc-mother-se-stand\",\"assets/village-town/npc/mother/se-stand.webp\",0,\"20261123-122157\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:22:04.426Z",
+   "at": 1795411324478
+  },
+  "[\"npc-mother-ne-stand\",\"NE\",true,[[\"npc-mother-ne-stand\",\"assets/village-town/npc/mother/ne-stand.webp\",0,\"20261123-122348\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:23:53.459Z",
+   "at": 1795411433550
+  },
+  "[\"npc-mother-nw-stand\",\"NW\",true,[[\"npc-mother-nw-stand\",\"assets/village-town/npc/mother/nw-stand.webp\",0,\"20261123-122347\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T05:23:53.459Z",
+   "at": 1795411433550
   }
  },
  "studioClipHistory": {
