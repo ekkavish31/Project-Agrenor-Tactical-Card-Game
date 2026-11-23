@@ -197,7 +197,9 @@ async function cartState(){let meta=await idbGet('cart-meta')||{log:[],keys:[]},
 async function cartSummary(){const s=await cartState(),all=new Map([...s.staged,...s.files]);let bytes=0;for(const b of all.values())bytes+=b?(b.size||0):0;const n=all.size+s.meta.keys.length+(s.layout?1:0);return{...s,all,n,bytes,big:all.size>=BIG.files||bytes>=BIG.bytes}}
 function cartNotify(){try{cartBc&&cartBc.postMessage('c')}catch(e){}try{cartUi()}catch(e){}}
 async function cartStage(message,build,onStatus){const c=config(),say=t=>{try{onStatus(t)}catch(e){}};say('🛒 กำลังเตรียมไฟล์ใส่ Cart…');
- const ref=await json('/git/ref/heads/'+c.branch),head=ref.object.sha,files=await build({sha:head,read:p=>readText(p,head)});
+ const ref=await json('/git/ref/heads/'+c.branch),head=ref.object.sha,inCart=new Map(await idbGet('cart-files')||[]);
+ /* v98.991 · a second Cart of the SAME data file must build on the first one. The Cart keeps ONE copy per path, and build() used to read the file from GitHub's main only — so the second Cart (e.g. the size of the lower row) held "main + its own change" and replaced the first (the upper row's size) in the cart, in this browser's data and in the pushed file. Text files already in the cart are read from the cart. */
+ const files=await build({sha:head,read:async p=>{const b=inCart.get(p);if(b&&/\.(js|json|md|txt|csv|html|css)$/i.test(p)){try{return await b.text()}catch(e){}}return readText(p,head)}});
  if(!files||!files.length){say('ไม่มีอะไรเปลี่ยน');return null}
  let webS={};try{webS=parseSettings(await readText('js/game-settings.js',head))}catch(e){}const us=unsnapshot(files,webS),sf=us.files;
  if(sf.length)await cartFiles(sf);await cartLog(message,sf.map(f=>f.path),us.keys);BUILD.set(message+'#'+Date.now(),{fn:build});
@@ -211,7 +213,9 @@ async function cartPush(){const T0=Date.now(),B0=new Set(BUILD.keys()),s=await c
    const MM=window.ManifestMerge||(()=>{try{return window.top.ManifestMerge}catch(e){return null}})();
    if(MM&&head.read&&st.some(([p])=>/asset-manifest\.(json|js)$/.test(p))){try{const tx=await head.read('data/asset-manifest.json'),base=await idbGet('repo-staged-base');if(tx){const rb=await MM.rebase(st,tx,base&&base.text);if(rb.changed)st=rb.files}}catch(e){console.warn('cart manifest merge',e)}}
    for(const[p,b]of st)m.set(p,b);for(const[p,b]of s.files)m.set(p,b);
-   for(const b of BUILD.values()){try{for(const f of await b.fn(head)||[])m.set(f.path,f.remove?null:f.content)}catch(e){console.warn('cart: re-run with newest main failed, using the stored copy',e)}}
+   /* v98.991 · re-run every Cart's build against the NEWEST main, each one reading what the earlier builds of this push produced (so two Carts of one data file add up instead of the last replacing the rest) */
+   const built=new Map(),hd={...head,read:async p=>built.has(p)?built.get(p):head.read(p)};
+   for(const b of BUILD.values()){try{for(const f of await b.fn(hd)||[]){m.set(f.path,f.remove?null:f.content);if(!f.remove&&typeof f.content==='string')built.set(f.path,f.content)}}catch(e){console.warn('cart: re-run with newest main failed, using the stored copy',e)}}
    const files=[];for(const[p,b]of m){if(b==null){files.push({path:p,remove:true});continue}files.push({path:p,content:b instanceof Blob&&/\.(js|json|html|css|md|txt|csv)$/i.test(p)?await b.text():b})}
    if(s.layout&&!files.some(f=>f.path==='js/village-layout-v67.js')){try{const v=JSON.parse(localStorage.getItem(ES().LAYOUT));files.push({path:'js/village-layout-v67.js',content:'// Village default layout — saved from the in-game editor '+new Date().toISOString()+'.\nwindow.VillageDefaultLayout='+JSON.stringify(v,null,2)+';\n'})}catch(e){console.warn('cart: village layout',e)}}
    if(s.meta.keys.length){const cur=parseSettings(await head.read('js/game-settings.js'));for(const k of s.meta.keys){const v=localStorage.getItem(k);if(v!==null)cur[k]=v}const sf={path:'js/game-settings.js',content:settingsFile(cur)},i=files.findIndex(f=>f.path==='js/game-settings.js');if(i>=0)files[i]=sf;else files.push(sf)}
