@@ -9,7 +9,9 @@
   const staged = new Map();           // path -> Blob (write) | null (delete)
   let tree = null, ready = null;      // tree: Set of every file path in the repo
   const listeners = [];
-  const notify = () => listeners.forEach(f => { try { f(staged.size) } catch (e) {} });
+  /* v98.986 · the local safety copies (assets/_versions/…) never go to GitHub: the "⬆ Push ที่แก้ (N)" count leaves them out */
+  const shown = () => { let n = 0; for (const p of staged.keys()) if (!/^assets\/_versions\//.test(p)) n++; return n };
+  const notify = () => listeners.forEach(f => { try { f(shown()) } catch (e) {} });
   const rel = p => p.split('/').map(encodeURIComponent).join('/');
   const raw = p => 'https://raw.githubusercontent.com/' + REPO + '/main/' + rel(p);
   const nf = n => Object.assign(new DOMException('not found: ' + n, 'NotFoundError'));
