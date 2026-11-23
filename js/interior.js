@@ -568,7 +568,7 @@
   function questNpc(id) { const n = performance.now(); if (n > qAt) { qAt = n + 500; try { qT = parent !== window ? parent.Story?.questTargets?.() : null } catch (e) { qT = null } } return !!qT?.npc?.includes(id) }
   function drawPerson(a, t) {
     const p = P(a.vu, a.vv); g.save(); g.globalAlpha = Math.max(0, Math.min(1, a.fade));
-    VillagerDraw(g, a.p.look || {}, p.x, p.y, t, { walking: a.walking, face: a.face, phase: a.phase, act: a.act, scale: CharSize.INTERIOR_NPC_SCALE * IK() * (window.CharScaleAdjust?.factor('village', a.id) || 1) });   /* v98.152 · the room's ONE multiplier × ⚖ Scale Lineup */
+    VillagerDraw(g, a.p.look || {}, p.x, p.y, t, { walking: a.walking, face: a.face, phase: a.phase, act: a.act, poseAdj: true, scale: CharSize.INTERIOR_NPC_SCALE * IK() * (window.CharScaleAdjust?.factor('village', a.id) || 1) });   /* v98.152 · the room's ONE multiplier × ⚖ Scale Lineup */
     if (a.p.recruit && !L.inParty(S, a.id)) { g.font = '700 15px AgThai,system-ui'; g.textAlign = 'center'; g.fillStyle = '#ffd25a'; g.strokeStyle = '#2a1a0a'; g.lineWidth = 3; const y = p.y - 98 + Math.sin(t * .004) * 3; g.strokeText('★', p.x, y); g.fillText('★', p.x, y) }
     if (questNpc(a.id)) { const y = p.y - 122 + Math.sin(t * .006) * 5; g.shadowColor = 'rgba(255,200,60,.9)'; g.shadowBlur = 14; g.beginPath(); g.moveTo(p.x, y - 18); g.lineTo(p.x + 11, y); g.lineTo(p.x, y + 18); g.lineTo(p.x - 11, y); g.closePath(); g.fillStyle = '#ffd34d'; g.fill(); g.shadowBlur = 0; g.lineWidth = 2; g.strokeStyle = '#5a3a0a'; g.stroke() }
     if (a.p.benched) { g.font = '700 12px AgThai,system-ui'; g.textAlign = 'center'; g.fillStyle = '#9fe0b0'; g.fillText('ทีม', p.x, p.y - 96) }
