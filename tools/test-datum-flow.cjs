@@ -30,6 +30,8 @@ const server = http.createServer((q, r) => { let p = decodeURIComponent(q.url.sp
   const order = await p.evaluate(() => [...document.querySelectorAll('#dtList [data-dk]')].map(b => b.dataset.dk)), mid = order.indexOf('shL');
   assert.ok(mid > 0, 'shL is inside the list');
   await p.click('#dtList [data-dk="shL"]'); await click(.33, .33);  assert.equal(await sel(), order[mid + 1], 'after placing shL (not first) the next point in the list is selected');
+  await p.click('#dtList [data-dk="chin"]'); await click(.5, .27); assert.equal(await sel(), 'crown', 'next is the following point even when it is already set');
+  await p.click('#dtList [data-dk="crown"]'); await click(.5, .09); assert.equal(await sel(), 'shL', 'crown → shL (already set earlier) is still next, never "first unset"');
   await p.click('#dtList [data-dk="' + order[0] + '"]'); await click(.44, .2); assert.equal(await sel(), order[1], 'placing the first point selects the second');
   await b.close(); server.close(); for (const e of errs) console.log('✗ page error: ' + e); if (errs.length) process.exit(1); console.log('✓ datum flow: all points → head line → leg line → thickness (hold to end a line) · specks ignored');
 })().catch(e => { console.log('✗', e.message); process.exit(1) });

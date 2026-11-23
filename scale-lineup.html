@@ -925,10 +925,12 @@ async function openDatum(e) {
       if (gt && !gateDone[dir + gt] && !filled(k) && needLine(gt)) { dirIdx[dir] = i; return 'cut:' + gt }
       if ((!PD.OPTIONAL.includes(k) || k === 'crown') && !filled(k)) { dirIdx[dir] = i; return k } }
     dirIdx[dir] = keys.length; if (fromPlace) for (const lk of ['neck', 'hip']) if (!gateDone[dir + lk] && needLine(lk)) return 'cut:' + lk; return null };   /* v98.463 · order: every datum point → ✂ head line → ✂ leg line → 📏 leg thickness */
-  /* v98.980 · after PLACING a point the walk continues from the point after it in the list (start at the left foot → right foot is next, not the first unset point); when nothing is left after it, earlier unset points come next */
-  const advance = fromPlace => { let jumped = false; if (fromPlace && selK) { const ix = flow().indexOf(selK); if (ix >= 0) { dirIdx[dir] = ix + 1; jumped = true } }
-    let n = nextUnset(fromPlace);
-    if (jumped && (!n || n.startsWith('cut:'))) { const keep = dirIdx[dir]; dirIdx[dir] = 0; const m = nextUnset(false); if (m && !m.startsWith('cut:')) n = m; else dirIdx[dir] = keep } if (n && n.startsWith('cut:')) startCut(n.slice(4)); else { selK = n || selK; if (!n && fromPlace && !widthSkip[dir] && !cur().own.has('wdA')) startWidth() } };
+  /* v98.990 · after PLACING a point the selection simply moves to the NEXT point in the list order — whether or not that point is already set (the user clicks another one in the list if they want a different one).
+     Lines (✂) are not forced in between; only after the last point does the old walk continue (✂ head line → ✂ leg line → 📏 thickness). */
+  const advance = fromPlace => { if (fromPlace && selK) { const keys = flow(), ix = keys.indexOf(selK);
+      if (ix >= 0 && ix + 1 < keys.length) { dirIdx[dir] = ix + 1; selK = keys[ix + 1]; return }
+      if (ix >= 0) dirIdx[dir] = keys.length }
+    const n = nextUnset(fromPlace); if (n && n.startsWith('cut:')) startCut(n.slice(4)); else { selK = n || selK; if (!n && fromPlace && !widthSkip[dir] && !cur().own.has('wdA')) startWidth() } };
   const startWidth = () => { widthMode = true; widthN = 0; selK = null; $d('dtMsg').textContent = '📏 คลิก 2 จุดขวางท่อนขาตรงจุดที่ต้องการวัด (ที่ไม่โดนเสื้อผ้า เช่นกลางแข้ง) — Esc = ข้าม · ลากปลายเส้นเพื่อแก้ได้'; hover = null; draw() };
   const startCut = k => { gateDone[dir + k] = true; cutMode = k; cutDraft = []; selK = null; hover = null; cutUi(); draw(); $d('dtMsg').textContent = '✂ เส้น' + CUT_NAME[k] + ': คลิกเรียงจุด (≥ 2 จุด) แล้ว กดค้างที่จุดสุดท้ายเพื่อจบเส้น — Esc = ข้ามเส้นนี้' };
   async function loadPic() {
