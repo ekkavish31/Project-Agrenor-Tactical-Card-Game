@@ -104385,7 +104385,18 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-may-sw-walk1/mwsrjz0k-2ipt.webp",
+     "at": "2026-11-23T04:26:19.389Z",
+     "stamp": "mwsrjz0k-2ipt",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ],
+   "artRevision": "20261123-112619"
   },
   {
    "id": "npc-may-ne-stand",
@@ -104424,7 +104435,18 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-may-ne-walk1/mwsrkilc-lerp.webp",
+     "at": "2026-11-23T04:26:44.781Z",
+     "stamp": "mwsrkilc-lerp",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ],
+   "artRevision": "20261123-112644"
   },
   {
    "id": "npc-may-se-stand",
@@ -104449,7 +104471,7 @@
    "id": "npc-may-se-walk1",
    "file": "assets/village-town/npc/may/se-walk1.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -104463,7 +104485,9 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "ms": 100,
+   "artRevision": "20261123-112619"
   },
   {
    "id": "npc-may-nw-stand",
@@ -104488,7 +104512,7 @@
    "id": "npc-may-nw-walk1",
    "file": "assets/village-town/npc/may/nw-walk1.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -104502,7 +104526,9 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "ms": 100,
+   "artRevision": "20261123-112645"
   },
   {
    "id": "npc-tom-sw-stand",
@@ -150780,6 +150806,1150 @@
      "note": "ก่อนใส่ภาพใหม่"
     }
    ]
+  },
+  {
+   "id": "npc-may-sw-walk2",
+   "file": "assets/village-town/npc/may/sw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk3",
+   "file": "assets/village-town/npc/may/sw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk4",
+   "file": "assets/village-town/npc/may/sw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk5",
+   "file": "assets/village-town/npc/may/sw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk6",
+   "file": "assets/village-town/npc/may/sw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk7",
+   "file": "assets/village-town/npc/may/sw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk8",
+   "file": "assets/village-town/npc/may/sw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk9",
+   "file": "assets/village-town/npc/may/sw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk10",
+   "file": "assets/village-town/npc/may/sw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk11",
+   "file": "assets/village-town/npc/may/sw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-sw-walk12",
+   "file": "assets/village-town/npc/may/sw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk2",
+   "file": "assets/village-town/npc/may/se-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk3",
+   "file": "assets/village-town/npc/may/se-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk4",
+   "file": "assets/village-town/npc/may/se-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk5",
+   "file": "assets/village-town/npc/may/se-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk6",
+   "file": "assets/village-town/npc/may/se-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk7",
+   "file": "assets/village-town/npc/may/se-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk8",
+   "file": "assets/village-town/npc/may/se-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk9",
+   "file": "assets/village-town/npc/may/se-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk10",
+   "file": "assets/village-town/npc/may/se-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk11",
+   "file": "assets/village-town/npc/may/se-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-se-walk12",
+   "file": "assets/village-town/npc/may/se-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-112619"
+  },
+  {
+   "id": "npc-may-ne-walk2",
+   "file": "assets/village-town/npc/may/ne-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-112644"
+  },
+  {
+   "id": "npc-may-ne-walk3",
+   "file": "assets/village-town/npc/may/ne-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk4",
+   "file": "assets/village-town/npc/may/ne-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk5",
+   "file": "assets/village-town/npc/may/ne-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk6",
+   "file": "assets/village-town/npc/may/ne-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk7",
+   "file": "assets/village-town/npc/may/ne-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk8",
+   "file": "assets/village-town/npc/may/ne-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk9",
+   "file": "assets/village-town/npc/may/ne-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk10",
+   "file": "assets/village-town/npc/may/ne-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk11",
+   "file": "assets/village-town/npc/may/ne-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-ne-walk12",
+   "file": "assets/village-town/npc/may/ne-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-nw-walk2",
+   "file": "assets/village-town/npc/may/nw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261123-112645"
+  },
+  {
+   "id": "npc-may-nw-walk3",
+   "file": "assets/village-town/npc/may/nw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk4",
+   "file": "assets/village-town/npc/may/nw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk5",
+   "file": "assets/village-town/npc/may/nw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk6",
+   "file": "assets/village-town/npc/may/nw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk7",
+   "file": "assets/village-town/npc/may/nw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk8",
+   "file": "assets/village-town/npc/may/nw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk9",
+   "file": "assets/village-town/npc/may/nw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk10",
+   "file": "assets/village-town/npc/may/nw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk11",
+   "file": "assets/village-town/npc/may/nw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261123-112646"
+  },
+  {
+   "id": "npc-may-nw-walk12",
+   "file": "assets/village-town/npc/may/nw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "usedIn": "NPC ป้าเมย์",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261123-112646"
   }
  ],
  "studioReviews": {
