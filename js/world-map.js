@@ -448,7 +448,7 @@
 
   /* ---------- input ---------- */
   let drag = null;
-  cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, cx: cam.x, cy: cam.y, moved: false }; cv.setPointerCapture(e.pointerId) });
+  cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, cx: cam.x, cy: cam.y, moved: false }; try { cv.setPointerCapture(e.pointerId) } catch (_) { }   /* v98.1012 · a stale pointer id threw here and left `drag` set */ });
   cv.addEventListener('pointermove', e => {
     const w = toWorld(e.clientX, e.clientY); hover = pixelToHex(w.x, w.y); tip(e, hover);
     if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.hypot(dx, dy) > 5) drag.moved = true;
