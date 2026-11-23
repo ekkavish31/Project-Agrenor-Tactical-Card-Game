@@ -7643,3 +7643,12 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v98.1020 · 23 พ.ย. 2026
 - ภาพเมืองเฉพาะ 5 แห่งตามข้อมูล Settlements และ Canon ที่มีอยู่ ไม่เพิ่มประวัติ/เควสใหม่ เชื่อมทั้ง landmark และ town panel
 - built-in image_gen prompts: warm painterly isometric hex tile; Lakenhold lakeside walled capital; Willowshore willow fishing piers; Deepcairn crystal mining; Thornwatch wooden guild palisade; Vinehollow vineyards hot spring shrine
+
+## v98.1021 — เนื้อเรื่องตอนเจอบอส: บทสนทนา + อีเวนต์กลางสู้ + ช่อง portrait บอส (ข้อเสนอ ไม่ใช่ Canon)
+- รายละเอียดและข้อจำกัดอยู่ใน `docs/PROPOSAL-BOSS-ENCOUNTERS-TH.md` · ไม่แตะ `CURRENT-ERA-CANON.md` · บอสไม่พูดเป็นคำ ไม่แต่งที่มา
+- **ตรวจก่อนเขียน (แก้ที่เคยบอกผิด):** ฉากตายตัว `hungerPit` `convoyPass` `dragonLair` มี intro/cut/half/win/lose อยู่แล้ว ไม่ใช่แค่ "ตอนตัดปม"
+- **อีเวนต์กลางสู้ใหม่** ใน `js/set-pieces.js` (`talk.rounds`): ก้อนหิวรอบ 4 (คลื่นสัตว์รอยหมอง) · ขบวนนักโทษรอบ 3 (แตรเรียกกำลังเสริม) · ปล่องมังกรรอบ 5 (ตะกอนหลุดจากรอยแตก)
+- **บทบอสแผนที่โลก 6 ตัว** (จ่าฝูงหมาป่า โกเล็มหิน สไลม์ยักษ์ ราชินีน้ำแข็ง หัวหน้าโจร หัวหน้าโคโบลด์) `BattleTalk.bosses` ใน `js/battle-talk.js` · `BOSS_KIND` ใน `js/town-battle.js` เลือกใช้เมื่อสู้ด้วย `title=บอส…` ที่ไม่มีฉาก/`tut`
+- **ผู้พูดแบบบอส** `who:'b:<kind>'`: แผ่นชื่อ+ไอคอน แล้วเปลี่ยนเป็นรูปเมื่อมีไฟล์ `assets/portraits/boss-<kind>-<neutral|angry|worry|happy>.webp` (ตรวจไฟล์อัตโนมัติ ไม่ต้องแก้โค้ด)
+- ทดสอบ: `test-set-pieces` 67 ผ่าน · เปิดสนามบอสหมาป่าใน Playwright เห็นบทเปิด พร้อมแผ่นชื่อ "จ่าฝูงหมาป่า" + ไอคอน 🐺 (ยังไม่มีรูป portrait) · ไม่มี error
+- **ยังไม่ได้ทดสอบ:** บทครึ่งเลือด/ชนะ/แพ้ของบอสแผนที่โลกในการสู้จริง · อีเวนต์ `rounds` ของ 3 ฉากตายตัวในการสู้จริง · การเปลี่ยนเป็น portrait เมื่อไฟล์มา
