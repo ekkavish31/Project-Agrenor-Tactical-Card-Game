@@ -48,7 +48,7 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
     let k = '';
     try {
       if (e && e.nodeType === 1) {
-        if (e.dataset && e.id === 'world' && 'agc' in e.dataset) k = e.dataset.agc && O.hands ? e.dataset.agc : 'arrow';   /* the village map says what is under the pointer (js: village-town.html) */
+        if (e.dataset && 'agc' in e.dataset) k = e.dataset.agc && O.hands ? e.dataset.agc : 'arrow';   /* the map canvas says what is under the pointer (village-town.html · village-place.html · js/interior.js — v98.1021: any element with data-agc, not only #world) */
         else if (e.tagName === 'IFRAME' || e.tagName === 'FRAME') k = 'frame';   /* the page inside draws its own cursor */
         else {
           const c = (getComputedStyle(e).cursor || '').split(',').pop().trim();

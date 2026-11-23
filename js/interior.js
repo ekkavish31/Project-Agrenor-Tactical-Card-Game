@@ -616,7 +616,7 @@
 
   /* ---------- input ---------- */
   function personAt(sx, sy) { let best = null, bd = 1e9; for (const a of people.values()) { if (a.leaving) continue; const p = screen(a.vu, a.vv), dx = sx - p.x, dy = sy - (p.y - 40 * Z); if (Math.abs(dx) < 20 * Z && Math.abs(dy) < 48 * Z) { const d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = a } } } return best }
-  cv.addEventListener('pointermove', e => { const a = personAt(e.clientX, e.clientY); hoverId = a ? a.id : null; cv.style.cursor = a ? 'pointer' : 'default' });
+  cv.addEventListener('pointermove', e => { const a = personAt(e.clientX, e.clientY); hoverId = a ? a.id : null; cv.style.cursor = a ? 'pointer' : 'default'; if (a) cv.dataset.agc = 'talk'; else delete cv.dataset.agc });   /* v98.1021 · speech-bubble cursor over a villager (js/game-cursor.js) */
   cv.addEventListener('pointerup', e => {
     if (modalOpen) return;
     const a = personAt(e.clientX, e.clientY);

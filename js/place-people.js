@@ -107,5 +107,7 @@
       bubble = { a, text: a.p.name + ': ' + String(text).replace(/\{name\}/g, hero), until: performance.now() + 5200 };
     }
   }
-  root.PlacePeople = { objects, click, list: () => people.map(a => a.p.id), state: () => people.map(a => ({ id: a.p.id, u: a.u, v: a.v, steps: a.path?.length || 0 })) };
+  /* v98.1021 · the pointer is over a villager you can talk to (same test as click) — js/game-cursor.js shows the speech-bubble cursor */
+  function hoverAt(wp, project) { for (const a of people) { const pt = project(a.u, a.v); if (Math.abs(wp.x - pt.x) <= 22 && wp.y <= pt.y + 8 && wp.y >= pt.y - 100) return a } return null }
+  root.PlacePeople = { objects, click, hoverAt, list: () => people.map(a => a.p.id), state: () => people.map(a => ({ id: a.p.id, u: a.u, v: a.v, steps: a.path?.length || 0 })) };
 })(globalThis);
