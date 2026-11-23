@@ -37,6 +37,20 @@
     let fired = false; const t = setTimeout(() => { if (fired) return; fired = true; mid?.(); done?.() }, 450);   /* not ready in time: no animation (never a blinking one) */
     (DEC || decodeWarm()).then(() => { if (fired) return; fired = true; clearTimeout(t); play(el, dir, mid, done) });
   }
+  /* v98.1017 · WARM PAINT. `decode()` only decodes the picture at its FULL size (1672×941); the turn paints each frame as a CSS background scaled to the book on screen, which is a different decode / raster — done for the first time at the first flips,
+     one frame late, so the page blinked. Once per book size (after the pictures are decoded) all 20 frames are painted for ~0.4 s at 2 % opacity, so the browser has them at the real size before the first turn. */
+  let WARM_KEY = '';
+  function warmPaint(el) {
+    try {
+      if (!el || reduced()) return; const r = el.getBoundingClientRect(); if (!(r.width > 50)) return;
+      const key = Math.round(r.width) + 'x' + Math.round(r.height) + '@' + (window.devicePixelRatio || 1); if (key === WARM_KEY) return; WARM_KEY = key;
+      (DEC || decodeWarm()).then(() => requestAnimationFrame(() => {
+        if (!el.isConnected) { WARM_KEY = ''; return }
+        const box = document.createElement('div'); box.setAttribute('aria-hidden', 'true'); box.className = 'cb-warm'; box.style.cssText = 'position:absolute;inset:0;overflow:hidden;opacity:.02;pointer-events:none;z-index:0';
+        box.innerHTML = FLIP.map(f => `<i style="position:absolute;inset:0;background:url('${new URL(f, document.baseURI).href}') center/100% 100% no-repeat"></i>`).join(''); el.appendChild(box); setTimeout(() => box.remove(), 400)
+      }))
+    } catch (e) { }
+  }
   function play(el, dir, mid, done) { const fr = dir < 0 ? [...FLIP].reverse() : FLIP; el.classList.add('cb-turning'); let i = 0, midDone = false;
     const step = () => { if (i < fr.length) { el.style.setProperty('--cb-page', `url("${new URL(fr[i], document.baseURI).href}")`); if (i === FLIP_MID && !midDone) { midDone = true; mid?.() } i++; setTimeout(step, FLIP_MS) } else { if (!midDone) mid?.(); el.style.removeProperty('--cb-page'); el.classList.remove('cb-turning'); done?.() } };
     step() }
@@ -101,7 +115,7 @@
       book.querySelectorAll('.cb-page').forEach(p => p.hidden = p.dataset.p !== id);
       lay(id); try { window.CardStudio?.fit(book) } catch (e) { }
     };
-    const open = book.querySelector('.cb-open'); let busyTurn = false;
+    const open = book.querySelector('.cb-open'); let busyTurn = false; requestAnimationFrame(() => warmPaint(open));   /* v98.1017 */
     const turnTo = (dir, fn) => { if (busyTurn) return; busyTurn = true; try { window.Sfx?.play?.('page') } catch (e) { } pageTurn(open, dir, fn, () => { busyTurn = false }) };
     const turn = d => { const n = spreads(tab), k = (spreadOf[tab] || 0) + d; if (k < 0 || k >= n) return; turnTo(d, () => { spreadOf[tab] = k; show(tab) }) };
     book.querySelectorAll('.cb-tabs').forEach(nav => nav.addEventListener('click', e => { const b = e.target.closest('button[data-t]'); if (!b || b.dataset.t === tab) return; const ids = tabs.map(t => t.id), d = ids.indexOf(b.dataset.t) > ids.indexOf(tab) ? 1 : -1; turnTo(d, () => show(b.dataset.t)) }));
