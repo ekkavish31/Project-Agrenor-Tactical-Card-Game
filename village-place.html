@@ -1026,12 +1026,13 @@ const vendorWorld = s => { const df = vendorDefault(s), v = s.vendor || {}; retu
 function vendorObj(s, i) {
  if (!s.vendor?.kind || !VENDOR_KINDS[s.vendor.kind]) return null;
  const w = vendorWorld(s), p = project(w.u, w.v), face = vendorFace(s), kind = s.vendor.kind, hash = [...kind + s.id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % 628 / 100,
-  px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale();
+  fk = window.CharScaleAdjust?.factor('village', kind) || 1,   /* v98.1010 · the seller's ⚖ Scale Lineup factor (its own kind: m1…g4) like every villager (place-people.js castScale) */
+  px = CharSize.VILLAGE_HERO_PX * (CharSize.DRAW.ally / CharSize.DRAW.hero) * window.placeScale() * fk;
  hits.push({ type: 'station', i, r: { x: p.x - px * .22, y: p.y - px * .9, w: px * .44, h: px * .95 } });   /* a click on the seller = the station */
  return { y: p.y, vendor: true, wu: w.u, wv: w.v, draw: (t = performance.now()) => {
   const stand = TownArt.image(vendorFile(kind, face.toLowerCase())), pk = stand && vendorPoseOf(s, t, hash),   /* v98.961 · the soft semi-SD vendor pictures (8 poses) come FIRST; the realistic painted atlas (generated-village/vendors.png) is only the fallback for a kind that has no picture */ pim = pk && TownArt.image(vendorFile(kind, face.toLowerCase(), pk)),
    im = pim && pim.complete && pim.naturalWidth ? pim : stand, bob = Math.sin(t * .0018 + hash) * 1.1;   /* v98.947 · the pose picture if it exists, else the standing one (not when the painted village art replaces vendors) */
-  if (im && im.complete && im.naturalWidth) { g.fillStyle = 'rgba(20,16,10,.28)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * PLACE_CHAR_K, 6 * PLACE_CHAR_K, 0, 0, 7); g.fill(); g.drawImage(im, p.x - px / 2, p.y - px * 360 / 384 - bob, px, px) }
+  if (im && im.complete && im.naturalWidth) { g.fillStyle = 'rgba(20,16,10,.28)'; g.beginPath(); g.ellipse(p.x, p.y, 15 * PLACE_CHAR_K * fk, 6 * PLACE_CHAR_K * fk, 0, 0, 7); g.fill(); g.drawImage(im, p.x - px / 2, p.y - px * 360 / 384 - bob, px, px) }
   else if (stand && !stand.complete) { /* the picture is still loading: draw nothing for a moment instead of flashing the other version */ }
   else if (window.VillagePaintedArt?.draw(g, kind, p.x, p.y - bob, px, { height: px * .88, flip: face === 'SE' })) { /* painted vendor atlas */ }
    else window.VillagerDraw?.(g, VENDOR_KINDS[kind].look, p.x, p.y, t, { face, scale: window.placeScale() })
