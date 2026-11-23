@@ -270,7 +270,7 @@ const PA = 'assets/', PROP_ART = {
   house: { _: [['village-town/inn', 176, 'w'], ['village-town/shop', 176, 'w'], ['village-town/healer', 176, 'w']] },
   stallR: { _: [['village-town/decor/market-stall-red', 104, 'w']] }, stallB: { _: [['village-town/decor/market-stall-blue', 104, 'w']] }, crates: { _: [['interior/crate-stack', 58, 'w']] },
   barrel: { _: [['interior/keg', 44, 'w'], ['village-town/decor/v1-rain-barrel', 42, 'w']] }, sacks: { _: [['interior/sack-pile', 56, 'w']] }, cart: { _: [['village-town/decor/cart', 90, 'w']] },
-  lamp: { _: [['village-town/decor/lamp-post', 108, 'h']] }, well: { _: [['village-town/decor/well', 66, 'w']] }, vegstand: { _: [['village-town/decor/v1-veg-stand', 86, 'w']] },
+  lamp: { _: [['village-town/decor/lamp-post', 25, 'w']] }, well: { _: [['village-town/decor/well', 66, 'w']] }, vegstand: { _: [['village-town/decor/v1-veg-stand', 86, 'w']] },
   bench: { _: [['village-town/decor/bench', 66, 'w']] }, flowerbox: { _: [['village-town/decor/flower-box', 56, 'w']] },
   cactus: { _: [['tactics/props/b1-cactus', 84, 'h'], ['tactics/props/cactus', 72, 'h']] }   // deadtree / cactus pictures are planned (docs/ART-TODO.md): code drawing until they exist
 };
