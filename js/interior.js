@@ -397,7 +397,9 @@
     g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(p.x, p.y, k === 'chicken' ? 8 : 15, k === 'chicken' ? 3 : 5, 0, 0, 7); g.fill();
     if (k === 'goat') {
       const A = window.MonsterArt || (() => { try { return parent.MonsterArt } catch (e) { return null } })();
-      const art = A?.frame('goat', dir > 0 ? 'SE' : 'SW', { pose: h.wait > 0 ? 'graze' : 'walk' }, 1, t, 'farm-goat');
+      if (A && !drawAnimal.pre) { drawAnimal.pre = 1; try { A.preload(['goat'], ['idle', 'walk', 'graze']) } catch (e) { } }   /* v98.999 · load the poses before they are needed (no code goat while loading) */
+      const gp = h.wait > 0 ? 'graze' : 'walk', gf = dir > 0 ? 'SE' : 'SW'; let art = A?.frame('goat', gf, { pose: gp }, 1, t, 'farm-goat');
+      if (art) h.lastArt = art; else if (A?.resolveClip('goat', gf, gp)) { art = h.lastArt || A.frame('goat', gf, { pose: 'idle' }, 1, t, 'farm-goat-idle'); if (!art) return }
       if (art) { const hh = 35, ww = hh * art.sw / art.sh, pv = art.pivot || [.5, .95]; g.save(); g.translate(p.x, p.y - hop); if (art.flip) g.scale(-1, 1); g.drawImage(art.image, art.sx, art.sy, art.sw, art.sh, -ww * pv[0], -hh * pv[1], ww, hh); g.restore(); if (h.a.hungry) { g.fillStyle = '#c84a3a'; g.font = 'bold 12px sans-serif'; g.fillText('!', p.x + 14, p.y - 30) } return; }
     }
     if (window.VillagePaintedArt?.draw(g, k, p.x, p.y - hop, k === 'chicken' ? 22 : k === 'sheep' ? 38 : 48, { flip: dir > 0 })) {
