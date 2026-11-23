@@ -72,19 +72,35 @@ body.cs-open{overflow:hidden}
 @media (max-width:640px){.cs-portrait{width:48px;height:48px}.cs-portrait span{font-size:22px}.cs-box{padding:12px 14px 16px;gap:10px}.cs-live .cs-bar{height:6vh}.cs-box{bottom:calc(6vh + 10px)}}
 
 /* ---------------- quest tracker ---------------- */
-#storyTracker{position:fixed;left:24px;top:172px;z-index:1200;width:min(320px,calc(100vw - 48px));font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;color:#f6ecd6;
- background:linear-gradient(180deg,rgba(26,36,28,.9),rgba(18,26,20,.92));border:1px solid rgba(232,201,138,.5);border-radius:14px;box-shadow:0 8px 26px rgba(0,0,0,.4);overflow:hidden}
+/* v98.997 · the quest window in the game's own look: the battle-HUD panel frame, gold diamond bullet, game bar, picture buttons (no emoji) */
+#storyTracker{position:fixed;left:24px;top:172px;z-index:1200;width:min(344px,calc(100vw - 48px));box-sizing:border-box;font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;color:#f6ecd6;
+ background:none;border:24px solid transparent;border-image:url(../assets/ui/battle-panel.webp) 40 fill/24px stretch;border-radius:0;box-shadow:none;overflow:visible;filter:drop-shadow(0 8px 16px rgba(0,0,0,.6));margin:-8px}
 #storyTracker[hidden]{display:none}
-.stk-head{display:flex;align-items:center;gap:8px;padding:9px 12px;background:linear-gradient(90deg,rgba(232,201,138,.18),transparent);cursor:pointer}
-.stk-head small{color:#e8c98a;font-size:11px}.stk-head b{flex:1;font-size:14px;font-weight:600}
-#storyTracker .stk-head .stk-fold{all:unset;color:#e8c98a;font-size:14px;cursor:pointer;padding:0 4px;line-height:1}
-.stk-body{padding:4px 12px 12px}.stk-goal{font-size:14px;line-height:1.5;margin:4px 0 2px}.stk-hint{font-size:12px;color:#c9bfa8;line-height:1.45;margin:2px 0 0}
-.stk-prog{height:5px;border-radius:3px;background:rgba(255,255,255,.12);margin:8px 0 2px;overflow:hidden}.stk-prog i{display:block;height:100%;background:linear-gradient(90deg,#e0a64a,#ffe08a);transition:width .5s}
-.stk-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-.stk-acts button{font:inherit;font-size:13px;padding:6px 11px;border-radius:9px;border:1px solid rgba(232,201,138,.6);background:linear-gradient(180deg,#5b4423,#3b2b15);color:#fff1d2;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.35)}
-.stk-acts button.primary{background:linear-gradient(180deg,#c8892f,#8f5a19);border-color:#ffd68c;animation:stkGlow 2.2s ease-in-out infinite}
+.stk-head{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;margin:-6px -4px 6px;padding:0 0 7px;background:none;border-bottom:1px solid rgba(232,201,138,.32);cursor:pointer}
+.stk-head small{flex:0 0 100%;color:#e9c47a;font-size:11px;letter-spacing:.06em;white-space:nowrap;text-shadow:0 1px 0 #000a}.stk-head b{flex:1;font-size:15px;font-weight:700;color:#fff1cf;text-shadow:0 1px 0 #000a;line-height:1.25}
+#storyTracker .stk-head .stk-fold{all:unset;box-sizing:border-box;width:22px;height:22px;display:grid;place-items:center;cursor:pointer;color:#e9c47a;border-radius:6px}#storyTracker .stk-head .stk-fold:hover{background:#ffffff14;color:#fff3d6}
+#storyTracker .stk-fold i{display:block;width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translate(-1px,-1px);transition:transform .2s}
+#storyTracker.stk-folded .stk-fold i{transform:rotate(-45deg) translate(-1px,-1px)}
+.stk-body{padding:2px 0 0}
+.stk-goal{position:relative;font-size:14px;line-height:1.5;margin:4px 0 2px;padding-left:18px}
+.stk-goal::before{content:"";position:absolute;left:3px;top:.55em;width:8px;height:8px;background:linear-gradient(135deg,#ffe08a,#c8892f);border:1px solid #5a3a10;transform:rotate(45deg);box-shadow:0 0 6px #ffcf6a88}
+.stk-hint{font-size:12px;color:#d1c7ae;line-height:1.45;margin:3px 0 0}
+.stk-night{color:#a9c4ff}
+.stk-prog{height:14px;box-sizing:border-box;border:4px solid transparent;border-image:url(../assets/ui/battle-bar.webp) 8 fill/4px stretch;margin:8px 0 3px;overflow:visible}.stk-prog i{display:block;height:100%;min-width:2px;background:url(../assets/ui/bar-yellow.webp);background-size:auto 100%;border-radius:2px;transition:width .5s}
+.stk-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:flex-end}
+/* picture buttons: the owner's gold-framed icons (assets/icons/menu/*.webp) with a small caption */
+.stk-acts button.ib{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:1px;width:62px;cursor:pointer;text-align:center;color:#f1dfb4;font:600 11px/1.15 'VillageThai','Noto Sans Thai',system-ui,sans-serif;text-shadow:0 1px 0 #000c;transition:transform .12s,filter .12s}
+.stk-acts button.ib img{width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 3px 3px #000a);-webkit-user-drag:none}
+.stk-acts button.ib:hover{transform:translateY(-2px);filter:brightness(1.12)}.stk-acts button.ib:active{transform:translateY(1px) scale(.97)}
+.stk-acts button.ib.primary{color:#fff1cf;animation:stkGlow 2.2s ease-in-out infinite}
+.stk-acts button.ib:focus-visible{outline:2px solid #ffd77a;outline-offset:2px;border-radius:12px}
+/* text buttons: the battle button picture, 9-sliced */
+.stk-acts button.txt{all:unset;box-sizing:border-box;cursor:pointer;padding:0 8px;min-height:30px;display:inline-flex;align-items:center;justify-content:center;border:6px solid transparent;border-image:url(../assets/ui/battle-btn.webp) 14 fill/6px stretch;color:#fff3d2;font:700 13px/1 'VillageThai','Noto Sans Thai',system-ui,sans-serif;text-shadow:0 1px 0 #000a;transition:filter .12s,transform .12s}
+.stk-acts button.txt:hover{filter:brightness(1.15)}.stk-acts button.txt:active{transform:translateY(1px)}
+.stk-acts button.txt.primary{border-image-source:url(../assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none;animation:stkGlow 2.2s ease-in-out infinite}
+.stk-acts button.txt.go::after{content:"";width:0;height:0;margin-left:7px;border-left:7px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
 .stk-acts button:disabled{opacity:.45;cursor:not-allowed;animation:none}
-@keyframes stkGlow{50%{box-shadow:0 0 14px rgba(255,200,110,.6),0 2px 0 rgba(0,0,0,.35)}}
+@keyframes stkGlow{50%{filter:drop-shadow(0 0 9px rgba(255,200,110,.85)) brightness(1.08)}}
 .stk-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:2px;background:rgba(120,170,255,.2);color:#bcd3ff;border:1px solid rgba(120,170,255,.35)}
 #storyTracker.stk-done .stk-head{background:linear-gradient(90deg,rgba(150,220,140,.25),transparent)}
 #storyTracker.stk-folded .stk-body{display:none}
@@ -212,7 +228,7 @@ body.cs-open #smithWip{display:none}
 
 /* v98.252 · no quest window over a battle */
 body.fb-open #storyTracker{display:none!important}
-#storyTracker .stk-head .stk-x{all:unset;color:#e8c98a;font-size:13px;cursor:pointer;padding:0 5px;line-height:1;opacity:.75}#storyTracker .stk-head .stk-x:hover{opacity:1;color:#fff3d6}
+#storyTracker .stk-head .stk-x{all:unset;box-sizing:border-box;flex:0 0 auto;width:22px;height:22px;cursor:pointer;background:url(../assets/ui/close-x.webp) center/contain no-repeat;opacity:.85;transition:opacity .12s,transform .12s}#storyTracker .stk-head .stk-x:hover{opacity:1;transform:scale(1.1)}
 
 /* v98.621 · scene buttons redesigned: icon + short label, round glass buttons with a thin gold edge.
    top-left = Log · top-right = Auto + เร่ง · bottom-right = ข้ามฉาก */

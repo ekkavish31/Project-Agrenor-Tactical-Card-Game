@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.995';
+  const V = '98.996';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -528,7 +528,7 @@
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
     d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbDis"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ทิ้งไพ่ฟื้นแรง</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '<button id="fbBack" hidden><img class="bi" src="assets/icons/pack/arrow.webp" alt="" draggable="false"><span>ไปต่อ ▸</span></button>' : ''}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbDis"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ทิ้งไพ่ฟื้นแรง</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '' : ''}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
       <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = เกมพาเดินเข้าไปให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
     document.body.append(d); hud = d;
@@ -542,7 +542,6 @@
     { const row = d.querySelector('#fbEnd').parentElement, acts = document.createElement('div'); acts.id = 'fbActions'; while (row.firstChild) acts.append(row.firstChild); row.remove(); document.body.append(acts);
       const min = d.querySelector('#fbMin'), apply = m => { d.classList.toggle('min', m); try { localStorage.setItem('projectA.fbHudMin', m ? '1' : '0') } catch (e) { } };
       let was = false; try { was = localStorage.getItem('projectA.fbHudMin') === '1' } catch (e) { } apply(was); min.onclick = () => apply(!d.classList.contains('min')) }
-    if (EMBED) document.getElementById('fbBack').onclick = () => report(st.outcome);
   }
   function hudSync() {
     if (!hud || !st) return;
@@ -883,6 +882,7 @@
     }
     const show = showPlay(group, id, cardLine(group, id), b), r = FB.playCombat(st, i);
     if (!r.ok) { show.el.remove(); b.style.visibility = ''; flash(r.reason); return }
+    STAT.cards[id] = (STAT.cards[id] || 0) + 1;
     busy = true; hudSync(); if (!r.self) walks = []; pend = null; markAuto();
     await heroAction(r);
     await show.done(); busy = false; refresh();
@@ -905,7 +905,7 @@
     const h = FB.hero(st), m = r.target || FB.monster(st);
     if (r.self) {
       h.pose = r.guard ? 'guard' : 'idle'; fx(r.fx, h, h, { color: r.heal ? '#7fe08a' : '#f4d36a' }); if (r.card === 'climb') fx('climbUp', h); if (r.card === 'perch') fx('perchFlag', h); impact(h, r.fx, false); h.flashUntil = 0;
-      await wait(260); if (r.heal) floatText(h, '+' + r.heal, '#7fe08a'); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a'); if (r.cured?.length) floatText(h, 'CURED', '#c8f0ff'); if (r.evade) floatText(h, 'EVADE READY', '#bfe8ff'); if (r.counter) floatText(h, 'COUNTER READY', '#ffd9a0'); if (r.ambush) floatText(h, 'AMBUSH ×1.6', '#d9b8ff');
+      await wait(260); if (r.heal) { STAT.healed.hero = (STAT.healed.hero || 0) + r.heal; floatText(h, '+' + r.heal, '#7fe08a') } if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff'); if (r.restore) floatText(h, 'STAMINA +' + r.restore, '#ffe08a'); if (r.cured?.length) floatText(h, 'CURED', '#c8f0ff'); if (r.evade) floatText(h, 'EVADE READY', '#bfe8ff'); if (r.counter) floatText(h, 'COUNTER READY', '#ffd9a0'); if (r.ambush) floatText(h, 'AMBUSH ×1.6', '#d9b8ff');
       h.shown = h.hp; hudSync(); await wait(520); h.pose = 'idle'; return;
     }
     const last = !FB.monsters(st).some(u => u.hp > 0), kill = last, heavy = r.big > 1 || r.hits.reduce((a, x) => a + x.damage, 0) >= 20;
@@ -918,7 +918,7 @@
       for (const [n, x] of r.hits.entries()) {
         const tu = x.target || m, lastHit = n === r.hits.length - 1, fin = kill && lastHit, down = tu.hp <= 0 && !r.hits.slice(n + 1).some(y => y.target === tu);
         if (x.splash) fx(r.fx, tu, h, { scale: .8 });
-        impact(tu, r.fx, { big: heavy, crit: x.crit, kill: fin || down, from: h }); tu.hitUntil = now() + 460;
+        tally(h, tu, x, down); impact(tu, r.fx, { big: heavy, crit: x.crit, kill: fin || down, from: h }); tu.hitUntil = now() + 460;
         if (x.crit) banner('CRITICAL!', 'crit');
         if (fin) { hitStop(380); if (cine) cine.z = 2.3; shake(20, 600) } else if (down) { hitStop(240); shake(14, 420) } else if (x.crit) { hitStop(210); shake(17, 460) } else { hitStop(heavy ? 140 : 100); shake(heavy ? 13 : 8, heavy ? 380 : 280) }
         if (down) tu.deadAt = now() + 380;
@@ -986,7 +986,7 @@
     a.dir = dirTo(a, t); const M = window.MonsterArt, isMon = a.side === 'monster', fxk = isMon ? (MON[a.kind]?.fx || 'sword') : (a.fx || 'sword');
     const strikePose = isMon && a.kind === 'pumpkinBoss' && FB.dist(a, t) > 1 ? 'cast' : 'strike';
     const tw = isMon ? M?.timing?.(a.kind, a.dir, 'windup') : null, ts = isMon ? M?.timing?.(a.kind, a.dir, strikePose) : null;
-    const isHero = t === FB.hero(st), down = t.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน')), full = isHero || s.crit || down || a.boss;
+    const isHero = t === FB.hero(st), down = t.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน')), full = isHero || s.crit || down || a.boss; tally(a, t, s, down);
     await cinemaIf(s.crit || s.damage >= 20 || a.boss || (down && isHero), a, t, async () => {
       a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } if (isMon) await monsterCharge(a, Math.max(a.boss || s.damage >= 20 ? 900 : full ? 800 : 650, tw?.duration || 0)); else if (a.boss || s.damage >= 20) await chargeAttack(a, Math.max(560, Math.min(900, tw?.duration || 0))); else await wait(full ? 300 : 200);
       a.pose = strikePose; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
@@ -999,7 +999,7 @@
       if (down && t.side === 'hero' && !isHero) floatText(t, 'DOWN', '#ff8a7a', true);
       t.shown = t.hp; hudSync();
       await wait(full ? Math.max(300, Math.min(900, (ts?.duration || 500) - (ts?.impactMs ?? 160))) : 260);
-      if (s.counter) { t.pose = 'windup'; await wait(150); t.pose = 'strike'; sfx('swing'); fx('sword', a, t, {}); impact(a, 'sword', { from: t, big: true }); a.hitUntil = now() + 420; hitStop(120); shake(10, 300); floatText(a, '−' + s.counter, '#ffd27a', false, true); floatText(a, 'COUNTER', '#ffd9a0', true); a.shown = a.hp; hudSync(); if (a.hp <= 0) a.deadAt = now() + 300; await wait(420) }
+      if (s.counter) { tally(t, a, { damage: s.counter, notes: [] }, a.hp <= 0); t.pose = 'windup'; await wait(150); t.pose = 'strike'; sfx('swing'); fx('sword', a, t, {}); impact(a, 'sword', { from: t, big: true }); a.hitUntil = now() + 420; hitStop(120); shake(10, 300); floatText(a, '−' + s.counter, '#ffd27a', false, true); floatText(a, 'COUNTER', '#ffd9a0', true); a.shown = a.hp; hudSync(); if (a.hp <= 0) a.deadAt = now() + 300; await wait(420) }
       if (s.fall) { shake(12, 380); await walkAnim(t, [s.fall.from, { u: t.u, v: t.v }], 6, true); fx('fallDust', t); floatText(t, 'FALL −' + s.fall.damage, '#ff9a8a', false, true); t.shown = t.hp; hudSync() }   /* v94: knocked off a ledge */
       a.pose = 'idle'; if (t.hp > 0) t.pose = 'idle';
     }, full ? { z: 1.7 } : { z: 1.4, bars: false, lead: 170, tail: 90 });
@@ -1151,11 +1151,27 @@
     await startTurnShow(false);
   }
   /* embedded in the world map: hand the result back (also automatically a moment after the end) */
+  /* v98.996 · battle statistics for the Victory report (page 2). Counted where each REAL hit is shown (never from previews). Ids: 'hero' · the party key · 'foe' */
+  const STAT = { t0: Date.now(), dealt: {}, taken: {}, kills: {}, healed: {}, cards: {}, crit: 0, adv: 0, dis: 0, flank: 0, high: 0, max: null };
+  const statId = u => u.side === 'monster' ? 'foe' : (u === FB.hero(st) ? 'hero' : (u.key || u.id));
+  function tally(att, tgt, x, down) {
+    try {
+      const d = Math.max(0, x.damage | 0), A = statId(att), T = statId(tgt); STAT.dealt[A] = (STAT.dealt[A] || 0) + d; STAT.taken[T] = (STAT.taken[T] || 0) + d;
+      if (att.side === 'monster') return;
+      const ns = (x.notes || []).join('|'); if (x.crit) STAT.crit++; if (/ชนะ .+ ×/.test(ns)) STAT.adv++; else if (/แพ้ .+ ×/.test(ns)) STAT.dis++;
+      if (/ด้านหลัง|ด้านข้าง|ข้างหลัง/.test(ns)) STAT.flank++; if (/ที่สูง \+|กระโจนจากที่สูง/.test(ns)) STAT.high++;
+      if (down && tgt.side === 'monster') STAT.kills[A] = (STAT.kills[A] || 0) + 1; if (!STAT.max || d > STAT.max.dmg) STAT.max = { dmg: d, by: A };
+    } catch (e) { }
+  }
+  function statOut() {
+    try { const cards = Object.entries(STAT.cards).map(([id, n]) => [cardName('combat', id), n]).sort((a, b) => b[1] - a[1]);
+      return { turns: st.turns, secs: Math.round((Date.now() - STAT.t0) / 1000), dealt: STAT.dealt, taken: STAT.taken, kills: STAT.kills, healed: STAT.healed, crit: STAT.crit, adv: STAT.adv, dis: STAT.dis, flank: STAT.flank, high: STAT.high, cards, items: Object.values(st.itemsUsed || {}).reduce((a, n) => a + n, 0), maxHit: STAT.max } } catch (e) { return null }
+  }
   let reported = false;
-  function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), used: st.itemsUsed || {}, evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
+  function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), used: st.itemsUsed || {}, goal: (() => { try { return FB.objText(st) } catch (e) { return '' } })(), turns: st.turns, stat: statOut(), evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
   function finish() {
     if (st.outcome === 'win') { const al = FB.allies(st).filter(a => a.hp > 0); if (al.length) say(al[Math.floor(Math.random() * al.length)], 'win') }
-    if (EMBED) { const b = document.getElementById('fbBack'); if (b) b.hidden = false; const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; endTalk().then(() => setTimeout(() => report(st.outcome), 3600)) } hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
+    if (EMBED) { const f = hud?.querySelector('#fbFlee'); if (f) f.hidden = true; endTalk().then(() => setTimeout(() => report(st.outcome), st.outcome === 'win' ? 1800 : 3600)) }   /* v98.996 · no 'ไปต่อ' button: the host opens the Victory report (js/victory-screen.js) over this scene and removes the frame after its Continue */ hudSync(); handSync(); if (st.outcome === 'lose') { banner('DEFEAT…', 'win'); sfx('lose') } else if (!CINE) toast('VICTORY!') }
   function flash(msg) { texts.push({ u: FB.hero(st).vu, v: FB.hero(st).vv, txt: msg, col: '#f6d79b', t0: now(), small: true }) }
   function floatText(unit, txt, col, small, big) { const t = now(), stack = texts.filter(x => x.unit === unit && t - x.t0 < 450).length; texts.push({ unit, u: unit.vu, v: unit.vv, txt, col, t0: t, small, big, dx: (Math.random() - .5) * 18, dy: -stack * 22 }) }   // texts on the same unit stack upward
   function walkAnim(unit, path, speed = 4.2, slide = false) { return new Promise(res => { anims.push({ unit, pts: path.slice(1), i: 0, res, speed, slide }) }) }

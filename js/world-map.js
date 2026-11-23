@@ -1066,11 +1066,13 @@
     /* the shards stay over the screen until the arena inside the frame says it is ready (the village art may take a few seconds the first time) */
     const readyP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle-ready' && !e.data.warm) { removeEventListener('message', on); resolve() } }; addEventListener('message', on); setTimeout(resolve, 20000) });
     const resP = new Promise(resolve => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); resolve(e.data) } }; addEventListener('message', on) });
-    document.body.append(fr);
+    window.VictoryScreen?.fightUI?.(true); document.body.append(fr);
     const wait1 = document.createElement('div'); wait1.className = 'wm-toast'; wait1.style.animation = 'none'; wait1.style.top = '62%'; wait1.style.cssText += ';display:flex;align-items:center;gap:12px;padding:8px 22px 8px 14px;border-radius:22px'; wait1.innerHTML = (window.MipLoader ? MipLoader.html({ size: '56px', width: '150px' }) : '') + '<span>กำลังเตรียมสนามรบ…</span>'; setTimeout(() => { if (wait1.isConnected === false && !fr.classList.contains('on')) document.body.append(wait1) }, 1400);
     await readyP; wait1.remove(); fr.classList.add('on'); document.querySelectorAll('.wm-enc').forEach(e => setTimeout(() => e.remove(), 350));
     const res = await resP; try { localStorage.removeItem('projectA.wmFight'); localStorage.removeItem('projectA.battleSnap') } catch (e) { }
-    fr.classList.remove('on'); await wait(380); fr.remove();
+    /* v98.996 · a WIN keeps the battle frame under the Victory report (js/victory-screen.js) until its Continue button; every other result closes it now as before */
+    const dropFrame = async () => { if (!fr.isConnected) return; fr.classList.remove('on'); await wait(380); fr.remove() };
+    if (res.outcome !== 'win') { await dropFrame(); window.VictoryScreen?.fightUI?.(false) }
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
     /* v98.496 · bag cards spent in the fight leave the real bag */
     { const bg = WS.game().village.bag ||= {}, AD = window.ADVENTURE_DATA?.CONSUMABLES || {}, names = []; for (const [k, n] of Object.entries(res.used || {})) { if (!(n > 0) || !bg[k]) continue; bg[k] = Math.max(0, bg[k] - n); if (!bg[k]) delete bg[k]; names.push((AD[k]?.name || k) + ' ×' + n) } if (names.length) log('🎒 ใช้การ์ดกระเป๋า: ' + names.join(', ')) }
@@ -1100,8 +1102,9 @@
       chatter('win', .7);
       if (!o.boss && /bandit/.test(foe)) window.Factions?.add('village', 1, 'ปราบโจรป่า');   /* v97.41 · T2 */
       log('ชนะ' + (o.boss ? 'บอส' : '') + '! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
-      if (P) await results({ title: (obj ? '🎯 ' + OBJ_NAME[obj.split(':')[0]] + ' สำเร็จ' + (title ? ' · ' : '') : '') + title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed, job: jobRes && jobRes.id !== 'adventurer' ? { ...P.JOBS[jobRes.id], lv: P.jobLevel(WS.game(), jobRes.id), jp: P.jobsOf(WS.game()).jobs[jobRes.id]?.jp || 0, need: P.jobNeed(P.jobLevel(WS.game(), jobRes.id)), ups: jobRes.ups, max: P.JOB_MAX } : null });
+      if (P) await results({ goal: res.goal, stat: res.stat, turns: res.turns, title: (obj ? '🎯 ' + OBJ_NAME[obj.split(':')[0]] + ' สำเร็จ' + (title ? ' · ' : '') : '') + title, gold, loot: loot ? loot.split(' · ') : [], kills: res.kills || 0, members: members.filter(m => m.gain != null), heroNeed: P.heroNeed, allyNeed: P.allyNeed, job: jobRes && jobRes.id !== 'adventurer' ? { ...P.JOBS[jobRes.id], lv: P.jobLevel(WS.game(), jobRes.id), jp: P.jobsOf(WS.game()).jobs[jobRes.id]?.jp || 0, need: P.jobNeed(P.jobLevel(WS.game(), jobRes.id)), ups: jobRes.ups, max: P.JOB_MAX } : null });
       else toast('VICTORY! ' + (gold ? '+' + gold + ' 💰' : '') + (loot ? ' · ' + loot : ''));
+      await dropFrame(); window.VictoryScreen?.fightUI?.(false);
     } else if (res.outcome === 'flee') {
       log('หนีออกมาได้'); if (S.prev) { S.pos = { ...S.prev }; const p = center(S.pos.c, S.pos.r); token.x = p.x; token.y = p.y; reveal() } S.hp = Math.max(1, S.hp);
     } else {
@@ -1115,6 +1118,14 @@
   const CONTROL_LV = 3;   /* v97.15 · a companion at this level fights under the player's command (B14) */
   function chime(notes, vol = .05) { try { const A = chime.a ||= new (window.AudioContext || window.webkitAudioContext)(); notes.forEach((f, i) => { const o = A.createOscillator(), g = A.createGain(), t0 = A.currentTime + i * .09; o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + .02); g.gain.exponentialRampToValueAtTime(.0001, t0 + .5); o.connect(g).connect(A.destination); o.start(t0); o.stop(t0 + .55) }) } catch (e) { } }
   function results(r) {
+    if (window.VictoryScreen) {   /* v98.996 · the shared Victory report, over the battle scene */
+      const fem = (() => { try { return window.HeroVariant?.get?.() === 'female' } catch (e) { return false } })();
+      return VictoryScreen.show({ title: r.title, goal: r.goal, kills: r.kills, turns: r.turns, gold: r.gold, loot: r.loot, job: r.job, stat: r.stat,
+        members: r.members.map(m => { const p = m.key === 'hero' ? null : S.party.find(x => x.key === m.key);
+          return { id: m.key, name: m.name, pic: m.key === 'hero' ? (fem ? 'hero-female' : 'hero-male') : m.key === 'sib' ? (fem ? 'hero-male' : 'hero-female') : m.key, hp: m.key === 'hero' ? S.hp : (p?.hp ?? 0), max: m.key === 'hero' ? S.maxHp : (p?.max ?? 0),
+            gain: m.gain, lv0: m.lv0, lv1: m.lv1, xp0: m.xp0, xp1: m.xp1, needFn: m.key === 'hero' ? r.heroNeed : r.allyNeed,
+            upNote: m.key === 'hero' ? (m.lv1 > m.lv0 ? 'ได้แต้มสเตตัส +' + (m.lv1 - m.lv0) * 2 : '') : (m.lv0 < CONTROL_LV && m.lv1 >= CONTROL_LV ? '🎮 ปลดล็อก: สั่ง ' + m.name + ' เองได้ในการต่อสู้' : '') } }) });
+    }
     if (!document.getElementById('wmResCss')) { const s = document.createElement('style'); s.id = 'wmResCss'; s.textContent = `
       .wm-res{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#1d2a1fcc,#05080de8);animation:wmResIn .35s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
       .wm-res .box{width:min(560px,92vw);padding:22px 24px;border-radius:16px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 24px 60px #000c;text-align:center}

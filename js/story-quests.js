@@ -57,7 +57,7 @@ function guide(){const step=cur();if(!step)return;if(onWorld()){toast('อยู
  if(t.place?.length&&t.place.includes(V()?.location)&&/^place:/.test(scene())&&!t.npc?.length){toast('อยู่ที่นี่แล้ว · เดินไปที่จุดบริการในฉาก');return}
  const go=()=>{const w=townWin();if(!w?.TownQuest?.guide?.())toast('ทำตาม ◆ สีทองบนแผนที่หมู่บ้าน')};
  if(scene()!=='town'){root.VillageTown?.open?.();setTimeout(go,350)}else go()}
-const guideBtn={label:'📍⬅️',tip:'นำทาง · เดินไปยังจุดที่เควสต้องการตามถนน',primary:true,hide:()=>onWorld(),run:guide};
+const guideBtn={label:'เดินอัตโนมัติ',icon:'guide',alt:'map',tip:'นำทาง · เดินไปยังจุดที่เควสต้องการตามถนน',primary:true,hide:()=>onWorld(),run:guide};
 const HINT_WALK='◆ สีทองบนแผนที่บอกทาง · คลิกถนนหรืออาคารเพื่อเดิน · คลิกคนเพื่อคุย';
 function talkStep(o){return {tag:'real',...o,talk:o.talk,check:d=>!!d.talked,acts:[guideBtn,...(o.acts||[])],hint:o.hint||HINT_WALK}}
 /* v98.598/604 · WHERE a talk happens decides the backdrop — for every NPC scene (talkStep outro → the NPC), by where that person really is at that hour (npcPlace):
@@ -248,55 +248,8 @@ function battleCut(){
  const t0=performance.now();
  return {open:()=>new Promise(res=>{const wait=Math.max(0,1050-(performance.now()-t0));setTimeout(()=>{town?.classList.remove('qb-zoom');el.classList.add('out');setTimeout(()=>{el.remove();res()},560)},wait)}),drop:()=>{town?.classList.remove('qb-zoom');el.remove()}}}
 function battleReady(fr){return new Promise(res=>{const on=e=>{if(e.source===fr.contentWindow&&e.data?.type==='agrenor-battle-ready'){removeEventListener('message',on);res()}};addEventListener('message',on);setTimeout(res,20000)})}
-/* v98.472 · VICTORY summary after a story fight (goat / pumpkin …): foes beaten, EXP, HP of the party — click / Enter to continue */
-function victorySummary(r){return new Promise(done=>{
- /* v98.597 · a victory CEREMONY: golden rays + sparks · the word VICTORY letter by letter · party cards one by one (portrait · EXP counting up · HP) · the victory theme (bgm-victory-01) plays over it
-    first click = show everything at once · next click / Enter = go on */
- if(!document.getElementById('qbVicCss')){const c=document.createElement('style');c.id='qbVicCss';c.textContent=`
-#qbVic{position:fixed;inset:0;z-index:970;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#2a2412e6,#07090dee 70%);animation:qbVicIn .5s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif;cursor:pointer;color:#f6e7c0}
-#qbVic .rays{position:absolute;left:50%;top:38%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;background:repeating-conic-gradient(from 0deg,#ffd77a22 0 6deg,#0000 6deg 18deg);-webkit-mask:radial-gradient(circle,#000 0,#0000 55%);mask:radial-gradient(circle,#000 0,#0000 55%);animation:qbVicSpin 60s linear infinite;pointer-events:none}
-#qbVic canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#qbVic .wrap{position:relative;width:min(560px,94vw);text-align:center}
-#qbVic .crest{height:3px;margin:0 auto 10px;width:0;background:linear-gradient(90deg,#0000,#ffd77a,#0000);animation:qbVicLine .9s .1s ease-out forwards}
-#qbVic h2{margin:0;display:flex;justify-content:center;gap:.04em;font:900 clamp(40px,10vw,76px)/1 AgThai,Georgia,serif;letter-spacing:.1em;color:#ffd77a;text-shadow:0 3px 0 #7a4a0e,0 0 30px #ffb52e,0 0 70px #ff9a1f88}
-#qbVic h2 span{display:inline-block;opacity:0;transform:translateY(34px) scale(1.7);animation:qbVicLetter .55s cubic-bezier(.2,1.5,.4,1) forwards}
-#qbVic .sub{margin:10px 0 4px;font-size:16px;color:#e8d5a8;opacity:0;animation:qbVicFade .5s 1.05s forwards}
-#qbVic .kills{display:inline-block;margin:0 0 14px;padding:3px 16px;border:1px solid #ffd77a66;border-radius:20px;background:#00000055;color:#ffd77a;font-size:14px;opacity:0;animation:qbVicFade .5s 1.2s forwards}
-#qbVic .cards{display:grid;gap:9px}
-#qbVic .card{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;text-align:left;padding:9px 14px 9px 9px;border-radius:14px;background:linear-gradient(100deg,#3a2f17ee,#201a0eee);border:1px solid #ffd77a55;box-shadow:0 10px 26px #0009,inset 0 0 22px #ffd77a14;opacity:0;transform:translateX(-30px);animation:qbVicCard .5s cubic-bezier(.2,1.2,.4,1) forwards}
-#qbVic .face{width:64px;height:64px;border-radius:12px;overflow:hidden;border:2px solid #ffd77a;background:#4a3b1c;display:grid;place-items:center;font:900 26px AgThai,sans-serif;color:#ffd77a}
-#qbVic .face img{width:100%;height:100%;object-fit:cover;object-position:50% 14%}
-#qbVic .nm{font-weight:800;font-size:17px;color:#fff1cf;display:flex;justify-content:space-between;gap:8px}#qbVic .nm .xp{color:#ffd77a;font-variant-numeric:tabular-nums}
-#qbVic .bar{height:9px;margin-top:6px;border-radius:6px;background:#0008;overflow:hidden}#qbVic .bar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#ffb52e,#ffe08a);box-shadow:0 0 10px #ffc94e;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
-#qbVic .hp{display:flex;justify-content:space-between;margin-top:4px;font-size:12.5px;color:#cfc29c}#qbVic .hp b{color:#a8e6a0;font-weight:700}
-#qbVic .go{margin-top:16px;font-size:13px;color:#cdb98a;opacity:0;animation:qbVicFade .5s forwards}#qbVic .go.on{animation:qbVicFade .5s forwards,qbVicPulse 1.6s 0.6s ease-in-out infinite}
-#qbVic.skip *{animation-delay:0s!important;animation-duration:.01s!important}#qbVic.skip .bar i{transition-duration:.01s}
-@keyframes qbVicIn{from{opacity:0}to{opacity:1}}@keyframes qbVicSpin{to{transform:rotate(360deg)}}@keyframes qbVicLine{to{width:min(420px,70vw)}}
-@keyframes qbVicLetter{to{opacity:1;transform:none}}@keyframes qbVicFade{to{opacity:1}}@keyframes qbVicCard{to{opacity:1;transform:none}}@keyframes qbVicPulse{50%{opacity:.45}}`;document.head.append(c)}
- const e=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]),female=(()=>{try{return root.HeroVariant?.get?.()==='female'}catch{return false}})();
- const hero=(()=>{try{return G().village?.heroName||'ตัวเอก'}catch{return 'ตัวเอก'}})(),look=female?'hero-female':'hero-male',other=female?'hero-male':'hero-female';
- const members=[{name:hero,xp:r.xp,hp:r.hp,max:r.maxHp,pic:look},...(r.party||[]).map(p=>({name:p.name,xp:p.xp,hp:p.hp,max:p.max,pic:p.key==='sib'?other:p.key}))];
- const el=document.createElement('div');el.id='qbVic';el.setAttribute('role','dialog');el.setAttribute('aria-label','ชัยชนะ');
- const word='VICTORY!'.split('').map((c,i)=>`<span style="animation-delay:${.25+i*.09}s">${c}</span>`).join('');
- const t0=1.5;   /* the cards start after the title has settled */
- el.innerHTML=`<div class="rays"></div><canvas></canvas><div class="wrap"><div class="crest"></div><h2>${word}</h2>
-  <div class="sub">${e(String(r.title||'').replace(/\s*·\s*$/,''))}</div><div class="kills">⚔ ล้มศัตรู ${r.kills||0} ตัว</div>
-  <div class="cards">${members.map((m,i)=>`<div class="card" style="animation-delay:${t0+i*.38}s"><div class="face"><img alt="" src="assets/portraits/${e(m.pic)}-happy.webp" onerror="this.remove()"><span>${e((m.name||'?')[0])}</span></div>
-   <div><div class="nm"><span>${e(m.name)}</span><span class="xp" data-xp="${m.xp||0}">${m.xp?'EXP +0':''}</span></div><div class="bar"><i data-w="${m.xp?Math.min(100,30+m.xp):0}"></i></div><div class="hp"><span>HP</span><b>${m.hp}/${m.max}</b></div></div></div>`).join('')}</div>
-  <div class="go" style="animation-delay:${t0+members.length*.38+1.1}s">คลิก หรือกด Enter เพื่อไปต่อ</div></div>`;
- document.body.append(el);try{root.Sfx?.play?.('victory')}catch(x){}try{root.GameBGM?.force?.('victory')}catch(x){}
- /* gold sparks rising */
- const cv=el.querySelector('canvas'),g=cv.getContext('2d');let raf=0,W=0,H=0;const P=Array.from({length:70},()=>({x:Math.random(),y:Math.random(),s:.4+Math.random()*1.4,v:.0004+Math.random()*.0012,p:Math.random()*6}));
- const fit=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight};fit();addEventListener('resize',fit);
- const frame=t=>{g.clearRect(0,0,W,H);for(const q of P){q.y-=q.v*16;if(q.y<-.05){q.y=1.05;q.x=Math.random()}const a=.35+.45*Math.sin(t/500+q.p);g.fillStyle=`rgba(255,${200+((q.p*20)|0)},110,${Math.max(0,a)})`;g.beginPath();g.arc(q.x*W+Math.sin(t/900+q.p)*14,q.y*H,q.s*2.2,0,7);g.fill()}raf=requestAnimationFrame(frame)};raf=requestAnimationFrame(frame);
- /* EXP bars fill and count up as each card arrives */
- const timers=[];el.querySelectorAll('.card').forEach((c,i)=>{timers.push(setTimeout(()=>{const b=c.querySelector('.bar i');b.style.width=b.dataset.w+'%';const x=c.querySelector('.xp'),n=+x.dataset.xp;if(!n)return;const t1=performance.now();const step=now=>{const k=Math.min(1,(now-t1)/1000);x.textContent='EXP +'+Math.round(n*k);if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)},(t0+i*.38+.35)*1000))});
- const goOn=()=>el.querySelector('.go').classList.add('on');timers.push(setTimeout(goOn,(t0+members.length*.38+1.1)*1000));
- let skipped=false,ready=false;timers.push(setTimeout(()=>ready=true,500));
- const finish=()=>{el.querySelectorAll('.card').forEach(c=>{c.querySelector('.bar i').style.width=c.querySelector('.bar i').dataset.w+'%';const x=c.querySelector('.xp');if(+x.dataset.xp)x.textContent='EXP +'+x.dataset.xp});goOn()};
- const close=()=>{removeEventListener('keydown',key,true);removeEventListener('resize',fit);cancelAnimationFrame(raf);timers.forEach(clearTimeout);try{root.GameBGM?.force?.(null)}catch(x){}el.style.transition='opacity .35s';el.style.opacity='0';setTimeout(()=>{el.remove();done()},330)};
- const next=()=>{if(!ready)return;if(!skipped){skipped=true;el.classList.add('skip');finish();return}close()},key=ev=>{if(['Enter',' ','Escape'].includes(ev.key)){ev.preventDefault();ev.stopPropagation();next()}};
- el.onclick=next;addEventListener('keydown',key,true)})}
+/* v98.996 · the old story victory ceremony moved to js/victory-screen.js (one report for every battle, shown over the battle scene). Kept as a thin adapter for Story.victory. */
+function victorySummary(r){return root.VictoryScreen?root.VictoryScreen.show({title:r.title,kills:r.kills,members:(r.party||[]).map(p=>({id:p.key,name:p.name||p.key,pic:p.key,hp:p.hp,max:p.max,gain:p.xp}))}):Promise.resolve()}
 /* v98.476 · a story fight must not move the hero: remember where they stood on the village map (or in the open place) when the fight started,
    and put them back there afterwards — retried for a moment, because the map can re-place the hero at a door while it wakes up again */
 function heroSpot(){try{const T=root.VillageTown;if(!T)return null;const sc=T.getScene?.(),f=/^place:/.test(sc||'')?T.marketFrame:T.frame,h=f?.contentWindow?.ResumeHook?.get?.();return h?{f,h:{...h},sc}:null}catch(e){return null}}
@@ -324,12 +277,12 @@ function questBattle(d,o){return new Promise(resolve=>{
  if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
-  const win=r.outcome==='win';let xpGot=0;
+  const win=r.outcome==='win';let xpGot=0;const VS=root.VictoryScreen,before=win&&VS?VS.snap(g):null;
   if(win){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);if(root.Progression){const xp=Progression.battleXp({dang:.25,kills:r.kills});xpGot=xp;gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}
-  fr.remove();doRender();heroBack(spot);
-  /* v98.597 · the "fighting" lock stays ON while the victory screen is up — otherwise another goat standing next to the hero started a second fight behind it (goats left in the village · the chase went on) */
-  if(win)victorySummary({title:o.title,kills:r.kills||0,xp:xpGot,hp:g.hp,maxHp:g.maxHp||60,party:(v.party||[]).map(p=>({key:p.key,name:p.name||p.key,hp:p.hp,max:p.max,xp:Math.round(xpGot*.8)}))}).then(()=>{d.fighting=false;doSave();resolve('win')});else{d.fighting=false;doSave();resolve('out')}};
- {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);document.body.appendChild(fr)})}
+  const cleanup=()=>{fr.remove();doRender();heroBack(spot);VS?.fightUI?.(false)};
+  /* v98.996 · the Victory report opens OVER the battle scene (the frame is removed only after its Continue button). v98.597 · the "fighting" lock stays ON while it is up — otherwise another goat standing next to the hero started a second fight behind it */
+  if(win&&VS)VS.show({title:o.title,goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,before,xpGot,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(()=>{cleanup();d.fighting=false;doSave();resolve('win')});else if(win){cleanup();d.fighting=false;doSave();resolve('win')}else{cleanup();d.fighting=false;doSave();resolve('out')}};
+ {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);root.VictoryScreen?.fightUI?.(true);document.body.appendChild(fr)})}
 
 /* ---------- raid battle (v94: the flat card battle drawn on the village square, in a frame over the game) ---------- */
 function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับหมู่บ้านก่อน');return}
@@ -341,9 +294,11 @@ function startRaid(d){if(d.fighting)return;if(onWorld()){toast('กลับห�
  if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
-  if(r.outcome==='win'){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);d.won=true;if(root.Progression){const xp=Progression.battleXp({dang:.4,kills:r.kills});gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}else toast(r.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');
-  d.fighting=false;doSave();fr.remove();doRender();heroBack(spot)};
- {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);document.body.appendChild(fr)}
+  const VS=root.VictoryScreen,before=r.outcome==='win'&&VS?VS.snap(g):null;let xpGot=0;
+  if(r.outcome==='win'){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);d.won=true;if(root.Progression){const xp=Progression.battleXp({dang:.4,kills:r.kills});xpGot=xp;gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}else toast(r.outcome==='lose'?'พ่ายแพ้... ตั้งหลักแล้วลองใหม่':'ถอยออกมา · โจรยังอยู่ในงาน','');
+  const cleanup=()=>{d.fighting=false;doSave();fr.remove();doRender();heroBack(spot);VS?.fightUI?.(false)};
+  if(r.outcome==='win'&&VS)VS.show({title:'คืนเทศกาล · โจรป่าบุก',goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,before,xpGot,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(cleanup);else cleanup()};
+ {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);root.VictoryScreen?.fightUI?.(true);document.body.appendChild(fr)}
 
 /* ---------- sales detector (coins up while an item or goods left the bag at the market) ---------- */
 let prev=null;
@@ -368,6 +323,11 @@ function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step
 
 /* ---------- tracker ---------- */
 let box=null;
+/* v98.997 · the quest window is drawn with the game's own pictures — no emoji. Icon buttons: assets/icons/menu/<icon>.webp (the owner's 'guide' = footsteps + flag and 'replay' = book + arrow;
+   until those files are in the repo the existing 'alt' icon is shown instead). Text buttons use assets/ui/battle-btn*.webp. */
+const stkFold=f=>`<button class="stk-fold" type="button" aria-label="${f?'ขยาย':'พับ'}"><i></i></button>`,STK_X='<button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด"></button>';
+const stkIcon=(a,attr)=>`<button type="button" ${attr} class="ib${a.primary?' primary':''}"${a.tip?` title="${esc(a.tip)}" aria-label="${esc(a.tip)}"`:''}><img alt="" draggable="false" src="assets/icons/menu/${a.icon}.webp" onerror="this.onerror=null;this.src='assets/icons/menu/${a.alt||'quest'}.webp'"><span>${esc(a.label)}</span></button>`;
+const stkTxt=(a,attr)=>`<button type="button" ${attr} class="txt${a.primary?' primary':''}"${a.tip?` title="${esc(a.tip)}" aria-label="${esc(a.tip)}"`:''}>${esc(a.label)}</button>`;
 function tracker(){if(box)return box;box=document.createElement('aside');box.id='storyTracker';box.hidden=true;box.setAttribute('aria-live','polite');document.body.appendChild(box);
  box.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(e.target.closest('.stk-x')){e.stopPropagation();const st=story();if(st){st.closed=true;st.unseen=0;doSave();draw(true);badgeSync()}return}
   if(b){e.stopPropagation();act(b.dataset.act);return}if(e.target.closest('.stk-head')){const st=story();if(st){st.fold=!st.fold;doSave();draw(true)}}});return box}
@@ -375,13 +335,13 @@ let lastHtml='';
 function draw(force){const el=tracker(),st=story();if(!st||st.mode==='off'||root.TitleScreen?.active||document.querySelector('dialog[open],.ck-reveal,.mg')){el.hidden=true;return}
  if(st.closed&&st.mode!=='offer'){el.hidden=true;badgeSync();return}   /* v98.337 · closed: only the badge on the 'วันนี้' icon remains */
  let html='';el.classList.toggle('stk-done',st.mode==='done');el.classList.toggle('stk-folded',!!st.fold);
- if(st.mode==='offer')html=`<div class="stk-head"><small>บทนำใหม่</small><b>เทศกาลเฟิร์นเวล</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button></div><div class="stk-body"><p class="stk-goal">เล่นบทนำ 3 วันของงานเทศกาล และการเดินทางครั้งแรก</p><p class="stk-hint">เหมาะกับเซฟใหม่ · เซฟเดิมเล่นได้ บางขั้นจะผ่านเองถ้าทำไว้แล้ว</p><div class="stk-acts"><button data-act="start" class="primary" type="button">▶ เล่นบทนำ</button><button data-act="off" type="button">ซ่อน</button></div></div>`;
- else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ผลึกม่วงจากเหมืองเก่าที่อุ่นเมื่อแตะ<br>• แผนที่สมบัติเก่าในสมุดผนึก</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" type="button">ซ่อนกล่องนี้</button></div></div>`;
+ if(st.mode==='offer')html=`<div class="stk-head"><small>บทนำใหม่</small><b>เทศกาลเฟิร์นเวล</b>${stkFold(st.fold)}</div><div class="stk-body"><p class="stk-goal">เล่นบทนำ 3 วันของงานเทศกาล และการเดินทางครั้งแรก</p><p class="stk-hint">เหมาะกับเซฟใหม่ · เซฟเดิมเล่นได้ บางขั้นจะผ่านเองถ้าทำไว้แล้ว</p><div class="stk-acts"><button data-act="start" class="txt primary go" type="button">เล่นบทนำ</button><button data-act="off" class="txt" type="button">ซ่อน</button></div></div>`;
+ else if(st.mode==='done')html=`<div class="stk-head"><small>เล่นอิสระ</small><b>เบาะแสที่ได้</b>${stkFold(st.fold)}${STK_X}</div><div class="stk-body"><p class="stk-hint">• จานหินโบราณที่มีเส้นแสง<br>• จดหมายของ "G." ถึงเมืองใหญ่<br>• ผลึกม่วงจากเหมืองเก่าที่อุ่นเมื่อแตะ<br>• แผนที่สมบัติเก่าในสมุดผนึก</p><p class="stk-hint">เส้นทางไปเมืองใหญ่ยังไม่เปิด (อยู่ในแผน)</p><div class="stk-acts"><button data-act="off" class="txt" type="button">ซ่อนกล่องนี้</button></div></div>`;
  else{const step=STEPS[st.i];if(!step){el.hidden=true;return}const d=dataOf(step),chap=chapterOf(st.i),acts=(step.acts||[]).filter(a=>!a.hide?.(d));
-  const p=step.progress?.(d);const night=late()&&!/^sleep|^rest/.test(step.id)?'<p class="stk-hint">🌙 ดึกแล้ว กลับบ้านนอนแล้วทำต่อพรุ่งนี้ได้</p>':'';
-  html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'&&root.PROJECT_DEV?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน (แสดงเฉพาะเครื่องผู้สร้าง)">ชั่วคราว</span>':''}</b><button class="stk-fold" type="button">${st.fold?'▸':'▾'}</button><button class="stk-x" type="button" title="ปิดหน้าต่าง · เปิดกลับได้ที่ไอคอน วันนี้ → ภารกิจ" aria-label="ปิด">✕</button></div>
-  <div class="stk-body"><p class="stk-goal">◆ ${esc(step.goal)}</p>${p!=null?`<div class="stk-prog"><i style="width:${Math.round(p*100)}%"></i></div>`:''}${step.hint?`<p class="stk-hint">${esc(step.hint)}</p>`:''}${night}
-  <div class="stk-acts">${acts.map((a,j)=>`<button type="button" data-act="${(step.acts||[]).indexOf(a)}" class="${a.primary?'primary':''}"${a.tip?` title="${esc(a.tip)}" aria-label="${esc(a.tip)}"`:''}>${esc(a.label)}</button>`).join('')}<button type="button" data-act="replay" title="ดูฉากล่าสุดอีกครั้ง" aria-label="ดูฉากล่าสุดอีกครั้ง">🎞️↩️</button>${(()=>{try{return localStorage.getItem('projectA.dev')==='1'}catch(e){return false}})()?'<button type="button" data-act="skipall" title="ข้ามบทนำทั้งหมด">ข้ามบทนำ</button>':''}</div></div>`}
+  const p=step.progress?.(d);const night=late()&&!/^sleep|^rest/.test(step.id)?'<p class="stk-hint stk-night">ดึกแล้ว กลับบ้านนอนแล้วทำต่อพรุ่งนี้ได้</p>':'';
+  html=`<div class="stk-head"><small>${esc(chap)}</small><b>${esc(step.title)}${step.tag==='temp'&&root.PROJECT_DEV?'<span class="stk-tag" title="ระบบชั่วคราว ระบบจริงอยู่ในแผน (แสดงเฉพาะเครื่องผู้สร้าง)">ชั่วคราว</span>':''}</b>${stkFold(st.fold)}${STK_X}</div>
+  <div class="stk-body"><p class="stk-goal">${esc(step.goal)}</p>${p!=null?`<div class="stk-prog"><i style="width:${Math.round(p*100)}%"></i></div>`:''}${step.hint?`<p class="stk-hint">${esc(step.hint)}</p>`:''}${night}
+  <div class="stk-acts">${acts.map((a,j)=>{const at=`data-act="${(step.acts||[]).indexOf(a)}"`;return a.icon?stkIcon(a,at):stkTxt(a,at)}).join('')}${stkIcon({icon:'replay',alt:'spellbook',label:'ดูฉากซ้ำ',tip:'ดูฉากล่าสุดอีกครั้ง'},'data-act="replay"')}${(()=>{try{return localStorage.getItem('projectA.dev')==='1'}catch(e){return false}})()?'<button type="button" class="txt" data-act="skipall" title="ข้ามบทนำทั้งหมด">ข้ามบทนำ</button>':''}</div></div>`}
  if(html!==lastHtml||force){el.innerHTML=html;lastHtml=html}el.hidden=false}
 function chapterOf(i){for(let j=i;j>=0;j--)if(STEPS[j].chapter)return STEPS[j].chapter;return ''}
 async function act(a){const st=story();if(!st)return;

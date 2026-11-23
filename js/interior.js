@@ -950,9 +950,11 @@
     S = L.save(); modalOpen = true;
     const fr = document.createElement('iframe'); fr.id = 'inBattle';
     fr.src = `battle-field.html?battle=1&embed=1&r=5&biome=grass&night=1&m=bandit&ms=${encodeURIComponent('bandit*1.5')}&party=&hhp=${S.hp || 60}&hmax=${S.maxHp || 60}&title=${encodeURIComponent('ดวล · นาเดีย ·')}`;
-    document.body.append(fr);
+    window.VictoryScreen?.fightUI?.(true); document.body.append(fr);
     const res = await new Promise(r => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); r(e.data) } }; addEventListener('message', on) });
-    fr.remove(); modalOpen = false;
+    /* v98.996 · a won duel: the Victory report over the scene first, the frame goes after Continue */
+    if (res.outcome === 'win' && window.VictoryScreen) { const fem = (() => { try { return window.HeroVariant?.get?.() === 'female' } catch (e) { return false } })(); await VictoryScreen.show({ title: 'ดวล · นาเดีย', goal: res.goal, kills: res.kills || 0, turns: res.turns, stat: res.stat, members: [{ id: 'hero', name: heroName(), pic: fem ? 'hero-female' : 'hero-male', hp: res.hp, max: S.maxHp || 60, gain: 0 }] }) }
+    fr.remove(); window.VictoryScreen?.fightUI?.(false); modalOpen = false;
     if (res.outcome === 'win' || res.outcome === 'lose') MIND?.emit(res.outcome === 'win' ? 'duel:win' : 'duel:lose', { who: a.id, witness: [...people.keys()] });
     if (res.outcome === 'win') joinNow(a, 'ฮึ … ไม่เลวนี่ ข้ายอมรับ ข้าจะตามเจ้าไป แต่อย่าคิดว่าข้าจะเชื่อฟังทุกเรื่องนะ');
     else talk(a, res.outcome === 'flee' ? 'หนีแล้วหรือ? น่าผิดหวัง' : 'แค่นี้เองหรือ? กลับไปฝึกมาใหม่เถอะ');

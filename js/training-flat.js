@@ -21,17 +21,19 @@
     try { if ($('panel').open) $('panel').close() } catch (e) { }
     const done = e => {
       if (e.source !== fr.contentWindow || e.data?.type !== 'agrenor-battle') return;
-      removeEventListener('message', done); fr.remove();
-      const r = e.data; g.minutes = Math.min(1200, (g.minutes || 0) + MINUTES); 
+      removeEventListener('message', done);
+      const r = e.data, VS = root.VictoryScreen, before = r.outcome === 'win' && VS ? VS.snap(g) : null; let xpPaid = 0; g.minutes = Math.min(1200, (g.minutes || 0) + MINUTES); 
       for (const x of r.party || []) { const p = (v.party || []).find(q => q.key === x.key); if (p && x.order) p.order = x.order }
       const day = g.day, T = v.training ||= {}; if (T.day !== day) { T.day = day; T.xp = 0 }
-      const xp = Math.max(0, Math.min(XP_DAY - T.xp, XP_EACH * (r.kills || 0))); T.xp += xp;
+      const xp = Math.max(0, Math.min(XP_DAY - T.xp, XP_EACH * (r.kills || 0))); T.xp += xp; xpPaid = xp;
       let msg = 'ฝึกเสร็จ · ใช้เวลา ' + MINUTES + ' นาที';
       if (xp > 0) { const ups = gainCharacterXP(xp) || []; for (const p of v.party || []) if ((r.party || []).some(x => x.key === p.key)) root.Progression?.gainAlly(p, Math.round(xp * .8)); msg += ' · EXP +' + xp + (Array.isArray(ups) && ups.length ? ' · เลเวลอัป Lv.' + ups[ups.length - 1] : '') }
       else if (r.outcome === 'win') msg += ' · วันนี้ได้ EXP จากการฝึกครบแล้ว (' + XP_DAY + ')';
-      try { save() } catch (e) { } try { render() } catch (e) { } toast(msg);
+      const fin = () => { fr.remove(); try { save() } catch (e) { } try { render() } catch (e) { } toast(msg); VS?.fightUI?.(false) };
+      /* v98.996 · a won training fight shows the Victory report over the scene first; the frame goes after Continue */
+      if (r.outcome === 'win' && VS) VS.show({ title: 'ลานฝึกหุ่นฟาง', goal: r.goal, kills: r.kills || 0, turns: r.turns, members: VS.members(g, before, xpPaid, { fought: (r.party || []).map(x => x.key) }), stat: r.stat }).then(fin); else fin();
     };
-    addEventListener('message', done); document.body.appendChild(fr);
+    addEventListener('message', done); root.VictoryScreen?.fightUI?.(true); document.body.appendChild(fr);
   }
   /* training only — the archived expedition / adventure calls keep the old engine */
   /* v98.444 · the old grid-battle bridge (js/tactics-bridge.js: TacticsLab, expedition, #tacticsLayer) is archived — training is the only battle opened from here */
