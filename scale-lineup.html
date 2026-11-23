@@ -129,7 +129,7 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
    on-screen height (UNIT = one battle cell) = silhouette height ÷ picture height × the size the game draws the picture at:
-     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.1010
+     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.1011
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
@@ -300,7 +300,7 @@ async function build() {
   if (DOCK) showNow();   /* v98.962 · the row is usable now; the monsters below keep loading and the row refreshes when they arrive */
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.1010' + (window.GAME_VERSION?.v || 'v98.959'))).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.1011' + (window.GAME_VERSION?.v || 'v98.959'))).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     const MONS = [...blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)];
     await Promise.all(MONS.map(m => load(`assets/enemies/${m[4]}.webp`)));   /* v98.962 · all at once (they were fetched one by one) */
     for (const m of MONS) {
