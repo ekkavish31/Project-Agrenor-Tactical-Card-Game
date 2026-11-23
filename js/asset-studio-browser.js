@@ -62,7 +62,11 @@
   }
   /* v98.376 · a villager's walk = the frames npc-<id>-<dir>-walk1…N of that direction (one looping clip) */
   try{const by=new Map();for(const a of manifest.assets||[]){const o=a.studioOwner;if(!o||o.group!=='npcs'||a.pose!=='walk'||a.studioAllyWalk||!a.file||['missing','planned','unused'].includes(a.status))continue;const key=o.id+'|'+a.view;(by.get(key)||by.set(key,[]).get(key)).push(a)}
-   for(const [key,list] of by){if(list.length<2)continue;list.sort((x,y)=>(x.frame||1)-(y.frame||1));const [oid,view]=key.split('|');raw.push({id:'npcwalk:'+oid+':'+view,canonical:'npcwalk:'+oid+':'+view,action:'walk',view,loop:true,kind:'files',frames:list.map(a=>({assetId:a.id,file:a.file,cell:0,crop:null,ms:a.ms||110,flip:false,pivot:a.pivot||[.5,.9375],renderHeight:a.renderHeight||1,revision:a.artRevision||'',size:a.size||[384,384]}))})}}catch(e){}
+   window.StudioCatalog?.shadowed?.clear();
+   for(const [key,list] of by){if(list.length<2)continue;const [oid,view]=key.split('|');
+    /* v98.970 · a saved walk set (manifest.studioAllyWalks) is what the game plays first; the old row of npc-<id>-<dir>-walkN slots must not be a SECOND walk row of the same direction (it showed twice) — hide it and keep its slots out of the loose tiles */
+    if(manifest.studioAllyWalks?.[oid.replace(/^npc:/,'')]?.[view]?.frames?.length){for(const a of list)window.StudioCatalog?.shadowed?.add(a.id);continue}
+    list.sort((x,y)=>(x.frame||1)-(y.frame||1));raw.push({id:'npcwalk:'+oid+':'+view,canonical:'npcwalk:'+oid+':'+view,action:'walk',view,loop:true,kind:'files',frames:list.map(a=>({assetId:a.id,file:a.file,cell:0,crop:null,ms:a.ms||110,flip:false,pivot:a.pivot||[.5,.9375],renderHeight:a.renderHeight||1,revision:a.artRevision||'',size:a.size||[384,384]}))})}}catch(e){}
   /* v98.946 · a service person's pose = one single-frame clip per picture (stand = idle) */
   try{for(const a of manifest.assets||[]){const o=a.studioOwner;if(!o||o.group!=='svc'||!a.file||['planned','unused'].includes(a.status))continue;
    raw.push({id:'svcpose:'+a.id,canonical:'svcpose:'+a.id,action:a.pose,view:a.view,loop:false,kind:'files',frames:[{assetId:a.id,file:a.file,cell:0,crop:null,ms:600,flip:false,pivot:a.pivot||[.5,.9375],renderHeight:a.renderHeight||1,revision:a.artRevision||'',size:a.size||[384,384]}]})}}catch(e){}

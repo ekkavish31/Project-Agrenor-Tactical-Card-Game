@@ -246,6 +246,8 @@
  }
  function owner(a,meta={}){
   /* v98.444 · a villager who is also a FRIEND with battle stats (e.g. Berg) lives with the friends ("ตัวละคร"), not under NPC — the roster is js/studio-people.js */
+  /* v98.970 · a saved walk set (studio-ally-<id>-<dir>-walk-N) of a VILLAGER belongs to that villager even when it was saved under ally:<id> by an older build — that put one direction of Oren's walk on a phantom "Oren" friend, so the NPC showed its old slot row there instead (two walk rows) */
+  if(a.studioAllyWalk){const m=/^studio-ally-([a-z0-9]+)-/.exec(a.id||''),k=m&&m[1],P=root.STUDIO_PEOPLE;if(k&&P?.npcs?.[k]&&!P?.allies?.[k])return {id:'npc:'+k,name:P.npcs[k],group:'npcs'}}
   if(a.studioOwner&&groups[a.studioOwner.group]){const so={...a.studioOwner},k=so.id&&so.id.startsWith('npc:')?so.id.slice(4):null,A=root.STUDIO_PEOPLE?.allies;if(k&&A&&A[k])return {id:'ally:'+k,name:A[k],group:'characters'};return so}
   let id=a.id||'',cat=a.category||'',key=null;
   if(a.enemy)key=a.enemy;
@@ -262,6 +264,7 @@
   let base=id.replace(/-views$/,'').replace(/^ground-anim-/,'ground-');
   return {id:'object:'+base,name:a.studioName||base,group:'objects'};
  }
+ const shadowed=new Set();   /* v98.970 · ids of picture slots that must not show as loose tiles (set by asset-studio-browser clipsFor before every build) */
  function staticClip(a){
   let d=a.view||a.id.match(/-(se|sw|ne|nw|s|n|e|w)-/i)?.[1]?.toUpperCase()||'—';
   let action=a.pose||a.id.match(/-(idle|windup|strike|guard|hit|down)$/)?.[1]||'ภาพนิ่ง';
@@ -276,9 +279,9 @@
    // Objects own individual sheets; do not put all animated ground under one entry.
    let cc={...c,entity:e.id,label:e.name};e.clips.push(cc);c.frames.forEach(f=>used.add(f.assetId));
   }
-  for(let e of entities.values())for(let a of e.assets){if(used.has(a.id)||!a.file||a.studioAllyWalk)continue;/* v98.645 · frames of a saved walk set only ever show inside that set (never as loose 1-frame tiles) */if(e.id==='hero'&&/(?:walk|run)/i.test([a.id,a.clip,a.pose].join(' ')))continue;const sc=staticClip(a);/* v97.66: a single picture is not shown as its own row when an animated clip already fills the same action × direction */if(e.clips.some(c=>c.kind!=='static'&&c.action===sc.action&&c.view===sc.view))continue;e.clips.push({...sc,entity:e.id,label:e.name})}
+  for(let e of entities.values())for(let a of e.assets){if(used.has(a.id)||!a.file||a.studioAllyWalk||shadowed.has(a.id))continue;/* v98.970 · slots of an old walk row that a saved walk set replaced (see clipsFor) *//* v98.645 · frames of a saved walk set only ever show inside that set (never as loose 1-frame tiles) */if(e.id==='hero'&&/(?:walk|run)/i.test([a.id,a.clip,a.pose].join(' ')))continue;const sc=staticClip(a);/* v97.66: a single picture is not shown as its own row when an animated clip already fills the same action × direction */if(e.clips.some(c=>c.kind!=='static'&&c.action===sc.action&&c.view===sc.view))continue;e.clips.push({...sc,entity:e.id,label:e.name})}
   return [...entities.values()].sort((a,b)=>a.name.localeCompare(b.name,'th',{numeric:true}));
  }
- root.StudioCatalog={groups,owner,build,enemyMetadata,jsonAssignment};
+ root.StudioCatalog={groups,owner,shadowed,build,enemyMetadata,jsonAssignment};
  if(typeof module==='object'&&module.exports)module.exports=root.StudioCatalog;
 })(globalThis);
