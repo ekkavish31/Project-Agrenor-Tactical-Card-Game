@@ -54,7 +54,7 @@ const art={};for(const n of ROSTER){for(const k of ['','-back']){if(!NPC_ART.inc
 function drawVillager(g,n,p,t,walking,face){const sc=(n.small?.72:1)*(window.VillageAssetEdit?.charScale?.('npc:'+n.id)||1),h=88*sc,bob=walking?Math.abs(Math.sin(t*.012+n.phase))*4*sc:Math.sin(t*.002+n.phase)*.8,back=face==='NE'||face==='NW',flip=face==='SW'||face==='NW';
  if(!root.VillagerDraw||art[n.id]){g.fillStyle='rgba(20,30,20,.38)';g.beginPath();g.ellipse(p.x,p.y,15*sc,6*sc,0,0,Math.PI*2);g.fill()}
  if(root.VillageAssetEdit?.drawChar?.('npc:'+n.id,g,{x:p.x,y:p.y-bob},face,h))return;const im=art[n.id+(back?'-back':'')]||art[n.id];if(im){const w=h*im.naturalWidth/im.naturalHeight*1.15;g.save();g.translate(p.x,p.y-bob);if(flip)g.scale(-1,1);root.TownArt.draw(g,im,null,[-w/2,-h*1.15,w,h*1.15],null);g.restore();return}
- if(root.VillagerDraw){const k=(window.VillageAssetEdit?.charScale?.('npc:'+n.id)||1);root.VillagerDraw(g,n.look||{},p.x,p.y,t,{walking,face,phase:n.phase,scale:k});return}
+ if(root.VillagerDraw){const k=(window.VillageAssetEdit?.charScale?.('npc:'+n.id)||1);root.VillagerDraw(g,n.look||{},p.x,p.y,t,{walking,face,phase:n.phase,scale:k,poseAdj:true});return}
  const L=n.look,s=sc;g.save();g.translate(p.x,p.y-bob);if(flip)g.scale(-1,1);
  const step=walking?Math.sin(t*.012+n.phase)*5*s:0;g.strokeStyle='#3a2a1e';g.lineWidth=5*s;g.lineCap='round';g.beginPath();g.moveTo(-5*s,-22*s);g.lineTo(-5*s+step,-2*s);g.moveTo(5*s,-22*s);g.lineTo(5*s-step,-2*s);g.stroke();
  // body

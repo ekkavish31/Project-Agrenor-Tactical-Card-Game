@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.996';
+  const V = '98.1010';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -84,7 +84,7 @@
   const stiSrc = k => STI[k] ? 'assets/ui/status/' + STI[k] + '.webp' : null;
   const stiHtml = (k, title) => { const s = stiSrc(k); return s ? `<img class="sti" src="${s}" alt="" draggable="false"${title ? ` title="${title}"` : ''}>` : `<span${title ? ` title="${title}"` : ''}>${(FB.STATUS[k] || {}).icon || ''}</span>` };
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null, hoverU = null, pickU = null;   /* v98.358 · hoverU: the unit under the pointer (white edge + info window) · pickU: the unit last clicked (grey crystal over its head) */
-  let texts = [], anims = [], effects = [], hud = null, hand = null, discardMode = false, picked = new Set(), seenUids = new Set();
+  let texts = [], anims = [], effects = [], hud = null, hand = null, seenUids = new Set();
   const wait = ms => new Promise(r => setTimeout(r, ms / SPD()));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const imgs = new Map(); function im(src) { let i = imgs.get(src); if (!i) { i = new Image(); i.src = src; imgs.set(src, i) } return i.complete && i.naturalWidth ? i : null }
@@ -181,7 +181,7 @@
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     st = FB.create({ fp: FP, bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true, bag: bagForBattle(),
       hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
-    if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
+    if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], noBad: {}, force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = SCENE ? (u.side === 'monster' ? (u.ct ?? u.speed * 3) : 40) : u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
@@ -191,7 +191,7 @@
     if (Q.get('imm') === '1') for (const u of st.units) if (u.side === 'hero' && (u.id === 'hero' || u.key === 'sib')) u.immortal = true;   /* v98.331 · prologue tutorials: HP can drop, never below 1 */
     pend = null; walks = [];
     st.arena = { cu, cv, r };
-    texts = []; anims = []; effects = []; busy = false; discardMode = false; picked.clear(); seenUids.clear();
+    texts = []; anims = []; effects = []; busy = false; seenUids.clear();
     if (Q.get('resume') === '1') applyResume(); else makeFlee();
     if (SCENE) attachScene();
   }
@@ -409,6 +409,31 @@
   #fbDuel.min .dc{min-width:0;padding:4px}#fbDuel.min .nm{display:none}#fbDuel.min .pf,#fbDuel.min .dc.t .pf{width:60px;height:60px}#fbDuel.min .dc.t{margin-right:8px}#fbDuel.min .vs{margin-right:20px}
   @keyframes fbDuelFlash{0%{opacity:0;transform:scale(.5)}25%{opacity:1}100%{opacity:0;transform:scale(1.15)}}@keyframes fbDuelPush{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes fbDuelShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-2deg)}45%{transform:translateX(5px) rotate(2deg)}70%{transform:translateX(-3px)}}
   @media (max-width:860px),(max-height:560px){#fbDuel{top:auto;bottom:226px;right:6px}#fbDuel .dc{min-width:0}#fbDuel .nm{display:none}#fbDuel .pf{width:64px;height:64px}#fbDuel .dc.t .pf{width:54px;height:54px}#fbDuel .dc.t{margin-right:8px}}
+  /* v98.1009 · BIG duel portraits (≈3× the old 108 / 88 px): actor and target side by side with a clash effect between them; the ▭ button folds back to the small stacked cards.
+     Struck fighter: red light pulses 3× per hit; below 25% HP the frame throbs red. --pw = portrait size (fits the screen). */
+  #fbDuel:not(.min){--pw:min(324px,21vw,38vh);top:84px;right:12px;flex-direction:row;align-items:flex-start;gap:0}
+  #fbDuel:not(.min) .dc{flex-direction:column;align-items:stretch;gap:6px;min-width:0;max-width:none;padding:8px 10px 10px;width:calc(var(--pw) + 22px)}
+  #fbDuel:not(.min) .dc.t{margin-right:0;width:calc(var(--pw) * .82 + 22px);margin-top:calc(var(--pw) * .18)}
+  #fbDuel:not(.min) .pf{width:var(--pw);height:var(--pw);border-radius:16px}#fbDuel:not(.min) .dc.t .pf{width:calc(var(--pw) * .82);height:calc(var(--pw) * .82)}
+  #fbDuel:not(.min) .nm b{font-size:16px}#fbDuel:not(.min) .nm small{font-size:12px}#fbDuel:not(.min) .hp{height:9px}#fbDuel:not(.min) .mo{font-size:15px;min-height:19px}
+  #fbDuel:not(.min) .tools{position:absolute;right:0;bottom:-28px}
+  #fbDuel .cl{align-self:center;position:relative;width:70px;height:70px;margin:0 -14px;z-index:5;pointer-events:none;display:grid;place-items:center;font-size:30px;filter:drop-shadow(0 2px 4px #000)}
+  #fbDuel .cl i{font-style:normal;opacity:.55}
+  #fbDuel .cl.on i{opacity:1;animation:fbClash .55s ease-out}
+  #fbDuel .cl.on::before,#fbDuel .cl.on::after{content:'';position:absolute;left:50%;top:50%;width:92px;height:5px;margin:-2px 0 0 -46px;border-radius:3px;background:linear-gradient(90deg,#0000,#fff8d8,#0000);animation:fbSlash .5s ease-out}
+  #fbDuel .cl.on::after{transform:rotate(-52deg);animation-delay:.07s}#fbDuel .cl.on::before{transform:rotate(38deg)}
+  #fbDuel .cl.k-guard i{color:#9fd4ff}#fbDuel .cl.k-heal i{color:#9fefaa}
+  #fbDuel .dc.m-hurt .pf .rd,#fbDuel .dc.low .pf .rd{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;background:radial-gradient(circle,#ff3a2a00 30%,#ff2a1ab0 100%)}
+  #fbDuel .dc.m-hurt .pf .rd{animation:fbRed .6s ease-in-out 1}
+  #fbDuel .dc.low:not(.m-down) .pf .rd{animation:fbThrob 1.1s ease-in-out infinite}
+  @keyframes fbRed{0%,100%{opacity:0}16%,50%,84%{opacity:1}33%,67%{opacity:.15}}
+  @keyframes fbThrob{0%,100%{opacity:.1}50%{opacity:.75}}
+  @keyframes fbClash{0%{transform:scale(.3) rotate(-30deg)}40%{transform:scale(1.5) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
+  @keyframes fbSlash{0%{opacity:0;width:20px}30%{opacity:1}100%{opacity:0;width:130px}}
+  #fbDuel:not(.min) .dc.m-attack .pf{animation:fbDuelLunge .5s ease-out}#fbDuel:not(.min) .dc.t.m-attack .pf{animation:fbDuelLungeL .5s ease-out}
+  @keyframes fbDuelLunge{0%{transform:translateX(0)}35%{transform:translateX(26px) scale(1.04)}100%{transform:translateX(0)}}@keyframes fbDuelLungeL{0%{transform:translateX(0)}35%{transform:translateX(-26px) scale(1.04)}100%{transform:translateX(0)}}
+  @media (max-width:860px),(max-height:560px){#fbDuel:not(.min){--pw:96px;top:auto;bottom:226px;right:6px}}
+  @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}#fbDuel .rd,#fbDuel .cl i,#fbDuel .cl::before,#fbDuel .cl::after{animation:none!important}}
   @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}}
   #fbItems{position:fixed;left:50%;bottom:208px;transform:translateX(-50%);z-index:42;display:flex;gap:10px;align-items:flex-end;padding:10px 14px 8px;border-radius:14px;background:#14110fe8;border:1px solid #fff3;box-shadow:0 8px 24px #000a}#fbItems[hidden]{display:none}
   #fbItems .lbl{position:absolute;left:14px;top:-10px;font:700 11px AgThai,system-ui,sans-serif;background:#2a2118;color:#f6d79b;padding:1px 9px;border-radius:8px;border:1px solid #fff3}
@@ -528,14 +553,15 @@
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
     d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbDis"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ทิ้งไพ่ฟื้นแรง</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '' : ''}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbCrSt" title="ดูดซับคริสตัล 1 ก้อน → ฟื้นแรง +15"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ดูดซับคริสตัล · แรง +15</span></button><button id="fbCrDraw" title="หลอมคริสตัล 1 ก้อน → สลับไพ่ใหม่ทั้งมือ (1 ครั้ง/เทิร์น)"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>หลอมคริสตัล · สลับไพ่</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '' : ''}</div>
       <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
-      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = เกมพาเดินเข้าไปให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
+      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = ต้องเดินเข้าไปก่อน เกมไม่พาเดินให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
     document.body.append(d); hud = d;
     d.querySelector('#fbEnd').onclick = () => endHeroTurn();
     d.querySelector('#fbAuto').onclick = () => setAuto(!auto);
     const q = document.createElement('div'); q.id = 'fbQueue'; document.body.append(q);
-    d.querySelector('#fbDis').onclick = () => setDiscard(!discardMode);
+    d.querySelector('#fbCrSt').onclick = () => crystalAct('stamina');
+    d.querySelector('#fbCrDraw').onclick = () => crystalAct('draw');
     d.querySelector('#fbUndo').onclick = () => undoWalk();
     d.querySelector('#fbMenu').onclick = () => pauseMenu();
     /* v98.252 · the action buttons live in their own row above the cards; the info window can be folded */
@@ -567,11 +593,10 @@
     const left = FB.crystals(st), max = st.crystalMax;
     hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<img class="gemi" src="assets/ui/gem-${i < left ? 'on' : 'off'}.webp" alt="" draggable="false">`).join('');
     document.getElementById('fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
-    document.getElementById('fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || !walks.length;
+    document.getElementById('fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || (st.attacks || 0) > 0 || !walks.length;
     { const a = document.getElementById('fbAuto'); a.disabled = noAuto(); a.title = noAuto() ? 'ปิดไว้ในบทฝึกต่อสู้' : ''; a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto' }
     queueSync(); itemSync();
-    document.getElementById('fbDis').disabled = busy || !!st.outcome || st.turn !== 'hero' || (!left && !discardMode);
-    document.getElementById('fbDis').querySelector('span').textContent = discardMode ? 'ยกเลิกการทิ้ง' : 'ทิ้งไพ่ฟื้นแรง';
+    { const off = busy || !!st.outcome || st.turn !== 'hero' || !left; document.getElementById('fbCrSt').disabled = off || FB.hero(st).stamina >= (FB.hero(st).stMax || 100); document.getElementById('fbCrDraw').disabled = off || !!st.redrawn }
     hud.querySelector('#fbLog').innerHTML = st.log.slice(-6).reverse().map(x => '<div>' + esc(x) + '</div>').join('');
   }
 
@@ -650,9 +675,10 @@
     const card = (R, role) => {
       const u = R.u, foe = u.side === 'monster', f = foe && MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
       const jn = !foe && window.Progression?.JOBS?.[job]?.name;
-      return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}">${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
+      return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}${pct > 0 && pct < 25 ? ' low' : ''}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"><b class="rd"></b>${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
     };
-    d.innerHTML = card(A, 'a') + (T ? '<span class="vs">▾</span>' + card(T, 't') : '') + `<div class="tools"><button data-k="Min" title="ย่อ/ขยายพอร์เทรต">${min ? '▣' : '▭'}</button><button data-k="Code" title="สลับภาพจริง ↔ ภาพวาดตามอาชีพ (โค้ด)">${code ? '🖼' : '✎'}</button></div>`;
+    const clash = T ? (A.m === 'attack' || T.m === 'hurt' ? 'attack' : A.m === 'guard' || T.m === 'guard' ? 'guard' : A.m === 'heal' ? 'heal' : '') : '', cIcon = clash === 'guard' ? '🛡' : clash === 'heal' ? '✚' : '⚔';
+    d.innerHTML = card(A, 'a') + (T ? (min ? '<span class="vs">▾</span>' : `<span class="cl ${clash ? 'on k-' + clash : ''}"><i>${cIcon}</i></span>`) + card(T, 't') : '') + `<div class="tools"><button data-k="Min" title="ย่อ/ขยายพอร์เทรต">${min ? '▣' : '▭'}</button><button data-k="Code" title="สลับภาพจริง ↔ ภาพวาดตามอาชีพ (โค้ด)">${code ? '🖼' : '✎'}</button></div>`;
     d.querySelectorAll('.tools button').forEach(b => b.onclick = () => { try { localStorage.setItem('projectA.fbDuel' + b.dataset.k, duelPref(b.dataset.k) ? '0' : '1') } catch (e) { } d.dataset.sig = ''; });
   }
   addEventListener('keydown', e => { if (e.key === 'Escape' && inspectU) { e.preventDefault(); e.stopImmediatePropagation(); setInspect(null) } }, true);
@@ -674,8 +700,8 @@
     document.body.append(d); hand = d;
     /* v94.02 touch: the first tap shows the card (range, element tip), a second tap on the same card plays it */
     let armed = null; const touchy = () => window.Touch?.lastPointer?.() === 'touch';
-    d.addEventListener('click', e => { const b = e.target.closest('.fb-card'); if (!b) return; if (touchy() && !discardMode && armed !== b.dataset.uid) { armed = b.dataset.uid; preview(b); return } armed = null; cardClick(b) });
-    d.addEventListener('pointerover', e => { if (touchy()) return; const b = e.target.closest('.fb-card'); if (b && !discardMode && !busy) preview(b) });
+    d.addEventListener('click', e => { const b = e.target.closest('.fb-card'); if (!b) return; if (touchy() && armed !== b.dataset.uid) { armed = b.dataset.uid; preview(b); return } armed = null; cardClick(b) });
+    d.addEventListener('pointerover', e => { if (touchy()) return; const b = e.target.closest('.fb-card'); if (b && !busy) preview(b) });
     d.addEventListener('pointerout', e => { if (touchy()) return; const b = e.target.closest('.fb-card'); if (b && !b.contains(e.relatedTarget)) hidePreview() });
     addEventListener('pointerdown', e => { if (touchy() && armed && !e.target.closest?.('.fb-card')) { armed = null; hidePreview() } }, true);
   }
@@ -688,8 +714,8 @@
     return W.tip(el, tg?.el);
   }
   function cardEl(group, c, i) {
-    const why = st.turn === 'hero' && !discardMode ? cardBlock(group, i) : '';
-    return `<button class="fb-card ${why ? 'off' : ''} ${picked.has(c.uid) ? 'picked' : ''}" data-group="${group}" data-i="${i}" data-uid="${esc(c.uid)}" data-id="${esc(c.id)}" title="${esc(cardName(group, c.id) + ' — ' + cardLine(group, c.id) + (elTip(group, c.id)?.text ? ' · ' + elTip(group, c.id).text : '') + (why ? ' · ' + why : ''))}">${(() => { const e = elTip(group, c.id); return e?.cls ? `<span class="fb-el ${e.cls}">${e.cls === 'adv' ? '▲' : '▼'}</span>` : '' })()}<div class="face">${faceHTML(group, c.id, true)}</div><span class="fb-tag"><b>${esc(cardName(group, c.id))}</b>${esc(cardLine(group, c.id))}</span></button>`;
+    const why = st.turn === 'hero' ? cardBlock(group, i) : '';
+    return `<button class="fb-card ${why ? 'off' : ''}" data-group="${group}" data-i="${i}" data-uid="${esc(c.uid)}" data-id="${esc(c.id)}" title="${esc(cardName(group, c.id) + ' — ' + cardLine(group, c.id) + (elTip(group, c.id)?.text ? ' · ' + elTip(group, c.id).text : '') + (why ? ' · ' + why : ''))}">${(() => { const e = elTip(group, c.id); return e?.cls ? `<span class="fb-el ${e.cls}">${e.cls === 'adv' ? '▲' : '▼'}</span>` : '' })()}<div class="face">${faceHTML(group, c.id, true)}</div><span class="fb-tag"><b>${esc(cardName(group, c.id))}</b>${esc(cardLine(group, c.id))}</span></button>`;
   }
   function handSync() {
     if (!hand || !st) return;
@@ -697,8 +723,6 @@
     row('#fbMove', 'movement'); row('#fbCombat', 'combat');
     hand.querySelector('#fbDraw').innerHTML = `${d.movement.draw.length + d.combat.draw.length}<small>กองจั่ว</small>`;
     hand.querySelector('#fbDiscard').innerHTML = `${d.movement.discard.length + d.combat.discard.length}<small>กองทิ้ง</small>`;
-    hand.classList.toggle('discarding', discardMode);
-    barSync();
   }
 
   /* ---------- full card beside the action (never over the hero or the monster) ---------- */
@@ -848,30 +872,21 @@
   const noAuto = () => ['goat', 'pumpkin'].includes(Q.get('tut')) || Q.get('noauto') === '1';
   function setAuto(on) { if (on && noAuto()) { flash('บทฝึกต่อสู้ · ยังใช้ Auto ไม่ได้ ลองเล่นเองก่อน'); return } auto = on; hudSync(); if (on && !busy && st.turn === 'hero' && !st.outcome) autoTurn() }
 
-  /* ---------- discard for stamina ---------- */
-  function setDiscard(on) { discardMode = on && !busy && st.turn === 'hero' && !st.outcome && (FB.crystals(st) > 0); picked.clear(); hidePreview(); refresh() }
-  function barSync() {
-    let bar = document.getElementById('fbBar');
-    if (!discardMode) { bar?.remove(); return }
-    if (!bar) { bar = document.createElement('div'); bar.id = 'fbBar'; document.body.append(bar) }
-    const n = picked.size;
-    bar.innerHTML = `<span>เลือกไพ่ที่จะทิ้ง <b>${n}</b> ใบ → แรง +${n * FB.STAMINA_PER_DISCARD} (ใช้ 1 คริสตัล)</span><button id="fbDisOk" ${n ? '' : 'disabled'}>ทิ้ง</button><button class="ghost" id="fbDisNo">ยกเลิก</button>`;
-    bar.querySelector('#fbDisOk').onclick = () => doDiscard(); bar.querySelector('#fbDisNo').onclick = () => setDiscard(false);
-  }
-  async function doDiscard() {
-    const picks = [...hand.querySelectorAll('.fb-card.picked')].map(e => ({ group: e.dataset.group, uid: e.dataset.uid, el: e }));
-    if (!picks.length) return;
-    busy = true; hudSync();
-    await flyTo(picks.map(p => p.el), hand.querySelector('#fbDiscard'));
-    const r = FB.discardForStamina(st, picks.map(p => ({ group: p.group, uid: p.uid })));
-    if (r.ok) floatText(FB.hero(st), 'STAMINA +' + r.stamina, '#ffe08a'); else toast(r.reason);
-    discardMode = false; picked.clear(); busy = false; refresh();
+  /* ---------- v98.1006 · spend a crystal: +15 stamina, or draw a fresh hand (replaces discarding cards) ---------- */
+  async function crystalAct(kind) {
+    if (!st || busy || st.outcome || st.turn !== 'hero') return;
+    const r = kind === 'draw' ? FB.redrawHand(st) : FB.crystalStamina(st);
+    if (!r.ok) { flash(r.reason); return }
+    sfx('cast', .3); if (kind === 'draw') { floatText(FB.hero(st), 'สลับไพ่ใหม่', '#bfe8ff'); pend = null } else floatText(FB.hero(st), 'STAMINA +' + r.stamina, '#ffe08a');
+    refresh();
   }
 
   /* ---------- playing cards ---------- */
+  /* v98.1007 · the companion (sib) scolds the first wrong-element card, then refuses every later one (pumpkin quest only: loan.noBad) */
+  const SCOLD_FIRST = [{ who: 'sib', emo: 'angry', text: '{callhero}! ฮิลด้าสอนแล้วไม่ใช่เหรอ ธาตุแพ้ทางตีไปก็เสียแรงเปล่า ๆ' }, { who: 'sib', emo: 'worry', text: 'ครั้งนี้ผ่านไป แต่คราวหน้าข้าไม่ให้ใช้ไพ่แพ้ทางอีกแล้วนะ' }];
+  const SCOLD_NO = [{ who: 'sib', emo: 'angry', text: 'หยุดก่อน! ไพ่ใบนั้นแพ้ทางมัน ฮิลด้าสอนแล้วนะ — เลือกไพ่ธาตุที่ชนะทางสิ' }];
   async function cardClick(b) {
     if (!st || st.turn !== 'hero') return;
-    if (discardMode) { const u = b.dataset.uid; picked.has(u) ? picked.delete(u) : picked.add(u); b.classList.toggle('picked'); barSync(); return }
     const group = b.dataset.group, i = +b.dataset.i, id = b.dataset.id, why = cardBlock(group, i);
     if (why) { flash(why); return }
     if (group === 'movement') {
@@ -881,11 +896,13 @@
       await wait(650); await show.done(); busy = false; refresh(); return;
     }
     const show = showPlay(group, id, cardLine(group, id), b), r = FB.playCombat(st, i);
+    if (!r.ok && r.scold) {   /* v98.1007 · wrong-element card after the first time: the companion refuses, nothing is spent */
+      show.el.remove(); b.style.visibility = ''; busy = true; hudSync(); await runTalk(SCOLD_NO, FB.hero(st)); busy = false; refresh(); flash(r.reason); return }
     if (!r.ok) { show.el.remove(); b.style.visibility = ''; flash(r.reason); return }
     STAT.cards[id] = (STAT.cards[id] || 0) + 1;
     busy = true; hudSync(); if (!r.self) walks = []; pend = null; markAuto();
     await heroAction(r);
-    await show.done(); busy = false; refresh();
+    await show.done(); if (r.scoldFirst) await runTalk(SCOLD_FIRST, FB.hero(st)); busy = false; refresh();
     if (st.outcome) finish();
   }
   async function chargeAttack(unit, duration = 560) {
@@ -1139,7 +1156,7 @@
     if (busy || st.turn !== 'hero' || st.outcome || facing) return;
     pend = null; markAuto(); hidePreview();
     if (auto) faceNearest(FB.hero(st)); else if (!(await pickFacing(null, forced === true))) return;
-    walks = []; setDiscard(false); busy = true; refresh();
+    walks = []; busy = true; refresh();
     if (st.ct) { const r = FB.endTurnCT(st); await playSteps(r.steps); actUnit = null; busy = false; if (st.outcome) { refresh(); finish(); return } await afterAI(); return }
     const allySteps = FB.alliesTurn(st);
     if (allySteps.length) { toast('PARTY PHASE'); await wait(400); await playSteps(allySteps) }
@@ -1183,7 +1200,7 @@
     cave: [
       { t: 'แถบบนสุดคือคิวเทิร์น · กรอบทองคือตัวที่ได้เล่นตอนนี้ — ตอนนี้ตาคุณ' },
       { t: 'คลิกช่องว่างเพื่อเดิน (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z หรือ ↶ ย้อนเดิน', done: () => coachState.moved },
-      { t: 'คลิกศัตรูที่อยู่ในระยะ → แถวไพ่โจมตีที่ใช้ได้ขึ้นข้างตัวมัน (เห็นดาเมจโดยประมาณ) แล้วเลือกใบที่จะตี (ยังไม่ถึงระยะ เกมพาเดินเข้าไปให้)', done: () => st.acted },
+      { t: 'คลิกศัตรูที่อยู่ในระยะ → แถวไพ่โจมตีที่ใช้ได้ขึ้นข้างตัวมัน (เห็นดาเมจโดยประมาณ) แล้วเลือกใบที่จะตี (ยังไม่ถึงระยะ ต้องเดินเข้าไปก่อน)', done: () => (st.attacks || 0) > 0 || st.acted },
       { t: '🔓 ปลดล็อกแล้ว: ปุ่ม Auto (ปุ่มที่เรืองแสง) — ให้เกมเล่นเทิร์นของตัวเอกให้ เลือกไพ่เดิน เลือกไพ่ตี และจบเทิร์นเอง กดอีกครั้งเพื่อหยุด · เหมาะกับศัตรูตัวเล็กที่ซ้ำๆ แต่เจอบอสหรือสนามอันตรายควรเล่นเอง', spot: '#fbAuto' },
       { t: 'กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า — หันเข้าหาศัตรู เพราะโดนตีจากด้านหลังแรงขึ้น ×1.2', done: () => st.turns > coachState.t0 },
       { t: 'ลูกศรใต้ตัวบอกทิศที่แต่ละตัวหัน · อ้อมไปตีศัตรูจากด้านหลังได้ ×1.2 · ล้มศัตรูให้หมดเพื่อชนะ' }],
@@ -1195,7 +1212,7 @@
     /* v98.331 · the first two real fights (prologue quests): Pip's goats teach WALKING / DISTANCE / FACING · the pumpkin patch teaches ATTACKING / TARGETS / ELEMENTS */
     goat: [
       { t: 'ตอนนี้ตาคุณ — คลิกช่องว่างเพื่อเดินเข้าใกล้แพะ (เกมเลือกไพ่เดินให้เอง) · เดินพลาดกด Z ย้อนได้', done: () => coachState.moved },
-      { t: 'แพะวิ่งหนีและขวิดสวนเบาๆ ได้ — ต้อนให้ชิดก่อนค่อยตี · คลิกแพะ แล้วเลือกไพ่โจมตีจากแถวไพ่ที่ขึ้นข้างตัวมัน (มีดาเมจโดยประมาณให้ดู)', done: () => st.acted },
+      { t: 'แพะวิ่งหนีและขวิดสวนเบาๆ ได้ — ต้อนให้ชิดก่อนค่อยตี · คลิกแพะ แล้วเลือกไพ่โจมตีจากแถวไพ่ที่ขึ้นข้างตัวมัน (มีดาเมจโดยประมาณให้ดู)', done: () => (st.attacks || 0) > 0 || st.acted },
       { t: 'ลูกศรใต้ตัวคือทิศที่หัน · ตีจากด้านหลังแรงขึ้น ×1.2 · กด จบเทิร์น (Space) แล้วเลือกทิศหันหน้า', done: () => st.turns > coachState.t0 },
       { t: 'ตัวเอกทั้งสองยังไม่ล้มในเควสนี้ (เลือดลดได้แต่ไม่ต่ำกว่า 1) — ลองเดิน ตี และหันหน้าให้คล่องจนจับแพะครบ' }],
     pumpkin: [
@@ -1207,7 +1224,7 @@
       { t: 'ระวัง! ถ้าฟักทองลูกหนึ่งเริ่มสั่น มันอาจวิวัฒน์ — บอสฟักทองใช้เถาวัลย์ระยะไกลพันธนาการ (เดินไม่ได้ 1 เทิร์น) และตีระยะใกล้เบาๆ' },
       { t: 'ใช้ไพ่ธาตุที่ชนะทาง (ดูลูกศร ▲ บนไพ่หลังคลิกเป้า) และตีจากด้านหลัง ×1.2 · ไม่ต้องกลัว — ตัวเอกเลือดไม่ต่ำกว่า 1' }],
     expedition: [
-      { t: 'แรงหมด? กด ♻ ทิ้งไพ่ฟื้นแรง เลือกไพ่ที่ไม่ใช้ แลกเป็นแรง (ใช้ 1 คริสตัล)' },
+      { t: 'แรงหมด? กด ดูดซับคริสตัล ฟื้นแรง +15 (ใช้ 1 คริสตัล) · หรือ หลอมคริสตัล สลับไพ่ใหม่ทั้งมือ (1 ครั้ง/เทิร์น)' },
       { t: 'หญ้าสูง/มอสคือกำบัง โดนตี −30% · ถอยไปยืนตอนเลือดน้อย' },
       { t: 'การ์ดปีนป่าย กระโจน หินถล่ม ใช้ความสูงให้ได้เปรียบ · ผลักศัตรูตกผาเสีย HP เพิ่ม' }]
   };
@@ -1299,12 +1316,12 @@
     else if (k === 'z' || k === 'backspace') { e.preventDefault(); undoWalk() }
     else if (k === 'a') setAuto(!auto)
     else if (k === 'tab') { e.preventDefault(); const ms = FB.monsters(st).filter(m => m.hp > 0); if (!ms.length) return; const i = ms.findIndex(m => m.id === (pend?.id || st.target)); pend = null; onEnemy(ms[(i + (e.shiftKey ? ms.length - 1 : 1)) % ms.length]) }
-    else if (k === 'enter' && pend) { e.preventDefault(); const m = st.units.find(u => u.id === pend.id); if (m) onEnemy(m) }
+
     else if (/^[1-9]$/.test(k)) { const b = hand?.querySelectorAll('#fbCombat .fb-card')[+k - 1]; if (b) cardClick(b) }
   });
   function click(wp) {
     if (st && st.turn === 'ally' && !busy && !st.outcome && !facing) return allyClick(wp);
-    if (!st || busy || st.outcome || st.turn !== 'hero' || discardMode || facing) return;
+    if (!st || busy || st.outcome || st.turn !== 'hero' || facing) return;
     const g = inv(wp.x, wp.y), to = anchorAt(g);
     const m = FB.monsters(st).find(u => u.hp > 0 && (inBlock(u, g) || (() => { const p = project(u.vu, u.vv); return Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5 })()));
     closePick();
@@ -1348,23 +1365,14 @@
   let pend = null, walks = [], facing = null;
   const handBtn = (group, uid) => hand?.querySelector(`.fb-card[data-group="${group}"][data-uid="${uid}"]`);
   function markAuto() { hand?.querySelectorAll('.fb-card.auto').forEach(e => e.classList.remove('auto')); if (!pend) return; handBtn('combat', pend.combatUid)?.classList.add('auto'); if (pend.moveUid) handBtn('movement', pend.moveUid)?.classList.add('auto') }
+  /* v98.1006 · clicking a foe no card can reach from here: NO walk-and-attack — say why and what to do (walk next to it first with a move card) */
   async function onEnemy(m) {
-    if (pend && pend.id === m.id) { const p = pend; pend = null; markAuto(); await runAttackPlan(p); return }
-    FB.setTarget(st, m.id); sfx('cast', .25); hudSync(); handSync();
-    const p = FB.autoAttack(st, m.id);
-    if (p.reason) { pend = null; markAuto(); floatText(m, 'TARGET', '#ffd25a', true); flash(p.reason); return }
-    const c = st.deck.combat.hand[p.index], mc = p.moveCard != null ? st.deck.movement.hand[p.moveCard] : null, name = cardName('combat', c.id);
-    pend = { id: m.id, to: p.to || null, combatUid: c.uid, moveUid: mc?.uid || null, total: p.pv.total, kill: p.pv.kill }; markAuto();
-    floatText(m, '≈ −' + p.pv.total + (p.pv.kill ? ' ☠' : ''), p.pv.kill ? '#ffe14d' : '#ffd0a0', true);
-    hint((p.to ? 'เดินเข้าไปแล้วใช้ ' : 'ใช้ ') + name + (mc ? ' (+ ' + cardName('movement', mc.id) + ')' : '') + ' · คลิกศัตรูอีกครั้งเพื่อโจมตี');
-  }
-  async function runAttackPlan(p) {
-    if (p.moveUid) { const b = handBtn('movement', p.moveUid); if (!b) return; await cardClick(b) }
-    if (p.to) { await heroMove(p.to); const h = FB.hero(st); if (h.u !== p.to.u || h.v !== p.to.v) return }
-    FB.setTarget(st, p.id); const b = handBtn('combat', p.combatUid); if (b) await cardClick(b);
+    FB.setTarget(st, m.id); sfx('cast', .25); hudSync(); handSync(); pend = null; markAuto();
+    floatText(m, 'TARGET', '#ffd25a', true); flash(FB.attackWhy(st, m.id) || 'ไม่มีไพ่โจมตีที่ถึงเป้านี้');
   }
   async function walkTo(to) {
     const p = FB.autoWalk(st, to); if (p.reason) { flash(p.reason); return }
+    if (p.emergency) { const e = FB.playEmergency(st); if (!e.ok) { flash(e.reason); return } floatText(FB.hero(st), 'เดินฉุกเฉิน +1', '#ffd25a', true); hint('เดินฉุกเฉิน: ไม่มีไพ่เดินที่ใช้ได้ — เดินฟรี 1 ช่อง (ไม่เสียคริสตัล)'); hudSync() }
     if (p.moveCard != null && farInfo && farMap?.has(to.u + ',' + to.v)) p.moveCard = farInfo.index;   /* v98.244 · beyond the free walk: play the card the yellow layer showed (the farthest one), not the smallest that would do */
     if (p.moveCard != null) { const b = handBtn('movement', st.deck.movement.hand[p.moveCard].uid); if (!b) return; await cardClick(b) }
     await heroMove(to);
@@ -1373,7 +1381,7 @@
   /* ---------- v97.08 · undo a walk until the hero acts ---------- */
   function undoWalk() {
     if (busy || !st || (st.turn !== 'hero' && st.turn !== 'ally') || st.outcome) return;
-    if (st.acted || !walks.length) { flash(st.acted ? 'โจมตีแล้ว ย้อนการเดินไม่ได้' : 'ยังไม่ได้เดิน'); return }
+    if (st.acted || (st.attacks || 0) > 0 || !walks.length) { flash(st.acted || (st.attacks || 0) > 0 ? 'โจมตีแล้ว ย้อนการเดินไม่ได้' : 'ยังไม่ได้เดิน'); return }
     const w = walks.pop(), h = FB.actor(st); h.u = w.from.u; h.v = w.from.v; h.vu = h.u + OFF; h.vv = h.v + OFF; h.face = w.face; h.dir = w.dir; st.mp += w.cost;
     pend = null; sfx('cast', .2); floatText(h, 'UNDO', '#bfe8ff', true); refresh();
   }
@@ -1727,7 +1735,7 @@
     }
     const p = project(u.vu, u.vv), back = ['NE', 'NW'].includes(u.dir), flip = ['SW', 'NW'].includes(u.dir), pose = u.hp <= 0 ? 'down' : u.walking ? 'idle' : (['windup', 'strike', 'hit', 'guard'].includes(u.pose) ? u.pose : 'idle');
     if (!ALLY_ART.includes(u.key) && !(pose !== 'idle' && !u.walking && (im(`assets/tactics/${u.key}_${u.dir.toLowerCase()}_${pose}.webp`) || im(`assets/tactics/${u.key}_${back ? 'ne' : 'se'}_${pose}.webp`))) && window.VillagerDraw) { const look = window.VillageLife?.P?.[u.key]?.look || { coat: '#5a6a8a', hair: '#3a2a1a', weapon: 'sword' }, pm = poseMotion(u, t);
-      if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT * CharSize.DRAW.ally / CharSize.NPC_CANVAS_K * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1));   /* v98.126 · ×1.065 = same 1.45-UNIT canvas as bram/luna/mil, × the ⚖ size */ if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
+      if (look.sprite && !OLDPOSE) { drawNpcSprite(g, u, t, p, look, pm, UNIT, sprites(), UNIT * CharSize.DRAW.ally / CharSize.NPC_CANVAS_K * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1) * (window.CharScaleAdjust?.poseFactor(u.key, u.walking && u.hp > 0 ? 'walk' : pose, null, u.dir) || 1));   /* v98.126 · ×1.065 = same 1.45-UNIT canvas as bram/luna/mil, × the ⚖ size */ if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
       g.save(); if (u.hp <= 0) g.globalAlpha *= .5; g.translate(pm.dx * .6, pm.dy - (u.lift || 0)); VillagerDraw(g, look, p.x, p.y, t, { walking: u.walking, face: u.dir, scale: UNIT / 56 * .78, act: u.hp <= 0 ? 'sleep' : u.pose === 'strike' ? 'work' : '' });
       if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .5; VillagerDraw(g, look, p.x, p.y, t, { face: u.dir, scale: UNIT / 56 * .78 }) } g.restore(); if (u.hp > 0) bar(g, p, p.y - UNIT * 1.25, u.shown / u.maxHp, '#7fc8a0'); return }
     /* v97.65: allies with their own SW/NW pictures (ALLY_OWN) use them as they are; everyone else mirrors SE/NE */
@@ -1783,7 +1791,7 @@
     const lift = (u.fly || T.fly) && u.hp > 0 ? UNIT * (.42 + .07 * Math.sin(t * .005 + (u.id.length * 1.7))) : 0, p = { x: p0.x, y: p0.y - lift };
     shadow(g, p0, UNIT * .26 * T.scale * (lift ? .7 - lift / UNIT * .3 : 1));
     if (af) {
-      const h = UNIT * CharSize.MON.base * CharSize.MON.k * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * monNorm(kind, T) * (af.renderHeight || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];
+      const h = UNIT * CharSize.MON.base * CharSize.MON.k * MAPK * (window.CharScaleAdjust?.factor('battle', mid) || 1) * monNorm(kind, T) * (af.renderHeight || 1) * (window.CharScaleAdjust?.poseFactor('enemy:' + kind, String(af.clipId || '').split('-').pop() || 'idle', null, u.dir) || 1), w = h * af.sw / af.sh, pv = af.pivot || [.5, .95];   /* v98.1005 · the size set for this pose in 📐 เรียงท่า (entity enemy:<kind>) */
       evoAura(g, u, p, h, t);
       const ec = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? 1 + .06 * Math.sin(t * .05) : 1, ex = u.evoCharge && t - u.evoCharge < 1800 && u.evoShow ? Math.sin(t * .09) * 3 : 0;
       g.save(); g.translate(p.x + ex, p.y); g.scale(ec, ec); if (af.flip) g.scale(-1, 1); if (u.hp <= 0 && !isLoot) g.globalAlpha *= .55;
@@ -2003,8 +2011,8 @@
   let padCur = null, padOn = false, padAt = 0;
   const padHeroCell = () => { const h = FB.hero(st); return { u: Math.floor(h.u), v: Math.floor(h.v) } };
   /* v98.628 · out of crystals = the turn is over: the facing picker opens by itself (no cancel) and picking a direction ends the turn */
-  setInterval(() => { if (!ON || !st || EDIT || busy || facing || pauseEl || discardMode || st.outcome || st.turn !== 'hero' || FB.crystals(st) > 0) return; if (document.hidden) return; endHeroTurn(true) }, 350);
-  const padReady = () => st && !busy && !st.outcome && st.turn === 'hero' && !discardMode && !facing && !pauseEl;
+  setInterval(() => { if (!ON || !st || EDIT || busy || facing || pauseEl || st.outcome || st.turn !== 'hero' || FB.crystals(st) > 0) return; if (document.hidden) return; endHeroTurn(true) }, 350);
+  const padReady = () => st && !busy && !st.outcome && st.turn === 'hero' && !facing && !pauseEl;
   function padStep(v) {
     if (!padReady()) return; const now = performance.now(); if (now < padAt) return; padAt = now + 150;
     if (!padCur) padCur = padHeroCell();
@@ -2031,6 +2039,6 @@
     return o;
   }
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') padOn = false }, true);
-  window.TownBattle = { fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing || discardMode), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
-    act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, discard: setDiscard, confirmDiscard: doDiscard }, busy: () => busy };
+  window.TownBattle = { fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
+    act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, crystal: crystalAct }, busy: () => busy };
 })();

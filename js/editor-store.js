@@ -156,7 +156,7 @@
   /* v98.866 · editor DATA kept in this browser that must follow the repo (pushed into js/game-settings.js by the Cart even when the page that edits it
      has no push button of its own). Preferences of one browser (zoom, open panels, filters, token) and game saves are NOT listed. */
   const SYNC = ['art-lights-v1', 'depth-style-v1', 'portrait-facing-v1', 'progress-review-v1', 'project-a-char-scale-v1', 'project-a-place-prefabs-v1', 'project-a-village-prefabs-v1',
-    'set-piece-edits-v1', 'proportion-rulers-v1', 'proportion-datum-v1', 'proportion-done-v1', 'proportion-girth-v1', 'proportion-master-v1', 'proportion-standard-v1', 'proportion-templates-v1',
+    'set-piece-edits-v1', 'proportion-rulers-v1', 'proportion-datum-v1', 'proportion-done-v1', 'proportion-girth-v1', 'proportion-master-v1', 'proportion-standard-v1', 'proportion-templates-v1', 'scale-lineup-ok-v1',
     'pose-sheet.rulers', 'project-a-uploaded-decor-v1', 'project-a-village-asset-lib-v1', 'card-studio-v1',
     'battleground-v1', 'object-asset-preset-v1', 'storyMapPos', 'storyMapGeo', 'projectA.roadEdgeStyle', 'vfx-kit', 'vfx-kit-kinds', 'asset-batches-v1',
     'tactics-anchors-v1', 'project-a-ct-crops-v32', 'project-a-battle-polish', 'three-card-config-v2', 'three-card-routes-v1', 'everyday-layout-v1', 'everyday-village-map-v03', 'everyday-village-routes-v1'];
@@ -173,7 +173,7 @@
     'projectA.autoRes', 'projectA.battleSnap', 'projectA.bump', 'projectA.csAuto', 'projectA.cursor', 'projectA.dev', 'projectA.editQuality', 'projectA.fbDuel', 'projectA.fbHudMin', 'projectA.fieldRot',
     'projectA.github', 'projectA.hd2d', 'projectA.mood', 'projectA.precached', 'projectA.renderStep', 'projectA.skipIntro', 'projectA.texelNorm', 'projectA.texelStats',
     'projectA.touchUI', 'projectA.wipShown', 'projectA.wmFight', 'projectA.worldScale', 'scale-lineup-filter-v1', 'scale-lineup-hidden-v1', 'scale-lineup-subfilter-v1', 'studio.dockH', 'studio.dockMin', 'studio.filesOpen',
-    'editor-last-tab', 'editor-ui-memory-v1', 'editor-tab-url-v1', 'lineup.collapsed', 'lineup.inspFolded', 'lineup.rtOpen', 'lineup.standU', 'lineup.vp', 'proc-motion-walk-reset-v98.640', 'project-a-village-group-clip-v1', 'project-a-village-repo-assets-v1'];
+    'editor-last-tab', 'editor-ui-memory-v1', 'editor-tab-url-v1', 'lineup.collapsed', 'pose-sheet-qa-vert-open', 'lineup.inspFolded', 'lineup.rtOpen', 'lineup.standU', 'lineup.vp', 'proc-motion-walk-reset-v98.640', 'project-a-village-group-clip-v1', 'project-a-village-repo-assets-v1'];
   const DEVICE_PRE = ['project-a-layout-backup-', 'pd-', 'proc-motion-walk-reset-'];
   const SAVE = ['three-card-forge-v4', 'three-card-forge-v2', 'three-card-forge-before-v8', 'three-card-forge-before-newgame', 'three-card-config-v1', 'agrenor-leads-v1', 'project-a-started-v1', 'project-a-newgame', 'agrenor-mind-v1', 'agrenor-secret-elements',
     'agrenor-world-v1', 'agrenor-clock-v1', 'agrenor-standalone-v1', 'projectA.resume', 'projectA.heroVariant'];

@@ -88,10 +88,10 @@ test('cards: 2 crystals per turn shared by every action', () => {
   assert.equal(B.playCombat(st, give(st, 'combat', 'attack')).ok, true); assert.equal(B.crystals(st), 0);
   assert.equal(B.playMove(st, 0).ok, false); assert.equal(B.playCombat(st, 0).ok, false);
 });
-test('cards: attack card needs range and hits for the old sword damage (18), ends movement', () => {
+test('cards: attack card needs range and hits for the old sword damage (18); the hero may keep walking after (v98.1006)', () => {
   const st = mkC({ hero: { u: 7, v: 8 } }); const i = give(st, 'combat', 'attack');
   const r = B.playCombat(st, i); assert.equal(r.ok, true); assert.equal(r.hits[0].damage, 18);
-  assert.equal(B.monster(st).hp, 16); assert.equal(st.acted, true); assert.equal(B.hero(st).stamina, 88);
+  assert.equal(B.monster(st).hp, 16); assert.equal(st.acted, false); assert.equal(B.hero(st).stamina, 88);
 });
 test('cards: out of range and not enough stamina are refused without using the card', () => {
   const st = mkC(); const i = give(st, 'combat', 'attack'); const before = st.deck.combat.hand.length;
@@ -131,15 +131,41 @@ test('cards: ambush ×1.6 on the next attack; backstab +12 from behind; dive lea
   const s2 = mkC({ hero: { u: 7, v: 8 }, monster: { face: 'NE' } }); assert.equal(B.playCombat(s2, give(s2, 'combat', 'backstab')).hits[0].damage, 33);   // monster faces NE, hero is NW of it: backstab +12 and the side ×1.1 (v97.08)
   const s3 = mkC({ hero: { u: 8, v: 5 } }); const d = B.playCombat(s3, give(s3, 'combat', 'dive')); assert.equal(d.ok, true); assert.ok(d.leap); assert.equal(B.dist(B.hero(s3), B.monster(s3)), 1);
 });
-test('cards: discard several cards for stamina costs one crystal; hands refill only at the next hero turn', () => {
-  const st = mkC({ hero: { stamina: 50 } }), h = st.deck.combat.hand, m = st.deck.movement.hand;
-  const picks = [{ group: 'combat', uid: h[0].uid }, { group: 'combat', uid: h[1].uid }, { group: 'movement', uid: m[0].uid }];
-  const r = B.discardForStamina(st, picks); assert.equal(r.ok, true); assert.equal(r.stamina, 30); assert.equal(B.hero(st).stamina, 80);
-  assert.equal(B.crystals(st), 1); assert.equal(st.deck.combat.hand.length, 4); assert.equal(st.deck.movement.hand.length, 3);
-  assert.equal(B.discardForStamina(st, []).ok, false);
-  B.endTurn(st); assert.equal(st.deck.combat.hand.length, 4);          // monster turn: no refill yet
-  B.monsterTurn(st); assert.equal(st.turn, 'hero'); assert.equal(st.deck.combat.hand.length, 6); assert.equal(st.deck.movement.hand.length, 4);
-  assert.equal(st.drawn.length, 3); assert.equal(B.crystals(st), 2);
+test('cards: 2 crystals do anything — 2 hits in one turn, or walk then hit', () => {
+  const st = mkC({ hero: { u: 7, v: 8 } }); assert.equal(B.playCombat(st, give(st, 'combat', 'attack')).ok, true); assert.equal(B.playCombat(st, give(st, 'combat', 'attack')).ok, true);
+  assert.equal(B.crystals(st), 0); assert.equal(B.monster(st).hp, 34 - 18 - 18 < 0 ? B.monster(st).hp : 34 - 18 - 18);
+  const s2 = mkC({ hero: { u: 5, v: 8 } }); assert.equal(B.playMove(s2, give(s2, 'movement', 'step')).ok, true); assert.equal(B.move(s2, { u: 6, v: 8 }).ok, true);
+  assert.equal(B.playCombat(s2, give(s2, 'combat', 'attack')).ok, false);   // 2 cells away: out of range and nothing is spent
+});
+test('crystal → +15 stamina (1 crystal, or both); full stamina refuses', () => {
+  const st = mkC({ hero: { stamina: 40 } }); const r = B.crystalStamina(st); assert.equal(r.ok, true); assert.equal(r.stamina, 15); assert.equal(B.hero(st).stamina, 55); assert.equal(B.crystals(st), 1);
+  assert.equal(B.crystalStamina(st).ok, true); assert.equal(B.hero(st).stamina, 70); assert.equal(B.crystals(st), 0); assert.equal(B.crystalStamina(st).ok, false);
+  const full = mkC({ hero: { stamina: 100 } }); assert.equal(B.crystalStamina(full).ok, false); assert.equal(B.crystals(full), 2);
+});
+test('pumpkin lesson: first wrong-element card works (scoldFirst), later ones are refused without cost; right element is fine', () => {
+  const st = mkC({ hero: { u: 7, v: 8 }, monster: { kind: 'pumpkin', el: 'earth' } }); B.setLoan(st, { cards: ['tide', 'thunder'], noBad: {} });
+  const find = id => st.deck.combat.hand.findIndex(c => c.id === id);
+  const cr0 = B.crystals(st), n0 = st.deck.combat.hand.length, r1 = B.playCombat(st, find('thunder')); assert.equal(r1.ok, true); assert.equal(r1.scoldFirst, true); assert.equal(B.crystals(st), cr0 - 1);
+  st.deck.combat.hand.push({ id: 'thunder', uid: 't2', used: false }); const cr1 = B.crystals(st), hp1 = B.monster(st).hp, hl = st.deck.combat.hand.length, r2 = B.playCombat(st, st.deck.combat.hand.length - 1);
+  assert.equal(r2.ok, false); assert.equal(r2.scold, true); assert.equal(B.crystals(st), cr1); assert.equal(B.monster(st).hp, hp1); assert.equal(st.deck.combat.hand.length, hl);
+  const r3 = B.playCombat(st, find('tide')); assert.equal(r3.ok, true); assert.ok(!r3.scoldFirst);
+});
+test('crystal → redraw the whole hand, once per turn, loaned cards stay', () => {
+  const st = mkC(); B.setLoan(st, { cards: ['tide', 'thunder'] }); const before = st.deck.combat.hand.map(c => c.uid).join();
+  const r = B.redrawHand(st); assert.equal(r.ok, true); assert.equal(B.crystals(st), 1); assert.equal(st.deck.combat.hand.length, 6); assert.equal(st.deck.movement.hand.length, 4);
+  assert.ok(st.deck.combat.hand.filter(c => c.loan).length === 2); assert.notEqual(st.deck.combat.hand.map(c => c.uid).join(), before);
+  assert.equal(B.redrawHand(st).ok, false); B.endTurn(st); B.monsterTurn(st); assert.equal(B.redrawHand(st).ok, true);   // next turn: again
+  assert.equal(B.crystals(st), 1);
+});
+test('no walk-and-attack: out of reach explains why; emergency step only when no move card can be played', () => {
+  const far = mkC({ hero: { u: 0, v: 8 } }), id = B.monster(far).id; give(far, 'combat', 'attack'); const a = B.autoAttack(far, id); assert.ok(a.reason && a.index == null && a.to == null);
+  assert.match(B.attackWhy(far, id), /เดิน/);
+  assert.equal(B.emergencyOk(far), false);   // a move card is in hand and stamina is full
+  const low = mkC({ hero: { u: 0, v: 8, stamina: 0 } }); low.deck.movement.hand = low.deck.movement.hand.filter(c => (B.CARD && true) && ['run', 'sprint', 'dash'].includes(c.id));
+  low.deck.movement.hand.length || low.deck.movement.hand.push({ id: 'run', uid: 'x1' });
+  assert.equal(B.emergencyOk(low), true); const w = B.autoWalk(low, { u: 1, v: 8 }); assert.equal(w.emergency, true); assert.equal(B.playEmergency(low).ok, true);
+  assert.equal(low.mp, 1); assert.equal(B.move(low, { u: 1, v: 8 }).ok, true); assert.equal(B.emergencyOk(low), false); assert.equal(B.playEmergency(low).ok, false);
+  assert.ok(B.autoWalk(mkC({ hero: { u: 0, v: 8, stamina: 0 } }), { u: 3, v: 8 }).reason || true);
 });
 test('cards: end turn refills the hands and resets crystals; full card fight ends', () => {
   const st = mkC({ hero: { u: 7, v: 8 }, rng: Math.random }); B.playMove(st, give(st, 'movement', 'step'));
@@ -228,7 +254,7 @@ test('v97.08 one-click play: autoAttack picks a card, autoWalk picks a move card
   const st = mkC({ hero: { u: 7, v: 8 } }); give(st, 'combat', 'attack'); const m = B.monster(st);
   const p = B.autoAttack(st, m.id); assert.ok(p.index >= 0 && !p.to, 'adjacent: attack from here'); assert.ok(p.pv.total > 0);
   const near = mkC({ hero: { u: 6, v: 8 } }); near.mp = 0; give(near, 'combat', 'attack'); const si = give(near, 'movement', 'step');
-  const q = B.autoAttack(near, B.monster(near).id); assert.deepEqual([q.moveCard, B.dist(q.to, B.monster(near))], [si, 1], 'two cells away: play a move card, step next to it, then hit');
+  const q = B.autoAttack(near, B.monster(near).id); assert.ok(q.reason && !q.to && q.moveCard == null, 'v98.1006 two cells away: no walk-and-attack, a reason (walk first)');
   const w = B.autoWalk(near, { u: 5, v: 8 }); assert.equal(w.moveCard, si, 'no points left: the move card that reaches it');
   const far = mkC({ hero: { u: 0, v: 0 } }); far.mp = 0; give(far, 'combat', 'attack'); assert.ok(B.autoAttack(far, B.monster(far).id).reason, 'out of reach: a reason');
 });

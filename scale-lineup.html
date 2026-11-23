@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th"><head><script src="js/editor-ui-memory.js?v=v98.974"></script><meta charset="utf-8"><link rel="icon" type="image/webp" href="assets/favicon.webp"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Scale Lineup · เทียบสเกลตัวละคร</title>
-<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/editor-store.js?v=v98.969"></script><script src="js/key-layout.js?v=1"></script><link rel="stylesheet" href="css/town-font.css">
+<link rel="stylesheet" href="css/thai-font.css?v=1"><script src="js/editor-store.js?v=v98.1002"></script><script src="js/key-layout.js?v=1"></script><link rel="stylesheet" href="css/town-font.css">
 <style>
 :root{--bg:#f4f1e8;--panel:#fffdf6;--ink:#2a2418;--muted:#7a6e55;--line:#d6cdb4;--gold:#c9a45a;--ok:#2f7d3a;--warn:#b0701a;--bad:#a8402f;--ruler:#8a7a52}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px VillageThai,"Noto Sans Thai",system-ui,sans-serif}
@@ -25,7 +25,7 @@ main{display:grid;grid-template-columns:230px 1fr 270px;gap:12px;padding:12px 16
 #stage .tick span{position:absolute;left:4px;top:-15px}
 #stage .base{position:absolute;left:0;right:0;border-top:2px solid var(--ink)}
 #stage .nm{position:absolute;font-size:11px;text-align:center;transform:translateX(-50%);white-space:nowrap}
-#stage .nm i{font-style:normal;color:var(--muted)}
+#stage .nm i{font-style:normal;color:var(--muted)}#stage .nm.ok,.mg-ok{background:#d3ebfb;border-radius:8px;padding:1px 6px}#stage .nm.ok.sel{background:#d3ebfb;border:2px solid #2f9a4a}
 .hint{color:var(--muted);font-size:12px;margin:6px 0 0}
 dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0;font-size:13px}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
 code{font-size:12px}
@@ -124,12 +124,12 @@ addEventListener('error',e=>{if(e.message)window.lineupLoading('Scale Lineup เ
 <p class="hint" id="note"></p></section>
 <aside class="card"><button id="inspToggle" type="button" aria-expanded="true" title="ยุบหน้าต่างปรับขนาดไปด้านขวา เพื่อดู Scale Lineup เต็ม ๆ">▶ ยุบ</button><div id="inspBody"><div id="insp"></div><div id="ctl"></div></div></aside>
 </main>
-<script src="js/village-layout-v67.js?v=v98.920"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/game-settings.js?v=v98.894"></script><script src="js/char-size.js?v=v98.572"></script><script src="js/character-scale-adjust-data.js?v=v98.894"></script><script src="js/character-scale-adjust.js?v=v98.948"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.976"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.936"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
+<script src="js/village-layout-v67.js?v=v98.920"></script><script src="js/map-scale.js?v=v98.380"></script><script src="js/game-settings.js?v=v98.894"></script><script src="js/char-size.js?v=v98.572"></script><script src="js/character-scale-adjust-data.js?v=v98.894"></script><script src="js/character-scale-adjust.js?v=v98.948"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.993"></script><script src="js/proportion-tool.js?v=v98.411"></script><script src="js/proportion-adjust.js?v=v98.936"></script><script src="js/proportion-zones.js?v=v98.413"></script><script src="js/proportion-datum.js?v=v98.456"></script><script src="js/proportion-rulers.js?v=v98.444"></script>
 <script>
 'use strict';
 /* v98.40 · Scale Lineup phase 1 — everything is MEASURED from the real pictures, nothing is saved.
    on-screen height (UNIT = one battle cell) = silhouette height ÷ picture height × the size the game draws the picture at:
-     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.996
+     hero  → 1.6 UNIT per 384 canvas      (js/town-battle.js?v=v98.1010
      ally  → 1.45 UNIT per 384 canvas     (CHARACTER_SCALE.drawSize.ally)
      monster → 1.6 × scale × 0.8 UNIT per picture height (drawMonster, static picture; animated MonsterArt frames use renderHeight, not covered yet)
    metres = on-screen height ÷ hero's on-screen height × 1.70 m (the hero is the yardstick). Village = same factors (approximation, phase 3 wires the real cast scales). */
@@ -300,7 +300,7 @@ async function build() {
   if (DOCK) showNow();   /* v98.962 · the row is usable now; the monsters below keep loading and the row refreshes when they arrive */
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=' + (window.GAME_VERSION?.v || 'v98.959'))).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
+    const src = await (await fetch('js/town-battle.js?v=v98.1010' + (window.GAME_VERSION?.v || 'v98.959'))).text(), blk = src.slice(src.indexOf('const MON = {'), src.indexOf('};', src.indexOf('const MON = {')));
     const MONS = [...blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)];
     await Promise.all(MONS.map(m => load(`assets/enemies/${m[4]}.webp`)));   /* v98.962 · all at once (they were fetched one by one) */
     for (const m of MONS) {
@@ -325,7 +325,7 @@ async function build() {
     }
   } catch (e) { console.warn('extra monsters not read', e) }
 }
-let ctx = 'battle', sel = 'hero', ghost = true, sorted = false;
+let ctx = 'battle', sel = 'hero', ghost = true, sortMode = '';   /* v98.1002 · sortMode: '' normal · 'h' height · 'ok' Scale OK first */
 const isW = e => !!e.group;
 /* v98.65 · ⚖ phase 2: size adjustments. ADJ = the draft being edited (starts as the committed js/character-scale-adjust-data.js, or the unsaved draft kept in this browser). */
 const DRAFT_KEY = 'projectA.scaleAdjustDraft', SAVED = JSON.parse(JSON.stringify(window.CHARACTER_SCALE_ADJUST || { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }));
@@ -344,13 +344,13 @@ const eff = e => isW(e) ? 1 : CharScaleAdjust.factor('main', AK(e.id), { global:
 const dirty = () => JSON.stringify(clean(ADJ)) !== JSON.stringify(clean(SAVED));
 function clean(a) { const o = { version: 1, global: {}, scene: { battle: {}, village: {}, world: {} } }; { const pz = {}; for (const [id, mp] of Object.entries(a.pose || {})) for (const [po, v] of Object.entries(mp || {})) if (Math.abs(v - 1) > .0005) (pz[id] ||= {})[po] = +v.toFixed(4); if (Object.keys(pz).length) o.pose = pz }   /* v98.465 · per-pose factors (crouching poses are drawn lower) */ for (const [k, v] of Object.entries(a.global || {})) if (Math.abs(v - 1) > .0005) o.global[k] = +v.toFixed(4); for (const c of ['battle', 'village', 'world']) for (const [k, v] of Object.entries(a.scene?.[c] || {})) if (Math.abs(v - 1) > .0005) o.scene[c][k] = +v.toFixed(4); return o }
 const persistDraft = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(clean(ADJ))); localStorage.setItem(DRAFT_KEY + '.base', JSON.stringify(clean(SAVED))) } catch (e) { } if (ST) try { parent.dispatchEvent(new CustomEvent('studio-scale-changed')) } catch (e) { } };
-let STEP = .5, ZOOM = 1, ALPHA = 1, SHADOW = false, FOOT = false, GUIDES = false, DIR = 'SW', POSE = 'idle';
+let STEP = .5, ZOOM = 1, ALPHA = 1, DIR = 'SW', POSE = 'idle';
 const refE = () => ENTRIES.find(e => lookOfId(e.id) === 'male') || ENTRIES.find(e => e.id === 'hero');   /* v98.458 · the yardstick is the MALE look, whichever look the studio has open */
 const heroU = () => refE().ctx[ctx].units, metres = (e, c = ctx) => isW(e) ? e.ctx.village.px / PXM_V : e.ctx[c].units / refE().ctx[c].units * HERO_M * eff(e, c);
 const heroE = refE;
 /* world tabs: the hero stands first as the yardstick, then the pieces of that tab */
 const visible = () => { const base = () => ENTRIES.filter(e => !isW(e) && e.ctx[ctx] && passF(e)), human = () => { const h = base().filter(e => e.kind !== 'monster'); return h.length ? h : base() };   /* v98.417 · the proportion view leaves monsters out (no head : body to judge) unless monsters are all that the filter leaves */
-  const a = tab === 'ratio' ? human() : tab === 'char' || tab === 'field' ? base() : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sorted ? a.sort((x, y) => metres(y) - metres(x)) : a };
+  const a = tab === 'ratio' ? human() : tab === 'char' || tab === 'field' ? base() : [heroE(), ...ENTRIES.filter(e => e.group === tab)]; return sortMode === 'h' ? a.sort((x, y) => metres(y) - metres(x)) : sortMode === 'ok' ? a.map((e, i) => [e, i]).sort((x, y) => (OK.has(y[0].id) - OK.has(x[0].id)) || x[1] - y[1]).map(x => x[0]) : a };
 const rangeOf = e => { if (!e.fixed) return ['', 'ไม่มีค่าตรึง']; const m = metres(e); return m < e.ref[0] ? ['warn', 'เล็กไป'] : m > e.ref[1] ? ['warn', 'ใหญ่ไป'] : ['ok', 'พอดี'] };
 function chip(e) { if (isW(e)) { const [k, t] = rangeOf(e); return `<span class="chip ${k}">${t}</span>` } const r = metres(e) / HERO_M; return isRefId(e.id) ? '<span class="chip ok">อ้างอิง</span>' : `<span class="chip ${r > .5 && r < 1.8 ? 'ok' : 'warn'}">${Math.round(r * 100)}%</span>` }
 /* choosing a character here also selects it in the studio's Animation tab */
@@ -380,16 +380,13 @@ function render() {
   st.style.height = (H + 36) + 'px'; st.style.width = W + 'px'; let h = '';
   for (let m = 0; m <= maxM + 1e-6; m += STEP) h += `<div class="tick" style="top:${base - m * ppm}px"><span>${m.toFixed(1)} m</span></div>`;
   h += `<div class="base" style="top:${base}px"></div>`;
-  if (GUIDES) for (const [t, f] of [['หัว', 1], ['ตา', .93], ['ไหล่', .82], ['เอว', .58], ['เข่า', .28]]) h += `<div class="tick" style="top:${base - HERO_M * f * ppm}px;border-color:#c9893a"><span style="left:auto;right:4px;color:#c9893a">${t}</span></div>`;
   const hc = heroE().ctx[ctx];
   V.forEach((e, i) => {
     const c = e.ctx[ctx], cx = xs[i], px = metres(e) * ppm, k = px / c.m.H, w = c.m.w * k, hh = c.m.h * k, left = cx - ((c.m.x0 + c.m.x1) / 2) * k, top = base - (c.m.bottom + 1) * k;
     if (ghost && !isRefId(e.id)) { const gk = HERO_M * ppm / hc.m.H; h += `<img class="ghost" alt="" src="${hc.url || hc.src}" style="${hc.flip ? 'transform:scaleX(-1);' : ''}width:${hc.m.w * gk}px;left:${cx - ((hc.m.x0 + hc.m.x1) / 2) * gk}px;top:${base - (hc.m.bottom + 1) * gk}px">` }
     const src = c.url || c.src, fl = c.flip ? 'transform:scaleX(-1);' : '';
-    if (SHADOW) h += `<div style="position:absolute;left:${cx - w * .22}px;top:${base - 5}px;width:${w * .44}px;height:10px;border-radius:50%;background:rgba(0,0,0,.28)"></div>`;
-    if (FOOT) h += `<div style="position:absolute;left:${cx}px;top:${base - 18 * ZOOM}px;height:${18 * ZOOM}px;border-left:1px solid #c0392b"></div>`;
     h += `<img class="ch${isSel(e.id) ? ' sel' : ''}" data-c="${e.id}" alt="${e.name}" src="${src}" style="${fl}width:${w}px;height:${hh}px;left:${left}px;top:${top}px;opacity:${e.id === 'hero' ? 1 : ALPHA}">`;
-    h += `<div class="nm${isSel(e.id) ? ' sel' : ''}" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i></div>`;
+    h += `<div class="nm${isSel(e.id) ? ' sel' : ''}${OK.has(e.id) ? ' ok' : ''}" title="${OK.has(e.id) ? 'Scale OK' : ''}" style="left:${cx}px;top:${base + 6}px">${e.name}<br><i>${isW(e) && !e.fixed ? '~' : ''}${metres(e).toFixed(2)} m${!isW(e) && Math.abs(eff(e) - 1) > .0005 ? ' · ' + Math.round(eff(e) * 100) + '%' : ''}</i></div>`;
   });
   st.innerHTML = h;
   /* v98.388 · pick by the character's CENTRE line, not by its picture box (the transparent box of the next picture covered the right half → the hit looked shifted left) */
@@ -1126,6 +1123,25 @@ const SUBKEY = 'scale-lineup-subfilter-v1'; let SUBF = { beast: true, hum: true,
 const monGroup = e => MGOF[e.id.slice(2)] || 'oth';
 const HIDKEY = 'scale-lineup-hidden-v1'; let HIDDEN = new Set(); try { HIDDEN = new Set(JSON.parse(localStorage.getItem(HIDKEY) || '[]')) } catch (e) { }
 const saveHidden = () => { try { localStorage.setItem(HIDKEY, JSON.stringify([...HIDDEN])) } catch (e) { } };   /* v98.452 · characters the player hid from the lineup (the hero stays: it is the yardstick) */
+/* v98.1002 · 🗂 จัดการ: every character of the lineup in one list — tick ซ่อน (hide from the lineup) and tick Scale OK (= finished; light-blue name label on the stage). The hero cannot be hidden (it is the yardstick). */
+const OKKEY = 'scale-lineup-ok-v1'; let OK = new Set(); try { OK = new Set(JSON.parse(localStorage.getItem(OKKEY) || '[]')) } catch (e) { }
+const saveOk = () => { try { localStorage.setItem(OKKEY, JSON.stringify([...OK])) } catch (e) { } };
+function openManage() {
+  document.getElementById('mgDlg')?.remove(); const dl = document.createElement('dialog'); dl.id = 'mgDlg'; dl.style.cssText = 'width:min(640px,94vw);max-height:86vh;padding:0;border:2px solid #315d46;border-radius:12px;background:#fffdf6;color:#222';
+  dl.innerHTML = `<div style="padding:10px 14px;display:flex;flex-direction:column;gap:8px;max-height:84vh"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b style="font-size:15px">🗂 จัดการตัวละครใน Lineup</b><span id="mgCount" class="hint"></span><span style="flex:1"></span><button id="mgUnhide">👁 เลิกซ่อนทั้งหมด</button><button id="mgClose">✕ ปิด</button></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><input id="mgQ" type="search" placeholder="ค้นหาชื่อ…" style="flex:1;min-width:140px;padding:4px 8px"><label style="font-size:13px"><input type="checkbox" id="mgTodo"> เฉพาะที่ยังไม่ Scale OK</label></div>
+    <div style="overflow:auto;border:1px solid #d6d9c8;border-radius:8px"><table id="mgT" style="width:100%;border-collapse:collapse;font-size:13px"></table></div></div>`;
+  document.body.append(dl); const $m = id => dl.querySelector('#' + id);
+  const all = () => ENTRIES.filter(e => !isW(e) && e.ctx[ctx]), catName = e => (CATS.find(c => c[0] === catOf(e)) || [, ''])[1];
+  const fix = () => { const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id };
+  const paint = () => { const q = $m('mgQ').value.trim().toLowerCase(), todo = $m('mgTodo').checked, A = all(), rows = A.filter(e => (!q || (e.name + ' ' + e.id).toLowerCase().includes(q)) && (!todo || !OK.has(e.id)));
+    const nOk = A.filter(e => OK.has(e.id)).length, nH = A.filter(e => HIDDEN.has(e.id)).length; $m('mgCount').textContent = `Scale OK ${nOk}/${A.length} · ซ่อน ${nH}`; $m('mgUnhide').disabled = !HIDDEN.size;
+    $m('mgT').innerHTML = `<thead><tr style="position:sticky;top:0;background:#eef2e4"><th style="text-align:left;padding:5px 8px">ตัวละคร</th><th style="text-align:left">หมวด</th><th title="ซ่อนออกจาก Lineup">ซ่อน</th><th title="ปรับสัดส่วนเสร็จแล้ว">Scale OK</th></tr></thead><tbody>` + rows.map(e => `<tr data-id="${e.id}" style="border-top:1px solid #eceedf"><td style="padding:4px 8px"><span class="${OK.has(e.id) ? 'mg-ok' : ''}">${e.name}</span></td><td style="color:#6a6f5c">${catName(e)}</td><td style="text-align:center"><input type="checkbox" data-hide ${HIDDEN.has(e.id) ? 'checked' : ''} ${e.id === 'hero' ? 'disabled title="ตัวเอกซ่อนไม่ได้ (เป็นไม้วัด)" style="opacity:.35"' : ''}></td><td style="text-align:center"><input type="checkbox" data-ok ${OK.has(e.id) ? 'checked' : ''}></td></tr>`).join('') + (rows.length ? '' : '<tr><td colspan="4" style="padding:10px;text-align:center;color:#888">ไม่มีรายการ</td></tr>') + '</tbody>' };
+  dl.addEventListener('change', ev => { const t = ev.target, id = t.closest('tr')?.dataset.id; if (!id) return;
+    if (t.matches('[data-hide]') && id !== 'hero') { t.checked ? HIDDEN.add(id) : HIDDEN.delete(id); saveHidden(); PICKED.delete(id); fix() } else if (t.matches('[data-ok]')) { t.checked ? OK.add(id) : OK.delete(id); saveOk() } else return; paint(); viewCtl(); render() });
+  $m('mgQ').oninput = paint; $m('mgTodo').onchange = paint; $m('mgUnhide').onclick = () => { HIDDEN.clear(); saveHidden(); paint(); viewCtl(); render() }; $m('mgClose').onclick = () => dl.close(); dl.addEventListener('close', () => dl.remove());
+  paint(); dl.showModal();
+}
 const passF = e => isW(e) || (!HIDDEN.has(e.id) && FILTER[catOf(e)] && (e.kind !== 'monster' || (SUBF[monGroup(e)] && (e.unwired ? SUBF.unwired : SUBF.wired))));
 function viewCtl() {
   const sel2 = (id, opts, val) => `<select id="${id}">${opts.map(([v, t]) => `<option value="${v}"${String(v) === String(val) ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
@@ -1138,12 +1154,12 @@ function viewCtl() {
   if (!world && FILTER.mon) h += `<div class="tg"><small>มอนสเตอร์ · แยกชนิด</small><div class="tr">${MGROUPS.map(([k, t]) => `<button data-sf="${k}" aria-pressed="${SUBF[k]}">${t}</button>`).join('')}<button data-sf="wired" aria-pressed="${SUBF.wired}" title="ตัวที่สนามรบใช้อยู่แล้ว (ตาราง MON)">✔ ใช้ในเกมแล้ว</button><button data-sf="unwired" aria-pressed="${SUBF.unwired}" title="มีภาพ/อนิเมชันใน asset แล้ว แต่ยังไม่ได้ต่อเข้าสนามรบ — ปรับขนาดเก็บไว้ล่วงหน้าได้">⏳ ยังไม่ต่อเกม</button></div></div>`;
   if (tab === 'char' || tab === 'ratio' || tab === 'field') { const nv = visible().filter(e => PICKED.has(e.id)).length; h += `<div class="tg"><small>ปรับหลายตัวพร้อมกัน</small><div class="tr"><button id="bMulti" aria-pressed="${MULTI}" title="เปิดแล้วคลิกตัวละครเพื่อติ๊กเลือก จากนั้นปุ่ม −5 −1 +1 +5 ที่แผงขวาจะปรับทุกตัวที่เลือก">☑ เลือกหลายตัว</button>${MULTI ? `<button id="bPickAll" title="ติ๊กทุกตัวที่เห็นอยู่ (ตามตัวกรอง)">เลือกทั้งหมดที่เห็น</button><button id="bPickNone">ล้าง</button><span class="zv">เลือกแล้ว ${nv} ตัว</span>` : ''}</div></div>` }
   if (tab === 'ratio') h = `<div class="tg"><small>มุมมอง</small><div class="tr"><button id="vwRul" aria-pressed="false" title="กลับไปไม้วัดความสูงจริง">📏 กลับไม้วัดความสูงจริง</button></div></div>` + h;   /* v98.962 · only the ruler remains; the datum view (opened by 📍 / 📐 on a pose cell) keeps a way back */
-  if (!world && tab !== 'maps') { const nh = [...HIDDEN].filter(id => ENTRIES.some(x => x.id === id)).length, tgt = MULTI ? [...PICKED] : [sel], can = tgt.some(id => id && id !== 'hero' && !HIDDEN.has(id));
-    h += `<div class="tg"><small>ซ่อนตัว</small><div class="tr"><button id="bHide" ${can ? '' : 'disabled'} title="ซ่อนตัวที่เลือกออกจาก Lineup (ตัวหลักซ่อนไม่ได้ เพราะเป็นไม้วัด)">🙈 ซ่อน${MULTI ? 'ตัวที่ติ๊ก' : 'ตัวนี้'}</button><button id="bShowAll" ${nh ? '' : 'disabled'} title="เอาตัวที่ซ่อนไว้กลับมาแสดงทั้งหมด">👁 แสดงทั้งหมด${nh ? ' (ซ่อนอยู่ ' + nh + ')' : ''}</button></div></div>` }
+  if (!world && tab !== 'maps') { const nh = [...HIDDEN].filter(id => ENTRIES.some(x => x.id === id)).length, no = [...OK].filter(id => ENTRIES.some(x => x.id === id)).length;
+    h += `<div class="tg"><small>ตัวละครใน Lineup</small><div class="tr"><button id="bManage" title="รายการตัวละครทั้งหมดใน Lineup: ติ๊กซ่อน · ติ๊ก Scale OK (ปรับสัดส่วนเสร็จแล้ว)">🗂 จัดการ${nh || no ? ' (ซ่อน ' + nh + ' · OK ' + no + ')' : ''}</button></div></div>` }
   /* v98.962 · the 'Datum อัตโนมัติ / Auto Datum ทั้งหมด' button is removed (owner 23 Nov) */
-  if (tab !== 'maps') h += `<div class="tg"><small>จัดเรียง</small><div class="tr"><button id="bSort" aria-pressed="${sorted}" title="เรียงจากสูงสุดไปต่ำสุด แทนลำดับปกติ">↕ เรียงตามความสูง</button></div></div>`;
+  if (tab !== 'maps') h += `<div class="tg"><small>เรียง</small><div class="tr"><select id="bSort" title="เรียงตัวละครบนเวที">${[['', 'ตามลำดับปกติ'], ['h', 'ความสูง (สูง → ต่ำ)'], ['ok', 'Finished (Scale OK ขึ้นหัวแถว)']].map(([v, t]) => `<option value="${v}"${v === sortMode ? ' selected' : ''}>${t}</option>`).join('')}</select></div></div>`;
   if (zoomTab) h += `<div class="tg"><small>ซูม</small><div class="tr"><button class="sq" id="zOut" title="ซูมออก">−</button><span class="zv">${Math.round(ZOOM * 100)}%</span><button class="sq" id="zIn" title="ซูมเข้า">+</button></div></div>`;
-  if (stageTab) h += `<div class="tg"><small>ตัวช่วยดู</small><div class="tr"><button id="vGhost" aria-pressed="${ghost}" title="เงาจางของตัวเอกซ้อนหลังทุกตัว ไว้เทียบความสูง">👤 เงาตัวเอก</button><button id="vShadow" aria-pressed="${SHADOW}" title="วงเงาใต้เท้า">◔ เงาพื้น</button><button id="vFoot" aria-pressed="${FOOT}" title="ขีดแนวตั้งที่จุดเท้า">┃ จุดเท้า</button><button id="vGuides" aria-pressed="${GUIDES}" title="เส้นนอนบอกระดับ หัว/ตา/ไหล่/เอว/เข่า ของตัวเอก">≡ เส้นระดับตัวเอก</button></div></div>`;
+  if (stageTab) h += `<div class="tg"><small>ตัวช่วยดู</small><div class="tr"><button id="vGhost" aria-pressed="${ghost}" title="เงาจางของตัวเอกซ้อนหลังทุกตัว ไว้เทียบความสูง">👤 เงาตัวเอก</button></div></div>`;
   if (stageTab) h += `<details><summary>⚙ ไม้วัด</summary><div class="setrow"><label>ขีดไม้บรรทัด ${sel2('vStep', [[.5, 'ทุก 0.5 m'], [.25, 'ทุก 0.25 m'], [.1, 'ทุก 0.1 m']], STEP)}</label><label>ความชัดตัวละครอื่น <input id="vAlpha" type="range" min="15" max="100" value="${Math.round(ALPHA * 100)}" style="width:90px"></label><label title="ความสูงตัวเอกที่ใช้เป็นไม้วัด (เมตร)">ตัวเอกสูง <input id="vHero" type="number" step="0.01" min="1" max="2.5" value="${HERO_M}" style="width:60px"> m</label></div></details>`;
   $('toolbar').innerHTML = h; const el = id => document.getElementById(id), re = () => { viewCtl(); render() };
   $('toolbar').querySelectorAll('[data-f]').forEach(b => b.onclick = () => { const k = b.dataset.f, on = Object.values({ ...FILTER, [k]: !FILTER[k] }).some(Boolean); if (!on) return; FILTER[k] = !FILTER[k]; try { localStorage.setItem(FKEY, JSON.stringify(FILTER)) } catch (e) { } const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() });
@@ -1157,16 +1173,15 @@ function viewCtl() {
         const im = await load(pic.url || pic.src); const mm = im && measure(im, pic.flip); if (!mm) { bad++; continue } const g2 = PD.autoGuess(mm, j.dir); if (!g2) { bad++; continue }
         const rec = PD.get(j.id, j.pose, 0) || { pts: {} }; if (PD.REQUIRED.every(k => rec.pts?.[j.dir]?.[k])) { skipped++; continue } PD.setAuto(rec, j.dir, g2, mm); PD.put(j.id, j.pose, 0, rec); n++ }
       msg.textContent = `⚙ เดาแล้ว ${n} ภาพ · ข้าม ${skipped} (มีจุดที่วางเองครบ) · ภาพโหลดไม่ได้ ${bad}`; render() } catch (er) { msg.textContent = 'ผิดพลาด: ' + er.message } btn.disabled = false };
-  if (el('bHide')) el('bHide').onclick = () => { for (const id of (MULTI ? [...PICKED] : [sel])) if (id && id !== 'hero') HIDDEN.add(id); saveHidden(); PICKED.clear(); const v = visible(); if (!v.some(x => x.id === sel)) sel = (v.find(x => x.id !== 'hero') || v[0] || { id: 'hero' }).id; re() };
-  if (el('bShowAll')) el('bShowAll').onclick = () => { HIDDEN.clear(); saveHidden(); re() };
+  if (el('bManage')) el('bManage').onclick = openManage;
   if (el('vwRul')) el('vwRul').onclick = () => { tab = 'char'; re() }
   if (el('bMulti')) el('bMulti').onclick = () => { MULTI = !MULTI; if (MULTI && !PICKED.size && sel && sel !== 'hero') PICKED.add(sel); re() };
   if (el('bPickAll')) el('bPickAll').onclick = () => { for (const e of visible()) PICKED.add(e.id); re() };
   if (el('bPickNone')) el('bPickNone').onclick = () => { PICKED.clear(); re() };
-  if (el('bSort')) el('bSort').onclick = () => { sorted = !sorted; re() };
+  if (el('bSort')) el('bSort').onchange = ev => { sortMode = ev.target.value; re() };
   if (el('zOut')) el('zOut').onclick = () => { ZOOM = ZS[Math.max(0, zi - 1)]; re() };
   if (el('zIn')) el('zIn').onclick = () => { ZOOM = ZS[Math.min(ZS.length - 1, zi + 1)]; re() };
-  if (el('vGhost')) { el('vGhost').onclick = () => { ghost = !ghost; re() }; el('vShadow').onclick = () => { SHADOW = !SHADOW; re() }; el('vFoot').onclick = () => { FOOT = !FOOT; re() }; el('vGuides').onclick = () => { GUIDES = !GUIDES; re() } }
+  if (el('vGhost')) { el('vGhost').onclick = () => { ghost = !ghost; re() } }
   if (el('vStep')) { el('vStep').onchange = e => { STEP = +e.target.value; render() }; el('vAlpha').oninput = e => { ALPHA = +e.target.value / 100; render() }; el('vHero').onchange = e => { HERO_M = Math.min(2.5, Math.max(1, +e.target.value || 1.7)); render() } }
 }
 const GROUPS = [['one', 'เฉพาะตัวนี้'], ['ally', 'เพื่อนทั้งหมด'], ['monster', 'มอนสเตอร์ทั้งหมด'], ['all', 'ทุกตัวยกเว้นตัวเอก']];
