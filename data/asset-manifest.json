@@ -104365,7 +104365,17 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-may-sw-stand/20261123-113012.webp",
+     "at": "2026-11-23T04:30:12.436Z",
+     "stamp": "20261123-113012",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261123-113012"
   },
   {
    "id": "npc-may-sw-walk1",
@@ -104415,7 +104425,17 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "history": [
+    {
+     "file": "assets/_versions/npc-may-ne-stand/20261123-113927.webp",
+     "at": "2026-11-23T04:39:28.136Z",
+     "stamp": "20261123-113927",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ],
+   "artRevision": "20261123-113929"
   },
   {
    "id": "npc-may-ne-walk1",
@@ -104493,7 +104513,7 @@
    "id": "npc-may-nw-stand",
    "file": "assets/village-town/npc/may/nw-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -104506,7 +104526,8 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "artRevision": "20261123-113928"
   },
   {
    "id": "npc-may-nw-walk1",
@@ -151950,6 +151971,1302 @@
    "frame": 12,
    "ms": 100,
    "artRevision": "20261123-112646"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-1",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-2",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-3",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-4",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-5",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-6",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-7",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-8",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-9",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-10",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-11",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-sw-walk-12",
+   "file": "assets/tactics/imported/ally-may-walk-sw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1ka4"
+  },
+  {
+   "id": "studio-ally-may-se-walk-1",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-2",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-3",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-4",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-5",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-6",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-7",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-8",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-9",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-10",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-11",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-se-walk-12",
+   "file": "assets/tactics/imported/ally-may-walk-se/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1pjg"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-1",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-2",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-3",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-4",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-5",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-6",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-7",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-8",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-9",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-10",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-11",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-ne-walk-12",
+   "file": "assets/tactics/imported/ally-may-walk-ne/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss1wyc"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-1",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-2",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-3",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-4",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-5",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-6",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-7",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-8",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-9",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-10",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-11",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
+  },
+  {
+   "id": "studio-ally-may-nw-walk-12",
+   "file": "assets/tactics/imported/ally-may-walk-nw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:may",
+    "name": "ป้าเมย์",
+    "group": "npcs"
+   },
+   "artRevision": "mwss22c4"
   }
  ],
  "studioReviews": {
@@ -158429,6 +159746,67 @@
    "frames": {},
    "approvedAt": "2026-11-23T04:17:59.868Z",
    "at": 1795407479953
+  },
+  "[\"npc-may-sw-stand\",\"SW\",true,[[\"npc-may-sw-stand\",\"assets/village-town/npc/may/sw-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:30:07.266Z",
+   "at": 1795408207346
+  },
+  "[\"npc-may-se-stand\",\"SE\",true,[[\"npc-may-se-stand\",\"assets/village-town/npc/may/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:30:13.416Z",
+   "at": 1795408213450
+  },
+  "[\"npc-may-sw-stand\",\"SW\",true,[[\"npc-may-sw-stand\",\"assets/village-town/npc/may/sw-stand.webp\",0,\"20261123-113012\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:30:13.416Z",
+   "at": 1795408213450
+  },
+  "[\"npc-may-ne-stand\",\"NE\",true,[[\"npc-may-ne-stand\",\"assets/village-town/npc/may/ne-stand.webp\",0,\"20261123-113929\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:39:33.233Z",
+   "at": 1795408773289
+  },
+  "[\"npc-may-nw-stand\",\"NW\",true,[[\"npc-may-nw-stand\",\"assets/village-town/npc/may/nw-stand.webp\",0,\"20261123-113928\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:39:33.233Z",
+   "at": 1795408773290
+  },
+  "[\"npcwalk:npc:may:SW\",\"SW\",true,[[\"npc-may-sw-walk1\",\"assets/village-town/npc/may/sw-walk1.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk2\",\"assets/village-town/npc/may/sw-walk2.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk3\",\"assets/village-town/npc/may/sw-walk3.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk4\",\"assets/village-town/npc/may/sw-walk4.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk5\",\"assets/village-town/npc/may/sw-walk5.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk6\",\"assets/village-town/npc/may/sw-walk6.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk7\",\"assets/village-town/npc/may/sw-walk7.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk8\",\"assets/village-town/npc/may/sw-walk8.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk9\",\"assets/village-town/npc/may/sw-walk9.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk10\",\"assets/village-town/npc/may/sw-walk10.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk11\",\"assets/village-town/npc/may/sw-walk11.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk12\",\"assets/village-town/npc/may/sw-walk12.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795408801662,
+   "approvedAt": "2026-11-23T04:40:01.662Z"
+  },
+  "[\"allywalk:may:SW\",\"SW\",true,[[\"studio-ally-may-sw-walk-1\",\"assets/tactics/imported/ally-may-walk-sw/frame-01.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-2\",\"assets/tactics/imported/ally-may-walk-sw/frame-02.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-3\",\"assets/tactics/imported/ally-may-walk-sw/frame-03.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-4\",\"assets/tactics/imported/ally-may-walk-sw/frame-04.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-5\",\"assets/tactics/imported/ally-may-walk-sw/frame-05.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-6\",\"assets/tactics/imported/ally-may-walk-sw/frame-06.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-7\",\"assets/tactics/imported/ally-may-walk-sw/frame-07.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-8\",\"assets/tactics/imported/ally-may-walk-sw/frame-08.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-9\",\"assets/tactics/imported/ally-may-walk-sw/frame-09.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-10\",\"assets/tactics/imported/ally-may-walk-sw/frame-10.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-11\",\"assets/tactics/imported/ally-may-walk-sw/frame-11.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-12\",\"assets/tactics/imported/ally-may-walk-sw/frame-12.webp\",0,\"mwss1ka4\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npcwalk:npc:may:SE\",\"SE\",true,[[\"npc-may-se-walk1\",\"assets/village-town/npc/may/se-walk1.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk2\",\"assets/village-town/npc/may/se-walk2.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk3\",\"assets/village-town/npc/may/se-walk3.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk4\",\"assets/village-town/npc/may/se-walk4.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk5\",\"assets/village-town/npc/may/se-walk5.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk6\",\"assets/village-town/npc/may/se-walk6.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk7\",\"assets/village-town/npc/may/se-walk7.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk8\",\"assets/village-town/npc/may/se-walk8.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk9\",\"assets/village-town/npc/may/se-walk9.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk10\",\"assets/village-town/npc/may/se-walk10.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk11\",\"assets/village-town/npc/may/se-walk11.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-se-walk12\",\"assets/village-town/npc/may/se-walk12.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795408808261,
+   "approvedAt": "2026-11-23T04:40:08.261Z"
+  },
+  "[\"npcwalk:npc:may:NE\",\"NE\",true,[[\"npc-may-ne-walk1\",\"assets/village-town/npc/may/ne-walk1.webp\",0,\"20261123-112644\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk2\",\"assets/village-town/npc/may/ne-walk2.webp\",0,\"20261123-112644\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk3\",\"assets/village-town/npc/may/ne-walk3.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk4\",\"assets/village-town/npc/may/ne-walk4.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk5\",\"assets/village-town/npc/may/ne-walk5.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk6\",\"assets/village-town/npc/may/ne-walk6.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk7\",\"assets/village-town/npc/may/ne-walk7.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk8\",\"assets/village-town/npc/may/ne-walk8.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk9\",\"assets/village-town/npc/may/ne-walk9.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk10\",\"assets/village-town/npc/may/ne-walk10.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk11\",\"assets/village-town/npc/may/ne-walk11.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-ne-walk12\",\"assets/village-town/npc/may/ne-walk12.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795408818236,
+   "approvedAt": "2026-11-23T04:40:18.236Z"
+  },
+  "[\"allywalk:may:NE\",\"NE\",true,[[\"studio-ally-may-ne-walk-1\",\"assets/tactics/imported/ally-may-walk-ne/frame-01.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-2\",\"assets/tactics/imported/ally-may-walk-ne/frame-02.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-3\",\"assets/tactics/imported/ally-may-walk-ne/frame-03.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-4\",\"assets/tactics/imported/ally-may-walk-ne/frame-04.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-5\",\"assets/tactics/imported/ally-may-walk-ne/frame-05.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-6\",\"assets/tactics/imported/ally-may-walk-ne/frame-06.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-7\",\"assets/tactics/imported/ally-may-walk-ne/frame-07.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-8\",\"assets/tactics/imported/ally-may-walk-ne/frame-08.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-9\",\"assets/tactics/imported/ally-may-walk-ne/frame-09.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-10\",\"assets/tactics/imported/ally-may-walk-ne/frame-10.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-11\",\"assets/tactics/imported/ally-may-walk-ne/frame-11.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-12\",\"assets/tactics/imported/ally-may-walk-ne/frame-12.webp\",0,\"mwss1wyc\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npcwalk:npc:may:NW\",\"NW\",true,[[\"npc-may-nw-walk1\",\"assets/village-town/npc/may/nw-walk1.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk2\",\"assets/village-town/npc/may/nw-walk2.webp\",0,\"20261123-112645\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk3\",\"assets/village-town/npc/may/nw-walk3.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk4\",\"assets/village-town/npc/may/nw-walk4.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk5\",\"assets/village-town/npc/may/nw-walk5.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk6\",\"assets/village-town/npc/may/nw-walk6.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk7\",\"assets/village-town/npc/may/nw-walk7.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk8\",\"assets/village-town/npc/may/nw-walk8.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk9\",\"assets/village-town/npc/may/nw-walk9.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk10\",\"assets/village-town/npc/may/nw-walk10.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk11\",\"assets/village-town/npc/may/nw-walk11.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-nw-walk12\",\"assets/village-town/npc/may/nw-walk12.webp\",0,\"20261123-112646\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "at": 1795408822451
   }
  },
  "studioClipHistory": {
@@ -169177,6 +170555,308 @@
      {
       "assetId": "studio-ally-oren-nw-walk-12",
       "src": "assets/tactics/imported/ally-oren-walk-nw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "may": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T04:39:59.980Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-may-sw-walk-1",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-2",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-3",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-4",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-5",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-6",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-7",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-8",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-9",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-10",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-11",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-sw-walk-12",
+      "src": "assets/tactics/imported/ally-may-walk-sw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T04:40:06.796Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-may-se-walk-1",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-2",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-3",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-4",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-5",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-6",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-7",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-8",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-9",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-10",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-11",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-se-walk-12",
+      "src": "assets/tactics/imported/ally-may-walk-se/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T04:40:16.404Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-may-ne-walk-1",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-2",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-3",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-4",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-5",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-6",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-7",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-8",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-9",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-10",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-11",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-ne-walk-12",
+      "src": "assets/tactics/imported/ally-may-walk-ne/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-23T04:40:23.380Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-may-nw-walk-1",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-2",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-3",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-4",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-5",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-6",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-7",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-8",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-9",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-10",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-11",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-may-nw-walk-12",
+      "src": "assets/tactics/imported/ally-may-walk-nw/frame-12.webp",
       "ms": 100
      }
     ]
