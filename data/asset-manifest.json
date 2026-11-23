@@ -104472,7 +104472,7 @@
    "id": "npc-may-se-stand",
    "file": "assets/village-town/npc/may/se-stand.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -104485,7 +104485,8 @@
     "id": "npc:may",
     "name": "ป้าเมย์",
     "group": "npcs"
-   }
+   },
+   "artRevision": "mwst8piq"
   },
   {
    "id": "npc-may-se-walk1",
@@ -162634,10 +162635,10 @@
    "at": 1795408207346
   },
   "[\"npc-may-se-stand\",\"SE\",true,[[\"npc-may-se-stand\",\"assets/village-town/npc/may/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
-   "status": "approved",
+   "status": "unreviewed",
    "frames": {},
    "approvedAt": "2026-11-23T05:09:38.248Z",
-   "at": 1795410578332
+   "at": 1795410811350
   },
   "[\"npc-may-sw-stand\",\"SW\",true,[[\"npc-may-sw-stand\",\"assets/village-town/npc/may/sw-stand.webp\",0,\"20261123-113012\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
@@ -165399,6 +165400,12 @@
   "static:npc-hilda-nw-stand": [
    {
     "at": "2026-11-17T07:48:14.899Z",
+    "entries": []
+   }
+  ],
+  "static:npc-may-se-stand": [
+   {
+    "at": "2026-11-23T05:13:34.041Z",
     "entries": []
    }
   ]
