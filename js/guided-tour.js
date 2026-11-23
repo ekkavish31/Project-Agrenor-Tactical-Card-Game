@@ -3,7 +3,7 @@
    GuidedTour.run([step, …]) → Promise (resolves when the last step is done or Esc skips the tour)
    step = { who:'B'|'S', text, target?: selector | () => Element, wait?: 'click' (default when there is a target) | 'next' | () => boolean, hint?: 'อาร์โรว์ข้อความสั้น', pad?: px }
      • who 'B' = the elder brother · 'S' = the younger sister (resolved to the lead / the follower by js/story-fx.js roleWho) · text may use {Bn} {Sn} {S2B} {B2S} {hero} {sib}
-     • no target → a text-only line: click / Enter / Space = next      • target → the step finishes when the target is clicked (the click still goes through to it)
+     • no target → a text-only line: click ANYWHERE / Enter / Space = next      • target → the step finishes when the target is clicked (the click still goes through to it)
    The UI lives inside the open <dialog> when there is one (a modal dialog makes everything outside it inert), otherwise in <body>. */
 (function (root) {
   'use strict';
@@ -18,7 +18,8 @@
 #gtour .pic{position:fixed;bottom:0;height:min(58vh,520px);display:flex;align-items:flex-end;pointer-events:none;transition:filter .25s,opacity .25s,transform .25s}
 #gtour .pic img{max-height:100%;max-width:26vw;object-fit:contain;filter:drop-shadow(0 8px 16px #000c)}
 #gtour .pic.L{left:1vw}#gtour .pic.R{right:1vw}#gtour .pic.dim{filter:brightness(.55) saturate(.7);transform:translateY(8px)}
-#gtour .box{position:fixed;left:50%;bottom:2.6vh;transform:translateX(-50%);width:min(780px,58vw);min-height:116px;padding:12px 18px 14px;background:linear-gradient(#2a2016f2,#15100af2);border:1.5px solid #d8b46a;border-radius:14px;box-shadow:0 12px 36px #000c;color:#fff1d2;pointer-events:auto;cursor:pointer}
+#gtour .box{position:fixed;left:50%;bottom:2.6vh;transform:translateX(-50%);width:min(780px,58vw);min-height:116px;padding:12px 18px 14px;background:linear-gradient(#2a2016f2,#15100af2);border:1.5px solid #d8b46a;border-radius:14px;box-shadow:0 12px 36px #000c;color:#fff1d2;pointer-events:auto}
+#gtour.adv .blk,#gtour.adv .box{cursor:pointer}
 #gtour .box b{display:block;color:#ffd98a;font-size:18px;margin-bottom:4px}
 #gtour .box p{margin:0;font-size:19px;line-height:1.5;min-height:3em}
 #gtour .box small{position:absolute;right:14px;bottom:8px;color:#d8b46acc;font-size:13px}
@@ -44,7 +45,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     if (!document.getElementById('gtourCss')) { const st = document.createElement('style'); st.id = 'gtourCss'; st.textContent = css; document.head.append(st) }
     const C = root.Cutscene, fill = t => C?.fill ? C.fill(t) : String(t || '');
     const el = document.createElement('div'); el.id = 'gtour'; if (opt.bright) el.className = 'bright';
-    el.innerHTML = '<div class="blk" data-b="t"></div><div class="blk" data-b="b"></div><div class="blk" data-b="l"></div><div class="blk" data-b="r"></div><div class="veil"></div><div class="ring hide"></div><div class="arrow" hidden><svg viewBox="0 0 54 54"><path d="M27 4 L48 30 H35 V50 H19 V30 H6 Z" fill="#ffd77a" stroke="#5a3a0a" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="pic L"></div><div class="pic R"></div><div class="box"><b></b><p></p><small>คลิกเพื่อไปต่อ</small><button class="skip" type="button">ข้ามบทสอน (Esc)</button></div>';
+    el.innerHTML = '<div class="blk" data-b="t"></div><div class="blk" data-b="b"></div><div class="blk" data-b="l"></div><div class="blk" data-b="r"></div><div class="veil"></div><div class="ring hide"></div><div class="arrow" hidden><svg viewBox="0 0 54 54"><path d="M27 4 L48 30 H35 V50 H19 V30 H6 Z" fill="#ffd77a" stroke="#5a3a0a" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="pic L"></div><div class="pic R"></div><div class="box"><b></b><p></p><small>คลิกที่ไหนก็ได้เพื่อไปต่อ</small><button class="skip" type="button">ข้ามบทสอน (Esc)</button></div>';
     const mount = () => { const dl = document.querySelectorAll('dialog[open]'), host = dl.length ? dl[dl.length - 1] : document.body;   quiet();   /* the TOPMOST open dialog (a card view opens above the book) */ if (el.parentNode !== host) host.append(el); };
     mount();
     const $ = s => el.querySelector(s), blk = k => $(`[data-b="${k}"]`), ring = $('.ring'), arrow = $('.arrow'), box = $('.box'), say = box.querySelector('p'), nm = box.querySelector('b');
@@ -60,7 +61,8 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     $('.skip').onclick = e => { e.stopPropagation(); skipped = true; stepDone?.() };
     const finishType = () => { clearInterval(typeTimer); typeTimer = 0; say.textContent = typed; shown = typed };
     const advance = () => { if (typeTimer) { finishType(); return } if (!targetEl || curNext) stepDone?.() };
-    box.onclick = () => advance();
+    /* v98.1000 · a "read" step goes on with a click ANYWHERE on the screen (the invisible blockers + the box all bubble to the overlay); an "action" step (a target that must be clicked) still ignores everything but that target */
+    el.addEventListener('click', e => { if (e.target.closest('.skip')) return; advance() });
     let curSpec = null;
     const place = () => {   /* keep the spotlight on the (possibly moving) target */
       mount();
@@ -94,7 +96,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
         const who = resolve(C, st.who || 'S'), side = who === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('dim', side !== 'L'); $('.pic.R').classList.toggle('dim', side !== 'R');
         { const fem = root.HeroVariant?.get?.() === 'female'; nm.textContent = who === 'hero' ? (C?.fill ? C.fill('{hero}') : (fem ? 'น้องสาว' : 'พี่ชาย')) : (C?.fill ? C.fill('{sib}') : (fem ? 'พี่ชาย' : 'น้องสาว')) }
         typed = fill(st.text); say.textContent = ''; let i = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { i += 2; say.textContent = typed.slice(0, i); if (i >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 22);
-        curNext = st.wait === 'next'; box.querySelector('small').textContent = st.target && !curNext ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกเพื่อไปต่อ';
+        curNext = st.wait === 'next'; el.classList.toggle('adv', !st.target || curNext); box.querySelector('small').textContent = st.target && !curNext ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกที่ไหนก็ได้เพื่อไปต่อ';
         if (st.prep) { try { st.prep() } catch (e) { } await sleep(350) }   /* e.g. re-open the book if the previous click closed it */
         curSpec = st.target || null; targetEl = st.target ? await findTarget(st.target) : null;
         if (skipped) break;
