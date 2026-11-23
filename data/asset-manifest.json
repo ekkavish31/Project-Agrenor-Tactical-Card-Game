@@ -152043,7 +152043,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114700",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-1/20261123-114700.webp",
+     "at": "2026-11-23T04:47:00.894Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-2",
@@ -152070,7 +152079,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-2/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.024Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-3",
@@ -152097,7 +152115,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-3/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.131Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-4",
@@ -152124,7 +152151,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-4/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.239Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-5",
@@ -152151,7 +152187,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-5/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.317Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-6",
@@ -152178,7 +152223,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-6/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.419Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-7",
@@ -152205,7 +152259,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-7/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.532Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-8",
@@ -152232,7 +152295,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-8/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.641Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-9",
@@ -152259,7 +152331,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-9/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.813Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-10",
@@ -152286,7 +152367,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114702",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-10/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.950Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-11",
@@ -152313,7 +152403,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114702",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-11/20261123-114700.webp",
+     "at": "2026-11-23T04:47:02.282Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-sw-walk-12",
@@ -152340,7 +152439,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1ka4"
+   "artRevision": "20261123-114702",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-sw-walk-12/20261123-114700.webp",
+     "at": "2026-11-23T04:47:02.432Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-1",
@@ -152367,7 +152475,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114700",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-1/20261123-114700.webp",
+     "at": "2026-11-23T04:47:00.978Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-2",
@@ -152394,7 +152511,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-2/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.073Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-3",
@@ -152421,7 +152547,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-3/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.177Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-4",
@@ -152448,7 +152583,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-4/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.279Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-5",
@@ -152475,7 +152619,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-5/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.377Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-6",
@@ -152502,7 +152655,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-6/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.465Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-7",
@@ -152529,7 +152691,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-7/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.582Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-8",
@@ -152556,7 +152727,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-8/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.730Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-9",
@@ -152583,7 +152763,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114701",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-9/20261123-114700.webp",
+     "at": "2026-11-23T04:47:01.880Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-10",
@@ -152610,7 +152799,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114702",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-10/20261123-114700.webp",
+     "at": "2026-11-23T04:47:02.208Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-11",
@@ -152637,7 +152835,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114702",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-11/20261123-114700.webp",
+     "at": "2026-11-23T04:47:02.367Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-se-walk-12",
@@ -152664,7 +152871,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1pjg"
+   "artRevision": "20261123-114702",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-se-walk-12/20261123-114700.webp",
+     "at": "2026-11-23T04:47:02.546Z",
+     "stamp": "20261123-114700",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-1",
@@ -152691,7 +152907,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115301",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-1/20261123-115216.webp",
+     "at": "2026-11-23T04:52:16.984Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-2",
@@ -152718,7 +152943,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115301",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-2/20261123-115216.webp",
+     "at": "2026-11-23T04:52:17.217Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-3",
@@ -152745,7 +152979,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-3/20261123-115216.webp",
+     "at": "2026-11-23T04:52:17.452Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-4",
@@ -152772,7 +153015,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-4/20261123-115216.webp",
+     "at": "2026-11-23T04:52:17.850Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-5",
@@ -152799,7 +153051,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-5/20261123-115216.webp",
+     "at": "2026-11-23T04:52:18.364Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-6",
@@ -152826,7 +153087,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-6/20261123-115216.webp",
+     "at": "2026-11-23T04:52:18.743Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-7",
@@ -152853,7 +153123,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-7/20261123-115216.webp",
+     "at": "2026-11-23T04:52:19.211Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-8",
@@ -152880,7 +153159,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-8/20261123-115216.webp",
+     "at": "2026-11-23T04:52:19.599Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-9",
@@ -152907,7 +153195,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-9/20261123-115216.webp",
+     "at": "2026-11-23T04:52:20.073Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-10",
@@ -152934,7 +153231,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-10/20261123-115216.webp",
+     "at": "2026-11-23T04:52:20.507Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-11",
@@ -152961,7 +153267,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-11/20261123-115216.webp",
+     "at": "2026-11-23T04:52:20.948Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-ne-walk-12",
@@ -152988,7 +153303,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss1wyc"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-ne-walk-12/20261123-115216.webp",
+     "at": "2026-11-23T04:52:21.365Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-1",
@@ -153015,7 +153339,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115301",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-1/20261123-115216.webp",
+     "at": "2026-11-23T04:52:17.111Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-2",
@@ -153042,7 +153375,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115301",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-2/20261123-115216.webp",
+     "at": "2026-11-23T04:52:17.340Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-3",
@@ -153069,7 +153411,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-3/20261123-115216.webp",
+     "at": "2026-11-23T04:52:17.703Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-4",
@@ -153096,7 +153447,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-4/20261123-115216.webp",
+     "at": "2026-11-23T04:52:17.991Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-5",
@@ -153123,7 +153483,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-5/20261123-115216.webp",
+     "at": "2026-11-23T04:52:18.554Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-6",
@@ -153150,7 +153519,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-6/20261123-115216.webp",
+     "at": "2026-11-23T04:52:18.888Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-7",
@@ -153177,7 +153555,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115302",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-7/20261123-115216.webp",
+     "at": "2026-11-23T04:52:19.400Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-8",
@@ -153204,7 +153591,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-8/20261123-115216.webp",
+     "at": "2026-11-23T04:52:19.773Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-9",
@@ -153231,7 +153627,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-9/20261123-115216.webp",
+     "at": "2026-11-23T04:52:20.248Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-10",
@@ -153258,7 +153663,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-10/20261123-115216.webp",
+     "at": "2026-11-23T04:52:20.703Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-11",
@@ -153285,7 +153699,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-11/20261123-115216.webp",
+     "at": "2026-11-23T04:52:21.154Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "studio-ally-may-nw-walk-12",
@@ -153312,7 +153735,16 @@
     "name": "ป้าเมย์",
     "group": "npcs"
    },
-   "artRevision": "mwss22c4"
+   "artRevision": "20261123-115303",
+   "history": [
+    {
+     "file": "assets/_versions/studio-ally-may-nw-walk-12/20261123-115216.webp",
+     "at": "2026-11-23T04:52:21.570Z",
+     "stamp": "20261123-115216",
+     "status": "final",
+     "note": "ก่อนใส่ภาพใหม่"
+    }
+   ]
   },
   {
    "id": "npc-tess-sw-walk2",
@@ -161594,26 +162026,26 @@
   "[\"npc-may-se-stand\",\"SE\",true,[[\"npc-may-se-stand\",\"assets/village-town/npc/may/se-stand.webp\",0,\"\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:30:13.416Z",
-   "at": 1795408213450
+   "approvedAt": "2026-11-23T04:47:16.830Z",
+   "at": 1795409236904
   },
   "[\"npc-may-sw-stand\",\"SW\",true,[[\"npc-may-sw-stand\",\"assets/village-town/npc/may/sw-stand.webp\",0,\"20261123-113012\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:30:13.416Z",
-   "at": 1795408213450
+   "approvedAt": "2026-11-23T04:47:16.830Z",
+   "at": 1795409236904
   },
   "[\"npc-may-ne-stand\",\"NE\",true,[[\"npc-may-ne-stand\",\"assets/village-town/npc/may/ne-stand.webp\",0,\"20261123-113929\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:39:33.233Z",
-   "at": 1795408773289
+   "approvedAt": "2026-11-23T04:47:26.756Z",
+   "at": 1795409246865
   },
   "[\"npc-may-nw-stand\",\"NW\",true,[[\"npc-may-nw-stand\",\"assets/village-town/npc/may/nw-stand.webp\",0,\"20261123-113928\",null,1000,false,[0.5,0.95],[384,384],1]]]": {
    "status": "approved",
    "frames": {},
-   "approvedAt": "2026-11-23T04:39:33.233Z",
-   "at": 1795408773290
+   "approvedAt": "2026-11-23T04:47:26.756Z",
+   "at": 1795409246866
   },
   "[\"npcwalk:npc:may:SW\",\"SW\",true,[[\"npc-may-sw-walk1\",\"assets/village-town/npc/may/sw-walk1.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk2\",\"assets/village-town/npc/may/sw-walk2.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk3\",\"assets/village-town/npc/may/sw-walk3.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk4\",\"assets/village-town/npc/may/sw-walk4.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk5\",\"assets/village-town/npc/may/sw-walk5.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk6\",\"assets/village-town/npc/may/sw-walk6.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk7\",\"assets/village-town/npc/may/sw-walk7.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk8\",\"assets/village-town/npc/may/sw-walk8.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk9\",\"assets/village-town/npc/may/sw-walk9.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk10\",\"assets/village-town/npc/may/sw-walk10.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk11\",\"assets/village-town/npc/may/sw-walk11.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-may-sw-walk12\",\"assets/village-town/npc/may/sw-walk12.webp\",0,\"20261123-112619\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
    "status": "approved",
@@ -161654,9 +162086,46 @@
    "approvedAt": "2026-11-23T04:44:22.418Z"
   },
   "[\"npcwalk:npc:tess:NE\",\"NE\",true,[[\"npc-tess-ne-walk1\",\"assets/village-town/npc/tess/ne-walk1.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk2\",\"assets/village-town/npc/tess/ne-walk2.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk3\",\"assets/village-town/npc/tess/ne-walk3.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk4\",\"assets/village-town/npc/tess/ne-walk4.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk5\",\"assets/village-town/npc/tess/ne-walk5.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk6\",\"assets/village-town/npc/tess/ne-walk6.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk7\",\"assets/village-town/npc/tess/ne-walk7.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk8\",\"assets/village-town/npc/tess/ne-walk8.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk9\",\"assets/village-town/npc/tess/ne-walk9.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk10\",\"assets/village-town/npc/tess/ne-walk10.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk11\",\"assets/village-town/npc/tess/ne-walk11.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-tess-ne-walk12\",\"assets/village-town/npc/tess/ne-walk12.webp\",0,\"20261123-114345\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
-   "status": "unreviewed",
+   "status": "approved",
    "frames": {},
-   "at": 1795409067718
+   "at": 1795409072141,
+   "approvedAt": "2026-11-23T04:44:32.141Z"
+  },
+  "[\"allywalk:may:SW\",\"SW\",true,[[\"studio-ally-may-sw-walk-1\",\"assets/tactics/imported/ally-may-walk-sw/frame-01.webp\",0,\"20261123-114700\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-2\",\"assets/tactics/imported/ally-may-walk-sw/frame-02.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-3\",\"assets/tactics/imported/ally-may-walk-sw/frame-03.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-4\",\"assets/tactics/imported/ally-may-walk-sw/frame-04.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-5\",\"assets/tactics/imported/ally-may-walk-sw/frame-05.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-6\",\"assets/tactics/imported/ally-may-walk-sw/frame-06.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-7\",\"assets/tactics/imported/ally-may-walk-sw/frame-07.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-8\",\"assets/tactics/imported/ally-may-walk-sw/frame-08.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-9\",\"assets/tactics/imported/ally-may-walk-sw/frame-09.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-10\",\"assets/tactics/imported/ally-may-walk-sw/frame-10.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-11\",\"assets/tactics/imported/ally-may-walk-sw/frame-11.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-sw-walk-12\",\"assets/tactics/imported/ally-may-walk-sw/frame-12.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795409590545,
+   "approvedAt": "2026-11-23T04:53:10.471Z"
+  },
+  "[\"allywalk:may:SE\",\"SE\",true,[[\"studio-ally-may-se-walk-1\",\"assets/tactics/imported/ally-may-walk-se/frame-01.webp\",0,\"20261123-114700\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-2\",\"assets/tactics/imported/ally-may-walk-se/frame-02.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-3\",\"assets/tactics/imported/ally-may-walk-se/frame-03.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-4\",\"assets/tactics/imported/ally-may-walk-se/frame-04.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-5\",\"assets/tactics/imported/ally-may-walk-se/frame-05.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-6\",\"assets/tactics/imported/ally-may-walk-se/frame-06.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-7\",\"assets/tactics/imported/ally-may-walk-se/frame-07.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-8\",\"assets/tactics/imported/ally-may-walk-se/frame-08.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-9\",\"assets/tactics/imported/ally-may-walk-se/frame-09.webp\",0,\"20261123-114701\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-10\",\"assets/tactics/imported/ally-may-walk-se/frame-10.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-11\",\"assets/tactics/imported/ally-may-walk-se/frame-11.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-se-walk-12\",\"assets/tactics/imported/ally-may-walk-se/frame-12.webp\",0,\"20261123-114702\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795409590546,
+   "approvedAt": "2026-11-23T04:53:10.471Z"
+  },
+  "[\"allywalk:may:NE\",\"NE\",true,[[\"studio-ally-may-ne-walk-1\",\"assets/tactics/imported/ally-may-walk-ne/frame-01.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-2\",\"assets/tactics/imported/ally-may-walk-ne/frame-02.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-3\",\"assets/tactics/imported/ally-may-walk-ne/frame-03.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-4\",\"assets/tactics/imported/ally-may-walk-ne/frame-04.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-5\",\"assets/tactics/imported/ally-may-walk-ne/frame-05.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-6\",\"assets/tactics/imported/ally-may-walk-ne/frame-06.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-7\",\"assets/tactics/imported/ally-may-walk-ne/frame-07.webp\",0,\"20261123-115224\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-8\",\"assets/tactics/imported/ally-may-walk-ne/frame-08.webp\",0,\"20261123-115219\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-9\",\"assets/tactics/imported/ally-may-walk-ne/frame-09.webp\",0,\"20261123-115220\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-10\",\"assets/tactics/imported/ally-may-walk-ne/frame-10.webp\",0,\"20261123-115220\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-11\",\"assets/tactics/imported/ally-may-walk-ne/frame-11.webp\",0,\"20261123-115221\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-12\",\"assets/tactics/imported/ally-may-walk-ne/frame-12.webp\",0,\"20261123-115221\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:52:25.433Z",
+   "at": 1795409545472
+  },
+  "[\"allywalk:may:NW\",\"NW\",true,[[\"studio-ally-may-nw-walk-1\",\"assets/tactics/imported/ally-may-walk-nw/frame-01.webp\",0,\"20261123-115217\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-2\",\"assets/tactics/imported/ally-may-walk-nw/frame-02.webp\",0,\"20261123-115217\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-3\",\"assets/tactics/imported/ally-may-walk-nw/frame-03.webp\",0,\"20261123-115217\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-4\",\"assets/tactics/imported/ally-may-walk-nw/frame-04.webp\",0,\"20261123-115218\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-5\",\"assets/tactics/imported/ally-may-walk-nw/frame-05.webp\",0,\"20261123-115218\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-6\",\"assets/tactics/imported/ally-may-walk-nw/frame-06.webp\",0,\"20261123-115218\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-7\",\"assets/tactics/imported/ally-may-walk-nw/frame-07.webp\",0,\"20261123-115219\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-8\",\"assets/tactics/imported/ally-may-walk-nw/frame-08.webp\",0,\"20261123-115219\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-9\",\"assets/tactics/imported/ally-may-walk-nw/frame-09.webp\",0,\"20261123-115220\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-10\",\"assets/tactics/imported/ally-may-walk-nw/frame-10.webp\",0,\"20261123-115220\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-11\",\"assets/tactics/imported/ally-may-walk-nw/frame-11.webp\",0,\"20261123-115221\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-12\",\"assets/tactics/imported/ally-may-walk-nw/frame-12.webp\",0,\"20261123-115221\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:52:25.433Z",
+   "at": 1795409545473
+  },
+  "[\"allywalk:may:NE\",\"NE\",true,[[\"studio-ally-may-ne-walk-1\",\"assets/tactics/imported/ally-may-walk-ne/frame-01.webp\",0,\"20261123-115301\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-2\",\"assets/tactics/imported/ally-may-walk-ne/frame-02.webp\",0,\"20261123-115301\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-3\",\"assets/tactics/imported/ally-may-walk-ne/frame-03.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-4\",\"assets/tactics/imported/ally-may-walk-ne/frame-04.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-5\",\"assets/tactics/imported/ally-may-walk-ne/frame-05.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-6\",\"assets/tactics/imported/ally-may-walk-ne/frame-06.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-7\",\"assets/tactics/imported/ally-may-walk-ne/frame-07.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-8\",\"assets/tactics/imported/ally-may-walk-ne/frame-08.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-9\",\"assets/tactics/imported/ally-may-walk-ne/frame-09.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-10\",\"assets/tactics/imported/ally-may-walk-ne/frame-10.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-11\",\"assets/tactics/imported/ally-may-walk-ne/frame-11.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-ne-walk-12\",\"assets/tactics/imported/ally-may-walk-ne/frame-12.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:53:37.421Z",
+   "at": 1795409617497
+  },
+  "[\"allywalk:may:NW\",\"NW\",true,[[\"studio-ally-may-nw-walk-1\",\"assets/tactics/imported/ally-may-walk-nw/frame-01.webp\",0,\"20261123-115301\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-2\",\"assets/tactics/imported/ally-may-walk-nw/frame-02.webp\",0,\"20261123-115301\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-3\",\"assets/tactics/imported/ally-may-walk-nw/frame-03.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-4\",\"assets/tactics/imported/ally-may-walk-nw/frame-04.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-5\",\"assets/tactics/imported/ally-may-walk-nw/frame-05.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-6\",\"assets/tactics/imported/ally-may-walk-nw/frame-06.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-7\",\"assets/tactics/imported/ally-may-walk-nw/frame-07.webp\",0,\"20261123-115302\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-8\",\"assets/tactics/imported/ally-may-walk-nw/frame-08.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-9\",\"assets/tactics/imported/ally-may-walk-nw/frame-09.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-10\",\"assets/tactics/imported/ally-may-walk-nw/frame-10.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-11\",\"assets/tactics/imported/ally-may-walk-nw/frame-11.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-may-nw-walk-12\",\"assets/tactics/imported/ally-may-walk-nw/frame-12.webp\",0,\"20261123-115303\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "approvedAt": "2026-11-23T04:53:37.421Z",
+   "at": 1795409617498
   }
  },
  "studioClipHistory": {
