@@ -10,6 +10,7 @@ h3{margin:10px 0 4px;font-size:12px;color:var(--gold);letter-spacing:.3px}
 #scenes button{display:block;width:100%;text-align:left;margin-bottom:4px}#scenes small{color:var(--muted);display:block}#scenes .chg::after{content:' ● แก้แล้ว';color:var(--gold);font-size:11px}
 #pal{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}#pal button{display:flex;align-items:center;gap:6px;text-align:left;padding:3px 6px;font-size:12px}#pal i{width:20px;height:20px;border-radius:4px;flex:none;display:grid;place-items:center;font:700 12px monospace;font-style:normal;color:#fff;text-shadow:0 1px 2px #000;border:1px solid #0006}
 main{position:relative;overflow:hidden;background:#0b0d0a}canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}
+#tip{position:fixed;z-index:50;display:none;pointer-events:none;max-width:260px;padding:6px 9px;border-radius:7px;background:#0f120ef2;border:1px solid #6a7a5c;color:#e8eadf;font-size:12px;line-height:1.5;white-space:pre-line;box-shadow:0 4px 14px #0008}#tip b{color:#ffe08a}
 #status{grid-column:1/4;display:flex;gap:14px;padding:4px 10px;background:#0f120e;border-top:1px solid var(--line);color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden}
 .row{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:4px 0}.row label{display:flex;gap:4px;align-items:center;color:var(--muted)}input[type=number]{width:62px}input[type=text]{width:100%}
 #val div{font-size:12px;margin:2px 0}#val .e{color:var(--bad)}#val .g{color:var(--ok)}
@@ -38,6 +39,7 @@ textarea{width:100%;height:120px;font:11px monospace}
  <h3>ส่งออก / นำเข้า</h3><div class="row"><button id="exp">คัดลอก JSON ฉากนี้</button><button id="imp">นำเข้า JSON</button></div><textarea id="io" placeholder="วาง JSON ที่นี่แล้วกด นำเข้า"></textarea>
  <p class="hint">• ค่าที่แก้บันทึกอัตโนมัติในเบราว์เซอร์นี้ (กด ▶ ทดลองเล่นเห็นผลทันที) · กด ⬆ ใส่ Cart แล้ว Push เพื่อให้ทุกเครื่องใช้ตาม<br>• แก้ได้: แผนที่ · ขนาด · ตำแหน่งตัวเอก/เพื่อน/ศัตรู · ชนิด/เลือด/ชื่อของศัตรู · กติกา บทพูด เป้าหมาย คลื่น ยังอยู่ในโค้ด <code>js/set-pieces.js</code> (ปากอุโมงค์/จุดป้องกัน แสดงเป็นเครื่องหมายอ่านอย่างเดียว)</p></aside>
 <div id="status"><span id="pos"></span><span id="info"></span></div>
+<div id="tip"></div>
 <script src="js/editor-store.js?v=v98.969"></script><script src="js/game-settings.js"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.976"></script><script src="js/set-pieces.js?v=v98.953"></script>
 <script>
 const SP = SetPieces, KEY = SP.EDIT_KEY, $ = id => document.getElementById(id), cv = $('cv'), g = cv.getContext('2d');
@@ -101,7 +103,16 @@ cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); con
   else if (tool === 'fill') { flood(c[0], c[1], brush); commit() }
   else if (tool === 'pick') { const ch = getCell(...c); if (ch != null) { brush = ch; tool = 'brush'; syncUi() } }
   else if (tool === 'unit') { const u = unitAt(...c); sel = u; if (u) drag = { unit: u, moved: false }; refresh(true) } });
-cv.addEventListener('pointermove', e => { const [px, py] = pt(e), c = toCell(px, py); hover = c; $('pos').textContent = inb(...c) ? `u ${c[0]} · v ${c[1]} · '${getCell(...c)}' ${NAMES[getCell(...c)] || ''}` : '';
+/* hover tooltip (floats next to the cursor): what the cell is — name · char · kind · level · coordinates · unit standing on it */
+const KIND = { blocked: 'ตัน เดินผ่านไม่ได้', cover: 'ที่กำบัง', slow: 'เดินช้า', normal: 'เดินได้ปกติ' };
+function tipText(c) { if (!inb(...c)) return ''; const ch = getCell(...c), t = SP.TILE[ch] || SP.TILE['.'], L = [`<b>${NAMES[ch] || t.prop || ch}</b>  ('${ch}')`];
+  L.push((KIND[t.k] || t.k) + (t.level ? ` · พื้นสูง ระดับ ${t.level}` : '') + (t.prop ? ` · ภาพ: ${t.prop}` : ''), `u ${c[0]} · v ${c[1]}`);
+  const un = unitAt(...c); if (un) { const o = getUnit(un); L.push(un.t === 'hero' ? '👤 ตัวเอก (H)' : un.t === 'ally' ? `👤 เพื่อนร่วมทีม A${un.i + 1}` : `⚔ ศัตรู: ${o.name || o.kind || '?'}${o.boss ? ' ★บอส' : ''}${o.kind ? ` (${o.kind})` : ''}`) } return L.join('\n') }
+const tipEl = $('tip'), tipHide = () => { tipEl.style.display = 'none' };
+function tipShow(e, c) { const s = drag ? '' : tipText(c); if (!s) return tipHide(); tipEl.innerHTML = s.replace(/\n/g, '<br>'); tipEl.style.display = 'block';
+  const w = tipEl.offsetWidth, h = tipEl.offsetHeight; tipEl.style.left = Math.max(4, Math.min(e.clientX + 14, innerWidth - w - 4)) + 'px'; tipEl.style.top = Math.max(4, e.clientY + h + 22 > innerHeight ? e.clientY - h - 10 : e.clientY + 16) + 'px' }
+cv.addEventListener('pointerleave', tipHide);
+cv.addEventListener('pointermove', e => { const [px, py] = pt(e), c = toCell(px, py); hover = c; $('pos').textContent = inb(...c) ? `u ${c[0]} · v ${c[1]} · '${getCell(...c)}' ${NAMES[getCell(...c)] || ''}` : ''; tipShow(e, c);
   if (!drag) return draw(); if (drag.pan) { ox = drag.ox + px - drag.px; oy = drag.oy + py - drag.py } else if (drag.paint) { line(drag.last, c, (u, v) => stamp(u, v, brush)); drag.last = c } else if (drag.rect || drag.line) drag.cur = c
   else if (drag.unit) { const u = getUnit(drag.unit); if (u && inb(...c) && !unitAt(...c)) { u.u = c[0]; u.v = c[1]; drag.moved = true } } draw() });
 cv.addEventListener('pointerup', e => { const d = drag; drag = null; if (!d) return; const c = toCell(...pt(e));
