@@ -13,6 +13,7 @@
   };
   /* first match wins · [regex on the path, category, sub-category (string or fn(match))] */
   const RULES = [
+    [/^assets\/generated-village\/portrait-sources\//, 'portrait', 'ต้นฉบับภาพสนทนา NPC (4 อารมณ์)'],
     [/^assets\/generated-village\/(clerk|vera|boss)\.png$/, 'portrait', 'ภาพสนทนาหมู่บ้าน'],
     [/^assets\/generated-village\/vendors\.png$/, 'npc', 'พนักงานร้านและกิลด์ (atlas)'],
     [/^assets\/generated-village\/farmprops\.png$/, 'village', 'ของฟาร์มและไอคอน (atlas)'],
