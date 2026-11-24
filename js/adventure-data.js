@@ -10,7 +10,7 @@ const CONSUMABLES={
  smallPumpkin:{name:'ฟักทองลูกเล็ก',element:'earth',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:30,stamina:30,price:14,text:'ฟื้น HP 30 และแรง 30 · ของขวัญจากฮิลดา'},
  mayBread:{name:'ขนมปังป้าเมย์',element:'earth',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:10,stamina:20,price:8,gift:true,art:'mayBread',text:'ฟื้น HP 10 และแรง 20 · ขนมปังป้าเมย์ที่แม่นับไว้ให้ 4 ก้อนก่อนออกจากบ้าน'},   /* v98.1022 · the 4 loaves of the prologue morning (js/story-data.js: "แม่นับขนมปังไว้แล้ว สี่ก้อน") · picture = the travel bread's until its own is made */
  momWater:{name:'น้ำดื่มจากแม่',element:'water',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:0,stamina:30,price:6,gift:true,text:'ฟื้นแรง 30 · น้ำต้มสุกใส่กระติกที่แม่เตรียมให้'},
- bread:{name:'ขนมปังเดินทาง',element:'earth',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:10,stamina:20,price:8,text:'ฟื้น HP 10 และแรง 20'},
+ bread:{name:'ขนมปังเดินทาง',element:'earth',rarity:'common',kind:'ฟื้นฟู',use:'ทุกที่',hp:10,stamina:30,price:8,text:'ฟื้น HP 10 และแรง 30'},
  firebomb:{name:'ระเบิดไฟ',element:'fire',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:22,range:4,price:30,text:'ขว้างใส่ศัตรูในระยะ 4 ช่อง ความเสียหาย 22'},
  iceBomb:{name:'ระเบิดน้ำแข็ง',element:'ice',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:18,range:4,price:32,text:'ขว้างใส่ศัตรูในระยะ 4 ช่อง ความเสียหาย 18 · น้ำตื้นกลายเป็นน้ำแข็ง'},
  elixir:{name:'น้ำอมฤต',element:'light',rarity:'rare',kind:'ฟื้นฟู',use:'ทุกที่',hp:80,stamina:50,price:90,text:'ฟื้น HP 80 และแรง 50'},

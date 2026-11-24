@@ -60,7 +60,7 @@
   }
   /* critical hits (card mode): hero 15 %, monster 8 %, ×1.5 damage */
   const CRIT = { hero: .15, ally: .12, monster: .08, mult: 1.5 };
-  const CRYSTALS = 2, CRYSTAL_STAMINA = 15, HAND = { movement: 4, combat: 6 };
+  const CRYSTALS = 2, CRYSTAL_STAMINA = 15, EMERGENCY_STAMINA = 5, HAND = { movement: 4, combat: 6 };
   /* v95.00 · the hero's growth in card battles: weapon cards add h.power (level, weapon, strength), element cards add h.spell (knowledge) */
   const SPELL_CARDS = new Set(['spell', 'thunder', 'frost', 'flame', 'gust', 'tide', 'pull', 'quake', 'rockfall', 'chaosBolt', 'chaosRend', 'shadowDrain', 'sleepMist', 'lightningArc', 'lightLance']);
   const cardBonus = (h, id) => Math.max(0, SPELL_CARDS.has(id) ? h.spell || 0 : h.power || 0) + (h.meleePlus && CARD[id] && CARD[id].range === 1 && !CARD[id].self ? h.meleePlus : 0);
@@ -832,15 +832,18 @@
     st.target = keep; return best;
   }
   /* v98.1006 · NO walk-and-attack in one click: a hit is offered only when a card in hand reaches the foe from where the hero stands. Out of reach → {reason} saying WHY and what to do (walk next to it first).
-     Walking itself is separate: a move card (1 crystal + stamina), or the one-cell emergency step when no move card can be played at all. */
+     Walking itself is separate: a move card (1 crystal + stamina), or the paid one-cell emergency step when no move card can be played at all (v98.1035). */
   function emergencyOk(st) {
-    if (!st.cards || st.outcome || st.turn !== 'hero' || st.emergency) return false;
+    if (!st.cards || st.outcome || st.turn !== 'hero' || !crystals(st)) return false;
     const h = hero(st), TD = deckLib(); if (h.sts?.bind) return false;
     return !st.deck.movement.hand.some(c => { const m = TD.MOVE[c.id]; return m && h.stamina >= m.stamina });   /* no usable move card: empty hand, or not enough stamina for every one */
   }
   function playEmergency(st) {
-    if (!emergencyOk(st)) return { ok: false, reason: st.emergency ? 'เดินฉุกเฉินใช้ไปแล้วในเทิร์นนี้' : 'ยังมีไพ่เดินที่ใช้ได้ — ใช้ไพ่เดินแทน' };
-    st.emergency = 1; st.mp += 1; st.log.push('เดินฉุกเฉิน +1 ช่อง'); return { ok: true, move: 1 };
+    if (!emergencyOk(st)) return { ok: false, reason: !crystals(st) ? 'คริสตัลหมดแล้ว — เดินฉุกเฉินใช้ไม่ได้' : 'ยังมีไพ่เดินที่ใช้ได้ — ใช้ไพ่เดินแทน' };
+    const h = hero(st), before = h.stamina;
+    st.spent++; h.stamina = Math.min(h.stMax || 100, h.stamina + EMERGENCY_STAMINA); st.mp += 1;
+    st.log.push('เดินฉุกเฉิน -1 คริสตัล +1 ช่อง · Stamina +' + (h.stamina - before));
+    return { ok: true, move: 1, stamina: h.stamina - before };
   }
   function attackWhy(st, id) {
     if (!st.cards || st.outcome || st.turn !== 'hero') return 'ไม่ใช่ตาคุณ';
@@ -925,6 +928,6 @@
     const cards = []; st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (!m || h.stamina < m.stamina) return; const e = reach(st, h, st.mp + m.move).get(key); if (e && e.cost > 0) cards.push({ index: i, uid: c.uid, id: c.id, name: m.name, move: m.move, stamina: m.stamina, cost: e.cost }) });
     return { cards };
   }
-  const api = { setSignature, applyForge, cardEl, baseRule: id => CARD_BASE[id] || null, ITEM, ITEM_NAME, itemRule, itemDraw, itemBlock, useItem, free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, CRYSTAL_STAMINA, HAND, crystals, refill, crystalStamina, redrawHand, emergencyOk, playEmergency, attackWhy, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { setSignature, applyForge, cardEl, baseRule: id => CARD_BASE[id] || null, ITEM, ITEM_NAME, itemRule, itemDraw, itemBlock, useItem, free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, CRYSTAL_STAMINA, EMERGENCY_STAMINA, HAND, crystals, refill, crystalStamina, redrawHand, emergencyOk, playEmergency, attackWhy, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

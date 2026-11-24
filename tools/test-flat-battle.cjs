@@ -157,14 +157,16 @@ test('crystal → redraw the whole hand, once per turn, loaned cards stay', () =
   assert.equal(B.redrawHand(st).ok, false); B.endTurn(st); B.monsterTurn(st); assert.equal(B.redrawHand(st).ok, true);   // next turn: again
   assert.equal(B.crystals(st), 1);
 });
-test('no walk-and-attack: out of reach explains why; emergency step only when no move card can be played', () => {
+test('no walk-and-attack: out of reach explains why; emergency step costs a crystal and restores stamina', () => {
   const far = mkC({ hero: { u: 0, v: 8 } }), id = B.monster(far).id; give(far, 'combat', 'attack'); const a = B.autoAttack(far, id); assert.ok(a.reason && a.index == null && a.to == null);
   assert.match(B.attackWhy(far, id), /เดิน/);
   assert.equal(B.emergencyOk(far), false);   // a move card is in hand and stamina is full
   const low = mkC({ hero: { u: 0, v: 8, stamina: 0 } }); low.deck.movement.hand = low.deck.movement.hand.filter(c => (B.CARD && true) && ['run', 'sprint', 'dash'].includes(c.id));
   low.deck.movement.hand.length || low.deck.movement.hand.push({ id: 'run', uid: 'x1' });
   assert.equal(B.emergencyOk(low), true); const w = B.autoWalk(low, { u: 1, v: 8 }); assert.equal(w.emergency, true); assert.equal(B.playEmergency(low).ok, true);
-  assert.equal(low.mp, 1); assert.equal(B.move(low, { u: 1, v: 8 }).ok, true); assert.equal(B.emergencyOk(low), false); assert.equal(B.playEmergency(low).ok, false);
+  assert.equal(low.mp, 1); assert.equal(B.hero(low).stamina, B.EMERGENCY_STAMINA); assert.equal(B.crystals(low), 1);
+  assert.equal(B.move(low, { u: 1, v: 8 }).ok, true); assert.equal(B.emergencyOk(low), true); assert.equal(B.playEmergency(low).ok, true);
+  assert.equal(low.mp, 2); assert.equal(B.hero(low).stamina, B.EMERGENCY_STAMINA * 2); assert.equal(B.crystals(low), 0);
   assert.ok(B.autoWalk(mkC({ hero: { u: 0, v: 8, stamina: 0 } }), { u: 3, v: 8 }).reason || true);
 });
 test('cards: end turn refills the hands and resets crystals; full card fight ends', () => {

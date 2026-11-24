@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1034';
+  const V = '98.1035';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1384,7 +1384,7 @@
   }
   async function walkTo(to) {
     const p = FB.autoWalk(st, to); if (p.reason) { flash(p.reason); return }
-    if (p.emergency) { const e = FB.playEmergency(st); if (!e.ok) { flash(e.reason); return } floatText(FB.hero(st), 'เดินฉุกเฉิน +1', '#ffd25a', true); hint('เดินฉุกเฉิน: ไม่มีไพ่เดินที่ใช้ได้ — เดินฟรี 1 ช่อง (ไม่เสียคริสตัล)'); hudSync() }
+    if (p.emergency) { const e = FB.playEmergency(st); if (!e.ok) { flash(e.reason); return } floatText(FB.hero(st), 'เดินฉุกเฉิน -1 คริสตัล · STAMINA +' + e.stamina, '#ffd25a', true); hint('เดินฉุกเฉิน: ไม่มีไพ่เดินที่ใช้ได้ — เดิน 1 ช่อง · เสีย 1 คริสตัล · ฟื้น Stamina +5'); hudSync() }
     if (p.moveCard != null && farInfo && farMap?.has(to.u + ',' + to.v)) p.moveCard = farInfo.index;   /* v98.244 · beyond the free walk: play the card the yellow layer showed (the farthest one), not the smallest that would do */
     if (p.moveCard != null) { const b = handBtn('movement', st.deck.movement.hand[p.moveCard].uid); if (!b) return; await cardClick(b) }
     await heroMove(to);
