@@ -166,7 +166,7 @@
      the save backup) · 'own' = drafts with their own export / push button (battlefield editor). A key the page writes that is in NO list is recorded
      (EditorStore.unknown(), shown in the 🛒 Cart) — a new editor value that someone forgot to add to SYNC can then never stay on one computer unnoticed.
      tools/test-sot-keys.cjs fails when the code uses a key that is not classified here. */
-  const DEVICE = ['battle-tab-sub', 'hud-tab-sub', 'visual-tab-sub', 'ur-tab', 'smMapW', 'battleground-recent-v1', 'gh-latest-v1', 'project-a-repo-tree-v1', 'project-a-gh-assets-v1',
+  const DEVICE = ['projectA.resumeLast', 'battle-tab-sub', 'hud-tab-sub', 'visual-tab-sub', 'ur-tab', 'smMapW', 'battleground-recent-v1', 'gh-latest-v1', 'project-a-repo-tree-v1', 'project-a-gh-assets-v1',
     'pose-sheet.cart-sig', 'pose-sheet.hidden', 'pose-sheet.mode', 'pose-sheet.show', 'pose-sheet.zoom', 'pose-sheet.mirrorSync', 'pose-sheet.mirrorSync2', 'pose-sheet.revSync', 'pose-sheet.revSync2',
     'project-a-bgm-v24', 'project-a-sfx', 'project-a-field-grid', 'project-a-fp-float', 'project-a-fs', 'project-a-gart', 'project-a-gart-ring', 'project-a-grid-mode', 'project-a-grid-show',
     'project-a-ground-brush', 'project-a-lock-ratio', 'project-a-manager-mode', 'project-a-ramp', 'project-a-sharp', 'project-a-sharp-amt', 'project-a-place-clipboard-v1', 'project-a-layout-sync-v1',

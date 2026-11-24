@@ -197,6 +197,36 @@
     "art": "enemy-goat",
     "rank": "normal"
   },
+  "murk": {
+    "name": "สัตว์รอยหมอง",
+    "art": "enemy-murk",
+    "rank": "normal"
+  },
+  "byrexael": {
+    "name": "มังกรดำจ้าววิญญาณ",
+    "art": "enemy-byrexael",
+    "rank": "boss"
+  },
+  "hunger": {
+    "name": "ก้อนหิว",
+    "art": "enemy-hunger",
+    "rank": "boss"
+  },
+  "alarmHorn": {
+    "name": "แตรสัญญาณ",
+    "art": "enemy-alarm-horn",
+    "rank": "normal"
+  },
+  "soulCore": {
+    "name": "แก่นตะกอนวิญญาณ",
+    "art": "enemy-soul-core",
+    "rank": "normal"
+  },
+  "hungerRoot": {
+    "name": "ปมหิว",
+    "art": "enemy-hunger-root",
+    "rank": "normal"
+  },
   "pumpkin": {
     "name": "ฟักทองในไร่",
     "art": "enemy-pumpkin",

@@ -4,7 +4,7 @@ nav{display:flex;gap:6px;padding:5px 8px;background:#0c0e0b;border-bottom:1px so
 main{flex:1;position:relative}iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#111}iframe[hidden]{display:none}</style></head><body>
 <nav><button data-id="lab" aria-pressed="true" title="Battleground Editor เดิม: ชิ้นส่วนและสนามสุ่ม">🧱 แล็บชิ้น / สนามสุ่ม (เดิม)</button><button data-id="fixed" title="แก้แผนที่และตำแหน่งยูนิตของฉากต่อสู้ตายตัว (ถนนแพะ · ก้นเหมือง ฯลฯ)">📌 ฉากตายตัว (แพะ · บอส)</button></nav>
 <main id="m"></main>
-<script src="js/editor-store.js?v=v98.1002"></script><script>const SRC={lab:'battleground.html',fixed:'set-piece-editor.html'};const m=document.getElementById('m');let last='lab';try{last=localStorage.getItem('battle-tab-sub')||'lab'}catch(e){}if(!SRC[last])last='lab';
+<script src="js/editor-store.js?v=v98.1028"></script><script>const SRC={lab:'battleground.html',fixed:'set-piece-editor.html'};const m=document.getElementById('m');let last='lab';try{last=localStorage.getItem('battle-tab-sub')||'lab'}catch(e){}if(!SRC[last])last='lab';
 function show(id){last=id;try{localStorage.setItem('battle-tab-sub',id)}catch(e){}document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
  for(const f of m.children)f.hidden=f.dataset.id!==id;if(!m.querySelector('[data-id="'+id+'"]')){const f=document.createElement('iframe');f.dataset.id=id;f.src=SRC[id]+(location.search||'');m.append(f)}}
 document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.id)};show(last);</script></body></html>
