@@ -109,6 +109,10 @@
   {
    "id": "battle-field",
    "name": "สนามรบ (พื้นผิวและพร็อพ)"
+  },
+  {
+   "id": "vfx",
+   "name": "เอฟเฟกต์ภาพเคลื่อนไหว"
   }
  ],
  "statuses": {
@@ -161014,6 +161018,166 @@
    "prompt": "Reimagine the REFERENCE town landmark as a full immersive 16:9 dialogue BACKGROUND viewed at street-level, not a cutout diorama. Preserve recognizable buildings, roof colors, materials and settlement character from reference. Vinehollow village at eye level from a lane beside its vineyards: cream plaster cottages with orange terracotta roofs, stone winery arches and barrels, purple grape vines, cypress-like trees, small steaming natural spring higher up hill, warm sunny daylight. No real-world cross or deity statue. Rich warm hand-painted JRPG environment consistent with Agrenor village dialogue art. No people or creatures, no text, no borders, no UI. Full opaque edge-to-edge ground, sky and architecture; no transparent void, no floating island, no isometric model. Clear lower foreground for characters.",
    "usedIn": "DialogueBackdrops · town conversations",
    "artRevision": "v98.1027"
+  },
+  {
+   "id": "spell-anim-ice",
+   "file": "assets/fx/anim/ice-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์น้ำแข็ง 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-lightning",
+   "file": "assets/fx/anim/lightning-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์สายฟ้า 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-water",
+   "file": "assets/fx/anim/water-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์น้ำ 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-wind",
+   "file": "assets/fx/anim/wind-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์ลม 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-earth",
+   "file": "assets/fx/anim/earth-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์ดิน 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-dark",
+   "file": "assets/fx/anim/dark-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์ราตรี 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-heal",
+   "file": "assets/fx/anim/heal-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์รักษา 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-shield",
+   "file": "assets/fx/anim/shield-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์โล่ 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
   }
  ],
  "studioReviews": {
