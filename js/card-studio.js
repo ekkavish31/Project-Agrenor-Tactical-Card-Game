@@ -271,6 +271,9 @@ function load(){try{store=JSON.parse(localStorage.getItem(KEY))}catch(e){store=n
  if(!store||![1,2].includes(store.version))store={version:2,frame:FRAME,templates:DEFAULT_TEMPLATES(),rarities:clone(DEFAULT_RARITIES),cards:{},order:[]};
  migrate();for(const id of ['a-armor-burn','a-hammer-strike','a-water-ball'])delete store.cards[id];for(let c of gameCards()){
   const old=store.cards[c.id];
+  // Adopt the new story-item art only when the player still has its shipped fallback.
+  const fallback={'c-mayBread':'bread','g-glowCrystal':'crystalShard'}[c.id];
+  if(fallback&&old?.art&&!old.art.data&&old.art.src==='assets/cards/item/'+fallback+'.webp')old.art.src=c.art.src;
   if(!old){store.cards[c.id]=c;store.order.push(c.id)}
   // v16: adopt newly installed art only for untouched empty defaults.
   // Preserve uploaded art, custom image paths and all card/gameplay edits.

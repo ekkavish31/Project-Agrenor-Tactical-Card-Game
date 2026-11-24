@@ -39,6 +39,7 @@
     [/^assets\/interior\//, 'interior', 'เฟอร์นิเจอร์ · ของในห้อง'],
     [/^assets\/enemies\//, 'monster', m => /animations/.test(m.input) ? 'แอนิเมชันมอนสเตอร์' : 'มอนสเตอร์ (หน้า/หลัง)'],
     [/^assets\/(terrain|world|v03)\//, 'terrain', m => ({ terrain: 'ภูมิประเทศ (สนามรบ)', world: 'วัตถุบนแผนที่โลก', v03: 'พื้นหลัง · HUD เก่า' })[m[1]]],
+    [/^assets\/scenes\/dialogue\//, 'story', 'ฉากหลังบทสนทนาตามสถานที่'],
     [/^assets\/scenes\//, 'battlefield', 'ฉากพื้นที่'],
     [/^assets\/fx\//, 'fx', m => 'เอฟเฟกต์'],
     [/^assets\/(ui|icons)\//, 'ui', m => m[1] === 'ui' ? 'UI' : 'ไอคอน'],

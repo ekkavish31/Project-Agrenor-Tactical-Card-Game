@@ -510,5 +510,6 @@ function contestScene(days){const lines=[{face:'happy',who:'marta',text:'ฮิ�
  lines.push({tint:'dusk',fx:['lanterns','motes'],text:'งานดำเนินไปจนพระอาทิตย์เริ่มลับขอบฟ้า...'});
  return {bg:B.market,pan:'in',tint:'day',fx:['lanterns','motes'],lines}}
 
+for(const id of Object.keys(SCENES))SCENES[id]=root.DialogueBackdrops?.intro(id,SCENES[id])||SCENES[id];
 root.STORY_DATA={B,SPEAKERS,SCENES,contestScene};
 })(globalThis);
