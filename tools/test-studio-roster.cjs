@@ -14,6 +14,7 @@ for (const [k, name] of Object.entries(P.npcs)) { const o = owners.get('npc:' + 
 // monsters
 const tb = fs.readFileSync(path.join(ROOT, 'js/town-battle.js'), 'utf8'), mons = [...tb.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'[^\n]*?img:/gm)].map(m => m[1]);
 assert.ok(mons.length >= 17, 'read the monster table');
-for (const k of mons) { assert.ok(E[k], `monster ${k} is missing from STUDIO_ENEMIES (js/studio-catalog.js)`); const o = owners.get('enemy:' + k); assert.ok(o, `monster ${k} has no entity`); assert.notEqual(o.name, k, `monster ${k} has a Thai name`); assert.ok(['monsters', 'bosses'].includes(o.group)) }
+const standIn = new Set([...tb.matchAll(/^\s*(\w+):\s*\{[^\n]*standIn: true/gm)].map(m => m[1]));   /* v98.1033 · round A monsters reuse another monster's sprite until their own is painted: no studio entity yet (docs/TODO.md) */
+for (const k of mons) { if (standIn.has(k)) continue; assert.ok(E[k], `monster ${k} is missing from STUDIO_ENEMIES (js/studio-catalog.js)`); const o = owners.get('enemy:' + k); assert.ok(o, `monster ${k} has no entity`); assert.notEqual(o.name, k, `monster ${k} has a Thai name`); assert.ok(['monsters', 'bosses'].includes(o.group)) }
 assert.equal(owners.get('enemy:pumpkinBoss').group, 'bosses', 'the pumpkin boss is under บอส');
 console.log(`studio roster: ${Object.keys(P.allies).length} friends · ${Object.keys(P.npcs).length} villagers · ${mons.length} monsters (+${Object.keys(E).length - mons.length} more in the catalog) — all passed`);

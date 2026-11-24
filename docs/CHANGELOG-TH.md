@@ -7768,3 +7768,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - ผู้สร้างให้ทำตามข้อเสนอใน `docs/NPC-DIALOGUE-LAYERS-TH.md`: รายชื่อ NPC ระดับ A1 · โอเรนทำเฉพาะเส้นผู้นำหมู่บ้าน (จานหินรอ Retcon) · log ต่อคนเก็บใน `agrenor-mind-v1` เดิมพร้อมย่อ log
 - **นาเดีย** (`js/village-life.js` `nadia.about`): จาก "ข้าแค่ยืม…" (เกือบยอมรับ) เป็นประโยคที่ไม่ยืนยัน/ไม่ปฏิเสธ ให้แหวนเจ้าเมืองคงเป็นข่าวลือตาม `docs/CHARACTER-VOICES-TH.md` §4
 - เทสต์: `tools/test-village-mind.cjs` 891 ผ่าน · `tools/test-early-dialogue-scope.cjs` 1,391 บรรทัดผ่าน
+
+## v98.1034 — 24 พฤศจิกายน 2026
+- มอนสเตอร์รอบ A ติดป้าย `standIn: true` (ใช้สไปรต์ของตัวอื่นแทน) · `test-studio-roster` ข้ามมอนที่ยังไม่มีภาพของตัวเอง — เมื่อวาดภาพจริงให้ลบป้ายและเพิ่มใน `studio-catalog.js`
