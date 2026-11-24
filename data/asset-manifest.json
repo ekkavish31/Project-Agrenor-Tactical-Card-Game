@@ -161430,6 +161430,918 @@
    "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
    "artRevision": "v98.1036",
    "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "npc-bryn-portrait-source",
+   "file": "assets/generated-village/portrait-sources/bryn.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-bryn-neutral",
+   "file": "assets/portraits/bryn-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    503,
+    682
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-bryn-happy",
+   "file": "assets/portraits/bryn-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    503,
+    682
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-bryn-angry",
+   "file": "assets/portraits/bryn-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    503,
+    682
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-bryn-worry",
+   "file": "assets/portraits/bryn-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    503,
+    682
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-ella-portrait-source",
+   "file": "assets/generated-village/portrait-sources/ella.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2170,
+    725
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-ella-neutral",
+   "file": "assets/portraits/ella-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    461,
+    694
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ella-happy",
+   "file": "assets/portraits/ella-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    461,
+    694
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ella-angry",
+   "file": "assets/portraits/ella-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    461,
+    694
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ella-worry",
+   "file": "assets/portraits/ella-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    461,
+    694
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-joe-portrait-source",
+   "file": "assets/generated-village/portrait-sources/joe.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-joe-neutral",
+   "file": "assets/portraits/joe-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    450,
+    695
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-joe-happy",
+   "file": "assets/portraits/joe-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    450,
+    695
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-joe-angry",
+   "file": "assets/portraits/joe-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    450,
+    695
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-joe-worry",
+   "file": "assets/portraits/joe-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    450,
+    695
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-ken-portrait-source",
+   "file": "assets/generated-village/portrait-sources/ken.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-ken-neutral",
+   "file": "assets/portraits/ken-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    499,
+    702
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ken-happy",
+   "file": "assets/portraits/ken-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    499,
+    702
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ken-angry",
+   "file": "assets/portraits/ken-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    499,
+    702
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ken-worry",
+   "file": "assets/portraits/ken-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    499,
+    702
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-finn-portrait-source",
+   "file": "assets/generated-village/portrait-sources/finn.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-finn-neutral",
+   "file": "assets/portraits/finn-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    479,
+    672
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-finn-happy",
+   "file": "assets/portraits/finn-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    479,
+    672
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-finn-angry",
+   "file": "assets/portraits/finn-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    479,
+    672
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-finn-worry",
+   "file": "assets/portraits/finn-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    479,
+    672
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-berg-portrait-source",
+   "file": "assets/generated-village/portrait-sources/berg.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-berg-neutral",
+   "file": "assets/portraits/berg-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    511,
+    665
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-berg-happy",
+   "file": "assets/portraits/berg-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    511,
+    665
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-berg-angry",
+   "file": "assets/portraits/berg-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    511,
+    665
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-berg-worry",
+   "file": "assets/portraits/berg-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    511,
+    665
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-shep-portrait-source",
+   "file": "assets/generated-village/portrait-sources/shep.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-shep-neutral",
+   "file": "assets/portraits/shep-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    490,
+    630
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-shep-happy",
+   "file": "assets/portraits/shep-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    490,
+    630
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-shep-angry",
+   "file": "assets/portraits/shep-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    490,
+    630
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-shep-worry",
+   "file": "assets/portraits/shep-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    490,
+    630
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-pim-portrait-source",
+   "file": "assets/generated-village/portrait-sources/pim.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-pim-neutral",
+   "file": "assets/portraits/pim-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    370,
+    630
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-pim-happy",
+   "file": "assets/portraits/pim-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    370,
+    630
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-pim-angry",
+   "file": "assets/portraits/pim-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    370,
+    630
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-pim-worry",
+   "file": "assets/portraits/pim-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    370,
+    630
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-tess-portrait-source",
+   "file": "assets/generated-village/portrait-sources/tess.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-tess-neutral",
+   "file": "assets/portraits/tess-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    484,
+    712
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-tess-happy",
+   "file": "assets/portraits/tess-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    484,
+    712
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-tess-angry",
+   "file": "assets/portraits/tess-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    484,
+    712
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-tess-worry",
+   "file": "assets/portraits/tess-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    484,
+    712
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-ash-portrait-source",
+   "file": "assets/generated-village/portrait-sources/ash.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-ash-neutral",
+   "file": "assets/portraits/ash-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    514,
+    664
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ash-happy",
+   "file": "assets/portraits/ash-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    514,
+    664
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ash-angry",
+   "file": "assets/portraits/ash-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    514,
+    664
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-ash-worry",
+   "file": "assets/portraits/ash-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    514,
+    664
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-pell-portrait-source",
+   "file": "assets/generated-village/portrait-sources/pell.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-pell-neutral",
+   "file": "assets/portraits/pell-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    507,
+    637
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-pell-happy",
+   "file": "assets/portraits/pell-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    507,
+    637
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-pell-angry",
+   "file": "assets/portraits/pell-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    507,
+    637
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-pell-worry",
+   "file": "assets/portraits/pell-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    507,
+    637
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "npc-hugo-portrait-source",
+   "file": "assets/generated-village/portrait-sources/hugo.png",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2172,
+    724
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 1,
+    "names": [
+     "neutral",
+     "happy",
+     "angry",
+     "worry"
+    ]
+   },
+   "usedIn": "ต้นฉบับภาพสนทนา 4 อารมณ์ v98.947"
+  },
+  {
+   "id": "portrait-hugo-neutral",
+   "file": "assets/portraits/hugo-neutral.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    496,
+    655
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-hugo-happy",
+   "file": "assets/portraits/hugo-happy.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    496,
+    655
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-hugo-angry",
+   "file": "assets/portraits/hugo-angry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    496,
+    655
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "portrait-hugo-worry",
+   "file": "assets/portraits/hugo-worry.webp",
+   "category": "characters",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    496,
+    655
+   ],
+   "usedIn": "StoryActors · StoryCast · BattlePortrait v98.947"
+  },
+  {
+   "id": "town-event-games",
+   "file": "assets/generated-village/events/games.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "size": [
+    1672,
+    941
+   ],
+   "usedIn": "TownEvents.card · เหตุการณ์เมืองเดิม v98.947"
+  },
+  {
+   "id": "town-event-toll",
+   "file": "assets/generated-village/events/toll.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "size": [
+    1672,
+    941
+   ],
+   "usedIn": "TownEvents.card · เหตุการณ์เมืองเดิม v98.947"
+  },
+  {
+   "id": "town-event-collect",
+   "file": "assets/generated-village/events/collect.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "size": [
+    1672,
+    941
+   ],
+   "usedIn": "TownEvents.card · เหตุการณ์เมืองเดิม v98.947"
+  },
+  {
+   "id": "town-event-caravan",
+   "file": "assets/generated-village/events/caravan.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "size": [
+    1672,
+    941
+   ],
+   "usedIn": "TownEvents.card · เหตุการณ์เมืองเดิม v98.947"
+  },
+  {
+   "id": "town-event-patrol",
+   "file": "assets/generated-village/events/patrol.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "size": [
+    1672,
+    941
+   ],
+   "usedIn": "TownEvents.card · เหตุการณ์เมืองเดิม v98.947"
+  },
+  {
+   "id": "town-event-thief",
+   "file": "assets/generated-village/events/thief.png",
+   "category": "scenes",
+   "status": "final",
+   "transparent": false,
+   "size": [
+    1672,
+    941
+   ],
+   "usedIn": "TownEvents.card · เหตุการณ์เมืองเดิม v98.947"
   }
  ],
  "studioReviews": {

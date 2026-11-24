@@ -874,6 +874,7 @@
       <div class="acts">${talkActs(p, jobs, rec)}</div></div></div>`;
     document.body.append(bg); dlg = bg;
     const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
+    window.StoryActors?.drawTalkPortrait(bg.querySelector('canvas'), p.id, txt, () => dlg === bg);
     bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
     bg.onclick = e => { if (e.target === bg) { close(); if (VISIT) leave() } };
     a.face = faceOf(hero.u - a.u, hero.v - a.v);
