@@ -30,7 +30,7 @@ const G = {
   forge: 'โรงตีเหล็ก/งานช่าง', shop: 'ร้านค้า/ตลาด', home: 'บ้าน: โต๊ะ/ที่นั่ง/ตู้', bed: 'ห้องนอน/พรม', inn: 'ครัว/โรงเตี๊ยม',
   fire: 'เตาผิง/แสงไฟ', small: 'ของเล็กบนโต๊ะ/ต้นไม้ในร่ม', temple: 'วิหาร', guild: 'สมาคมนักผจญภัย', sage: 'ห้องสมุด/นักปราชญ์',
   healer: 'สถานพยาบาล', wall: 'ประตู/หน้าต่าง/ของแขวนผนัง', craft: 'งานฝีมือในบ้าน', farm: 'ไร่/ฟาร์ม', crop: 'พืชผัก (4 ระยะ)',
-  town: 'ของตกแต่งเมือง', fence: 'รั้ว/กำแพง/ประตูเมือง', tree: 'ต้นไม้/พุ่มไม้', coast: 'ชายฝั่ง', snow: 'หิมะ',
+  town: 'ของตกแต่งเมือง', festival: 'งานเทศกาล', water: 'คลอง/ระบบน้ำ', trail: 'เส้นทาง/ค่ายพัก', fence: 'รั้ว/กำแพง/ประตูเมือง', tree: 'ต้นไม้/พุ่มไม้', coast: 'ชายฝั่ง', snow: 'หิมะ',
   wild: 'ป่า/ของเล็กบนพื้น', battle: 'สนามรบ/ซากปรักหักพัง', rock: 'หิน/แร่/คริสตัล', bld: 'อาคาร (ภาพทั้งหลัง)'
 };
 
@@ -97,6 +97,34 @@ const INTERIOR = {
 /* ---------- everything else: [file under assets/, name, group, width in the village (0 = sub-maps only), anchor] ---------- */
 const V = 'village-town/';
 const OTHER = [
+  // v98.1036 · town/map props; movement and height remain map-owned
+  [V + 'decor/canal-bridge-stone-ne', 'สะพานหินข้ามคลอง แนว ↗', G.town, 230],
+  [V + 'decor/canal-bridge-stone-nw', 'สะพานหินข้ามคลอง แนว ↖', G.town, 230],
+  [V + 'decor/canal-bridge-wood-ne', 'สะพานไม้ข้ามคลอง แนว ↗', G.town, 230],
+  [V + 'decor/canal-bridge-wood-nw', 'สะพานไม้ข้ามคลอง แนว ↖', G.town, 230],
+  [V + 'decor/outdoor-stairs-stone-ne', 'บันไดหินกลางแจ้ง ขึ้น ↗', G.town, 155],
+  [V + 'decor/outdoor-stairs-stone-nw', 'บันไดหินกลางแจ้ง ขึ้น ↖', G.town, 155],
+  [V + 'decor/outdoor-stairs-ruin-ne', 'บันไดหินผุกร่อน ขึ้น ↗', G.town, 155],
+  [V + 'decor/outdoor-stairs-ruin-nw', 'บันไดหินผุกร่อน ขึ้น ↖', G.town, 155],
+  [V + 'decor/festival-flower-arch', 'ซุ้มดอกไม้เทศกาล', G.festival, 190],
+  [V + 'decor/festival-pennant-line', 'ราวธงสามเหลี่ยม', G.festival, 220],
+  [V + 'decor/festival-lantern-line', 'ราวโคมเทศกาล', G.festival, 220],
+  [V + 'decor/festival-stage', 'เวทีไม้เทศกาล', G.festival, 230],
+  [V + 'decor/festival-ribbon-pole', 'เสาริบบิ้นเทศกาล', G.festival, 100],
+  [V + 'decor/festival-bell-game', 'แผงเกมตีระฆัง', G.festival, 150],
+  [V + 'decor/canal-hand-pump', 'ปั๊มน้ำมือโยก', G.water, 65],
+  [V + 'decor/canal-sluice-gate', 'ประตูระบายน้ำไม้', G.water, 150],
+  [V + 'decor/canal-drain-se', 'ปากท่อหิน แนว ↘', G.water, 130],
+  [V + 'decor/canal-drain-sw', 'ปากท่อหิน แนว ↙', G.water, 130],
+  [V + 'decor/canal-waterwheel', 'กังหันวิดน้ำไม้', G.water, 170],
+  [V + 'decor/canal-mooring-posts', 'หลักผูกเรือพร้อมเชือก', G.water, 100],
+  [V + 'decor/trail-tent', 'เต็นท์นักเดินทาง', G.trail, 160],
+  [V + 'decor/trail-bedroll-pack', 'สัมภาระและม้วนผ้าห่ม', G.trail, 65],
+  [V + 'decor/trail-watch-platform', 'แท่นเฝ้าระวังไม้', G.trail, 165],
+  [V + 'decor/trail-map-shelter', 'ป้ายแผนที่มีหลังคา', G.trail, 135],
+  [V + 'decor/trail-milestone', 'หลักหินบอกเส้นทาง', G.trail, 60],
+  [V + 'decor/trail-cairn', 'กองหินนำทาง', G.trail, 60],
+
   // town decoration already in the village table (DECOR_W) keeps its old kind there; listed for the sub-maps
   [V + 'decor/fence-picket', 'รั้วไม้', G.fence, 110], [V + 'decor/stone-wall-low', 'กำแพงหินเตี้ย', G.fence, 110], [V + 'decor/hedge-row', 'แนวพุ่มไม้', G.fence, 120],
   [V + 'decor/flower-bed', 'แปลงดอกไม้', G.town, 118], [V + 'decor/flower-box', 'กระบะดอกไม้', G.town, 90], [V + 'decor/stepping-stones', 'หินทางเดิน', G.town, 130],
@@ -130,6 +158,9 @@ const OTHER = [
   [V + 'edge/snow-ridge', 'สันหิมะ', G.snow, 220], [V + 'edge/snow-rock-l', 'หินหิมะ (ใหญ่)', G.snow, 170], [V + 'edge/snow-rock-m', 'หินหิมะ (กลาง)', G.snow, 130],
   [V + 'edge/snow-rock-s', 'หินหิมะ (เล็ก)', G.snow, 100], [V + 'edge/snow-sign', 'ป้ายในหิมะ', G.snow, 120], [V + 'edge/snowdrift', 'กองหิมะ', G.snow, 140],
   // fences & buildings drawn in the Object Workshop
+  ['objects/iron-fence4-corner-new-2', 'รั้วเหล็กเข้ามุม 4 ช่อง แบบ 2', G.fence, 260],
+  ['objects/iron-fence4-corner-new', 'รั้วเหล็กเข้ามุม 4 ช่อง แบบ 1', G.fence, 260],
+  ['objects/iron-fence3-corner', 'รั้วเหล็กเข้ามุม 3 ช่อง', G.fence, 230],
   ['objects/fence-picket-long', 'รั้วระแนงยาว', G.fence, 260], ['objects/fence-wood-2', 'รั้วไม้ 2 ช่อง', G.fence, 120], ['objects/fence-wood-long', 'รั้วไม้ยาว', G.fence, 260],
   ['objects/iron-fence-cornerlong', 'รั้วเหล็กเข้ามุม', G.fence, 260], ['objects/iron-fence2', 'รั้วเหล็ก 2 ช่อง', G.fence, 200], ['objects/iron-fence4', 'รั้วเหล็ก 4 ช่อง', G.fence, 260],
   ['objects/house-01', 'บ้านไม้หลังเล็ก', G.bld, 0, .86], ['objects/adventurer-guild', 'สมาคมนักผจญภัย', G.bld, 0, .86],
