@@ -18,15 +18,26 @@
   function idle(o = {}) { const L = o.near ? ['👋', '😊', '👋'] : o.walking ? ['🎵', '💭', '😊', '🎵'] : ['💭', '😌', '🤔', '🎵']; if (o.period === 'evening' || o.period === 'night') L.push('🥱', '🌙'); if (o.period === 'morning') L.push('☀️'); return L[Math.floor(Math.random() * L.length)] }
   const EMOJI = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
   function wrap(g, txt, maxW) { const lines = []; let cur = ''; for (const ch of [...String(txt)]) { if (ch === '\n') { lines.push(cur); cur = ''; continue } if (cur && g.measureText(cur + ch).width > maxW) { lines.push(cur); cur = ch.trim() ? ch : '' } else cur += ch } if (cur) lines.push(cur); return lines }
+  const paper = typeof Image !== 'undefined' ? new Image() : null;
+  if(paper)paper.src='assets/ui/ivory-panel.webp';
+  function paperFrame(g,x,y,w,h,k){
+    if(!paper?.complete||!paper.naturalWidth)return false;
+    const sw=paper.naturalWidth,sh=paper.naturalHeight,bx=sw*.12,by=sh*.12,d=Math.min(17*k,w/3,h/3);
+    const Sx=[0,bx,sw-bx,sw],Sy=[0,by,sh-by,sh],Dx=[x,x+d,x+w-d,x+w],Dy=[y,y+d,y+h-d,y+h];
+    for(let j=0;j<3;j++)for(let i=0;i<3;i++)g.drawImage(paper,Sx[i],Sy[j],Sx[i+1]-Sx[i],Sy[j+1]-Sy[j],Dx[i],Dy[j],Dx[i+1]-Dx[i],Dy[j+1]-Dy[j]);
+    return true;
+  }
   function bubble(g, x, tipY, text, o = {}) {
-    const k = o.k || 1, F = 18 * k, NF = 14 * k, LH = 26 * k, PAD = 13 * k, maxW = 300 * k, ER = o.emoji ? 19 * k : 0;
+    const view=g.getTransform?.();if(view&&g.canvas&&view.a>0&&view.d>0)o={minX:(8*(root.devicePixelRatio||1)-view.e)/view.a,maxX:(g.canvas.width-8*(root.devicePixelRatio||1)-view.e)/view.a,minY:(8*(root.devicePixelRatio||1)-view.f)/view.d,...o};
+    const k = o.k || 1, F = 18 * k, NF = 14 * k, LH = 26 * k, PAD = 13 * k, maxW = Math.max(60*k,Math.min(300*k,(o.maxX??Infinity)-(o.minX??0)-60*k)), ER = o.emoji ? 19 * k : 0;
     g.save(); g.font = `600 ${F}px VillageThai,AgThai,system-ui,"Noto Sans Thai",sans-serif`;
     const lines = wrap(g, text, maxW), nameW = o.name ? (g.font = `800 ${NF}px VillageThai,AgThai,system-ui,sans-serif`, g.measureText(o.name).width) : 0; g.font = `600 ${F}px VillageThai,AgThai,system-ui,"Noto Sans Thai",sans-serif`;
     const w = Math.max(nameW, ...lines.map(l => g.measureText(l).width), 60 * k) + PAD * 2, h = lines.length * LH + PAD * 1.5 + (o.name ? NF + 5 * k : 0), tail = 11 * k;
     let bx = x - w / 2, by = tipY - tail - h; if (o.minX != null) bx = Math.max(o.minX + ER, bx); if (o.maxX != null) bx = Math.min(o.maxX - w, bx);
+    if(o.minY!=null)by=Math.max(o.minY+ER,by);
     if (o.placed) { for (let n = 0; n < 8; n++) { const hit = o.placed.find(r => bx < r.x + r.w + 4 * k && bx + w + 4 * k > r.x && by < r.y + r.h + 4 * k && by + h + 4 * k > r.y); if (!hit) break; by = hit.y - h - 10 * k } if (o.minY != null) by = Math.max(o.minY + ER, by); o.placed.push({ x: bx, y: by, w, h }) }
     g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 10 * k; g.shadowOffsetY = 3 * k;
-    g.fillStyle = '#fffaeb'; g.strokeStyle = '#6b4a22'; g.lineWidth = 2.2 * k; g.beginPath(); g.roundRect(bx, by, w, h, 13 * k); g.fill(); g.shadowColor = 'transparent'; g.stroke();
+    g.fillStyle = '#fffaeb'; g.strokeStyle = '#6b4a22'; g.lineWidth = 2.2 * k; if(!paperFrame(g,bx,by,w,h,k)){g.beginPath(); g.roundRect(bx, by, w, h, 8 * k); g.fill(); g.shadowColor = 'transparent'; g.stroke()}g.shadowColor='transparent';
     const tx = Math.max(bx + 16 * k, Math.min(bx + w - 16 * k, x)); g.beginPath(); g.moveTo(tx - 9 * k, by + h - 1 * k); g.lineTo(x, by + h + tail); g.lineTo(tx + 9 * k, by + h - 1 * k); g.closePath(); g.fill(); g.beginPath(); g.moveTo(tx - 9 * k, by + h); g.lineTo(x, by + h + tail); g.lineTo(tx + 9 * k, by + h); g.stroke();
     g.textAlign = 'left'; g.textBaseline = 'alphabetic'; let ty = by + PAD * .75;
     if (o.name) { g.font = `800 ${NF}px VillageThai,AgThai,system-ui,sans-serif`; g.fillStyle = '#9a4a14'; g.fillText(o.name, bx + PAD, ty + NF); ty += NF + 5 * k }
@@ -34,7 +45,7 @@
     if (o.emoji) badge(g, bx + 2 * k, by + 2 * k, ER, o.emoji, k);
     g.restore(); return { x: bx, y: by, w, h };
   }
-  function badge(g, cx, cy, r, emoji, k) { g.save(); g.fillStyle = '#fff'; g.strokeStyle = '#6b4a22'; g.lineWidth = 2.2 * k; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill(); g.stroke(); g.font = `${r * 1.25}px ${EMOJI}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#2b1c0a'; g.fillText(emoji, cx, cy + r * .08); g.restore() }
+  function badge(g, cx, cy, r, emoji, k) { g.save(); g.fillStyle = '#f4e8cb'; g.strokeStyle = '#9d793e'; g.lineWidth = 2.2 * k; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill(); g.stroke(); g.font = `${r * 1.25}px ${EMOJI}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#2b1c0a'; g.fillText(emoji, cx, cy + r * .08); g.restore() }
   function pop(g, x, tipY, emoji, o = {}) { const k = o.k || 1, age = o.age ?? 999, s = age < 220 ? .4 + .6 * (age / 220) + .25 * Math.sin(age / 220 * Math.PI) : 1, r = 20 * k * s, cy = tipY - 10 * k - r + Math.sin((age || 0) * .005) * 2 * k;
     g.save(); g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 8 * k; g.fillStyle = '#fffaeb'; g.beginPath(); g.moveTo(x - 6 * k, cy + r * .8); g.lineTo(x, tipY); g.lineTo(x + 6 * k, cy + r * .8); g.fill(); g.restore(); badge(g, x, cy, r, emoji, k) }
   root.NpcEmote = { pick, idle, bubble, pop, badge };

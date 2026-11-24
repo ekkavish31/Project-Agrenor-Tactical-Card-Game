@@ -10,6 +10,11 @@ const GV=(()=>{try{return (window.GAME_VERSION||{}).v||''}catch{return ''}})();
 const frame=makeFrame('หมู่บ้าน 2.5D',deferTown?'':'village-town.html?v='+(GV||'97.17')),marketFrame=makeFrame('สถานที่ 2.5D');let placeId='',placeAct='';marketFrame.hidden=true;document.body.appendChild(host);
 const back=document.createElement('button');back.id='townReturn';back.textContent='← กลับแผนที่หมู่บ้าน';back.style.cssText='position:fixed;left:20px;top:78px;z-index:201;padding:10px 16px;border-radius:10px;background:#213b2df0;color:#fff0c7;border:1px solid #b6c48e';back.hidden=true;back.onclick=()=>openTown();document.body.append(back);
 let ready=false,marketReady=false,initialized=false,lastStamp='',lastMotion='',inside=false,marketOpen=false,lastVisible='';
+// Cover the iframe before navigation, including the gap before its own scripts run.
+const loading=document.createElement('div');loading.className='scene-transit';loading.style.cssText='position:absolute;inset:0;z-index:10;background:#f2e7ca;color:#3e2a18';loading.hidden=true;loading.setAttribute('role','status');loading.innerHTML='<div class="load-card"><h2>กำลังเตรียมสถานที่…</h2>'+(window.MipLoader?.html({width:'100%'})||'<div class="mip-track" aria-hidden="true"><div class="mip-go"><div class="mip-flip"><div class="mip-run"><i></i></div></div></div></div>')+'<p>กำลังเปิดหน้าบันทึกการเดินทาง</p><button type="button" hidden>ลองโหลดใหม่</button></div>';host.appendChild(loading);
+let loadTimer=0;loading.querySelector('button').onclick=()=>{if(marketOpen){marketReady=false;marketFrame.src=marketFrame.src;sync()}};
+function syncLoading(){const wait=marketOpen&&!marketReady;if(wait===!loading.hidden)return;loading.hidden=!wait;clearTimeout(loadTimer);loading.querySelector('button').hidden=true;if(wait)loadTimer=setTimeout(()=>{loading.querySelector('p').textContent='กำลังรอภาพของสถานที่…';loading.querySelector('button').hidden=false},15000)}
+
 function post(f,data){f.contentWindow?.postMessage({source:'project-a-game',...data},'*')}
 function send(data){if(ready)post(frame,data)}
 function stateData(){return{location:s.village.location,name:heroName(),day:s.day,minutes:s.minutes,hp:s.hp,stamina:s.stamina,coins:s.village.coins,message:s.log,exits:Object.entries(window.ADVENTURE_DATA.AREAS).map(([id,a])=>({id,name:a.name,exit:a.exit})),actions:placeActions().map(a=>({id:a.id,name:a.name,cost:a.cost,effect:a.effect,reason:a.reason||''}))}}
@@ -25,7 +30,7 @@ for(const type of ['keydown','keyup'])document.addEventListener(type,e=>{
  const f=marketOpen?marketFrame:frame,w=f?.contentWindow;if(!w||f.hidden)return;
  try{focusActive();w.document.dispatchEvent(new w.KeyboardEvent(type,{key:e.key,code:e.code,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,repeat:e.repeat,bubbles:true,cancelable:true}));e.preventDefault();e.stopPropagation()}catch{}
 },true);
-function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden;frame.hidden=marketOpen;marketFrame.hidden=!marketOpen;
+function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden;frame.hidden=marketOpen;marketFrame.hidden=!marketOpen;syncLoading();
  {const fk=JSON.stringify([!host.hidden,marketOpen,placeId,ready,marketReady,modalOpen()]);if(fk!==lastFocusKey){lastFocusKey=fk;setTimeout(focusActive,0);setTimeout(focusActive,250)}}
  const vis=JSON.stringify([!host.hidden,marketOpen,ready,marketReady,modalOpen()]);if(vis!==lastVisible){lastVisible=vis;send({type:'visibility',visible:!host.hidden&&!marketOpen&&!modalOpen()});if(marketReady)post(marketFrame,{type:'visibility',visible:!host.hidden&&marketOpen&&!modalOpen()})}
  const data=stateData(),stamp=JSON.stringify(data);if(stamp!==lastStamp){lastStamp=stamp;send({type:'state',data});if(marketReady)post(marketFrame,{type:'state',data})}
@@ -56,7 +61,7 @@ window.addEventListener('message',e=>{const m=e.data;if(e.source===frame.content
  else if(m.type==='arrive'&&typeof m.id==='string')arrived(m.id,typeof m.map==='string'?m.map:'',{placeId:typeof m.placeId==='string'?m.placeId:'',name:typeof m.name==='string'?m.name:'',custom:!!m.custom});
  else if(m.type==='menu')menu(m.id);
  }else if(e.source===marketFrame.contentWindow&&m?.source==='project-a-place'){
- if(m.type==='ready'){marketReady=true;post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)});sync()}
+ if(m.type==='ready'){if(m.place&&m.place!==placeId.replace(/^in:/,''))return;marketReady=true;post(marketFrame,{type:'init',data:stateData()});post(marketFrame,{type:'motion',data:HeroMotion.snapshot(TACTICS_SPRITES)});sync()}
  else if(m.type==='leave'&&marketOpen&&!busy)openTown();
  else if(m.type==='action'&&marketOpen&&!busy&&s.mode!=='battle'&&(s.village.location===placeAct||placeId.startsWith('in:'))&&typeof m.id==='string')Promise.resolve(runPlaceAction(m.id)).then(()=>{lastStamp='';sync()});
  else if(m.type==='menu')menu(m.id);

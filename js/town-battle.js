@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1047';
+  const V = '98.1048';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -401,7 +401,7 @@
   #fbDuel .dc{position:relative;display:flex;align-items:center;gap:9px;min-width:200px;max-width:240px;padding:6px 10px 6px 6px;border-radius:12px;background:linear-gradient(90deg,#14110fe6,#14110fb0);border:1px solid #fff2;box-shadow:0 4px 14px #0009;transition:opacity .25s}
   #fbDuel .dc.t{margin-right:18px;opacity:.96}#fbDuel .dc.foe{border-color:#c4563f88}
   #fbDuel .pf{position:relative;flex:none;width:108px;height:108px;border-radius:12px;overflow:hidden;border:3px solid var(--jc,#8a9a6a);background:#16130f center/cover no-repeat;box-shadow:0 0 0 1px #000a,0 0 12px var(--jc,#8a9a6a)66}
-  #fbDuel .dc.t .pf{width:88px;height:88px}
+  #fbDuel .dc.t .pf{width:108px;height:108px}
   #fbDuel .pf::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:8px;transition:box-shadow .2s}
   #fbDuel .jb{position:absolute;left:-7px;top:-7px;z-index:2;width:22px;height:22px;border-radius:50%;background:var(--jc,#888);border:2px solid #1a140c;display:grid;place-items:center;font:700 12px AgThai,system-ui,"Segoe UI Symbol",sans-serif;font-style:normal;color:#fff8e8}
   #fbDuel .nm{flex:1;min-width:0}#fbDuel .nm b{display:block;font-size:14px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#fbDuel .nm small{display:block;font-size:11px;color:#cdbf98}
@@ -416,13 +416,13 @@
   #fbDuel .tools{pointer-events:auto;display:flex;gap:4px}#fbDuel .tools button{width:26px;height:22px;border-radius:7px;border:1px solid #fff3;background:#14110fcc;color:#e8d9aa;font-size:12px;cursor:pointer;padding:0}
   #fbDuel.min .dc{min-width:0;padding:4px}#fbDuel.min .nm{display:none}#fbDuel.min .pf,#fbDuel.min .dc.t .pf{width:60px;height:60px}#fbDuel.min .dc.t{margin-right:8px}#fbDuel.min .vs{margin-right:20px}
   @keyframes fbDuelFlash{0%{opacity:0;transform:scale(.5)}25%{opacity:1}100%{opacity:0;transform:scale(1.15)}}@keyframes fbDuelPush{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes fbDuelShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-2deg)}45%{transform:translateX(5px) rotate(2deg)}70%{transform:translateX(-3px)}}
-  @media (max-width:860px),(max-height:560px){#fbDuel{top:auto;bottom:226px;right:6px}#fbDuel .dc{min-width:0}#fbDuel .nm{display:none}#fbDuel .pf{width:64px;height:64px}#fbDuel .dc.t .pf{width:54px;height:54px}#fbDuel .dc.t{margin-right:8px}}
-  /* v98.1009 · BIG duel portraits (≈3× the old 108 / 88 px): actor and target side by side with a clash effect between them; the ▭ button folds back to the small stacked cards.
-     Struck fighter: red light pulses 3× per hit; below 25% HP the frame throbs red. --pw = portrait size (fits the screen). */
-  #fbDuel:not(.min){--pw:min(324px,21vw,38vh);top:84px;right:12px;flex-direction:row;align-items:flex-start;gap:0}
+  @media (max-width:860px),(max-height:560px){#fbDuel{top:auto;bottom:226px;right:6px}#fbDuel .dc{min-width:0}#fbDuel .nm{display:none}#fbDuel .pf{width:64px;height:64px}#fbDuel .dc.t .pf{width:64px;height:64px}#fbDuel .dc.t{margin-right:8px}}
+  /* Compact duel portraits: actor and target share one responsive size and baseline.
+     Hit flashes remain; the fold button switches both to equal small portraits. */
+  #fbDuel:not(.min){--pw:clamp(72px,min(12vw,20vh),132px);top:84px;right:12px;flex-direction:row;align-items:flex-start;gap:0}
   #fbDuel:not(.min) .dc{flex-direction:column;align-items:stretch;gap:6px;min-width:0;max-width:none;padding:8px 10px 10px;width:calc(var(--pw) + 22px)}
-  #fbDuel:not(.min) .dc.t{margin-right:0;width:calc(var(--pw) * .82 + 22px);margin-top:calc(var(--pw) * .18)}
-  #fbDuel:not(.min) .pf{width:var(--pw);height:var(--pw);border-radius:16px}#fbDuel:not(.min) .dc.t .pf{width:calc(var(--pw) * .82);height:calc(var(--pw) * .82)}
+  #fbDuel:not(.min) .dc.t{margin-right:0;width:calc(var(--pw) + 22px);margin-top:0}
+  #fbDuel:not(.min) .pf{width:var(--pw);height:var(--pw);border-radius:16px}#fbDuel:not(.min) .dc.t .pf{width:var(--pw);height:var(--pw)}
   #fbDuel:not(.min) .nm b{font-size:16px}#fbDuel:not(.min) .nm small{font-size:12px}#fbDuel:not(.min) .hp{height:9px}#fbDuel:not(.min) .mo{font-size:15px;min-height:19px}
   #fbDuel:not(.min) .tools{position:absolute;right:0;bottom:-28px}
   #fbDuel .cl{align-self:center;position:relative;width:70px;height:70px;margin:0 -14px;z-index:5;pointer-events:none;display:grid;place-items:center;font-size:30px;filter:drop-shadow(0 2px 4px #000)}
@@ -440,7 +440,7 @@
   @keyframes fbSlash{0%{opacity:0;width:20px}30%{opacity:1}100%{opacity:0;width:130px}}
   #fbDuel:not(.min) .dc.m-attack .pf{animation:fbDuelLunge .5s ease-out}#fbDuel:not(.min) .dc.t.m-attack .pf{animation:fbDuelLungeL .5s ease-out}
   @keyframes fbDuelLunge{0%{transform:translateX(0)}35%{transform:translateX(26px) scale(1.04)}100%{transform:translateX(0)}}@keyframes fbDuelLungeL{0%{transform:translateX(0)}35%{transform:translateX(-26px) scale(1.04)}100%{transform:translateX(0)}}
-  @media (max-width:860px),(max-height:560px){#fbDuel:not(.min){--pw:96px;top:auto;bottom:226px;right:6px}}
+  @media (max-width:860px),(max-height:560px){#fbDuel:not(.min){--pw:clamp(64px,16vh,96px);top:auto;bottom:226px;right:6px}}
   @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}#fbDuel .rd,#fbDuel .cl i,#fbDuel .cl::before,#fbDuel .cl::after{animation:none!important}}
   @media (prefers-reduced-motion:reduce){#fbDuel .pf{animation:none!important}}
   #fbItems{position:fixed;left:50%;bottom:208px;transform:translateX(-50%);z-index:42;display:flex;gap:10px;align-items:flex-end;padding:10px 14px 8px;border-radius:14px;background:#14110fe8;border:1px solid #fff3;box-shadow:0 8px 24px #000a}#fbItems[hidden]{display:none}
@@ -1573,6 +1573,7 @@
        only a pose the editor has no pictures for falls back to the still idle frame moved by poseMotion() */
     if (u._lp !== name) { u._lp = name; u._pt = t }
     const ed = set[name + 'Frames'];
+    if(u._rdy&&ed?.length){u._edPose=true;return ed[0]} // idle-ready never advances a charge animation
     if (!OLDPOSE && ed?.length) { u._edPose = ed.length > 1; const e = t - (u._pt || t), total = ed.reduce((n, f) => n + (Number(f.ms) || 110), 0); return e >= total ? ed.at(-1) : (window.StudioWalks?.frame(ed, e) || ed[0]) }
     u._edPose = false;
     if (!OLDPOSE) return set.idleFrames?.[0] || set.idle;                 // action poses: still frame of the new outfit, moved by poseMotion()
@@ -1620,9 +1621,8 @@
     }
   }
   /* procedural action poses (code instead of pictures): lean back on windup, lunge + sword arc on strike, recoil on hit, crouch on guard, fall on down */
-  /* v98.956 · READY STANCE (our side only — heroes and friends, not monsters): a fighter that is just standing (idle · alive · no sleep / freeze / bind) — waiting OR on its own turn stands in the "เตรียมโจมตี" (windup) pose instead of the relaxed idle,
-     and that stance moves by itself: a knee-bounce, breathing, a slow sway and a weapon tip that wobbles — each fighter on its own phase (by id) so the line does not move in step.
-     Implemented by drawUnit(): while a ready fighter is drawn, u.pose = 'windup' and u._rdy = true, restored right after; nothing in the rules sees it. */
+  /* Ready stance uses the saved windup picture without procedural bob, sway or
+     scale. Foot/shadow anchors stay fixed; attack animation still runs normally. */
   function isReady(u) {
     try {
       if (!st || st.outcome || !FB || u.side !== 'hero' || u.hp <= 0 || u.walking || u.mipForm || (u.pose && u.pose !== 'idle')) return false;   /* our side only (owner 22 Nov: monsters stay in their idle) */
@@ -1631,10 +1631,8 @@
     } catch (e) { return false }
   }
   function readyMotion(u, t, still) {
-    const ph = (u.id ? [...String(u.id)].reduce((a, c) => a + c.charCodeAt(0), 0) : 0) * .61, fs = ['SE', 'NE'].includes(u.dir) ? 1 : -1;
-    const br = Math.sin(t * .0044 + ph), bob = Math.sin(t * .0088 + ph), sway = Math.sin(t * .0021 + ph * 1.3), shift = Math.sin(t * .0008 + ph * .7);
-    if (still) return { dx: shift * .8, dy: -(.5 + .5 * bob) * 1.2, rot: 0, sx: 1 - br * .008, sy: 1 + br * .014, wpn: 0 };
-    return { dx: -fs * 2.6 + sway * 1.5 + shift * 1.2, dy: -(.5 + .5 * bob) * 1.8, rot: -fs * .045 + sway * .014, sx: 1 - br * .01, sy: 1 + br * .02, wpn: -fs * 30 + Math.sin(t * .0057 + ph) * 8 };
+    // The pose already contains bent knees. Keep its feet fixed on the shadow.
+    return { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, wpn: 0 };
   }
   function poseMotion(u, t) {
     const name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';

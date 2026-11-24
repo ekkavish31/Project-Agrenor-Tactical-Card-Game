@@ -61,16 +61,18 @@
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
         root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, poseAdj: true, scale: castScale('npc:' + a.p.id) });
         if (questNpc(a.p.id)) mark(g, pt, t, castScale('npc:' + a.p.id));
-        if (bubble?.a === a && now < bubble.until) say(g, pt, bubble.text);
+
       } });
     }
     return out;
   }
+  function drawTop(g,project,t){if(bubble&&t<bubble.until&&people.includes(bubble.a))say(g,project(bubble.a.u,bubble.a.v),bubble.text)}
   /* v95.01 · gold ◆ over the villager the current intro quest wants you to talk to (js/story-quests.js) */
   let qT = null, qAt = 0;
   function questNpc(id) { const n = performance.now(); if (n > qAt) { qAt = n + 500; try { qT = parent !== window ? parent.Story?.questTargets?.() : null } catch (e) { qT = null } } return !!qT?.npc?.includes(id) }
   function mark(g, pt, t, sc) { root.QuestGem?.draw(g, pt.x, pt.y - 84 * (sc || 1), t, { k: Math.max(.8, Math.min(1.4, sc || 1)) }) }   /* v98.1017 · the painted crystal, floating just above that villager's head (was a flat code-drawn diamond at a fixed height) */
   function say(g, pt, txt) {
+    if(root.NpcEmote){const m=g.getTransform(),k=(root.devicePixelRatio||1)/Math.max(.2,Math.hypot(m.a,m.b));return root.NpcEmote.bubble(g,pt.x,pt.y-110,txt,{k})}
     g.save(); g.font = '13px TownThai,VillageThai,system-ui'; const max = 230, words = [...txt], lines = []; let cur = '';
     for (const ch of words) { if (g.measureText(cur + ch).width > max) { lines.push(cur); cur = ch } else cur += ch } if (cur) lines.push(cur);
     const w = Math.min(max, Math.max(...lines.map(l => g.measureText(l).width))) + 18, h = lines.length * 17 + 12, x = pt.x - w / 2, y = pt.y - 120 - h;
@@ -109,5 +111,5 @@
   }
   /* v98.1021 · the pointer is over a villager you can talk to (same test as click) — js/game-cursor.js shows the speech-bubble cursor */
   function hoverAt(wp, project) { for (const a of people) { const pt = project(a.u, a.v); if (Math.abs(wp.x - pt.x) <= 22 && wp.y <= pt.y + 8 && wp.y >= pt.y - 100) return a } return null }
-  root.PlacePeople = { objects, click, hoverAt, list: () => people.map(a => a.p.id), state: () => people.map(a => ({ id: a.p.id, u: a.u, v: a.v, steps: a.path?.length || 0 })) };
+  root.PlacePeople = { drawTop, objects, click, hoverAt, list: () => people.map(a => a.p.id), state: () => people.map(a => ({ id: a.p.id, u: a.u, v: a.v, steps: a.path?.length || 0 })) };
 })(globalThis);
