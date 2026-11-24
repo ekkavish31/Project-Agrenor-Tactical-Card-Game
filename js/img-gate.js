@@ -12,7 +12,7 @@
      Self-contained: this file runs before everything else, so it brings its own style (scoped to #imgGateVeil) and links the shared Mip sheet. */
   const css = document.createElement('style');
   css.textContent = '#imgGateVeil{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(ellipse at 50% 38%,#2c3d2f,#0f1712 72%);color:#f5e6c4;font:14px/1.5 AgThai,system-ui,"Noto Sans Thai",Tahoma,sans-serif;transition:opacity .35s}'
-    + '#imgGateVeil .gl-box{position:relative;width:min(560px,calc(100vw - 40px));margin-bottom:9vh}'
+    + '#imgGateVeil .gl-box{position:relative;zoom:1.5;width:min(560px,calc((100vw - 40px)/1.5));margin-bottom:9vh}#imgGateVeil .gl-box .mip-track{--mw:100%!important}'
     + '#imgGateVeil .gl-kicker{font:600 11px/1 AgThai,system-ui,sans-serif;letter-spacing:.32em;color:#e8c374}'
     + '#imgGateVeil .gl-title{margin:8px 0 14px;font:700 28px AgThai,Georgia,"Noto Sans Thai",serif;color:#ffe8a6;text-shadow:0 3px 14px #000}'
     + '#imgGateVeil .gl-bar{height:10px;border-radius:6px;background:#0b1220;border:1px solid #d9b46b66;overflow:hidden;box-shadow:inset 0 1px 3px #000}'
