@@ -105838,7 +105838,18 @@
     "id": "npc:guard",
     "name": "ยามดอร์ก",
     "group": "npcs"
-   }
+   },
+   "ms": 100,
+   "history": [
+    {
+     "file": "assets/_versions/npc-guard-sw-walk1/mwuhs90l-atng.webp",
+     "at": "2026-11-24T09:28:21.693Z",
+     "stamp": "mwuhs90l-atng",
+     "status": "final",
+     "note": "นำเข้าชีท"
+    }
+   ],
+   "artRevision": "20261124-162821"
   },
   {
    "id": "npc-guard-ne-stand",
@@ -105924,7 +105935,7 @@
    "id": "npc-guard-se-walk1",
    "file": "assets/village-town/npc/guard/se-walk1.webp",
    "category": "allies",
-   "status": "missing",
+   "status": "final",
    "size": [
     384,
     384
@@ -105938,7 +105949,9 @@
     "id": "npc:guard",
     "name": "ยามดอร์ก",
     "group": "npcs"
-   }
+   },
+   "ms": 100,
+   "artRevision": "20261124-162822"
   },
   {
    "id": "npc-guard-nw-stand",
@@ -163113,6 +163126,1874 @@
    "frame": 12,
    "ms": 100,
    "artRevision": "20261124-162509"
+  },
+  {
+   "id": "npc-guard-sw-walk2",
+   "file": "assets/village-town/npc/guard/sw-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk3",
+   "file": "assets/village-town/npc/guard/sw-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk4",
+   "file": "assets/village-town/npc/guard/sw-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk5",
+   "file": "assets/village-town/npc/guard/sw-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk6",
+   "file": "assets/village-town/npc/guard/sw-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk7",
+   "file": "assets/village-town/npc/guard/sw-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk8",
+   "file": "assets/village-town/npc/guard/sw-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk9",
+   "file": "assets/village-town/npc/guard/sw-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk10",
+   "file": "assets/village-town/npc/guard/sw-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk11",
+   "file": "assets/village-town/npc/guard/sw-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-sw-walk12",
+   "file": "assets/village-town/npc/guard/sw-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261124-162821"
+  },
+  {
+   "id": "npc-guard-se-walk2",
+   "file": "assets/village-town/npc/guard/se-walk2.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 2,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk3",
+   "file": "assets/village-town/npc/guard/se-walk3.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 3,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk4",
+   "file": "assets/village-town/npc/guard/se-walk4.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 4,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk5",
+   "file": "assets/village-town/npc/guard/se-walk5.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 5,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk6",
+   "file": "assets/village-town/npc/guard/se-walk6.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 6,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk7",
+   "file": "assets/village-town/npc/guard/se-walk7.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 7,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk8",
+   "file": "assets/village-town/npc/guard/se-walk8.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 8,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk9",
+   "file": "assets/village-town/npc/guard/se-walk9.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 9,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk10",
+   "file": "assets/village-town/npc/guard/se-walk10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 10,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk11",
+   "file": "assets/village-town/npc/guard/se-walk11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 11,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "npc-guard-se-walk12",
+   "file": "assets/village-town/npc/guard/se-walk12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "usedIn": "NPC ยามดอร์ก",
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "frame": 12,
+   "ms": 100,
+   "artRevision": "20261124-162822"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-1",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-2",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-3",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-4",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-5",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-6",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-7",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-8",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-9",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-10",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-11",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-sw-walk-12",
+   "file": "assets/tactics/imported/ally-guard-walk-sw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsp0f"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-1",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-2",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-3",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-4",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-5",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-6",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-7",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-8",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-9",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-10",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-11",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-se-walk-12",
+   "file": "assets/tactics/imported/ally-guard-walk-se/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "SE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhsvs1"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-1",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-2",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-3",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-4",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-5",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-6",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-7",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-8",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-9",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-10",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-11",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-ne-walk-12",
+   "file": "assets/tactics/imported/ally-guard-walk-ne/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NE",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhug9j"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-1",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-01.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 1,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-2",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-02.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 2,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-3",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-03.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 3,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-4",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-04.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 4,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-5",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-05.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 5,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-6",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-06.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 6,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-7",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-07.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 7,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-8",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-08.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 8,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-9",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-09.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 9,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-10",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-10.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 10,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-11",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-11.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 11,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "studio-ally-guard-nw-walk-12",
+   "file": "assets/tactics/imported/ally-guard-walk-nw/frame-12.webp",
+   "category": "allies",
+   "status": "final",
+   "size": [
+    384,
+    384
+   ],
+   "transparent": true,
+   "view": "NW",
+   "pose": "walk",
+   "frame": 12,
+   "frames": 12,
+   "ms": 100,
+   "pivot": [
+    0.5,
+    0.9375
+   ],
+   "studioAllyWalk": true,
+   "studioOwner": {
+    "id": "npc:guard",
+    "name": "ยามดอร์ก",
+    "group": "npcs"
+   },
+   "artRevision": "mwuhuljq"
   }
  ],
  "studioReviews": {
@@ -170165,6 +172046,37 @@
    "frames": {},
    "approvedAt": "2026-11-24T09:27:10.867Z",
    "at": 1795512430897
+  },
+  "[\"npcwalk:npc:guard:SW\",\"SW\",true,[[\"npc-guard-sw-walk1\",\"assets/village-town/npc/guard/sw-walk1.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk2\",\"assets/village-town/npc/guard/sw-walk2.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk3\",\"assets/village-town/npc/guard/sw-walk3.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk4\",\"assets/village-town/npc/guard/sw-walk4.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk5\",\"assets/village-town/npc/guard/sw-walk5.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk6\",\"assets/village-town/npc/guard/sw-walk6.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk7\",\"assets/village-town/npc/guard/sw-walk7.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk8\",\"assets/village-town/npc/guard/sw-walk8.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk9\",\"assets/village-town/npc/guard/sw-walk9.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk10\",\"assets/village-town/npc/guard/sw-walk10.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk11\",\"assets/village-town/npc/guard/sw-walk11.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-sw-walk12\",\"assets/village-town/npc/guard/sw-walk12.webp\",0,\"20261124-162821\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795512523652,
+   "approvedAt": "2026-11-24T09:28:43.652Z"
+  },
+  "[\"allywalk:guard:SW\",\"SW\",true,[[\"studio-ally-guard-sw-walk-1\",\"assets/tactics/imported/ally-guard-walk-sw/frame-01.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-2\",\"assets/tactics/imported/ally-guard-walk-sw/frame-02.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-3\",\"assets/tactics/imported/ally-guard-walk-sw/frame-03.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-4\",\"assets/tactics/imported/ally-guard-walk-sw/frame-04.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-5\",\"assets/tactics/imported/ally-guard-walk-sw/frame-05.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-6\",\"assets/tactics/imported/ally-guard-walk-sw/frame-06.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-7\",\"assets/tactics/imported/ally-guard-walk-sw/frame-07.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-8\",\"assets/tactics/imported/ally-guard-walk-sw/frame-08.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-9\",\"assets/tactics/imported/ally-guard-walk-sw/frame-09.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-10\",\"assets/tactics/imported/ally-guard-walk-sw/frame-10.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-11\",\"assets/tactics/imported/ally-guard-walk-sw/frame-11.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-sw-walk-12\",\"assets/tactics/imported/ally-guard-walk-sw/frame-12.webp\",0,\"mwuhsp0f\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npcwalk:npc:guard:SE\",\"SE\",true,[[\"npc-guard-se-walk1\",\"assets/village-town/npc/guard/se-walk1.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk2\",\"assets/village-town/npc/guard/se-walk2.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk3\",\"assets/village-town/npc/guard/se-walk3.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk4\",\"assets/village-town/npc/guard/se-walk4.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk5\",\"assets/village-town/npc/guard/se-walk5.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk6\",\"assets/village-town/npc/guard/se-walk6.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk7\",\"assets/village-town/npc/guard/se-walk7.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk8\",\"assets/village-town/npc/guard/se-walk8.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk9\",\"assets/village-town/npc/guard/se-walk9.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk10\",\"assets/village-town/npc/guard/se-walk10.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk11\",\"assets/village-town/npc/guard/se-walk11.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-se-walk12\",\"assets/village-town/npc/guard/se-walk12.webp\",0,\"20261124-162822\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795512532505,
+   "approvedAt": "2026-11-24T09:28:52.505Z"
+  },
+  "[\"npcwalk:npc:guard:NE\",\"NE\",true,[[\"npc-guard-ne-walk1\",\"assets/village-town/npc/guard/ne-walk1.webp\",0,\"20261124-162508\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk2\",\"assets/village-town/npc/guard/ne-walk2.webp\",0,\"20261124-162508\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk3\",\"assets/village-town/npc/guard/ne-walk3.webp\",0,\"20261124-162508\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk4\",\"assets/village-town/npc/guard/ne-walk4.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk5\",\"assets/village-town/npc/guard/ne-walk5.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk6\",\"assets/village-town/npc/guard/ne-walk6.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk7\",\"assets/village-town/npc/guard/ne-walk7.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk8\",\"assets/village-town/npc/guard/ne-walk8.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk9\",\"assets/village-town/npc/guard/ne-walk9.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk10\",\"assets/village-town/npc/guard/ne-walk10.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk11\",\"assets/village-town/npc/guard/ne-walk11.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-ne-walk12\",\"assets/village-town/npc/guard/ne-walk12.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "approved",
+   "frames": {},
+   "at": 1795512605768,
+   "approvedAt": "2026-11-24T09:30:05.768Z"
+  },
+  "[\"allywalk:guard:NE\",\"NE\",true,[[\"studio-ally-guard-ne-walk-1\",\"assets/tactics/imported/ally-guard-walk-ne/frame-01.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-2\",\"assets/tactics/imported/ally-guard-walk-ne/frame-02.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-3\",\"assets/tactics/imported/ally-guard-walk-ne/frame-03.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-4\",\"assets/tactics/imported/ally-guard-walk-ne/frame-04.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-5\",\"assets/tactics/imported/ally-guard-walk-ne/frame-05.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-6\",\"assets/tactics/imported/ally-guard-walk-ne/frame-06.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-7\",\"assets/tactics/imported/ally-guard-walk-ne/frame-07.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-8\",\"assets/tactics/imported/ally-guard-walk-ne/frame-08.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-9\",\"assets/tactics/imported/ally-guard-walk-ne/frame-09.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-10\",\"assets/tactics/imported/ally-guard-walk-ne/frame-10.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-11\",\"assets/tactics/imported/ally-guard-walk-ne/frame-11.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1],[\"studio-ally-guard-ne-walk-12\",\"assets/tactics/imported/ally-guard-walk-ne/frame-12.webp\",0,\"mwuhug9j\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {}
+  },
+  "[\"npcwalk:npc:guard:NW\",\"NW\",true,[[\"npc-guard-nw-walk1\",\"assets/village-town/npc/guard/nw-walk1.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk2\",\"assets/village-town/npc/guard/nw-walk2.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk3\",\"assets/village-town/npc/guard/nw-walk3.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk4\",\"assets/village-town/npc/guard/nw-walk4.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk5\",\"assets/village-town/npc/guard/nw-walk5.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk6\",\"assets/village-town/npc/guard/nw-walk6.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk7\",\"assets/village-town/npc/guard/nw-walk7.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk8\",\"assets/village-town/npc/guard/nw-walk8.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk9\",\"assets/village-town/npc/guard/nw-walk9.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk10\",\"assets/village-town/npc/guard/nw-walk10.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk11\",\"assets/village-town/npc/guard/nw-walk11.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1],[\"npc-guard-nw-walk12\",\"assets/village-town/npc/guard/nw-walk12.webp\",0,\"20261124-162509\",null,100,false,[0.5,0.9375],[384,384],1]]]": {
+   "status": "unreviewed",
+   "frames": {},
+   "at": 1795512610352
   }
  },
  "studioClipHistory": {
@@ -181687,6 +183599,308 @@
      {
       "assetId": "studio-ally-mother-nw-walk-12",
       "src": "assets/tactics/imported/ally-mother-walk-nw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   }
+  },
+  "guard": {
+   "SW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-24T09:28:42.399Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-guard-sw-walk-1",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-2",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-3",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-4",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-5",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-6",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-7",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-8",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-9",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-10",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-11",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-sw-walk-12",
+      "src": "assets/tactics/imported/ally-guard-walk-sw/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "SE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-24T09:28:51.169Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-guard-se-walk-1",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-2",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-3",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-4",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-5",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-6",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-7",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-8",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-9",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-10",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-11",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-se-walk-12",
+      "src": "assets/tactics/imported/ally-guard-walk-se/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NE": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-24T09:30:04.375Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-guard-ne-walk-1",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-2",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-3",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-4",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-5",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-6",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-7",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-8",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-9",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-10",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-11",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-ne-walk-12",
+      "src": "assets/tactics/imported/ally-guard-walk-ne/frame-12.webp",
+      "ms": 100
+     }
+    ]
+   },
+   "NW": {
+    "version": 1,
+    "canvas": [
+     384,
+     384
+    ],
+    "anchor": [
+     0.5,
+     0.9375
+    ],
+    "loop": true,
+    "createdAt": "2026-11-24T09:30:11.222Z",
+    "frames": [
+     {
+      "assetId": "studio-ally-guard-nw-walk-1",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-01.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-2",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-02.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-3",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-03.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-4",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-04.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-5",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-05.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-6",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-06.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-7",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-07.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-8",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-08.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-9",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-09.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-10",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-10.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-11",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-11.webp",
+      "ms": 100
+     },
+     {
+      "assetId": "studio-ally-guard-nw-walk-12",
+      "src": "assets/tactics/imported/ally-guard-walk-nw/frame-12.webp",
       "ms": 100
      }
     ]
