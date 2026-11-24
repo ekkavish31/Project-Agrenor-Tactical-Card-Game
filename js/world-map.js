@@ -567,7 +567,7 @@
   function closeModal() { if (modalEl) { modalEl.remove(); modalEl = null; modalOpen = false; const r = modalResolve; modalResolve = null; r?.(null) } }
 
   /* ---------- v94.02 · drops: goods for the market (bag) and materials for the forge, by monster and land ---------- */
-  const DROPS = { hunger: ['crystalShard', 'boneCharm'], murk: ['boneCharm', 'crystalShard'], bat: ['batWing'], gull: ['driftwood'], wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'] };
+  const DROPS = { hunger: ['crystalShard', 'boneCharm'], murk: ['boneCharm', 'crystalShard'], bat: ['batWing'], gull: ['driftwood'], wolf: ['wolfFang'], shadowWolf: ['wolfFang', 'boneCharm'], bandit: ['oldCoin', 'herb'], slime: ['swampHerb', 'crystalShard'], kobold: ['crystalShard'], golem: ['crystalShard', 'crystalShard'], sporeCap: ['sporeCap'], webSpinner: ['spiderSilk'], rockApe: ['rockBit'], stoneScorpion: ['scorpionTail'], wisp: ['wispAsh'], snowOwl: ['owlFeather'] };
   const LAND = { forest: ['herb', 'wood'], grass: ['herb'], hills: ['iron', 'coal'], swamp: ['swampHerb'], snow: ['frostFur'], sand: ['pearl', 'driftwood'] };
   const MATS = ['iron', 'coal', 'wood', 'food'];
   function dropLoot(foe, biome, dang, boss, evolved) {
@@ -1042,7 +1042,7 @@
   /* ---------- battles (the flat card battle in an iframe) ---------- */
   /* v98.489 · effective boss health (before level scaling) — ก้อนหิว 160 from tools/simulate-hunger.cjs (with its 3 specials): ~65 % first-try win at hero Lv.12 (the story gate), ~40 % at Lv.10, ~87 % at Lv.14 (greedy bot, no items — a real player does better) */
   const BOSS_HP = { hunger: 160, byrexael: 170 };
-  const MON_HP = { murk: 38, hunger: 150, bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26 };
+  const MON_HP = { murk: 38, hunger: 150, bandit: 34, wolf: 26, slime: 40, kobold: 30, golem: 95, shadowWolf: 44, bat: 22, gull: 26, sporeCap: 28, webSpinner: 30, rockApe: 32, stoneScorpion: 36, wisp: 20, snowOwl: 26 };
   async function battle(foe, dang, o = {}) {
     busy = true; hudSync();
     const here = tile(S.pos.c, S.pos.r), night = nightness() > .6;

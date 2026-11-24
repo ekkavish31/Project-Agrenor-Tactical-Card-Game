@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1032';
+  const V = '98.1033';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -55,6 +55,13 @@
     soulCore: { name: 'แก่นตะกอนวิญญาณ', hp: 46, iq: 0, move: 0, atk: 0, scale: .95, fx: 'blunt', img: 'soulCore', passive: true, el: 'dark' },
     hungerRoot: { name: 'ปมหิว', hp: 42, iq: 0, move: 0, atk: 0, scale: .9, fx: 'blunt', img: 'hungerRoot', passive: true, el: 'dark' },
     hunger: { name: 'ก้อนหิว', hp: 150, iq: 2, move: 2, atk: 14, scale: 1.7, fx: 'blunt', img: 'hunger', range: 3, shove: true, el: 'dark' },
+    /* v98.1033 · round A monsters (docs/PROPOSAL-CARDS-MONSTERS-ITEMS-TH.md §4) — stand-in pictures from existing sprites until their own are painted */
+    sporeCap: { name: 'เห็ดพิษเดิน', hp: 28, iq: 1, move: 2, atk: 7, scale: .85, fx: 'arcane', img: 'bog-slime', range: 2, el: 'nature' },
+    webSpinner: { name: 'แมงมุมป่า', hp: 30, iq: 1, move: 3, atk: 8, scale: .9, fx: 'spear', img: 'bog-hunter', range: 3, el: 'nature' },
+    rockApe: { name: 'ลิงขว้างหิน', hp: 32, iq: 1, move: 3, atk: 8, scale: .95, fx: 'blunt', img: 'kobold-foreman', range: 4, shove: true, el: 'earth' },
+    stoneScorpion: { name: 'แมงป่องหิน', hp: 36, iq: 1, move: 3, atk: 10, scale: .85, fx: 'knife', img: 'gargoyle', el: 'earth' },
+    wisp: { name: 'ไฟพราย', hp: 20, iq: 1, move: 4, atk: 9, scale: .7, fx: 'fire', img: 'wisp', range: 3, fly: true, el: 'fire' },
+    snowOwl: { name: 'นกเค้าหิมะ', hp: 26, iq: 1, move: 5, atk: 8, scale: .85, fx: 'wind', img: 'gull', range: 3, fly: true, el: 'ice' },
     dummy: { name: 'หุ่นฟาง', hp: 40, iq: 0, move: 0, atk: 0, scale: 1, fx: 'blunt', img: '../scarecrow', passive: true, el: 'earth' }
   };
   /* v98.58 · evolution (วิวัฒน์): the next form of a monster, fought mid-battle (rules + hidden odds: js/flat-battle.js evolveCheck). Data only — add a pair to give another monster a next form. */
@@ -523,7 +530,7 @@
   /* ---------- card faces (old CardStudio design) ---------- */
   const cardKey = (group, id) => (group === 'movement' ? 'm-' : 'a-') + id;
   /* cards that have no picture yet borrow a close one */
-  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell', chaosBolt: 'spell', chaosRend: 'quake', chaosWard: 'guard', cleave: 'quake', shieldBash: 'wall', volley: 'line', snipe: 'aimed', smite: 'spell', bless: 'mend', shadowStep: 'twin', emberBurst: 'flame', warCry: 'guard', sigLightM: 'dash', sigHeavyM: 'skill', sigLightF: 'spell', sigHeavyF: 'thunder' };
+  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell', chaosBolt: 'spell', chaosRend: 'quake', chaosWard: 'guard', cleave: 'quake', shieldBash: 'wall', volley: 'line', snipe: 'aimed', smite: 'spell', bless: 'mend', shadowStep: 'twin', ghostStep: 'twin', sweepFoot: 'push', windBlade: 'gust', lightLance: 'line', shadowDrain: 'spell', sleepMist: 'frost', lightningArc: 'thunder', emberBurst: 'flame', warCry: 'guard', sigLightM: 'dash', sigHeavyM: 'skill', sigLightF: 'spell', sigHeavyF: 'thunder' };
   function faceHTML(group, id, mini) {
     const html = window.CardStudio?.renderCard(cardKey(group, id), { mini, fallbackArt: 'assets/cards/tactic-' + (ART_SUB[id] || id) + '.webp' });
     if (html) return html;

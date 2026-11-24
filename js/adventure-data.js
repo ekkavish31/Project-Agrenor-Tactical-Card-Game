@@ -26,6 +26,15 @@ const CONSUMABLES={
  smokeBomb:{name:'ระเบิดควัน',element:'dark',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',price:28,text:'ในสนามรบ: หลบการโจมตีครั้งถัดไปที่โดนตี'},
  whetstone:{name:'หินลับมีด',element:'earth',rarity:'common',kind:'เสริมพลัง',use:'ต่อสู้',price:18,text:'ในสนามรบ: การโจมตีครั้งถัดไปแรงขึ้น ×1.6'},
  oilFlask:{name:'ขวดน้ำมันไฟ',element:'fire',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:12,range:3,price:26,text:'สาดใส่ศัตรูในระยะ 3 ช่อง ความเสียหาย 12 · ลามถึงศัตรูข้างเคียง · ติดไหม้'},
+ antiShock:{name:'ยาแก้ชา',element:'nature',rarity:'common',kind:'เสริมพลัง',use:'ต่อสู้',price:18,text:'ในสนามรบ: ล้างสถานะผิดปกติ และได้เกราะ 6'},
+ antiSilence:{name:'ลูกอมแก้ใบ้',element:'nature',rarity:'common',kind:'เสริมพลัง',use:'ต่อสู้',price:20,text:'ในสนามรบ: ล้างสถานะผิดปกติ และฟื้นแรง 15'},
+ wakeSalt:{name:'เกลือปลุกสติ',element:'light',rarity:'common',kind:'เสริมพลัง',use:'ต่อสู้',price:16,text:'ในสนามรบ: ล้างสถานะผิดปกติ (หลับ แข็ง ชา ใบ้ ฯลฯ)'},
+ echoBell:{name:'กระดิ่งเรียกสติ',element:'light',rarity:'good',kind:'เสริมพลัง',use:'ต่อสู้',price:26,text:'ในสนามรบ: ฟื้นแรง 30 และล้างสถานะผิดปกติ'},
+ guardBalm:{name:'ยาทาเกราะแข็ง',element:'earth',rarity:'common',kind:'เสริมพลัง',use:'ต่อสู้',price:30,text:'ได้เกราะกันความเสียหาย 14'},
+ mendKit:{name:'ชุดเย็บแผลเดินทาง',element:'nature',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:20,stamina:0,price:36,text:'ฟื้น HP 20 · ในสนามรบล้างสถานะผิดปกติด้วย'},
+ bigStew:{name:'ซุปเนื้อเต็มชาม',element:'earth',rarity:'good',kind:'ฟื้นฟู',use:'ทุกที่',hp:30,stamina:0,price:32,text:'ฟื้น HP 30'},
+ sleepDart:{name:'ลูกดอกกล่อมหลับ',element:'water',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:6,range:4,price:22,text:'ยิงไกล 4 ช่อง ความเสียหาย 6 · ทำให้หลับ 60% (ถูกตีแล้วตื่น)'},
+ glueFlask:{name:'ขวดกาวเหนียว',element:'nature',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:4,range:3,price:24,text:'สาดใส่ศัตรูในระยะ 3 ช่อง ความเสียหาย 4 · ตรึงเดิน 90%'},
  flashPowder:{name:'ผงแสงวาบ',element:'light',rarity:'good',kind:'โจมตี',use:'ต่อสู้',damage:6,range:3,price:24,text:'ในระยะ 3 ช่อง ความเสียหาย 6 · ทำให้ศัตรูตาพร่าพลาดเทิร์นถัดไป'}
 };
 // ---------- goods: sell at the market or hand in for quests ----------
@@ -44,9 +53,15 @@ const GOODS={
  boneCharm:{name:'เครื่องรางกระดูก',element:'dark',rarity:'common',use:'ขาย',price:13,text:'ของขลังจากซากวิหาร'},
  soulGem:{name:'อัญมณีวิญญาณ',element:'chaos',rarity:'good',use:'ขาย',price:38,text:'แสงสีม่วงวนอยู่ข้างใน'},
  mirrorShard:{name:'ผลึกสะท้อน',element:'light',rarity:'rare',use:'สะสม',price:150,text:'ของที่ระลึกจากเพื่อนตัวเล็กที่กลับป่าไปแล้ว · ไม่ใช่การ์ด'},
+ sporeCap:{name:'หมวกเห็ดพิษ',element:'nature',rarity:'common',use:'ขาย',price:9,text:'หมวกเห็ดสีสดจากป่า ร้านยารับซื้อไปสกัดพิษ'},
+ spiderSilk:{name:'ใยแมงมุม',element:'nature',rarity:'common',use:'ขาย',price:11,text:'ใยเหนียวที่ช่างทำเชือกชอบ'},
+ rockBit:{name:'เศษหิน',element:'earth',rarity:'common',use:'ขาย',price:7,text:'เศษหินแข็งจากเนินเขา ใช้ผสมยาทา'},
+ scorpionTail:{name:'หางแมงป่อง',element:'earth',rarity:'common',use:'ขาย',price:14,text:'ปลายหางที่ยังมีพิษ ต้องจับด้วยถุงมือ'},
+ wispAsh:{name:'ขี้เถ้าพราย',element:'fire',rarity:'common',use:'ขาย',price:10,text:'ผงเถ้าอุ่น ๆ ที่เหลือจากดวงไฟในบึง'},
+ owlFeather:{name:'ขนนกเค้า',element:'ice',rarity:'common',use:'ขาย',price:12,text:'ขนที่นุ่มจนเงียบ ช่างทำหมอนชอบ'},
  relic:{name:'ตราประทับหัวหน้า',element:'chaos',rarity:'rare',use:'เควส',price:60,text:'หลักฐานการปราบหัวหน้าพื้นที่'}};
 /* v98.478 · ชิ้นส่วนหายากของมอนแต่ละชนิด (Canon D): ชื่อม่วง + สัญลักษณ์ ❖ แทนคำว่า "(มายา)" · ขายได้ ส่งเควสได้ และ Mip กินแล้วหาย (maya:true) */
-const MAYA_OF={hunger:'mayaHunger',murk:'mayaMurk',wolf:'mayaWolf',shadowWolf:'mayaShadowWolf',frostWolf:'mayaFrostWolf',yeti:'mayaYeti',bat:'mayaBat',gull:'mayaGull',bandit:'mayaBandit',slime:'mayaSlime',kobold:'mayaKobold',snowKobold:'mayaSnowKobold',golem:'mayaGolem'};
+const MAYA_OF={hunger:'mayaHunger',murk:'mayaMurk',wolf:'mayaWolf',shadowWolf:'mayaShadowWolf',frostWolf:'mayaFrostWolf',yeti:'mayaYeti',bat:'mayaBat',gull:'mayaGull',bandit:'mayaBandit',slime:'mayaSlime',kobold:'mayaKobold',snowKobold:'mayaSnowKobold',golem:'mayaGolem',sporeCap:'mayaSporeCap',webSpinner:'mayaWebSpinner',rockApe:'mayaRockApe',stoneScorpion:'mayaScorpion',wisp:'mayaWisp',snowOwl:'mayaOwl'};
 const MAYA_GOODS={
  mayaWolf:{name:'❖ เขี้ยวเรืองรอง',element:'dark',price:70,text:'เขี้ยวหมาป่าที่ยังมีประกายแปลก ๆ ซ่อนอยู่ข้างใน'},
  mayaShadowWolf:{name:'❖ ขนเงาไม่สะท้อนแสง',element:'dark',price:95,text:'ขนที่ดูดแสงรอบตัวไปหมด'},
@@ -60,6 +75,12 @@ const MAYA_GOODS={
  mayaSnowKobold:{name:'❖ ตะขอน้ำแข็งเหมือง',element:'ice',price:100,text:'ตะขอเหล็กเคลือบน้ำแข็งที่ไม่ยอมละลาย'},
  mayaHunger:{name:'❖ ผลึกหิวจาง',element:'dark',price:260,text:'เศษของก้อนหิวที่ยังเย็นเฉียบ — ของที่ใครก็อยากได้ แต่ไม่มีใครอยากถือนาน'},
  mayaMurk:{name:'❖ เสี้ยวหมองดำ',element:'dark',price:105,text:'เศษเงามืดจากสัตว์ที่ถูกรอยหมอง ยังเต้นเบา ๆ เหมือนมีชีวิต'},
+ mayaSporeCap:{name:'❖ เกสรสปอร์เรืองแสง',element:'nature',price:75,text:'ผงสปอร์ที่เรืองจาง ๆ ในที่มืด'},
+ mayaWebSpinner:{name:'❖ ใยเหนียวสะท้อนแสง',element:'nature',price:80,text:'ใยที่เหนียวจนมีดสั้นตัดไม่ขาด'},
+ mayaRockApe:{name:'❖ ก้อนหินกลมเกลี้ยง',element:'earth',price:85,text:'ก้อนหินที่กลมเกินกว่าจะเป็นธรรมชาติ'},
+ mayaScorpion:{name:'❖ เหล็กไนใส',element:'earth',price:90,text:'เหล็กไนใสเหมือนแก้ว มีของเหลวสีม่วงอยู่ข้างใน'},
+ mayaWisp:{name:'❖ ประกายกลมลอย',element:'fire',price:85,text:'ประกายที่ลอยค้างกลางอากาศจนกว่าจะถูกจับ'},
+ mayaOwl:{name:'❖ ขนปลายนุ่มเงียบ',element:'ice',price:80,text:'ขนปลายเย็นที่ไม่ส่งเสียงแม้ถูกลม'},
  mayaGolem:{name:'❖ หัวใจหินร้าว',element:'earth',price:130,text:'ก้อนหินที่มีรอยร้าวเรืองแสงจาง ๆ'}};
 for(const [k,g] of Object.entries(MAYA_GOODS))GOODS[k]={rarity:'rare',use:'ขาย · เควส · ให้ Mip',maya:true,...g};
 if(window.Chaos)Object.assign(GOODS,window.Chaos.GOODS);/* v98.66 · แก่นโกลาหลจากมอนวิวัฒน์ (js/chaos.js) */

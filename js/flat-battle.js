@@ -62,7 +62,7 @@
   const CRIT = { hero: .15, ally: .12, monster: .08, mult: 1.5 };
   const CRYSTALS = 2, CRYSTAL_STAMINA = 15, HAND = { movement: 4, combat: 6 };
   /* v95.00 · the hero's growth in card battles: weapon cards add h.power (level, weapon, strength), element cards add h.spell (knowledge) */
-  const SPELL_CARDS = new Set(['spell', 'thunder', 'frost', 'flame', 'gust', 'tide', 'pull', 'quake', 'rockfall', 'chaosBolt', 'chaosRend']);
+  const SPELL_CARDS = new Set(['spell', 'thunder', 'frost', 'flame', 'gust', 'tide', 'pull', 'quake', 'rockfall', 'chaosBolt', 'chaosRend', 'shadowDrain', 'sleepMist', 'lightningArc', 'lightLance']);
   const cardBonus = (h, id) => Math.max(0, SPELL_CARDS.has(id) ? h.spell || 0 : h.power || 0) + (h.meleePlus && CARD[id] && CARD[id].range === 1 && !CARD[id].self ? h.meleePlus : 0);
   const jobMult = (h, id) => SPELL_CARDS.has(id) ? h.spellMult || 1 : 1;   /* v97.18: mage */
   const crystals = st => Math.max(0, (st.crystalMax || CRYSTALS) - (st.spent || 0));
@@ -121,7 +121,13 @@
     /* v98.1019 · SIGNATURE cards of the two siblings (story unlocks, js/starter-kit.js unlockSignature) — every rule uses mechanics that already exist
        brother: rush in (leap) — Light = one target, hits hard · Heavy = splash round the target, a little harder · sister: special magic from afar — Light = one target + a status · Heavy = splash + a status on everyone hit */
     sigLightM: { range: 3, dmg: 24, st: 14, leap: 1, behind: 6, fx: 'sigLightM' }, sigHeavyM: { range: 3, dmg: 26, st: 20, leap: 1, aoe: 'splash', big: 1.4, fx: 'sigHeavyM' },
-    sigLightF: { range: 4, dmg: 20, st: 14, fx: 'sigLightF' }, sigHeavyF: { range: 4, dmg: 22, st: 20, aoe: 'splash', statusAll: 1, big: 1.3, fx: 'sigHeavyF' }
+    sigLightF: { range: 4, dmg: 20, st: 14, fx: 'sigLightF' }, sigHeavyF: { range: 4, dmg: 22, st: 20, aoe: 'splash', statusAll: 1, big: 1.3, fx: 'sigHeavyF' },
+    /* v98.1033 · round A of docs/PROPOSAL-CARDS-MONSTERS-ITEMS-TH.md (E0 = tiny new rule keys, no new board mechanics):
+       evadeAfter (dodge the next hit) · turnAway (target turns its back → next side hit counts as behind) · pierce (also hits the foe in the line behind) · drain (heal the user) · chain (bounces to the nearest foe) */
+    ghostStep: { range: 2, dmg: 10, st: 12, leap: 1, evadeAfter: 1, fx: 'knife' }, sweepFoot: { range: 1, dmg: 10, st: 10, turnAway: 1, slow: 1, fx: 'blunt' },
+    windBlade: { range: 3, dmg: 8, st: 14, hits: 2, push: 1, fx: 'wind' }, lightLance: { range: 4, dmg: 14, st: 14, pierce: 2, fx: 'spear' },
+    shadowDrain: { range: 3, dmg: 10, st: 12, drain: 6, fx: 'arcane' }, sleepMist: { range: 3, dmg: 4, st: 14, aoe: 'splash', statusAll: 1, fx: 'ice' },
+    lightningArc: { range: 4, dmg: 14, st: 14, chain: { p: .6, r: 2 }, fx: 'lightning' }
   };
   const hero = st => st.units[0];
   const monsters = st => st.units.filter(u => u.side === 'monster'), allies = st => st.units.filter((u, i) => i && u.side === 'hero');
@@ -163,7 +169,7 @@
   /* ---------- Kaelam elements (v94.02, js/elements.js): the attack's element vs the target's element ---------- */
   const EW = () => root.ElementWheel || (typeof require === 'function' ? require('./elements.js') : null);
   const WEAPON_EL = { bow: 'wind', axe: 'earth', tome: 'light', sword: 'fire', hammer: 'earth', staff: 'fusion', unarmed: 'earth', log: 'earth', knife: 'wind', spear: 'wind', rapier: 'water' };
-  const CARD_EL = { thunder: 'lightning', frost: 'ice', flame: 'fire', gust: 'wind', quake: 'earth', aimed: 'light', spell: 'fusion', tide: 'water', push: 'earth', pull: 'wind', rockfall: 'earth', whirl: 'wind', chaosBolt: 'chaos', chaosRend: 'chaos', chaosWard: 'chaos' };
+  const CARD_EL = { thunder: 'lightning', frost: 'ice', flame: 'fire', gust: 'wind', quake: 'earth', aimed: 'light', spell: 'fusion', tide: 'water', push: 'earth', pull: 'wind', rockfall: 'earth', whirl: 'wind', chaosBolt: 'chaos', chaosRend: 'chaos', chaosWard: 'chaos', ghostStep: 'dark', sweepFoot: 'earth', windBlade: 'wind', lightLance: 'light', shadowDrain: 'dark', sleepMist: 'water', lightningArc: 'lightning' };
   const FX_EL = { fire: 'fire', ice: 'ice', lightning: 'lightning', wind: 'wind', earth: 'earth', holy: 'light', heal: 'light', water: 'water', arcane: 'fusion' };
   const cardEl = (id, h) => CARD_EL[id] || WEAPON_EL[h.weapon] || 'earth';
   function elOf(u) { return u.el || null }
@@ -234,7 +240,7 @@
      burn 🔥 / poison ☠: HP lost at the start of the unit's own turn · sleep 💤: skips its turns, a hit wakes it · silence 🔇: no element
      cards or skills · weak ⬇: hits ×0.75 · freeze and shock reuse the old stun (skip a turn) and slow (−2 move). */
   const STATUS = { burn: { name: 'ไหม้', icon: '🔥', dot: 4, turns: 2 }, poison: { name: 'พิษ', icon: '☠', dot: 3, turns: 3 }, sleep: { name: 'หลับ', icon: '💤', turns: 2 }, silence: { name: 'ใบ้', icon: '🔇', turns: 2 }, weak: { name: 'อ่อนแรง', icon: '⬇', turns: 2 }, freeze: { name: 'แข็ง', icon: '❄' }, shock: { name: 'ชา', icon: '⚡' }, bind: { name: 'ติดเถาวัลย์', icon: '🌿', turns: 1 } };   /* v98.331 · bind: no walking until it ends */
-  const CARD_STATUS = { flame: ['burn', .5], emberBurst: ['burn', .6], snipe: ['weak', .35], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3], chaosBolt: ['weak', .5], chaosRend: ['silence', .4], sigLightF: ['weak', .75], sigHeavyF: ['shock', .6] };
+  const CARD_STATUS = { flame: ['burn', .5], emberBurst: ['burn', .6], snipe: ['weak', .35], frost: ['freeze', .35], thunder: ['shock', .45], tide: ['weak', .4], quake: ['weak', .3], gust: ['silence', .3], chaosBolt: ['weak', .5], chaosRend: ['silence', .4], sigLightF: ['weak', .75], sigHeavyF: ['shock', .6], shadowDrain: ['weak', .9], sleepMist: ['sleep', .55], lightningArc: ['shock', .4] };
   /* v98.955 · CARD FORGE (js/card-forge.js): stars / element / mod chip change a card's rule. CARD, CARD_STATUS and CARD_EL are rebuilt from the untouched originals each time a battle is created, so nothing sticks between fights. */
   const CARD_BASE = JSON.parse(JSON.stringify(CARD)), CARD_STATUS_BASE = JSON.parse(JSON.stringify(CARD_STATUS)), CARD_EL_BASE = { ...CARD_EL };
   function applyForge() {
@@ -246,7 +252,7 @@
       if (d && d.el) CARD_EL[id] = d.el; else if (CARD_EL_BASE[id]) CARD_EL[id] = CARD_EL_BASE[id]; else delete CARD_EL[id];
     }
   }
-  const MON_STATUS = { hunger: ['weak', .35], murk: ['poison', .25], pumpkinBoss: ['bind', .9],  slime: ['poison', .3], wolf: ['poison', .2], bat: ['sleep', .2], shadowWolf: ['sleep', .2], golem: ['weak', .3], frostWolf: ['freeze', .2], yeti: ['freeze', .25], frostQueen: ['freeze', .35], snowKobold: ['silence', .2], kobold: ['silence', .15], bandit: ['weak', .15] };
+  const MON_STATUS = { hunger: ['weak', .35], murk: ['poison', .25], pumpkinBoss: ['bind', .9],  slime: ['poison', .3], wolf: ['poison', .2], bat: ['sleep', .2], shadowWolf: ['sleep', .2], golem: ['weak', .3], frostWolf: ['freeze', .2], yeti: ['freeze', .25], frostQueen: ['freeze', .35], snowKobold: ['silence', .2], sporeCap: ['poison', .5], webSpinner: ['bind', .35], rockApe: ['weak', .15], stoneScorpion: ['poison', .35], wisp: ['burn', .5], snowOwl: ['sleep', .4], kobold: ['silence', .15], bandit: ['weak', .15] };
   function inflict(st, t, k, chance = 1, notes) {
     if (!st.cards || !alive(t) || !STATUS[k] || (st.rng || Math.random)() >= chance) return null;
     if (k === 'freeze') t.stun = 1; else if (k === 'shock') t.slowed = 1; else (t.sts ||= {})[k] = STATUS[k].turns;
@@ -650,9 +656,12 @@
     stoneSkin: { guard: 30, fx: 'shield' }, guardCharm: { guard: 20, fx: 'shield' }, smokeBomb: { evade: 1, fx: 'wind' }, whetstone: { ambush: 1.6, fx: 'arcane' },
     firebomb: { el: 'fire', range: 4, dmg: 22, fx: 'fire', status: ['burn', .6] }, iceBomb: { el: 'ice', range: 4, dmg: 18, fx: 'ice', status: ['freeze', .5] }, thunderJar: { el: 'wind', range: 4, dmg: 20, fx: 'lightning', status: ['shock', .5] },
     holyWater: { el: 'light', range: 3, dmg: 24, fx: 'arcane' }, poisonDart: { el: 'nature', range: 5, dmg: 14, fx: 'spear', status: ['poison', .85] }, oilFlask: { el: 'fire', range: 3, dmg: 12, fx: 'fire', aoe: 1, status: ['burn', .8] },
-    flashPowder: { el: 'light', range: 3, dmg: 6, fx: 'arcane', status: ['freeze', 1] }
+    flashPowder: { el: 'light', range: 3, dmg: 6, fx: 'arcane', status: ['freeze', 1] },
+    /* v98.1033 · round A items */
+    antiShock: { cure: 1, guard: 6, fx: 'shield' }, antiSilence: { cure: 1, restore: 15, fx: 'heal' }, wakeSalt: { cure: 1, fx: 'heal' }, echoBell: { cure: 1, restore: 30, fx: 'heal' }, guardBalm: { guard: 14, fx: 'shield' },
+    mendKit: { heal: 20, cure: 1, fx: 'heal' }, bigStew: { heal: 30, fx: 'heal' }, sleepDart: { el: 'water', range: 4, dmg: 6, fx: 'spear', status: ['sleep', .6] }, glueFlask: { el: 'nature', range: 3, dmg: 4, fx: 'earth', status: ['bind', .9] }
   };
-  const ITEM_NAME = { mayBread: 'ขนมปังป้าเมย์', potion: 'ยาฟื้นฟู', bigPotion: 'ยาฟื้นฟูชั้นดี', elixir: 'น้ำอมฤต', tonic: 'ชาเรี่ยวแรง', bread: 'ขนมปังเดินทาง', mushroomSoup: 'ซุปเห็ดอุ่น ๆ', energyDrink: 'น้ำผึ้งป่าเข้มข้น', bandage: 'ผ้าพันแผลสะอาด', antidote: 'ยาถอนพิษ', stoneSkin: 'ยาผิวศิลา', guardCharm: 'เครื่องรางคุ้มกัน', smokeBomb: 'ระเบิดควัน', whetstone: 'หินลับมีด', firebomb: 'ระเบิดไฟ', iceBomb: 'ระเบิดน้ำแข็ง', thunderJar: 'โถสายฟ้า', holyWater: 'น้ำมนต์', poisonDart: 'ลูกดอกพิษ', oilFlask: 'ขวดน้ำมันไฟ', flashPowder: 'ผงแสงวาบ' };
+  const ITEM_NAME = { mayBread: 'ขนมปังป้าเมย์', potion: 'ยาฟื้นฟู', bigPotion: 'ยาฟื้นฟูชั้นดี', elixir: 'น้ำอมฤต', tonic: 'ชาเรี่ยวแรง', bread: 'ขนมปังเดินทาง', mushroomSoup: 'ซุปเห็ดอุ่น ๆ', energyDrink: 'น้ำผึ้งป่าเข้มข้น', bandage: 'ผ้าพันแผลสะอาด', antidote: 'ยาถอนพิษ', stoneSkin: 'ยาผิวศิลา', guardCharm: 'เครื่องรางคุ้มกัน', smokeBomb: 'ระเบิดควัน', whetstone: 'หินลับมีด', firebomb: 'ระเบิดไฟ', iceBomb: 'ระเบิดน้ำแข็ง', thunderJar: 'โถสายฟ้า', holyWater: 'น้ำมนต์', poisonDart: 'ลูกดอกพิษ', oilFlask: 'ขวดน้ำมันไฟ', flashPowder: 'ผงแสงวาบ', antiShock: 'ยาแก้ชา', antiSilence: 'ลูกอมแก้ใบ้', wakeSalt: 'เกลือปลุกสติ', echoBell: 'กระดิ่งเรียกสติ', guardBalm: 'ยาทาเกราะแข็ง', mendKit: 'ชุดเย็บแผลเดินทาง', bigStew: 'ซุปเนื้อเต็มชาม', sleepDart: 'ลูกดอกกล่อมหลับ', glueFlask: 'ขวดกาวเหนียว' };
   const itemRule = k => ITEM[k] || null;
   function itemDraw(st) {
     const bag = st.bag || {}, held = {}; for (const k of st.itemHand || []) held[k] = (held[k] || 0) + 1;
@@ -745,6 +754,11 @@
     }
     /* area cards: ดาบหมุน hits everyone next to the hero, ทุบธรณี everyone next to the target */
     if (rule.aoe) { const c = rule.aoe === 'self' ? h : t; for (const o of opponents(st, h)) { if (o === t || dist(o, c) > 1) continue; const g2 = gap(st, h, o); if (rule.aoe === 'splash' && g2 <= -2) continue; const crit = (st.rng || Math.random)() < CRIT.hero + (h.crit || 0), r = hurt(st, o, (rule.dmg + cardBonus(h, id)) * (rule.aoe === 'splash' ? (g2 >= 1 ? 1.5 : 1) * (h.ambush || 1) : mult) * sideMult(st, h, o) * (crit ? CRIT.mult : 1)); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit, splash: true }) } }
+    if (rule.pierce) { const du = Math.abs(t.u - h.u) >= Math.abs(t.v - h.v) ? Math.sign(t.u - h.u) : 0, dv = du ? 0 : Math.sign(t.v - h.v); for (let k = 1; k < rule.pierce + 1 && !out.pierced; k++) { const o = opponents(st, h).find(x => x !== t && x.u === t.u + du * k && x.v === t.v + dv * k); if (o) { const r = hurt(st, o, (rule.dmg + cardBonus(h, id)) * mult * sm * elMult(st, cardEl(id, h), o, [])); out.hits.push({ target: o, damage: r.damage, notes: ['ทะลุ', ...r.notes], crit: false, splash: true }); out.pierced = o } } }
+    if (rule.chain) { const nx = opponents(st, h).filter(x => x !== t && dist(x, t) <= rule.chain.r).sort((a, b) => dist(a, t) - dist(b, t))[0]; if (nx && (st.rng || Math.random)() < rule.chain.p) { const r = hurt(st, nx, (rule.dmg + cardBonus(h, id)) * .8 * elMult(st, cardEl(id, h), nx, [])); out.hits.push({ target: nx, damage: r.damage, notes: ['เด้งต่อ', ...r.notes], crit: false, splash: true }); out.chained = nx; if (CARD_STATUS[id] && r.damage > 0) { const k = inflict(st, nx, CARD_STATUS[id][0], CARD_STATUS[id][1]); if (k) (out.statuses ||= []).push({ unit: nx, kind: k }) } } }
+    if (rule.drain) { const b0 = h.hp, got = out.hits.some(x => x.damage > 0) ? rule.drain : 0; h.hp = Math.min(h.maxHp, h.hp + got); out.drain = h.hp - b0 }
+    if (rule.evadeAfter) { h.evade = 1; out.evade = true }
+    if (rule.turnAway && alive(t)) { const OPP = { SE: 'NW', NW: 'SE', SW: 'NE', NE: 'SW' }; t.face = OPP[faceOf(t, h)]; out.turned = t }
     if (rule.guardAfter) { h.guard = Math.max(h.guard, rule.guardAfter); out.guard = h.guard }
     const total = out.hits.reduce((a, x) => a + x.damage, 0);
     st.log.push(h.name + ' ' + name + ' −' + total + (out.hits[0]?.notes.length ? ' (' + out.hits[0].notes.join(', ') + ')' : ''));

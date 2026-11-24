@@ -16,7 +16,7 @@
     'shop:sale': { sal: 1, life: 3, name: 'ร้านของเราขายได้' }
   };
   const BIOME = { grass: 'ทุ่งหญ้า', forest: 'ป่า', hills: 'เนินเขา', swamp: 'บึง', snow: 'ทุ่งหิมะ', sand: 'หาดทราย' };
-  const FOE = { bandit: 'โจรป่า', wolf: 'หมาป่า', slime: 'สไลม์', kobold: 'โคโบลด์', golem: 'โกเล็ม', shadowWolf: 'หมาป่าเงา', murk: 'สัตว์รอยหมอง', hunger: 'ก้อนหิว' };
+  const FOE = { bandit: 'โจรป่า', wolf: 'หมาป่า', slime: 'สไลม์', kobold: 'โคโบลด์', golem: 'โกเล็ม', shadowWolf: 'หมาป่าเงา', murk: 'สัตว์รอยหมอง', sporeCap: 'เห็ดพิษเดิน', webSpinner: 'แมงมุมป่า', rockApe: 'ลิงขว้างหิน', stoneScorpion: 'แมงป่องหิน', wisp: 'ไฟพราย', snowOwl: 'นกเค้าหิมะ', hunger: 'ก้อนหิว' };
 
   /* ---------- voices ---------- */
   const V = {};
