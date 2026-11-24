@@ -172,7 +172,7 @@
     'project-a-ground-brush', 'project-a-lock-ratio', 'project-a-manager-mode', 'project-a-ramp', 'project-a-sharp', 'project-a-sharp-amt', 'project-a-place-clipboard-v1', 'project-a-layout-sync-v1',
     'projectA.autoRes', 'projectA.battleSnap', 'projectA.bump', 'projectA.csAuto', 'projectA.cursor', 'projectA.dev', 'projectA.editQuality', 'projectA.fbDuel', 'projectA.fbHudMin', 'projectA.fieldRot',
     'projectA.github', 'projectA.hd2d', 'projectA.mood', 'projectA.precached', 'projectA.renderStep', 'projectA.skipIntro', 'projectA.texelNorm', 'projectA.texelStats',
-    'projectA.touchUI', 'projectA.wipShown', 'projectA.wmFight', 'projectA.worldScale', 'scale-lineup-filter-v1', 'scale-lineup-hidden-v1', 'scale-lineup-subfilter-v1', 'studio.dockH', 'studio.dockMin', 'studio.filesOpen',
+    'projectA.touchUI', 'projectA.resumeLast', 'projectA.wipShown', 'projectA.wmFight', 'projectA.worldScale', 'scale-lineup-filter-v1', 'scale-lineup-hidden-v1', 'scale-lineup-subfilter-v1', 'studio.dockH', 'studio.dockMin', 'studio.filesOpen',
     'editor-last-tab', 'editor-ui-memory-v1', 'editor-tab-url-v1', 'lineup.collapsed', 'pose-sheet-qa-vert-open', 'lineup.inspFolded', 'lineup.rtOpen', 'lineup.standU', 'lineup.vp', 'proc-motion-walk-reset-v98.640', 'project-a-village-group-clip-v1', 'project-a-village-repo-assets-v1'];
   const DEVICE_PRE = ['project-a-layout-backup-', 'pd-', 'proc-motion-walk-reset-'];
   const SAVE = ['three-card-forge-v4', 'three-card-forge-v2', 'three-card-forge-before-v8', 'three-card-forge-before-newgame', 'three-card-config-v1', 'agrenor-leads-v1', 'project-a-started-v1', 'project-a-newgame', 'agrenor-mind-v1', 'agrenor-secret-elements',
