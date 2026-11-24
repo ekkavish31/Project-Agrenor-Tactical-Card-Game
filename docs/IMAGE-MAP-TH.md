@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6519 ไฟล์ (468.8 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6545 ไฟล์ (470.6 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -24,7 +24,7 @@
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 622 | 30.6 MB | `assets/tactics` 614 · `assets/objects` 7 · `assets/generated-village` 1 | 589 | 33 |
 | 🃏 การ์ด | 170 | 44.2 MB | `assets/cards` 168 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 158 | 16 |
 | 🎛 UI · ไอคอน · เมนู | 256 | 9.1 MB | `assets/ui` 125 · `assets/icons` 90 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 101 | 11 |
-| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 144 | 20.8 MB | `assets/village-town` 129 · `assets/objects` 15 | 12 | 8 |
+| 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 170 | 22.6 MB | `assets/village-town` 155 · `assets/objects` 15 | 38 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 113 | 9.0 MB | `assets/terrain` 77 · `assets/world` 32 · `assets/v03` 4 | 9 | 2 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
@@ -92,8 +92,8 @@
 - UI / เคอร์เซอร์ — 8
 
 ### 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง
+- ของตกแต่ง — 59
 - ภาพหมู่บ้านอื่น ๆ — 48
-- ของตกแต่ง — 33
 - ขอบ — 24
 - วัตถุ · รั้ว · บ้านจาก Workshop — 15
 - พื้น — 13

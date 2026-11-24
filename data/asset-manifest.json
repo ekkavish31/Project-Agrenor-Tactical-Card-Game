@@ -161014,6 +161014,422 @@
    "prompt": "Reimagine the REFERENCE town landmark as a full immersive 16:9 dialogue BACKGROUND viewed at street-level, not a cutout diorama. Preserve recognizable buildings, roof colors, materials and settlement character from reference. Vinehollow village at eye level from a lane beside its vineyards: cream plaster cottages with orange terracotta roofs, stone winery arches and barrels, purple grape vines, cypress-like trees, small steaming natural spring higher up hill, warm sunny daylight. No real-world cross or deity statue. Rich warm hand-painted JRPG environment consistent with Agrenor village dialogue art. No people or creatures, no text, no borders, no UI. Full opaque edge-to-edge ground, sky and architecture; no transparent void, no floating island, no isometric model. Clear lower foreground for characters.",
    "usedIn": "DialogueBackdrops · town conversations",
    "artRevision": "v98.1027"
+  },
+  {
+   "id": "town-decor-canal-bridge-stone-ne",
+   "file": "assets/village-town/decor/canal-bridge-stone-ne.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    578,
+    423
+   ],
+   "transparent": true,
+   "subject": "สะพานหินข้ามคลอง แนว ↗",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-bridge-stone-nw",
+   "file": "assets/village-town/decor/canal-bridge-stone-nw.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    564,
+    434
+   ],
+   "transparent": true,
+   "subject": "สะพานหินข้ามคลอง แนว ↖",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-bridge-wood-ne",
+   "file": "assets/village-town/decor/canal-bridge-wood-ne.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    595,
+    441
+   ],
+   "transparent": true,
+   "subject": "สะพานไม้ข้ามคลอง แนว ↗",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-bridge-wood-nw",
+   "file": "assets/village-town/decor/canal-bridge-wood-nw.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    565,
+    447
+   ],
+   "transparent": true,
+   "subject": "สะพานไม้ข้ามคลอง แนว ↖",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-outdoor-stairs-stone-ne",
+   "file": "assets/village-town/decor/outdoor-stairs-stone-ne.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    541,
+    461
+   ],
+   "transparent": true,
+   "subject": "บันไดหินกลางแจ้ง ขึ้น ↗",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-outdoor-stairs-stone-nw",
+   "file": "assets/village-town/decor/outdoor-stairs-stone-nw.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    541,
+    459
+   ],
+   "transparent": true,
+   "subject": "บันไดหินกลางแจ้ง ขึ้น ↖",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-outdoor-stairs-ruin-ne",
+   "file": "assets/village-town/decor/outdoor-stairs-ruin-ne.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    548,
+    485
+   ],
+   "transparent": true,
+   "subject": "บันไดหินผุกร่อน ขึ้น ↗",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-outdoor-stairs-ruin-nw",
+   "file": "assets/village-town/decor/outdoor-stairs-ruin-nw.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    551,
+    475
+   ],
+   "transparent": true,
+   "subject": "บันไดหินผุกร่อน ขึ้น ↖",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-festival-flower-arch",
+   "file": "assets/village-town/decor/festival-flower-arch.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    449,
+    480
+   ],
+   "transparent": true,
+   "subject": "ซุ้มดอกไม้เทศกาล",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-festival-pennant-line",
+   "file": "assets/village-town/decor/festival-pennant-line.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    487,
+    399
+   ],
+   "transparent": true,
+   "subject": "ราวธงสามเหลี่ยม",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-festival-lantern-line",
+   "file": "assets/village-town/decor/festival-lantern-line.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    498,
+    383
+   ],
+   "transparent": true,
+   "subject": "ราวโคมเทศกาล",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-festival-stage",
+   "file": "assets/village-town/decor/festival-stage.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    530,
+    290
+   ],
+   "transparent": true,
+   "subject": "เวทีไม้เทศกาล",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-festival-ribbon-pole",
+   "file": "assets/village-town/decor/festival-ribbon-pole.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    356,
+    541
+   ],
+   "transparent": true,
+   "subject": "เสาริบบิ้นเทศกาล",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-festival-bell-game",
+   "file": "assets/village-town/decor/festival-bell-game.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    447,
+    494
+   ],
+   "transparent": true,
+   "subject": "แผงเกมตีระฆัง",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-hand-pump",
+   "file": "assets/village-town/decor/canal-hand-pump.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    291,
+    427
+   ],
+   "transparent": true,
+   "subject": "ปั๊มน้ำมือโยก",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-sluice-gate",
+   "file": "assets/village-town/decor/canal-sluice-gate.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    377,
+    463
+   ],
+   "transparent": true,
+   "subject": "ประตูระบายน้ำไม้",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-drain-se",
+   "file": "assets/village-town/decor/canal-drain-se.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    385,
+    383
+   ],
+   "transparent": true,
+   "subject": "ปากท่อหิน แนว ↘",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-drain-sw",
+   "file": "assets/village-town/decor/canal-drain-sw.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    366,
+    397
+   ],
+   "transparent": true,
+   "subject": "ปากท่อหิน แนว ↙",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-waterwheel",
+   "file": "assets/village-town/decor/canal-waterwheel.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    396,
+    525
+   ],
+   "transparent": true,
+   "subject": "กังหันวิดน้ำไม้",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-canal-mooring-posts",
+   "file": "assets/village-town/decor/canal-mooring-posts.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    445,
+    362
+   ],
+   "transparent": true,
+   "subject": "หลักผูกเรือพร้อมเชือก",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-trail-tent",
+   "file": "assets/village-town/decor/trail-tent.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    498,
+    438
+   ],
+   "transparent": true,
+   "subject": "เต็นท์นักเดินทาง",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-trail-bedroll-pack",
+   "file": "assets/village-town/decor/trail-bedroll-pack.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    443,
+    322
+   ],
+   "transparent": true,
+   "subject": "สัมภาระและม้วนผ้าห่ม",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-trail-watch-platform",
+   "file": "assets/village-town/decor/trail-watch-platform.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    415,
+    476
+   ],
+   "transparent": true,
+   "subject": "แท่นเฝ้าระวังไม้",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-trail-map-shelter",
+   "file": "assets/village-town/decor/trail-map-shelter.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    458,
+    485
+   ],
+   "transparent": true,
+   "subject": "ป้ายแผนที่มีหลังคา",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-trail-milestone",
+   "file": "assets/village-town/decor/trail-milestone.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    294,
+    412
+   ],
+   "transparent": true,
+   "subject": "หลักหินบอกเส้นทาง",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
+  },
+  {
+   "id": "town-decor-trail-cairn",
+   "file": "assets/village-town/decor/trail-cairn.webp",
+   "category": "village-map",
+   "status": "final",
+   "size": [
+    380,
+    418
+   ],
+   "transparent": true,
+   "subject": "กองหินนำทาง",
+   "prompt": "Isometric 2:1 hand-painted fantasy environment prop; weathered oak, cream-grey stone and muted fabric; warm upper-left daylight; isolated transparent cutout; no people, text or terrain island.",
+   "usedIn": "PLACEABLE_ART · เมนูวางของหมู่บ้านและแมพย่อย",
+   "artRevision": "v98.1036",
+   "note": "ภาพตกแต่งสำหรับจัดฉาก ไม่เปลี่ยนกติกาการเดิน ระดับพื้น หรือผังเซฟเดิม"
   }
  ],
  "studioReviews": {
