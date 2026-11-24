@@ -5,7 +5,7 @@ p{margin:4px 16px 10px;color:#cfe0b0}</style></head><body>
 <header><h1>🧪 เทียบเอฟเฟกต์พื้นสนาม</h1><span>สไตล์วงแหวน/ลูกปัด:</span><button data-s="1" class="on">1 · เส้นคู่ + แสงวิ่ง</button><button data-s="2">2 · เส้น + ลูกปัดโคจร</button><span style="flex:1"></span><span>ซ้าย = ภาพเดิม · ขวา = วาดด้วยโค้ด</span></header>
 <p>ภาพเดิมเป็นเฟรมต่อๆ กัน (6–12 เฟรม) ภาพที่เจนมามีแสงไม่เท่ากันเฟรมต่อเฟรมเลยดูสั่น · แบบโค้ดคำนวณจากเวลาแบบต่อเนื่อง ไม่มีเฟรมกระโดด</p>
 <canvas id="cv" width="1100" height="640"></canvas>
-<script src="js/editor-store.js?v=v98.1030"></script><script src="js/ground-art.js"></script><script src="js/ground-art-code.js"></script>
+<script src="js/editor-store.js?v=v98.1031"></script><script src="js/ground-art.js"></script><script src="js/ground-art-code.js"></script>
 <script>
 const cv=document.getElementById('cv'),g=cv.getContext('2d');let style=1;document.querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>{style=+b.dataset.s;document.querySelectorAll('button[data-s]').forEach(x=>x.classList.toggle('on',x===b))});
 const IMG={};const im=s=>{let i=IMG[s];if(!i){i=IMG[s]=new Image();i.src=s}return i.complete&&i.naturalWidth?i:null};
