@@ -7808,3 +7808,10 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - ลงทะเบียน manifest, preload สนาม และปรับ cache version; งานนี้ไม่มีการแก้กติกาหรือบทสนทนา
 - ตรวจรับ: `node --check` 235 ไฟล์ผ่าน; เทสต์รวม 89 รายการผ่าน 73 ไม่ผ่าน 16 และเทียบซ้ำทั้ง 16 กับ main ฐาน `0ab17ad` ได้ผลเดิมทั้งหมด (10 รายการเปิด browser ไม่ได้, 6 รายการเป็น assertion เดิม); เทสต์ภาพใหม่ตรวจ decode จริงครบ 64 เฟรมผ่าน
 - ลองเปิด Chromium ระบบเพิ่มเติมแล้วติดข้อจำกัด socket ของ environment; ยังไม่ได้ตรวจ VFX บนหน้าจอต่อสู้จริงของผู้ใช้
+
+## v98.1041 — แก้ A.Studio เปิดไม่ขึ้น (24 พ.ย. 2026)
+- **อาการ:** หน้า A.Studio ว่างเปล่า (ปุ่มไม่ทำงาน) หลัง v98.1038
+- **สาเหตุ:** สคริปต์ขยับ `?v=` ของ v98.1038 ตัดเครื่องหมาย `'` ปิดสตริงใน 3 หน้า: `asset-studio.html` (`manifestJsPath`), `object-asset-studio.html` (โหลด manifest), `scale-lineup.html` (2 จุด: manifest + `fetch town-battle.js`) ทำให้ inline script ทั้งก้อนมี SyntaxError
+- **แก้:** คืนเครื่องหมายคำพูดทั้ง 4 จุด (`scale-lineup` คืนรูปแบบ `'?v=' + (window.GAME_VERSION…)` ตามเดิม)
+- ตรวจ: `tools/test-html-scripts.cjs` ผ่าน (34 สคริปต์ใน 23 หน้า) · เปิด `asset-studio.html` ใน Playwright ไม่มี error และหน้าวาดครบ
+- **ข้อควรระวัง:** สคริปต์/คำสั่งที่ขยับ `?v=` ยังมีบั๊ก (ตรงกับที่บันทึกไว้ที่ v98.1028) ใครรันต้องรัน `node tools/test-html-scripts.cjs` ทุกครั้ง
