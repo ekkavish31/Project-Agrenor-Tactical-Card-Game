@@ -66,6 +66,7 @@ const PLACE_BG={forge:{bg:'assets/forge.webp'},market:{bg:'assets/market.webp'},
 let TALK_NPC=null;
 function talkNpcOf(id){if(!TALK_NPC){TALK_NPC={};for(const s of STEPS)if((s.talk||s.npc)&&s.outro&&typeof s.outro==='string')TALK_NPC[s.outro]=s.talk||s.npc}return TALK_NPC[id]||null}
 function sceneAt(id){const sc=D().SCENES[id];if(!sc)return sc;try{const npc=talkNpcOf(id);if(!npc)return sc;const at=String(npcPlace(npc)||'');
+  if(root.DialogueBackdrops)return root.DialogueBackdrops.intro(id,sc,at);
   let o=PLACE_BG[at];if(!o){o=npc==='hilda'?{art:'hildaFarm'}:{bg:'assets/market.webp'}}   /* v98.617 · outdoors in the village = the painted market square (owner's request), not the code-drawn countryside */   /* her own farm / a house door → outdoors */
   return {...sc,art:o.art||null,bg:o.bg||null}}catch(e){return sc}}
 function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets(d)||{}:{};const out={npc:[...(t.npc||[])],place:[...(t.place||[])],exit:!!(t.exit||step.exit),spots:[...(t.spots||[])],label:t.label||''};

@@ -160519,6 +160519,501 @@
    "subject": "weak",
    "usedIn": "Battle status",
    "artRevision": "v98.1026"
+  },
+  {
+   "id": "dialogue-bg-northgate",
+   "file": "assets/scenes/dialogue/northgate.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "northgate",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor, richly detailed warm hand-painted JRPG environmental illustration matching painterly village interiors, low fantasy human architecture. Northern stone border checkpoint at dawn, rugged grey masonry gate, pine-covered snowy ridges, wooden barrier, iron-banded supply wagons parked to side, cold mist. Human low-fantasy frontier, no people. Eye level cinematic establishing composition, leave uncluttered center and lower foreground for character bust overlays and dialogue box. Full scene edge to edge, no UI, no border, no letters, no readable text. No characters. Do not add story events or deities.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-haven",
+   "file": "assets/scenes/dialogue/haven.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "haven",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor, richly detailed warm hand-painted JRPG environmental illustration matching painterly village interiors, low fantasy human architecture. Human low-fantasy coastal trading port Haven, weathered wooden docks and moored modest sailing boats, salt sacks and fishing nets, warehouses and small harbor-side brazier, warm late afternoon. No people. Eye level cinematic establishing composition, leave uncluttered center and lower foreground for character bust overlays and dialogue box. Full scene edge to edge, no UI, no border, no letters, no readable text. No characters. Do not add story events or deities.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-brookmere",
+   "file": "assets/scenes/dialogue/brookmere.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "brookmere",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor, richly detailed warm hand-painted JRPG environmental illustration matching painterly village interiors, low fantasy human architecture. Brookmere, a small human river market town, low stone bridge over quiet brook, timber houses, modest trading stalls, green riverbanks, peaceful daylight, no people. Eye level cinematic establishing composition, leave uncluttered center and lower foreground for character bust overlays and dialogue box. Full scene edge to edge, no UI, no border, no letters, no readable text. No characters. Do not add story events or deities.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-refugee-camp",
+   "file": "assets/scenes/dialogue/refugee-camp.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "refugee-camp",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor, richly detailed warm hand-painted JRPG environmental illustration matching painterly village interiors, low fantasy human architecture. A war refugee camp outside a low fantasy border town, canvas tents, patched blankets, empty cooking pots, small fire pit, makeshift wooden benches, mountains and sparse trees in distance. Compassionate subdued atmosphere, no people. Eye level cinematic establishing composition, leave uncluttered center and lower foreground for character bust overlays and dialogue box. Full scene edge to edge, no UI, no border, no letters, no readable text. No characters. Do not add story events or deities.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-royal-office",
+   "file": "assets/scenes/dialogue/royal-office.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "royal-office",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor, richly detailed warm hand-painted JRPG environmental illustration matching painterly village interiors, low fantasy human architecture. Interior of a royal military supply inspector's office in Lakenhold: heavy wooden desk covered in ledgers and rolled inventory papers, wax seal, storage shelves, simple maps with no readable labels, modest stone walls and tall window, no throne, no people. Eye level cinematic establishing composition, leave uncluttered center and lower foreground for character bust overlays and dialogue box. Full scene edge to edge, no UI, no border, no letters, no readable text. No characters. Do not add story events or deities.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-deep-mine",
+   "file": "assets/scenes/dialogue/deep-mine.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "deep-mine",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor, richly detailed warm hand-painted JRPG environmental illustration matching painterly village interiors, low fantasy human architecture. Deepcairn lower mine entrance, heavy timber bracing, dark descending shaft blocked by crossed wooden beams and iron chains, tools and cold lantern light, subtle faint amber mineral seams; mysterious but no monsters or people, no revealed ancient machinery. Eye level cinematic establishing composition, leave uncluttered center and lower foreground for character bust overlays and dialogue box. Full scene edge to edge, no UI, no border, no letters, no readable text. No characters. Do not add story events or deities.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-market-alley",
+   "file": "assets/scenes/dialogue/market-alley.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "market-alley",
+   "prompt": "Wide 16:9 dialogue background for Agrenor, detailed hand-painted warm painterly JRPG environment consistent with village interiors. A narrow quiet alley behind a low fantasy human town's market, timber and plaster shop backs, stacked empty crates, closed canvas awnings, worn cobblestones, discreet shaded corner, neutral geography without named monuments, late afternoon. No people or creatures. Eye-level establishing shot, uncluttered center/lower foreground for character busts and dialogue UI. Edge-to-edge illustration, no borders, no text, no readable labels, no UI. Low fantasy, not photorealistic.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-teahouse-yard",
+   "file": "assets/scenes/dialogue/teahouse-yard.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "teahouse-yard",
+   "prompt": "Wide 16:9 dialogue background for Agrenor, detailed hand-painted warm painterly JRPG environment consistent with village interiors. A small courtyard behind a rural tea house, wooden bench beside plaster wall, clay teapot on an outdoor table, neatly stacked firewood, shaded tree, quiet afternoon, neutral low fantasy town architecture. No people or creatures. Eye-level establishing shot, uncluttered center/lower foreground for character busts and dialogue UI. Edge-to-edge illustration, no borders, no text, no readable labels, no UI. Low fantasy, not photorealistic.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-forest-camp",
+   "file": "assets/scenes/dialogue/forest-camp.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "forest-camp",
+   "prompt": "Wide 16:9 dialogue background for Agrenor, detailed hand-painted warm painterly JRPG environment consistent with village interiors. Thornwatch's small forest edge camp: timber palisade gate, simple tents beneath huge green trees, wooden sleeping cot and plain benches at the back, mossy stones, soft forest daylight, no grand fortress. No people or creatures. Eye-level establishing shot, uncluttered center/lower foreground for character busts and dialogue UI. Edge-to-edge illustration, no borders, no text, no readable labels, no UI. Low fantasy, not photorealistic.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-royal-library",
+   "file": "assets/scenes/dialogue/royal-library.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "royal-library",
+   "prompt": "Wide 16:9 dialogue background for Agrenor, detailed hand-painted warm painterly JRPG environment consistent with village interiors. Lakenhold's royal research reading room, tall book shelves, worktable with old copied inscription pages and sealed books, simple specimen display case, warm desk lamp, stone walls, no legible writing, no glowing gods or magical revelations. No people or creatures. Eye-level establishing shot, uncluttered center/lower foreground for character busts and dialogue UI. Edge-to-edge illustration, no borders, no text, no readable labels, no UI. Low fantasy, not photorealistic.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-moon-shrine",
+   "file": "assets/scenes/dialogue/moon-shrine.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "moon-shrine",
+   "prompt": "Wide 16:9 dialogue background for Agrenor, detailed hand-painted warm painterly JRPG environment consistent with village interiors. A low stone courtyard shrine on wooded mountain foothills at NIGHT, large PURPLE moon above ridge, small stone altar with candles and a few simple cloth offerings, peaceful faint mist, no sun, no deity statue, no ritual participants. No people or creatures. Eye-level establishing shot, uncluttered center/lower foreground for character busts and dialogue UI. Edge-to-edge illustration, no borders, no text, no readable labels, no UI. Low fantasy, not photorealistic.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-pilgrim-room",
+   "file": "assets/scenes/dialogue/pilgrim-room.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "pilgrim-room",
+   "prompt": "Wide 16:9 dialogue background for Agrenor, detailed hand-painted warm painterly JRPG environment consistent with village interiors. A humble pilgrim lodging room in a northern border settlement: simple stone floor, many small candles arranged neatly near low sleeping pallets, plain travel staffs by wall, a small hearth, grey wool blankets, quiet evening, no religious cross or deity statue. No people or creatures. Eye-level establishing shot, uncluttered center/lower foreground for character busts and dialogue UI. Edge-to-edge illustration, no borders, no text, no readable labels, no UI. Low fantasy, not photorealistic.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-wheat-field",
+   "file": "assets/scenes/dialogue/wheat-field.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "wheat-field",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Fernvale's rural wheat field at harvest, partially cut golden stalks, tied sheaves, a simple fence and humble barn at edge, green wooded basin and low hills, daytime. Rich hand-painted painterly JRPG illustration, warm coherent colors and detailed natural textures. No people, no creatures, no text, no readable labels, no UI, no border. Eye-level establishing view, keep center and lower foreground uncluttered for character bust overlays. Do not add lore revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-granary",
+   "file": "assets/scenes/dialogue/granary.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "granary",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Outside Fernvale village's communal wooden granary, raised timber storage shed, grain sacks and barrels, simple scales and small wooden cart, humble farming village, daylight. Rich hand-painted painterly JRPG illustration, warm coherent colors and detailed natural textures. No people, no creatures, no text, no readable labels, no UI, no border. Eye-level establishing view, keep center and lower foreground uncluttered for character bust overlays. Do not add lore revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-war-clinic",
+   "file": "assets/scenes/dialogue/war-clinic.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "war-clinic",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Willowshore refugee clinic interior, makeshift beds with clean folded linen, wash basins, herb jars, bandages and wooden medicine cabinet, modest light plaster room, compassionate warm daylight, no patients or people. Rich hand-painted painterly JRPG illustration, warm coherent colors and detailed natural textures. No people, no creatures, no text, no readable labels, no UI, no border. Eye-level establishing view, keep center and lower foreground uncluttered for character bust overlays. Do not add lore revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-supply-warehouse",
+   "file": "assets/scenes/dialogue/supply-warehouse.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "supply-warehouse",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Royal army supply warehouse interior in a human low fantasy town, stacked sacks of grain and salt, neatly bundled iron bars, crates, canvas rolls, loading door and weighing scale, wooden roof beams, daylight, no weapons of modern era. Rich hand-painted painterly JRPG illustration, warm coherent colors and detailed natural textures. No people, no creatures, no text, no readable labels, no UI, no border. Eye-level establishing view, keep center and lower foreground uncluttered for character bust overlays. Do not add lore revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-forest-stream",
+   "file": "assets/scenes/dialogue/forest-stream.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "forest-stream",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Shallow stream crossing on the woodland path just outside Fernvale, clear ankle-deep water across a dirt track, stepping stones, tangled bushes, leafy trees, peaceful late afternoon, no injured people or monsters. Rich hand-painted painterly JRPG illustration, warm coherent colors and detailed natural textures. No people, no creatures, no text, no readable labels, no UI, no border. Eye-level establishing view, keep center and lower foreground uncluttered for character bust overlays. Do not add lore revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-village-gate",
+   "file": "assets/scenes/dialogue/village-gate.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "village-gate",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Fernvale's modest village entrance, simple timber palisade and low stone footings, open wooden gate, small guard shelter, dirt path leading into green forest, hills beyond, friendly low fantasy farming hamlet, daylight. Rich hand-painted painterly JRPG illustration, warm coherent colors and detailed natural textures. No people, no creatures, no text, no readable labels, no UI, no border. Eye-level establishing view, keep center and lower foreground uncluttered for character bust overlays. Do not add lore revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-vineyard",
+   "file": "assets/scenes/dialogue/vineyard.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "vineyard",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Vinehollow vineyard edge, orderly grape vines on wooden trellises, dark fine ash dusting some leaves, distant southern volcanic ridge with subtle reddish haze, simple stone shrine at field edge, dusk under a PURPLE moon, no sun, no erupting disaster. Rich hand-painted painterly JRPG environment matching warm village illustrations. No people, no creatures, no text, no readable labels, no UI, no border. Eye level establishing view, clear lower center foreground for character busts and dialogue overlay. Avoid adding story revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-volcanic-crater",
+   "file": "assets/scenes/dialogue/volcanic-crater.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "volcanic-crater",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Southern volcanic crater approach, black basalt path, broad smoking crater and dim ember fissures far below, ancient rugged natural rock, dark red haze, dangerous but no visible dragon, no monsters, no castle, no deity. Wide dramatic vista for dialogue before optional dragon encounter. Rich hand-painted painterly JRPG environment matching warm village illustrations. No people, no creatures, no text, no readable labels, no UI, no border. Eye level establishing view, clear lower center foreground for character busts and dialogue overlay. Avoid adding story revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-hot-spring",
+   "file": "assets/scenes/dialogue/hot-spring.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "hot-spring",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Vinehollow's natural hot spring, shallow steaming clear pool ringed by smooth stones, modest wooden changing shelter and low screen at side, vineyard hills in distance, warm peaceful daylight, no bathers. Rich hand-painted painterly JRPG environment matching warm village illustrations. No people, no creatures, no text, no readable labels, no UI, no border. Eye level establishing view, clear lower center foreground for character busts and dialogue overlay. Avoid adding story revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-mage-hall",
+   "file": "assets/scenes/dialogue/mage-hall.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "mage-hall",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Lakenhold magic tower classroom interior: stone chamber with tall narrow arched window, wooden teaching desk, practice reading tables, shelves of books and simple element study tools, a small softly glowing crystal on stand, no floating giant magic circles, warm daylight. Rich hand-painted painterly JRPG environment matching warm village illustrations. No people, no creatures, no text, no readable labels, no UI, no border. Eye level establishing view, clear lower center foreground for character busts and dialogue overlay. Avoid adding story revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-museum",
+   "file": "assets/scenes/dialogue/museum.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "museum",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. Lakenhold modest historical museum interior, glass-fronted wooden display cases with mineral crystals and pottery, weathered stone fragments and copied abstract inscriptions, scholarly worktable, high stone walls and soft daylight, no readable labels, no depiction of gods or secret machinery. Rich hand-painted painterly JRPG environment matching warm village illustrations. No people, no creatures, no text, no readable labels, no UI, no border. Eye level establishing view, clear lower center foreground for character busts and dialogue overlay. Avoid adding story revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-holding-room",
+   "file": "assets/scenes/dialogue/holding-room.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "holding-room",
+   "prompt": "Wide 16:9 dialogue BACKGROUND for Agrenor. A small guard holding area behind a northern human border checkpoint, rough stone walls, timber bars, one empty simple bench, lantern and folded grey blanket, barred window showing cold mountain dusk, sober low fantasy environment, no people or torture equipment. Rich hand-painted painterly JRPG environment matching warm village illustrations. No people, no creatures, no text, no readable labels, no UI, no border. Eye level establishing view, clear lower center foreground for character busts and dialogue overlay. Avoid adding story revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-army-camp",
+   "file": "assets/scenes/dialogue/army-camp.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "army-camp",
+   "prompt": "Wide 16:9 dialogue background for Agrenor. A low fantasy military camp at the northern frontier, organized canvas tents, supply wagon, stacked shields and spears, simple wooden barracks and a central open gathering yard, subdued daylight, no flags with new crests, no soldiers. Rich hand-painted painterly JRPG environmental illustration consistent with warm village interiors. Leave lower center foreground for character busts and dialogue box. No creatures, no text, no readable labels, no UI, no borders. Do not invent lore symbols or revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-mine-tool-yard",
+   "file": "assets/scenes/dialogue/mine-tool-yard.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "mine-tool-yard",
+   "prompt": "Wide 16:9 dialogue background for Agrenor. The rear yard of a mining tool shed in Deepcairn, pickaxes and shovels on timber wall, empty wooden ore cart, rope coils, crates, rough mountain rock and mine timbers, grey daylight, no people. Rich hand-painted painterly JRPG environmental illustration consistent with warm village interiors. Leave lower center foreground for character busts and dialogue box. No creatures, no text, no readable labels, no UI, no borders. Do not invent lore symbols or revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-deep-mine-inner",
+   "file": "assets/scenes/dialogue/deep-mine-inner.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "deep-mine-inner",
+   "prompt": "Wide 16:9 dialogue background for Agrenor. A vast deep underground mine chamber, timber supports, rough excavated rock, abandoned ore tracks and scattered tools, faint amber mineral light and dark passage beyond, cold atmospheric haze, no creature, no ancient machines, no gods. Rich hand-painted painterly JRPG environmental illustration consistent with warm village interiors. Leave lower center foreground for character busts and dialogue box. No creatures, no text, no readable labels, no UI, no borders. Do not invent lore symbols or revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-cathedral",
+   "file": "assets/scenes/dialogue/cathedral.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "cathedral",
+   "prompt": "Wide 16:9 dialogue background for Agrenor. Lakenhold's human low fantasy cathedral interior, tall pale stone arches, rows of wooden pews, candle stands and a simple unmarked central altar, soft warm light through patterned abstract stained glass, no real-world religious crosses, no god statues, no people. Rich hand-painted painterly JRPG environmental illustration consistent with warm village interiors. Leave lower center foreground for character busts and dialogue box. No creatures, no text, no readable labels, no UI, no borders. Do not invent lore symbols or revelations.",
+   "usedIn": "DialogueBackdrops · dialogue/event/service location",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-lakenhold",
+   "file": "assets/scenes/dialogue/lakenhold.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "lakenhold street-level dialogue background",
+   "prompt": "Reimagine the REFERENCE town landmark as a full immersive 16:9 dialogue BACKGROUND viewed at street-level, not a cutout diorama. Preserve recognizable buildings, roof colors, materials and settlement character from reference. Lakenhold capital market square at eye level inside the city: stone-paved fountain plaza, cream stone civic buildings, warm red terracotta roofs, a distinctive purple-roofed scholarly tower, castle walls rising in distance, blue banners with existing reference ornament, calm daylight. Rich warm hand-painted JRPG environment consistent with Agrenor village dialogue art. No people or creatures, no text, no borders, no UI. Full opaque edge-to-edge ground, sky and architecture; no transparent void, no floating island, no isometric model. Clear lower foreground for characters.",
+   "usedIn": "DialogueBackdrops · town conversations",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-willowshore",
+   "file": "assets/scenes/dialogue/willowshore.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "willowshore street-level dialogue background",
+   "prompt": "Reimagine the REFERENCE town landmark as a full immersive 16:9 dialogue BACKGROUND viewed at street-level, not a cutout diorama. Preserve recognizable buildings, roof colors, materials and settlement character from reference. Willowshore lakeside village at eye level from its wooden ferry landing: modest timber-framed cream cottages with brown red roofs, large weeping willows, fishing nets, small rowboats and calm freshwater lake, a simple covered dock and green hills, warm daylight. Rich warm hand-painted JRPG environment consistent with Agrenor village dialogue art. No people or creatures, no text, no borders, no UI. Full opaque edge-to-edge ground, sky and architecture; no transparent void, no floating island, no isometric model. Clear lower foreground for characters.",
+   "usedIn": "DialogueBackdrops · town conversations",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-deepcairn",
+   "file": "assets/scenes/dialogue/deepcairn.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "deepcairn street-level dialogue background",
+   "prompt": "Reimagine the REFERENCE town landmark as a full immersive 16:9 dialogue BACKGROUND viewed at street-level, not a cutout diorama. Preserve recognizable buildings, roof colors, materials and settlement character from reference. Deepcairn mining settlement at eye level from a cobbled stepped street: small stone cottages against a rocky hillside, timber-braced upper mine entrance, mine cart rails and tool workshop, warm lanterns and chimney smoke, faint purple crystal glow deep in tunnel, daylight. Rich warm hand-painted JRPG environment consistent with Agrenor village dialogue art. No people or creatures, no text, no borders, no UI. Full opaque edge-to-edge ground, sky and architecture; no transparent void, no floating island, no isometric model. Clear lower foreground for characters.",
+   "usedIn": "DialogueBackdrops · town conversations",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-thornwatch",
+   "file": "assets/scenes/dialogue/thornwatch.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "thornwatch street-level dialogue background",
+   "prompt": "Reimagine the REFERENCE town landmark as a full immersive 16:9 dialogue BACKGROUND viewed at street-level, not a cutout diorama. Preserve recognizable buildings, roof colors, materials and settlement character from reference. Thornwatch forest outpost at eye level within palisade gate: wooden watchtower and steep red-roofed timber lodge, simple cream canvas tents, modest red banners with existing crossed-swords motif, tall dark conifer forest and rocky hill behind, daylight. Rich warm hand-painted JRPG environment consistent with Agrenor village dialogue art. No people or creatures, no text, no borders, no UI. Full opaque edge-to-edge ground, sky and architecture; no transparent void, no floating island, no isometric model. Clear lower foreground for characters.",
+   "usedIn": "DialogueBackdrops · town conversations",
+   "artRevision": "v98.1027"
+  },
+  {
+   "id": "dialogue-bg-vinehollow",
+   "file": "assets/scenes/dialogue/vinehollow.webp",
+   "category": "scenes",
+   "status": "final",
+   "size": [
+    1599,
+    900
+   ],
+   "transparent": false,
+   "subject": "vinehollow street-level dialogue background",
+   "prompt": "Reimagine the REFERENCE town landmark as a full immersive 16:9 dialogue BACKGROUND viewed at street-level, not a cutout diorama. Preserve recognizable buildings, roof colors, materials and settlement character from reference. Vinehollow village at eye level from a lane beside its vineyards: cream plaster cottages with orange terracotta roofs, stone winery arches and barrels, purple grape vines, cypress-like trees, small steaming natural spring higher up hill, warm sunny daylight. No real-world cross or deity statue. Rich warm hand-painted JRPG environment consistent with Agrenor village dialogue art. No people or creatures, no text, no borders, no UI. Full opaque edge-to-edge ground, sky and architecture; no transparent void, no floating island, no isometric model. Clear lower foreground for characters.",
+   "usedIn": "DialogueBackdrops · town conversations",
+   "artRevision": "v98.1027"
   }
  ],
  "studioReviews": {
