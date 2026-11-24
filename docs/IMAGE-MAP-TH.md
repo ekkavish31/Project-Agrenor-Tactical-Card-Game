@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6608 ไฟล์ (526.4 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6719 ไฟล์ (532.6 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -18,22 +18,22 @@
 |---|---|---|---|---|---|
 | 🗣 ภาพสนทนา (portrait) | 267 | 62.1 MB | `assets/portraits` 252 · `assets/generated-village` 15 | 131 | 4 |
 | 🧑‍🎤 ตัวเอก | 2917 | 104.9 MB | `assets/tactics` 2890 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2833 | 519 |
-| 👥 ชาวบ้าน / NPC | 499 | 16.5 MB | `assets/village-town` 498 · `assets/generated-village` 1 | 387 | 23 |
+| 👥 ชาวบ้าน / NPC | 547 | 17.4 MB | `assets/village-town` 546 · `assets/generated-village` 1 | 435 | 23 |
 | 🤝 เพื่อนร่วมทีม | 360 | 13.0 MB | `assets/tactics` 196 · `assets/village-town` 160 · `assets/allies` 4 | 360 | 16 |
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
-| ⚔ ท่าต่อสู้ในสนาม (tactics) | 622 | 30.6 MB | `assets/tactics` 614 · `assets/objects` 7 · `assets/generated-village` 1 | 589 | 33 |
-| 🃏 การ์ด | 170 | 44.2 MB | `assets/cards` 168 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 158 | 16 |
+| ⚔ ท่าต่อสู้ในสนาม (tactics) | 672 | 31.4 MB | `assets/tactics` 664 · `assets/objects` 7 · `assets/generated-village` 1 | 639 | 33 |
+| 🃏 การ์ด | 171 | 44.5 MB | `assets/cards` 169 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 158 | 16 |
 | 🎛 UI · ไอคอน · เมนู | 256 | 9.1 MB | `assets/ui` 125 · `assets/icons` 90 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 101 | 11 |
 | 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 170 | 22.6 MB | `assets/village-town` 155 · `assets/objects` 15 | 38 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 113 | 9.0 MB | `assets/terrain` 77 · `assets/world` 32 · `assets/v03` 4 | 9 | 2 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
 | ✨ เอฟเฟกต์ | 76 | 10.7 MB | `assets/fx` 76 | 8 | 0 |
-| 🎒 ไอเทม · อาวุธ · พืชผล | 61 | 5.3 MB | `assets/crops` 36 · `assets/weapons` 7 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 25 | 1 |
+| 🎒 ไอเทม · อาวุธ · พืชผล | 62 | 5.7 MB | `assets/crops` 36 · `assets/weapons` 8 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 26 | 1 |
 | 📖 เปิดเรื่อง · อินโทร · ฉาก | 72 | 83.6 MB | `assets/scenes` 33 · `assets/new-game-prologue` 17 · `assets/generated-village` 12 · `assets/intro` 10 | 45 | 0 |
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
 | 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 248 | 20.5 MB | `assets/_versions` 248 | 0 | 47 |
-| 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 31 | 3.1 MB | `archive/old-scene` 31 | 0 | 12 |
+| 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 42 | 6.9 MB | `archive/old-scene` 31 · `_archive/undefined-bg` 2 · `adjbox.png` 1 · `art-production/facing-arrows-4.png` 1 | 0 | 12 |
 
 ## หมวดย่อยในแต่ละหมวด
 
@@ -50,7 +50,7 @@
 - ไอคอนสถานที่ / เบ็ดเตล็ด (ระดับบนสุดของ assets) — 2
 
 ### 👥 ชาวบ้าน / NPC
-- ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 498
+- ชาวบ้านในหมู่บ้าน (ท่ายืน/เดิน) — 546
 - พนักงานร้านและกิลด์ (atlas) — 1
 
 ### 🤝 เพื่อนร่วมทีม
@@ -71,15 +71,15 @@
 - มอนสเตอร์ (หน้า/หลัง) — 104
 
 ### ⚔ ท่าต่อสู้ในสนาม (tactics)
-- ท่าที่นำเข้าจากสตูดิโอ (idle/walk/ท่า) — 432
-- ท่าต่อสู้ · อาวุธในมือ — 182
+- ท่าที่นำเข้าจากสตูดิโอ (idle/walk/ท่า) — 480
+- ท่าต่อสู้ · อาวุธในมือ — 184
 - วัตถุ · รั้ว · บ้านจาก Workshop — 7
 - ของฟาร์มและไอคอน (atlas) — 1
 
 ### 🃏 การ์ด
 - ภาพการ์ดยูนิต — 55
 - กรอบ · การ์ดทั่วไป — 44
-- การ์ด item — 37
+- การ์ด item — 38
 - การ์ด event — 12
 - การ์ด elements — 10
 - การ์ด skills — 9
@@ -118,7 +118,7 @@
 ### 🎒 ไอเทม · อาวุธ · พืชผล
 - พืชผล — 36
 - ไอเทม · ท่า (ไอคอน) — 16
-- อาวุธ — 7
+- อาวุธ — 8
 - ไอคอนสถานที่ / เบ็ดเตล็ด (ระดับบนสุดของ assets) — 2
 
 ### 📖 เปิดเรื่อง · อินโทร · ฉาก
@@ -134,6 +134,10 @@
 
 ### 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง
 - archive — 31
+- art-production (แผ่นสไปรต์ต้นฉบับ) — 6
+- _archive — 2
+- dev — 2
+- ไฟล์ระดับบนสุดของรีโป — 1
 
 ## ไฟล์ซ้ำที่กินที่มากสุด (เนื้อหาเหมือนกันทุกไบต์ — ตรวจแล้วลบสำเนาได้ ถ้าไม่มีโค้ดอ้างพาธนั้น)
 - 0.8 MB เสียไปกับสำเนา 3 ไฟล์: `assets/objects/_workshop/iron-fence3-corner/L0.webp`, `assets/objects/_workshop/iron-fence4-corner-new-2/L0.webp`, `assets/objects/_workshop/iron-fence4-corner-new/L0.webp`
