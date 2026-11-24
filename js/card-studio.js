@@ -222,6 +222,8 @@ function gameCards(){let out=[],rk=n=>({'ธรรมดา':'common','ดี':'
  // equipment
  let W=C?.WEAPONS||{};
  for(let id of ['sword','hammer','knife','spear','rapier','staff','bow','axe','tome'])if(W[id]){let w=W[id],k=mk('e-'+id,'equip',{ref:id,name:w.name,element:C.WEAPON_ELEMENT?.[id]||'fire',type:'อาวุธ',range:w.range,cost:{energy:w.stamina,minutes:0},main:{value:String(w.damage),label:'ความเสียหาย'},effects:[C.WEAPON_TRAITS?.[id]||'ใช้กับไพ่ โจมตี / ท่าพิเศษ']},{atk:w.damage,def:0,price:(typeof RECIPES!=='undefined'&&RECIPES[id]?.sell)||30});k.art.src=window.weaponImg?weaponImg(id):['sword','hammer'].includes(id)?'assets/'+id+'.webp':'';out.push(k)}
+ // A separate card face for the father's heirloom; combat remains the knife type.
+ {const base=out.find(c=>c.id==='e-knife');if(base){const k=clone(base);Object.assign(k,{id:'oldKnife',ref:'oldKnife',name:'มีดสั้นเก่าของพ่อ'});k.art.src=asset('weapon-oldKnife')||'assets/weapons/oldKnife.webp';out.push(k)}}
  out.push(mk('e-shield','equip',{ref:'shield',name:'โล่ไม้หุ้มเหล็ก',element:'light',type:'โล่',effects:['ไพ่ตั้งรับกันได้ 16 แทน 8']},{atk:0,def:8,price:24}));
  // materials
  const MEL={iron:'earth',coal:'fire',wood:'nature',food:'water'},MT={iron:'โลหะ',coal:'เชื้อเพลิง',wood:'ไม้',food:'อาหาร'},MC={iron:'ดาบ ค้อน',coal:'ดาบ ค้อน (เชื้อเพลิง)',wood:'ด้ามค้อน',food:'พักกินอาหาร'};
@@ -273,6 +275,7 @@ function load(){try{store=JSON.parse(localStorage.getItem(KEY))}catch(e){store=n
   const old=store.cards[c.id];
   // Adopt the new story-item art only when the player still has its shipped fallback.
   const fallback={'c-mayBread':'bread','g-glowCrystal':'crystalShard'}[c.id];
+  if(c.id==='c-momWater'&&old?.art&&!old.art.data&&['assets/cards/item/momWater.webp','assets/cards/item/tonic.webp'].includes(old.art.src))old.art.src=c.art.src;
   if(fallback&&old?.art&&!old.art.data&&old.art.src==='assets/cards/item/'+fallback+'.webp')old.art.src=c.art.src;
   if(!old){store.cards[c.id]=c;store.order.push(c.id)}
   // v16: adopt newly installed art only for untouched empty defaults.

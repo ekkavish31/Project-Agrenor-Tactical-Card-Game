@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1044';
+  const V = '98.1047';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -188,7 +188,7 @@
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
     try { const v = window.WorldState?.game?.()?.village, fem = /female/.test(window.HeroVariant?.get?.() || ''); FB.setSignature?.(+v?.sigLevel || 0, fem) } catch (e) { }   /* v98.1019 · signature cards: the OTHER sibling's skill depends on who leads */
     st = FB.create({ fp: FP, bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true, bag: bagForBattle(),
-      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
+      hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', weaponArt: HPRO.weapon === 'knife' && HPRO.weaponArt === 'oldKnife' ? 'oldKnife' : null, look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
     if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], noBad: {}, force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
@@ -1657,7 +1657,8 @@
   }
   /* v97.01: weapons the sprite sheet has no hand anchor for (axe, bow, knife, rapier, spear, tome) use the loose pictures in assets/tactics */
   const WEXTRA = { axe: { pivot: [.5, .9], size: [256, 768], scale: .62 }, knife: { pivot: [.5, .8], size: [256, 512], scale: .34 }, rapier: { pivot: [.5, .88], size: [256, 768], scale: .78 }, spear: { pivot: [.5, .72], size: [256, 1024], scale: 1.1 }, bow: { pivot: [.5, .5], size: [128, 320], scale: .6 }, tome: { pivot: [.5, .5], size: [160, 200], scale: .26 }, log: { pivot: [.5, .86], size: [160, 512], scale: .5 } };   /* v98.472 · log = ท่อนไม้ฟืน, the sibling's first weapon */
-  const weaponDef = (A, k) => A.equipment[k] || (WEXTRA[k] ? { src: `assets/tactics/${k}.webp`, ...WEXTRA[k] } : null);
+  // Visual identity is separate from the combat weapon type. Only the equipped heirloom uses these sprites.
+  const weaponDef = (A, k, unit, carried = false) => { const key = k === 'knife' && unit?.weaponArt === 'oldKnife' ? (carried ? 'oldKnife-sheathed' : 'oldKnife') : k; return A.equipment[key] || A.equipment[k] || (WEXTRA[k] ? { src: `assets/tactics/${k}.webp`, ...WEXTRA[k] } : null) };
   /* ---------- v97.48 · attack poses without hand anchors: the weapon floats in front of the fighter, the swing is a code-drawn trail ----------
      windup: weapon lifts behind the head and glows · strike: it swings over the top to the front with a light trail, a flash and (hammer/axe) a ground ring
      · guard: held up in front with a shimmer arc · hit: hangs loose. Allies carry their class weapon the same way. */
@@ -1674,7 +1675,7 @@
     return { x, y: y + Math.sin(t * .004) * .008, a, glow };
   }
   function actionWeapon(g, u, t, wkey, A, cx, top, size) {
-    const W = wkey && weaponDef(A, wkey), i = W && im(W.src); if (!i) return;
+    const W = wkey && weaponDef(A, wkey, u), i = W && im(W.src); if (!i) return;
     const S = actState(u, t), P = floatPos(S, t), h = size * (W.scale || .63), w = h * W.size[0] / W.size[1], x = cx + S.fs * size * P.x, y = top + size * P.y;
     g.save();
     if (P.glow > 0) { const r = size * .22, gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(255,230,170,${.45 * P.glow})`); gr.addColorStop(1, 'rgba(255,200,120,0)'); g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.globalCompositeOperation = 'source-over' }
@@ -1745,10 +1746,10 @@
     const pm = poseMotion(u, t);
     shadow(g, p, UNIT * .26); g.save(); g.translate(ox, -(u.lift || 0)); if (u.hp <= 0) g.globalAlpha *= .6;
     g.translate(p.x + pm.dx, p.y + pm.dy); g.rotate(pm.rot); g.scale(pm.sx, pm.sy); g.translate(-p.x, -p.y);
-    const sword = () => { if (u.weapon && weaponDef(A, u.weapon)) weapon(g, weaponDef(A, u.weapon), f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
+    const sword = () => { if (u.weapon && weaponDef(A, u.weapon, u)) weapon(g, weaponDef(A, u.weapon, u), f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
     /* v97.01: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
-    const carried = u.hp > 0 && (u.walking || !u.pose || u.pose === 'idle'), W = u.weapon && weaponDef(A, u.weapon);
-    const onBack = () => { if (!W) return; const away = ['NE', 'NW'].includes(u.dir), side = ['SE', 'NE'].includes(u.dir) ? -1 : 1, i2 = im(W.src); if (!i2) return;
+    const carried = u.hp > 0 && (u.walking || !u.pose || u.pose === 'idle'), W = u.weapon && weaponDef(A, u.weapon, u);
+    const onBack = () => { const W = u.weapon && weaponDef(A, u.weapon, u, true); if (!W) return; const away = ['NE', 'NW'].includes(u.dir), side = ['SE', 'NE'].includes(u.dir) ? -1 : 1, i2 = im(W.src); if (!i2) return;
       const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];
       const tipUp = ['spear', 'staff', 'bow'].includes(u.weapon), flatBack = u.weapon === 'tome';   // blades, hammers: point / edge down · spears (and staves): point up
       g.save(); g.translate(left + size * (.5 + side * (['knife', 'tome', 'bow'].includes(u.weapon) ? .2 : .06)), top + size * (flatBack ? .62 : u.weapon === 'knife' ? .52 : tipUp ? .56 : .38)); g.rotate(flatBack ? 0 : (side * (away ? 38 : -38) + (tipUp ? 0 : 180)) * Math.PI / 180); g.drawImage(i2, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore() };

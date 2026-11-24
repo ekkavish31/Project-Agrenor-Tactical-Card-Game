@@ -5478,19 +5478,18 @@
   },
   {
    "id": "item-momWater",
-   "file": "assets/cards/item/momWater.webp",
+   "file": "assets/cards/item/momWater-glass.webp",
    "category": "items",
-   "status": "temp",
+   "status": "final",
    "size": [
     1120,
     800
    ],
    "transparent": false,
-   "subject": "น้ำดื่มจากแม่ — ฟื้นแรง 30",
-   "prompt": "Landscape 7:5 fantasy RPG card illustration (the card window crops nothing important: keep the subject centred with margin), warm amber lighting, detailed painterly realistic fantasy game art, dark forest green/brown backdrop, one large readable central subject, no people unless stated, no text, no border, no symbols. Subject: กระติกไม้ใส่น้ำดื่มที่แม่เตรียมให้ ตั้งบนโต๊ะครัวไม้ มีไอจาง ๆ.",
+   "subject": "น้ำดื่มจากแม่ในขวดแก้วใส",
+   "prompt": "Painterly 7:5 fantasy JRPG item illustration, single clear glass bottle of refreshing plain drinking water, cork and twine, fresh condensation, cottage kitchen daylight, no tea, no potion, no text or frame.",
    "usedIn": "ของใช้ · น้ำดื่มจากแม่",
-   "note": "ภาพชั่วคราว: ใช้ภาพเดียวกับชาเรี่ยวแรงไปก่อน — วาดภาพกระติกน้ำของแม่มาแทน",
-   "artRevision": "v16"
+   "artRevision": "v98.1047"
   },
   {
    "id": "item-bread",
@@ -165210,6 +165209,51 @@
     "group": "npcs"
    },
    "artRevision": "mwuhuljq"
+  },
+  {
+   "id": "weapon-oldKnife",
+   "file": "assets/weapons/oldKnife.webp",
+   "category": "items",
+   "status": "final",
+   "size": [
+    1120,
+    800
+   ],
+   "transparent": false,
+   "subject": "มีดสั้นเก่าของพ่อ นอกฝัก วางคู่ฝักหนังสีน้ำตาล ขอบเย็บ เข็มขัดทองเหลือง",
+   "artRevision": "v98.1047",
+   "usedIn": "oldKnife · การ์ดอุปกรณ์/อาวุธของตัวเอก",
+   "prompt": "Match the approved father knife reference: practical short steel blade, worn dark brown grip, simple brass collar and pommel, stitched brown leather sheath with brass buckle; no magic or ornate embellishments."
+  },
+  {
+   "id": "equipment-oldKnife",
+   "file": "assets/tactics/oldKnife.webp",
+   "category": "tactics-equipment",
+   "status": "final",
+   "size": [
+    77,
+    512
+   ],
+   "transparent": true,
+   "subject": "มีดของพ่อ ใบมีดเหล็ก ด้ามน้ำตาล ปลอกทองเหลือง ใช้ระหว่างต่อสู้",
+   "artRevision": "v98.1047",
+   "usedIn": "oldKnife · การ์ดอุปกรณ์/อาวุธของตัวเอก",
+   "prompt": "Match the approved father knife reference: practical short steel blade, worn dark brown grip, simple brass collar and pommel, stitched brown leather sheath with brass buckle; no magic or ornate embellishments."
+  },
+  {
+   "id": "equipment-oldKnife-sheathed",
+   "file": "assets/tactics/oldKnife-sheathed.webp",
+   "category": "tactics-equipment",
+   "status": "final",
+   "size": [
+    122,
+    512
+   ],
+   "transparent": true,
+   "subject": "มีดของพ่ออยู่ในฝักหนัง ใช้ตอนพกและเดิน",
+   "artRevision": "v98.1047",
+   "usedIn": "oldKnife · การ์ดอุปกรณ์/อาวุธของตัวเอก",
+   "prompt": "Match the approved father knife reference: practical short steel blade, worn dark brown grip, simple brass collar and pommel, stitched brown leather sheath with brass buckle; no magic or ornate embellishments."
   }
  ],
  "studioReviews": {

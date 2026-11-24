@@ -1040,6 +1040,30 @@ const TACTICS_SPRITES = {
         128,
         512
       ]
+    },
+    "oldKnife": {
+      "src": "assets/tactics/oldKnife.webp",
+      "pivot": [
+        0.5,
+        0.8
+      ],
+      "size": [
+        77,
+        512
+      ],
+      "scale": 0.34
+    },
+    "oldKnife-sheathed": {
+      "src": "assets/tactics/oldKnife-sheathed.webp",
+      "pivot": [
+        0.5,
+        0.8
+      ],
+      "size": [
+        122,
+        512
+      ],
+      "scale": 0.34
     }
   },
   "props": {
