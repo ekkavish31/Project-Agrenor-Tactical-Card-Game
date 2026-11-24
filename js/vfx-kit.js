@@ -156,7 +156,7 @@
   const EXTRA = {};
   const variants = k => { k = nameOf(k); return [['old', 'เดิม (ภาพวาดแปะ)'], ['new', 'ใหม่ (วาดด้วยโค้ด)'], ...Object.entries(EXTRA[k] || {}).map(([id, v]) => [id, v.label])] };
   const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
-  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : 'old') };
+  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.painted8 ? 'painted8' : 'old') };
   const uses = k => { k = nameOf(k); if (!FX[k] && !EXTRA[k]) return false; return choiceOf(k) !== 'old' };
   const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = (v === 'new' || (v && v !== 'old')) ? String(v) : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
   const enabled = () => Object.keys(FX).some(uses);
@@ -217,5 +217,53 @@
       motes(g, e, 7, p.x, p.y - W * .4, W * 1.7, W * 1.2, W * .075, ks, 120, C.white) });
     return true }
   if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'atlas', 'ภาพวาดเคลื่อนไหว (อะนิเมชันไฟ)', fireAtlas);
+
+  /* Painted spell animation. Fixed 4×2 cells share a feet anchor; never trim frames
+     independently, which would make a growing effect jump. Existing explicit VFX
+     choices still win. A missing/loading sheet returns false to BattleVFX's old art. */
+  const SPELLS = {
+    ice: { size: 2.7, flight: true }, lightning: { size: 3.1 },
+    water: { size: 2.7, flight: true }, wind: { size: 2.7, flight: true },
+    earth: { size: 2.8 }, dark: { size: 2.6, flight: true },
+    heal: { size: 2.7 }, shield: { size: 2.6 }
+  }, spellImages = {};
+  function spellImage(kind) {
+    if (!spellImages[kind] && typeof Image !== 'undefined') {
+      const im = new Image(); im.decoding = 'async';
+      im.src = SRC ? new URL('../assets/fx/anim/' + kind + '-cast.webp', SRC).href : 'assets/fx/anim/' + kind + '-cast.webp';
+      spellImages[kind] = im;
+    }
+    const im = spellImages[kind]; return im && im.complete && im.naturalWidth > 0 && im.naturalHeight > 0 ? im : null;
+  }
+  function spellAtlas(kind, g, e, t, p, a, cw) {
+    const im = spellImage(kind), spec = SPELLS[kind]; if (!im) return false;
+    const rm = !!(e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+    const W = cw * (e.scale || 1), size = W * spec.size;
+    let k = t, x = p.x, y = p.y + cw * .06, drawSize = size;
+    const far = spec.flight && e.from && a && Math.hypot(a.x - p.x, a.y - p.y) > 4;
+    if (far && !rm) {
+      const split = .28;
+      if (t < split) {
+        const f = t / split; x = lerp(a.x, p.x, f);
+        y = lerp(a.y - cw * .65, p.y - cw * .65, f) - Math.sin(f * Math.PI) * cw * .25;
+        drawSize *= .35; y += drawSize * .32; k = 0;
+      } else k = (t - split) / (1 - split);
+    }
+    const frame = rm ? 3 : Math.min(7, Math.floor(clamp(k) * 8));
+    const fw = im.naturalWidth / 4, fh = im.naturalHeight / 2;
+    const alpha = rm ? .65 * (1 - t) : Math.min(1, Math.max(0, (1 - k) * 8));
+    if (alpha <= 0) return true;
+    g.save();
+    try {
+      g.globalCompositeOperation = 'source-over'; g.globalAlpha *= alpha;
+      g.drawImage(im, frame % 4 * fw, Math.floor(frame / 4) * fh, fw, fh,
+        x - drawSize * .5, y - drawSize * .82, drawSize, drawSize);
+    } finally { g.restore(); }
+    return true;
+  }
+  for (const kind of Object.keys(SPELLS)) {
+    spellImage(kind);
+    root.VfxKit.addVariant(kind, 'painted8', 'ภาพวาดเคลื่อนไหว (8 เฟรม)', (g, e, t, p, a, cw) => spellAtlas(kind, g, e, t, p, a, cw));
+  }
 
 })(globalThis);

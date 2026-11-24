@@ -162,7 +162,9 @@ const css=document.createElement('style');css.textContent=`#npcTalk{position:fix
 #npcTalk .nt-x{position:absolute;right:10px;top:10px;width:38px;height:38px;border-radius:50%;border:1.5px solid #a88a58;background:#0d1424;font-size:17px;line-height:1}#npcTalk .nt-x:hover{background:#5a2020}
 @media (max-width:760px){#npcTalk{gap:12px;padding:12px 14px}#npcTalk canvas{width:84px;height:98px}#npcTalk .nt-emo{width:34px;height:34px;font-size:20px;right:-8px;top:-8px}#npcTalk b{font-size:20px}#npcTalk p{font-size:18px;min-height:4.2em}#npcTalk kbd{display:none}#npcTalk .nt-next{min-width:120px;font-size:18px}#npcTalk .nt-ask button{min-height:44px;padding:4px 10px;font-size:15px}}
 @keyframes npcIn{from{opacity:0;transform:translate(-50%,10px)}}`;document.head.appendChild(css);
-const mood=t=>{const e=box.querySelector('.nt-emo');if(e)e.textContent=t&&root.NpcEmote?NpcEmote.pick(t):''};
+/* v98.1037 · ordinary village talks use the authored NPC faces too. Keep the sprite while loading. */
+function drawTalkPortrait(text) { const n = talking; if (n) root.StoryActors?.drawTalkPortrait(box.querySelector('canvas'), n.id, text, () => talking === n && !box.hidden); }
+const mood=t=>{const e=box.querySelector('.nt-emo');if(e)e.textContent=t&&root.NpcEmote?NpcEmote.pick(t):'';drawTalkPortrait(t)};
 let lines=[],li=0,typing=null;
 /* v95.14 · talking needs you next to the villager: a click on someone far away walks the hero up to them, then the talk opens (quest talks included) */
 const REACH=1.55;let approach=null;
@@ -186,7 +188,7 @@ function more(){if(!LIFE||!MIND()||extra<=0||!talking)return false;extra--;const
 /* v98.179 · all of the villager's lines are one passage typed by DialogueFX (rapid + voice, pages split at sentence ends; a full page waits for ▶ / Space) */
 let TT=null;
 function btn(){box.querySelector('[data-next]').textContent=(TT&&TT.hasMore())||extra>0?'▶ ถัดไป':'✓ จบ'}
-function show(){TT?.stop();TT=root.DialogueFX.create(box.querySelector('p'),{maxLines:4,voice:talking?.id||null,onPageDone:btn});TT.load(lines);TT.start();btn()}
+function show(){TT?.stop();TT=root.DialogueFX.create(box.querySelector('p'),{maxLines:4,voice:talking?.id||null,onPageStart:mood,onPageDone:btn});TT.load(lines);TT.start();btn()}
 function next(){if(TT&&TT.finish())return;if(TT&&TT.hasMore()){TT.nextPage();btn();return}if(!more())close()}
 function close(){box.hidden=true;clearInterval(typing);typing=null;TT?.stop();TT=null;if(talking)talking.wait=1.5;talking=null}
 box.querySelector('[data-next]').onclick=next;
