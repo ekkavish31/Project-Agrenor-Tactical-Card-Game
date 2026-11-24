@@ -21,7 +21,7 @@
     pumpkinDone: 'farm', seeds: 'farm', tomStall: 'square', stallDone: 'square', day2: 'home', guardTalk: 'village-gate',
     crystal: 'mine', gusLantern: 'forge', lanternsDone: 'workshop', craftDone: 'forge', hireDone: 'square', day3: 'square',
     soldOne: 'square', raid: 'square', awaken: 'square', plate: 'square', safTalk: 'healer', sibSwordIntro: 'forge',
-    sibSwordDone: 'forge', potionsDone: 'healer', kierHurt: 'forest-stream', kierAdmitted: 'healer', homeKier: 'square',
+    sibSwordDone: 'forge', sigLight: 'guild', potionsDone: 'healer', kierHurt: 'forest-stream', kierAdmitted: 'healer', homeKier: 'square',
     departure: 'forest', camp: 'camp', guildFirst: 'guild', home: 'house', finale: 'home', contest: 'square'
   };
   const EVENTS = {

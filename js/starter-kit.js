@@ -54,7 +54,7 @@ function sigOne(level,opt={}){const v=V();if(!v||(v.sigLevel||0)>=level)return P
  if(v.cardPool){v.cardPool.combat||={};v.cardPool.combat[other]=(v.cardPool.combat[other]||0)+2}
  const light=level===1,name=D.COMBAT[mine]?.name||mine;
  return unlock([{group:'combat',id:mine,n:2}],{kicker:opt.catchUp?'ท่าประจำตัว (ของที่ควรได้ไปแล้ว)':(light?'ท่าประจำตัว':'ท่าประจำตัว · ขั้นสอง'),title:name,
-  text:(fem?(light?'เวทพิเศษพุ่งไกลใส่เป้าเดี่ยว ทำให้อ่อนแรง':'เวทวงกว้างใส่เป้าและศัตรูรอบ ทำให้ชาทุกตัวที่โดน'):(light?'พุ่งเข้าประชิดแล้วฟันเป้าเดี่ยวหนักแน่น':'พุ่งเข้าประชิดแล้วฟันวงกว้าง โดนศัตรูรอบเป้า'))+' · ทั้งสองพี่น้องได้ท่าประจำตัวพร้อมกัน — อีกคนใช้เป็นท่าพิเศษตอนสั่งในการต่อสู้'})}
+  text:(fem?(light?'เวทพิเศษพุ่งไกลใส่เป้าเดี่ยว ทำให้อ่อนแรง':'เวทวงกว้างใส่เป้าและศัตรูรอบ ทำให้ชาทุกตัวที่โดน'):(light?'พุ่งเข้าประชิดแล้วฟันเป้าเดี่ยวหนักแน่น':'พุ่งเข้าประชิดแล้วฟันวงกว้าง โดนศัตรูรอบเป้า'))+' · ฟรีดาถอดแบบท่าให้ทั้งสองพี่น้องพร้อมกัน — อีกคนใช้เป็นท่าพิเศษตอนสั่งในการต่อสู้'})}
 apply();setTimeout(apply,0);// the save is loaded by the time this runs; the second call covers a late village init
 root.StarterKit={unlock,unlockSignature,apply,freshSave};
 })(globalThis);

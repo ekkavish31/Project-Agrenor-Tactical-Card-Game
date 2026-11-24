@@ -26,4 +26,15 @@ test('follower skill is blocked until unlocked and works after (status on the hi
   const st = mk({ monster: { u: 4, v: 0 } }); const ally = { id: 'a1', key: 'sib', side: 'hero', kind: 'ally', name: 'sib', u: 1, v: 1, hp: 50, maxHp: 50, atk: 8, move: 3, def: 0, guard: 0, range: 1 }; st.units.push(ally); st.turn = 'hero';
   B.setSignature(0, false); assert.match(B.skillBlock(st, ally), /ไม่มีท่าพิเศษ/);
   B.setSignature(1, false); assert.equal(B.skillBlock(st, ally), ''); const r = B.allySkillNow ? null : null; B.setSignature(0, false) });
+test('origin canon: story scenes exist, speakers valid, no forbidden lore', () => {
+  const fs = require('fs'), src = fs.readFileSync(__dirname + '/../js/story-data.js', 'utf8');
+  const bd = fs.readFileSync(__dirname + '/../js/dialogue-backdrops.js', 'utf8'), q = fs.readFileSync(__dirname + '/../js/story-quests.js', 'utf8');
+  assert.match(src, /sigLight:\{/); assert.match(bd, /sigLight: 'guild'/); assert.match(q, /sceneAt\('sigLight'\)/);
+  const i = src.indexOf('sigLight:{'), j = src.indexOf(' potionsDone:'), k = src.indexOf(' finale:{'), m = src.indexOf('// pumpkin contest');
+  const g = src.indexOf(' guildFirst:{'), g2 = src.indexOf(' home:{', g);
+  const parts = src.slice(i, j) + src.slice(k, m) + src.slice(g, g2);
+  assert.ok(/ถอดแบบท่า/.test(parts));
+  for (const w of ['พ่อบังเกิด', 'สายเลือด', 'แก่นธาตุ', 'โบราณ', 'G.', 'Mip', 'จานหิน' && '\u0000']) assert.ok(!parts.includes(w), w);
+  const who = [...src.slice(i, j).matchAll(/who:'(\w+)'/g)].map(x => x[1]); assert.ok(who.every(w => ['clerk', 'B', 'S', 'hero', 'sib'].includes(w)), who.join());
+});
 console.log(n + ' ok');
