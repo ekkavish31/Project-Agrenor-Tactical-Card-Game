@@ -553,9 +553,13 @@
   }
   function toast(t) { const d = document.createElement('div'); d.className = 'wm-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 1900) }
   let modalEl = null, modalResolve = null;
+  let dialogueContext = null;
+  async function atDialogue(context, run) { const previous = dialogueContext; dialogueContext = context; try { return await run() } finally { dialogueContext = previous } }
   function modal(html, buttons = [{ label: 'ตกลง', value: true }]) {
     closeModal(); modalOpen = true; tipEl.style.display = 'none';
     const bg = document.createElement('div'); bg.className = 'wm-modal-bg';
+    const here = tile(S.pos.c, S.pos.r), shot = window.DialogueBackdrops?.resolve(dialogueContext || { town: here?.poi?.id, biome: here?.biome });
+    if (shot) { bg.dataset.dialogueLocation = shot.key; bg.style.background = `linear-gradient(#08101838,#08101880),url("${shot.src}") center/cover no-repeat`; }
     bg.innerHTML = `<div class="wm-modal">${html}<div class="acts">${buttons.map((b, i) => `<button data-i="${i}" class="${b.ghost ? 'ghost' : ''}" ${b.disabled ? 'disabled' : ''}>${esc(b.label)}</button>`).join('')}</div></div>`;
     document.body.append(bg); modalEl = bg;
     return new Promise(res => { modalResolve = res; const done = v => { modalResolve = null; closeModal(); res(v) }; bg.querySelectorAll('.acts button').forEach(b => b.onclick = () => done(buttons[+b.dataset.i].value)); bg.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => done(b.dataset.pick)) });
@@ -599,6 +603,7 @@
   /* v98.487 · ฉากจบ (js/endings.js · N5): ลงชั้นล่างที่ดีปแคร์นเมื่อถึงหมุดไคลแมกซ์ — ตัดสินใจ 2 ครั้ง อ่านแนวโน้มจากทางแยกที่ผ่านมา */
   async function pageSeq(title, pages) { for (const p of pages) { const v = await modal(`<h2>${title}</h2>${faceBox(p.who, 84, 96, p.mood || window.StoryCast?.mood?.(p.text))}<p>${esc(p.text)}</p><div style="clear:both"></div>`, [{ label: 'ต่อไป', value: true }]); if (v == null) break } }
   async function finaleScene() {
+    return atDialogue({ town: 'deepcairn', location: 'deep-mine' }, async () => {
     const g = WS.game(), E = window.Endings, M = window.MainStory; if (!E || !E.ready(g)) return;
     /* ขั้น 1 · ปากเหมือง + ปลอกคอเซอร์เรียน (ทำครั้งเดียว · จำไว้ถ้าถอยออกมา) */
     let rel = M.flag(g, 'finaleRelease');
@@ -617,7 +622,7 @@
       const r = await areaExplore({ title: D.title, sub: D.sub, biome: D.biome, seed: world.seed ^ 0x7a1e, dang: .95, foes: D.foes, roster: D.roster, kinds: D.kinds, boss: D.boss, loreText: D.loreText, lairText: D.lairText });
       if (r !== 'win') { toast(r === 'left' ? 'ถอยออกจากเหมือง — กลับลงใหม่ได้ที่ปุ่ม ⚑' : 'ยังไม่ชนะก้อนหิว — พักแล้วกลับมาใหม่ได้'); hudSync(); return }
       M.set(g, 'finaleWon', true); WS.commit(); save(); log('☠ ก้อนหิวล้มลง (ยังไม่ตาย) — รอคำตัดสิน');
-      await pageSeq('⚑ ก้อนหิว', E.CLASH);
+      await atDialogue({ location: 'deep-mine-inner' }, () => pageSeq('⚑ ก้อนหิว', E.CLASH));
     }
     /* ขั้น 3 · คำตัดสินสุดท้าย (อ่านแนวโน้ม) */
     const so = E.sideOptions(g);
@@ -628,9 +633,11 @@
     toast('🏁 ตอนจบ: ' + res.name); log('🏁 ตอนจบ: ' + res.name + ' (' + res.tone + ')');
     await modal(`<h2>🏁 ${esc(res.name)}</h2><p><small>โทน: ${esc(res.tone)} · Mip ${res.fate === 'purified' ? 'ถูกชำระและกลับป่า (ได้ผลึกสะท้อน)' : 'ถูกผนึกให้หลับ'}</small></p><p>เรื่องหลักจบลงตรงนี้ — โลกยังอยู่ เล่นต่อได้ ไม่มีอะไรทับเซฟของคุณ · ดูทางที่เดินมาในสมุดบันทึก/ฉายา</p>`);
     hudSync();
+    });
   }
   /* v98.514 · มังกรดำจ้าววิญญาณ (Byrexael-Cean · docs/DRAGON-BYREXAEL-TH.md): บอสเสริมที่ปากปล่องภูเขาไฟใต้ — ฉากตายตัว \`dragonLair\` · ชนะแล้วเลือก ปลิดชีพ / ผนึกให้หลับ / ช่วยระบายตะกอน (สองทางหลังต้องมีความรู้จากเส้นเรื่อง) */
   async function dragonScene() {
+    return atDialogue({ location: 'volcanic-crater' }, async () => {
     const g = WS.game(), M = window.MainStory; if (!M || M.flag(g, 'dragonFate')) return;
     const rep = (f, n, why) => window.Factions?.add(f, n, why);
     const ally = !!M.flag(g, 'dragonAlly');
@@ -657,11 +664,13 @@
     WS.commit(); save();
     await pageSeq('⚑ ' + ({ slain: 'ปลิดชีพ', sealed: 'ผนึก', eased: 'ระบายตะกอน' })[fate], [{ who: null, text: TXT[0] }, { who: null, text: TXT[1] }]);
     toast('🔥 ' + ({ slain: 'มังกรถูกปลิดชีพ', sealed: 'มังกรถูกผนึก', eased: 'มังกรหลับสนิท' })[fate]); hudSync();
+    });
   }
   async function crossroadsAt(id) {
     const g = WS.game(), C = window.Crossroads; if (!C || !g) return;
     for (const m of C.expire(g, S)) { log(m); toast(m) }
     const e = C.pick(g, S, id); if (!e) return;
+    return atDialogue({ town: id, event: e.id }, async () => {
     /* v98.585 · the team speaks first: the follower and companions lean toward a choice by their nature (js/crossroads.js voices) */
     const vs = (() => { try { return C.voices?.(g, S, e) || [] } catch (x) { return [] } })(), backs = i => vs.filter(v => v.pick === i).map(v => v.name);
     const vface = v => v.who === 'sib' ? `<img src="assets/portraits/hero-${window.HeroVariant?.get?.() === 'female' ? 'male' : 'female'}-neutral.webp" alt="" style="width:40px;height:40px;object-fit:cover;object-position:50% 8%;border-radius:8px;border:1px solid #b49a5a;flex:none">` : `<span style="flex:none">${faceBox(v.who, 40, 40)}</span>`;
@@ -682,6 +691,7 @@
     /* v98.536 · the speaker answers with a face that fits how it went: won / safe → happy · lost / fled / failed check → worry · else from the words of the result */
     const rm = outcome === 'win' ? 'happy' : (outcome === 'lose' || outcome === 'flee' || b.checkFailed) ? 'worry' : (e.choices[v]?.mood || window.StoryCast?.mood?.(lines.join(' ')));
     await modal(`<h2>${e.icon} ${esc(e.title)}</h2>${faceBox(e.who, 84, 96, rm)}<p><b>${esc(b.choice || '')}</b></p>${lines.map(l => `<p>${esc(l)}</p>`).join('')}<div style="clear:both"></div>`);
+    });
   }
 
   window.WMCrossroads = crossroadsAt; window.WMFinale = finaleScene;   /* ใช้ทดสอบ/ดีบัก */
@@ -716,7 +726,7 @@
         if (r.panel === 'finale') { await finaleScene() }
         if (r.panel === 'dragon') { await dragonScene() }
         if (r.panel === 'bounty' && window.Bounties) { await Bounties.panel(S, id, () => { save(); hudSync() }); Bounties.place(S, world, G); fogDirty = true; save(); hudSync() }
-        for (const m of r.lines) log(m); save(); hudSync(); if (r.lines.length) await modal('<h2>' + esc(poi.name) + '</h2>' + r.lines.map(m => '<p>' + esc(m) + '</p>').join(''));
+        for (const m of r.lines) log(m); save(); hudSync(); if (r.lines.length) await atDialogue({ town: id, service: v.slice(4) }, () => modal('<h2>' + esc(poi.name) + '</h2>' + r.lines.map(m => '<p>' + esc(m) + '</p>').join('')));
         if (r.goto) { const tw = world.towns.find(x => x.id === r.goto); if (tw) { S.pos = { c: tw.c, r: tw.r }; S.known[K(tw.c, tw.r)] = 1; fogDirty = true; reveal(); save(); hudSync(); { const p = center(tw.c, tw.r); token.x = p.x; token.y = p.y; follow() } await townVisit(tile(tw.c, tw.r).poi); return } }
       }
       else if (v === 'event') { const here = tile(S.pos.c, S.pos.r), lines = await TownEvents.act(S, id, { job: window.Progression?.jobsOf(window.WorldState.game()).job, passTime, battle: () => battle(pickFoe(here), Math.max(.2, G.danger(world, here)), {}) }); for (const m of lines) log(m); if (lines.length) await modal('<h2>' + TownEvents.EVENTS[TownEvents.today(id)?.id]?.icon + ' ' + esc(poi.name) + '</h2>' + lines.map(m => '<p>' + esc(m) + '</p>').join('')) }
@@ -1081,6 +1091,11 @@
     const res = await resP; try { localStorage.removeItem('projectA.wmFight'); localStorage.removeItem('projectA.battleSnap') } catch (e) { }
     /* v98.996 · a WIN keeps the battle frame under the Victory report (js/victory-screen.js) until its Continue button; every other result closes it now as before */
     const dropFrame = async () => { if (!fr.isConnected) return; fr.classList.remove('on'); await wait(380); fr.remove() };
+    if (res.outcome === 'lose' && window.VictoryScreen) {   /* v98.1019 · the defeat report, over the battle scene, before the "หมดสติ" window */
+      const fem = (() => { try { return window.HeroVariant?.get?.() === 'female' } catch (e) { return false } })();
+      await VictoryScreen.show({ defeat: true, title, goal: res.goal, kills: res.kills || 0, turns: res.turns, stat: res.stat, notes: ['ถูกพากลับหมู่บ้าน'],
+        members: [{ id: 'hero', name: WS.heroName?.() || 'ตัวเอก', pic: fem ? 'hero-female' : 'hero-male', hp: Math.max(0, res.hp ?? 0), max: S.maxHp, gain: 0 },
+          ...(res.party || []).map(x => { const p = S.party.find(q => q.key === x.key); return p && { id: p.key, name: p.name, pic: p.key === 'sib' ? (fem ? 'hero-male' : 'hero-female') : p.key, hp: Math.max(0, x.hp), max: p.max, gain: 0 } }).filter(Boolean)] }) }
     if (res.outcome !== 'win') { await dropFrame(); window.VictoryScreen?.fightUI?.(false) }
     S.hp = Math.max(0, Math.min(S.maxHp, res.hp ?? S.hp));
     /* v98.496 · bag cards spent in the fight leave the real bag */

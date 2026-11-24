@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1022';
+  const V = '98.1027';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -79,8 +79,8 @@
   /* v98.492 · ?scene=<id>: a FIXED set-piece fight (js/set-pieces.js) — hand-drawn field, fixed starts, scene rules */
   const SCENE = window.SetPieces && Q.get('scene') ? window.SetPieces.get(Q.get('scene')) : null;
   const GROUP = (Q.get('ms') || (EMBED ? MK : [MK, MK, 'bandit'].join(','))).split(',').filter(Boolean).map(x => { const [kind, mult] = x.split('*'); return MON[kind] ? { kind, mult: +mult || HPX } : null }).filter(Boolean);
-  /* v98.281 · status icons = the user's picture set (assets/ui/status/<name>.webp, tools/build-status-icons.py); statuses with no picture yet (sleep 💤, silence 🔇) keep their emoji */
-  const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'freeze', shock: 'slow', slowed: 'slow', weak: 'disarm' };
+  /* v98.281 · status icons = the user's picture set (assets/ui/status/<name>.webp, tools/build-status-icons.py); dedicated painted icons include sleep, silence, stun, shock and weakness */
+  const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'stun', shock: 'shock', slowed: 'slow', weak: 'weak', sleep: 'sleep', silence: 'silence', bind: 'root' };
   const stiSrc = k => STI[k] ? 'assets/ui/status/' + STI[k] + '.webp' : null;
   const stiHtml = (k, title) => { const s = stiSrc(k); return s ? `<img class="sti" src="${s}" alt="" draggable="false"${title ? ` title="${title}"` : ''}>` : `<span${title ? ` title="${title}"` : ''}>${(FB.STATUS[k] || {}).icon || ''}</span>` };
   let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null, hoverU = null, pickU = null;   /* v98.358 · hoverU: the unit under the pointer (white edge + info window) · pickU: the unit last clicked (grey crystal over its head) */
@@ -179,6 +179,7 @@
       return null })();
     /* v94: the hero fights with the deck built at home (s.village.tacticDecks — the starter deck in a new game), not the full test deck */
     let deckConfig = TD.DEFAULT; try { const own = window.WorldState?.deck(); if (own) deckConfig = TD.validate(own) } catch (e) { }
+    try { const v = window.WorldState?.game?.()?.village, fem = /female/.test(window.HeroVariant?.get?.() || ''); FB.setSignature?.(+v?.sigLevel || 0, fem) } catch (e) { }   /* v98.1019 · signature cards: the OTHER sibling's skill depends on who leads */
     st = FB.create({ fp: FP, bounds: b, kindAt: (u, v) => cells.get(u + ',' + v) || 'blocked', levelAt: window.FieldHeight ? (u, v) => FieldHeight.level(u, v) : null, deckConfig, cards: true, ct: true, bag: bagForBattle(),
       hero: { ...hs, el: (() => { try { return window.WorldState?.game().village.story?.element || 'fire' } catch (e) { return 'fire' } })(), name: window.WorldState?.heroName() || 'ฮีโร่', maxHp: HMAX + (HPRO.hpMod || 0), hp: Math.min(HMAX + (HPRO.hpMod || 0), (HHP || HMAX) + Math.max(0, HPRO.hpMod || 0)), ...Object.fromEntries(['rangePlus', 'meleePlus', 'spellMult', 'supportMult', 'flankPlus', 'guardPlus'].filter(k => HPRO[k]).map(k => [k, HPRO[k]])), job: HPRO.job || 'adventurer', weapon: HPRO.weapon || 'knife', look: HPRO.look || null, stamina: Number.isFinite(HPRO.st) ? HPRO.st : HST, stMax: HPRO.stMax || 100, power: HPRO.power || 0, spell: HPRO.spell || 0, crit: HPRO.crit || 0, armor: HPRO.armor || 0 }, allies, monsters: mons, objective });
     if (Q.get('tut') === 'pumpkin') { FB.setLoan?.(st, { cards: ['tide', 'thunder'], noBad: {}, force: { card: 'thunder', on: 'pumpkin', done: false, why: 'ฮิลด้า: ลองใช้ ⚡ อัสนีบาต ตีฟักทองก่อน — ดูว่าตีเสียเปรียบธาตุเป็นอย่างไร' } }) }   /* v98.332 · Hilda lends 💧 tide (beats earth pumpkins) and ⚡ thunder (beats wind pests); the first hit on a pumpkin must be thunder (loses to earth ×0.7) */
@@ -304,7 +305,7 @@
     return Math.max(120, Math.min(need, W / 2 - half - 12));
   }
   /* procedural battle audio from the old system (BattlePolish: synthesized + the recorded slash) */
-  const SFXK = { sword: 'slash', knife: 'knife', spear: 'spear', rapier: 'rapier', blunt: 'hammer', fire: 'fire', ice: 'ice', lightning: 'lightning', arcane: 'magic', wind: 'magic', earth: 'earth', heal: 'heal', shield: 'block', parry: 'block' };
+  const SFXK = { sword: 'slash', knife: 'knife', spear: 'spear', rapier: 'rapier', blunt: 'hammer', fire: 'fire', ice: 'ice', lightning: 'lightning', arcane: 'magic', wind: 'magic', earth: 'earth', heal: 'heal', shield: 'block', parry: 'block', sigLightM: 'slash', sigHeavyM: 'hammer', sigLightF: 'magic', sigHeavyF: 'lightning' };
   function sfx(kind, s = .6) {
     if (window.Sfx?.battle(kind, s)) return;   /* v98.297 · recorded Kenney sounds (CC0) first; the old synth is the fallback while a file is still loading */
     const P = window.BattlePolish; if (!P) return;
@@ -522,7 +523,7 @@
   /* ---------- card faces (old CardStudio design) ---------- */
   const cardKey = (group, id) => (group === 'movement' ? 'm-' : 'a-') + id;
   /* cards that have no picture yet borrow a close one */
-  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell', chaosBolt: 'spell', chaosRend: 'quake', chaosWard: 'guard', cleave: 'quake', shieldBash: 'wall', volley: 'line', snipe: 'aimed', smite: 'spell', bless: 'mend', shadowStep: 'twin', emberBurst: 'flame', warCry: 'guard' };
+  const ART_SUB = { backstab: 'twin', dive: 'dash', tide: 'gust', formation: 'skill', counter: 'guard', evade: 'creep', firstAid: 'mend', ambush: 'creep', thunder: 'spell', chaosBolt: 'spell', chaosRend: 'quake', chaosWard: 'guard', cleave: 'quake', shieldBash: 'wall', volley: 'line', snipe: 'aimed', smite: 'spell', bless: 'mend', shadowStep: 'twin', emberBurst: 'flame', warCry: 'guard', sigLightM: 'dash', sigHeavyM: 'skill', sigLightF: 'spell', sigHeavyF: 'thunder' };
   function faceHTML(group, id, mini) {
     const html = window.CardStudio?.renderCard(cardKey(group, id), { mini, fallbackArt: 'assets/cards/tactic-' + (ART_SUB[id] || id) + '.webp' });
     if (html) return html;
@@ -603,6 +604,7 @@
   /* v97 · FFT turn queue (top centre): who acts next, the acting unit highlighted, with its HP */
   /* v98.253 · the face picture of a fighter (queue chips + inspect card) */
   function faceFor(u) {
+    if (window.BattlePortrait?.bossPortrait(u)) return BattlePortrait.face(u, 'idle');
     const lookNow = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })(), otherLook = lookNow === 'female' ? 'male' : 'female';
     return u.side === 'monster' ? (MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' })
       : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
@@ -673,7 +675,7 @@
     if (!d) { d = document.createElement('div'); d.id = 'fbDuel'; document.body.append(d) }
     d.dataset.sig = sig; d.classList.toggle('min', min);
     const card = (R, role) => {
-      const u = R.u, foe = u.side === 'monster', f = foe && MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
+      const u = R.u, foe = u.side === 'monster', f = foe && !BP.bossPortrait(u) && MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : BP.face(u, R.m, { look, code }), job = foe ? null : BP.jobOf(u), jc = foe ? '#c4563f' : (BP.JOB_COL[job] || '#8a9a6a'), pct = Math.max(0, Math.min(100, R.hp / u.maxHp * 100));
       const jn = !foe && window.Progression?.JOBS?.[job]?.name;
       return `<div class="dc ${role} ${foe ? 'foe' : 'ally'} m-${R.m}${pct > 0 && pct < 25 ? ' low' : ''}" style="--jc:${jc}"><span class="pf" style="background-image:url('${f.src}');background-position:${f.pos};background-size:${f.size}"><b class="rd"></b>${job ? `<i class="jb" title="${esc(jn || '')}">${BP.JOB_ICON[job]}</i>` : ''}</span><div class="nm"><b>${esc(u.name)}</b><small>${u.level ? 'Lv.' + u.level + ' ' : ''}${esc(jn || '')}</small><div class="hp"><i style="width:${pct}%;background:${foe ? '#e2705f' : '#6fd18a'}"></i></div><em class="mo">${BP.LABEL[R.m] || ''}</em></div></div>`;
     };
@@ -946,6 +948,7 @@
       for (const x of r.hits) (x.target || m).shown = (x.target || m).hp; hudSync(); if (r.guard) floatText(h, 'GUARD ' + r.guard, '#9cc8ff', true);
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
       if (r.status) floatText(r.status.unit, (FB.STATUS[r.status.kind]?.icon || '') + ' ' + (FB.STATUS[r.status.kind]?.name || ''), '#ffe08a', true);
+      for (const x of r.statuses || []) floatText(x.unit, (FB.STATUS[x.kind]?.icon || '') + ' ' + (FB.STATUS[x.kind]?.name || ''), '#ffe08a', true);
       if (r.fall) { shake(12, 380); fx('fallDust', m); floatText(m, 'FALL −' + r.fall.damage, '#ffb08a', false, true); m.shown = m.hp; hudSync() }
       if (kill) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
@@ -959,7 +962,7 @@
   }
   const dirSign = (a, b) => (project(b.vu, b.vv).x >= project(a.vu, a.vv).x ? 1 : -1);
   /* hit: white flash on the sprite + a light pool on the ground at the target */
-  const FXCOL = { fire: '255,140,60', ice: '150,220,255', lightning: '190,210,255', arcane: '200,160,255', heal: '140,255,160', shield: '170,210,255', wind: '200,255,220', earth: '230,190,120', parry: '255,240,190' };
+  const FXCOL = { fire: '255,140,60', ice: '150,220,255', lightning: '190,210,255', arcane: '200,160,255', heal: '140,255,160', shield: '170,210,255', wind: '200,255,220', earth: '230,190,120', parry: '255,240,190', sigLightM: '255,232,160', sigHeavyM: '255,190,90', sigLightF: '170,190,255', sigHeavyF: '190,165,255' };
   /* one hit landing: sprite flash, light pool, spark burst, knock-back, zoom punch, speed lines, white frame on big hits */
   function impact(u, kind, o = {}) {
     if (typeof o === 'boolean') o = { big: o };
@@ -1034,7 +1037,7 @@
   async function playSkill(r) {
     const a = r.ally; sfx('cast', .5); toast(a.name + ' · ' + r.name);
     if (r.heals) {
-      await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.heals) { fx('heal', x.unit, x.unit, { color: '#7fe08a' }); impact(x.unit, 'heal', false); x.unit.flashUntil = 0; floatText(x.unit, '+' + x.heal, '#7fe08a'); x.unit.shown = x.unit.hp; hudSync(); await wait(140) } await wait(500); a.pose = 'idle' }, { z: 1.4, bars: false, lead: 220, tail: 120 });
+      await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.heals) { STAT.healed[statId(a)] = (STAT.healed[statId(a)] || 0) + (x.heal | 0); fx('heal', x.unit, x.unit, { color: '#7fe08a' }); impact(x.unit, 'heal', false); x.unit.flashUntil = 0; floatText(x.unit, '+' + x.heal, '#7fe08a'); x.unit.shown = x.unit.hp; hudSync(); await wait(140) } await wait(500); a.pose = 'idle' }, { z: 1.4, bars: false, lead: 220, tail: 120 });
     } else if (r.shielded.length) {
       await cinematic(a, a, async () => { a.pose = 'guard'; await wait(200); for (const x of r.shielded) { fx('shield', x.unit, x.unit, {}); impact(x.unit, 'shield', false); floatText(x.unit, 'GUARD ' + x.guard, '#9cc8ff', true); await wait(140) } shake(6, 220); await wait(500); a.pose = 'idle' }, { z: 1.5, bars: false, lead: 220, tail: 120 });
     } else {
@@ -1049,6 +1052,7 @@
           floatText(tu, '−' + x.damage, x.crit ? '#ffe14d' : '#ffe0a0', false, true); tu.shown = Math.max(tu.hp, tu.shown - x.damage); hudSync(); await wait(r.hits.length > 1 ? 240 : 200);
         }
         if (r.moved && t.hp > 0) { const from = { u: t.vu - .5, v: t.vv - .5 }; shake(6, 200); await walkAnim(t, [from, { u: t.u, v: t.v }], 5, true) }
+        for (const x of r.statuses || []) floatText(x.unit, (FB.STATUS[x.kind]?.icon || '') + ' ' + (FB.STATUS[x.kind]?.name || ''), '#ffe08a', true);
         if (r.stun && r.stun.hp > 0) { floatText(r.stun, 'FROZEN', '#bfe8ff', true); glows.push({ u: r.stun.vu, v: r.stun.vv, col: '150,220,255', r: UNIT * 1.4, t0: now(), dur: 700 }) }
         for (const x of r.hits) x.target.shown = x.target.hp; hudSync();
         if (last) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(300); a.pose = 'idle';
@@ -1134,7 +1138,7 @@
       if (s.type === 'move') await walkAnim(s.unit, s.path);
       else if (s.type === 'attack') await unitAttack(s.unit, s.target, s);
       else if (s.type === 'stun') { floatText(s.unit, 'FROZEN — SKIP', '#bfe8ff', true); await wait(420) }
-      else if (s.type === 'dot') { const S = FB.STATUS[s.kind] || {}; if (s.kind === 'burn') smokeUp(s.unit, 250); s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
+      else if (s.type === 'dot') { { const d0 = s.damage | 0; if (s.unit.side === 'monster') STAT.dotFoe += d0; else { STAT.dotUs += d0; const k0 = statId(s.unit); STAT.taken[k0] = (STAT.taken[k0] || 0) + d0 } } const S = FB.STATUS[s.kind] || {};   /* v98.1019 · poison / burn damage counted for the report */ if (s.kind === 'burn') smokeUp(s.unit, 250); s.unit.hitUntil = now() + 300; floatText(s.unit, (S.icon || '') + ' −' + s.damage, s.kind === 'burn' ? '#ffb070' : '#b6e07a'); s.unit.shown = s.unit.hp; hudSync(); if (s.unit.hp <= 0) s.unit.deadAt = now() + 300; await wait(420) }
       else if (s.type === 'evolve') await playEvolve(s)
       else if (s.type === 'phase') { actUnit = s.unit; banner('ENRAGED!', 'crit'); screenFlash('255,90,58', .35, 420); shake(16, 520); floatText(s.unit, 'คลั่ง! ATK ↑', '#ff8a6a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,90,60', r: UNIT * 1.8, t0: now(), dur: 900 }); await wait(800) }
       else if (s.type === 'charge') { floatText(s.unit, '⚠ กำลังรวบรวมพลัง', '#ffd25a', false, true); glows.push({ u: s.unit.vu, v: s.unit.vv, col: '255,210,90', r: UNIT * 1.5, t0: now(), dur: 1100 }); hint('⚠ ' + s.unit.name + ' จะใช้ท่าใหญ่ในตาหน้า · กระจายตัว หรือถอยออกจากระยะ'); await wait(700) }
@@ -1170,7 +1174,7 @@
   }
   /* embedded in the world map: hand the result back (also automatically a moment after the end) */
   /* v98.996 · battle statistics for the Victory report (page 2). Counted where each REAL hit is shown (never from previews). Ids: 'hero' · the party key · 'foe' */
-  const STAT = { t0: Date.now(), dealt: {}, taken: {}, kills: {}, healed: {}, cards: {}, crit: 0, adv: 0, dis: 0, flank: 0, high: 0, max: null };
+  const STAT = { dotFoe: 0, dotUs: 0, t0: Date.now(), dealt: {}, taken: {}, kills: {}, healed: {}, cards: {}, crit: 0, adv: 0, dis: 0, flank: 0, high: 0, max: null };
   const statId = u => u.side === 'monster' ? 'foe' : (u === FB.hero(st) ? 'hero' : (u.key || u.id));
   function tally(att, tgt, x, down) {
     try {
@@ -1183,7 +1187,7 @@
   }
   function statOut() {
     try { const cards = Object.entries(STAT.cards).map(([id, n]) => [cardName('combat', id), n]).sort((a, b) => b[1] - a[1]);
-      return { turns: st.turns, secs: Math.round((Date.now() - STAT.t0) / 1000), dealt: STAT.dealt, taken: STAT.taken, kills: STAT.kills, healed: STAT.healed, crit: STAT.crit, adv: STAT.adv, dis: STAT.dis, flank: STAT.flank, high: STAT.high, cards, items: Object.values(st.itemsUsed || {}).reduce((a, n) => a + n, 0), maxHit: STAT.max } } catch (e) { return null }
+      return { turns: st.turns, secs: Math.round((Date.now() - STAT.t0) / 1000), dealt: STAT.dealt, taken: STAT.taken, kills: STAT.kills, healed: STAT.healed, dotFoe: STAT.dotFoe, dotUs: STAT.dotUs, crit: STAT.crit, adv: STAT.adv, dis: STAT.dis, flank: STAT.flank, high: STAT.high, cards, items: Object.values(st.itemsUsed || {}).reduce((a, n) => a + n, 0), maxHit: STAT.max } } catch (e) { return null }
   }
   let reported = false;
   function report(outcome) { if (reported || !EMBED) return; reported = true; try { localStorage.removeItem(SNAP_KEY) } catch (e) { } try { parent.postMessage({ type: 'agrenor-battle', outcome, hp: FB.hero(st).hp, kills: FB.monsters(st).filter(m => m.hp <= 0).length, party: FB.allies(st).map(a => ({ key: a.key, hp: a.hp, order: a.order || 'charge' })), used: st.itemsUsed || {}, goal: (() => { try { return FB.objText(st) } catch (e) { return '' } })(), turns: st.turns, stat: statOut(), evolved: FB.monsters(st).filter(m => m.evolved).map(m => ({ from: m.evoFrom, kind: m.kind, tier: m.evoTier || 1, line: m.evoLine || m.el, dead: m.hp <= 0 })) }, '*') } catch (e) { } }
@@ -1420,7 +1424,7 @@
   }
 
   /* ---------- effects (old BattleVFX images; code fallback = a ring) ---------- */
-  const KFX_MELEE = new Set(['sword', 'knife', 'spear', 'rapier', 'blunt', 'slash']), KFX_BURST = { fire: '#ff9a4a', ice: '#bfe8ff', water: '#6fb2ec', lightning: '#e4dcff', earth: '#d9b27a', wind: '#a8e6c8', arcane: '#d49af0', holy: '#f6e08a' };
+  const KFX_MELEE = new Set(['sword', 'knife', 'spear', 'rapier', 'blunt', 'slash', 'sigLightM', 'sigHeavyM']), KFX_BURST = { fire: '#ff9a4a', ice: '#bfe8ff', water: '#6fb2ec', lightning: '#e4dcff', earth: '#d9b27a', wind: '#a8e6c8', arcane: '#d49af0', holy: '#f6e08a' };
   const KIMG = {};   /* white sprites → tinted copies, cached by name+colour */
   function kimg(name, col) {
     const k = name + col; let c = KIMG[k]; if (c) return c.ok ? c : null; c = KIMG[k] = { ok: false };
@@ -1446,6 +1450,39 @@
     perchFlag(g, e, t, p) { g.globalAlpha = 1 - t; g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.beginPath(); g.ellipse(p.x, p.y, Math.max(0, UNIT * (.3 + t * .6)), Math.max(0, UNIT * (.14 + t * .28)), 0, 0, 7); g.stroke(); g.fillStyle = '#ffd25a'; g.fillRect(p.x + 18, p.y - UNIT * 1.6, 3, UNIT * 1.1); g.beginPath(); g.moveTo(p.x + 21, p.y - UNIT * 1.6); g.lineTo(p.x + 46, p.y - UNIT * 1.45 + Math.sin(t * 20) * 3); g.lineTo(p.x + 21, p.y - UNIT * 1.3); g.fill() },
     fallDust(g, e, t, p) { for (let i = 0; i < 10; i++) { const a = i / 10 * 6.28, r = UNIT * (.2 + t * .9); g.globalAlpha = (1 - t) * .8; g.fillStyle = '#b8a888'; g.beginPath(); g.arc(p.x + Math.cos(a) * r, p.y + Math.sin(a) * r * .45 - t * 10, 5 + t * 6, 0, 7); g.fill() } },
     diveTrail(g, e, t, p, a) { g.globalAlpha = 1 - t; const gr = g.createLinearGradient(a.x, a.y - UNIT, p.x, p.y - UNIT * .5); gr.addColorStop(0, 'rgba(255,240,180,0)'); gr.addColorStop(1, 'rgba(255,220,120,.9)'); g.strokeStyle = gr; g.lineWidth = 10 * (1 - t) + 2; g.beginPath(); g.moveTo(a.x, a.y - UNIT * 1.4); g.quadraticCurveTo((a.x + p.x) / 2, Math.min(a.y, p.y) - UNIT * 2.4, p.x, p.y - UNIT * .5); g.stroke() }
+  };
+  /* v98.1019 · SIGNATURE card effects (code-drawn). Brother = rush-in cuts, white-gold · sister = special magic, blue-violet. `a` = the caster's screen point, `p` = the target's */
+  const SIGR = e => n => ((e.seed * (n + 1) * 9301 + 49297) % 233280) / 233280;
+  HEIGHT_FX.sigLightM = (g, e, t, p, a) => {   // a bright streak along the ground from the caster, then a crossing cut with sparks
+    const b = a || { x: p.x - UNIT * 1.5, y: p.y }, R = SIGR(e), k = Math.min(1, t / .45); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    if (t < .6) { const gr = g.createLinearGradient(b.x, b.y, p.x, p.y); gr.addColorStop(0, 'rgba(255,240,200,0)'); gr.addColorStop(1, 'rgba(255,236,170,.95)'); g.strokeStyle = gr; for (let i = 0; i < 3; i++) { g.globalAlpha = (1 - t / .6) * (i ? .5 : 1); g.lineWidth = (i ? 3 : 8) * (1 - t); const o = (i - 1) * 3; g.beginPath(); g.moveTo(b.x, b.y - UNIT * .45 + o); g.lineTo(b.x + (p.x - b.x) * k, b.y - UNIT * .45 + (p.y - b.y) * k + o); g.stroke() } }
+    if (t > .35) { const u = (t - .35) / .65, cx = p.x, cy = p.y - UNIT * .6, L = UNIT * (.9 + u * .5); g.globalAlpha = 1 - u; g.strokeStyle = '#fff6d0'; g.lineWidth = 5 * (1 - u) + 1; for (const ang of [-.7, .55]) { g.beginPath(); g.moveTo(cx - Math.cos(ang) * L, cy - Math.sin(ang) * L); g.lineTo(cx + Math.cos(ang) * L, cy + Math.sin(ang) * L); g.stroke() }
+      for (let i = 0; i < 8; i++) { const an = R(i) * 6.28, d = UNIT * (.3 + u * 1.1) * (.6 + R(i + 5) * .6); g.globalAlpha = (1 - u) * .9; g.fillStyle = '#ffe9a8'; g.beginPath(); g.arc(cx + Math.cos(an) * d, cy + Math.sin(an) * d * .6, 2.5 * (1 - u) + .5, 0, 7); g.fill() } }
+  };
+  HEIGHT_FX.sigHeavyM = (g, e, t, p, a) => {   // a gathering ring on the caster → a heavy crescent over the target + a ground shock ring with cracks
+    const R = SIGR(e), s = e.scale || 1, b = a || p, cx = p.x, cy = p.y - UNIT * .15; g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    if (t < .4) { const u = t / .4; g.globalAlpha = (1 - u) * .8; g.strokeStyle = '#ffd98a'; g.lineWidth = 3; g.beginPath(); g.ellipse(b.x, b.y - UNIT * .4, UNIT * (1.1 - u * .8), UNIT * (1.1 - u * .8) * .5, 0, 0, 7); g.stroke() }
+    if (t > .25) { const u = (t - .25) / .75, a1 = Math.PI * (1.1 + u * .55);
+      g.globalAlpha = Math.min(1, (1 - u) * 1.4); g.strokeStyle = '#fff2c0'; g.lineWidth = 14 * (1 - u) * s + 2; g.beginPath(); g.arc(cx, cy - UNIT * .7, UNIT * 1.15 * s, Math.PI * 1.05, a1); g.stroke();
+      g.globalAlpha = (1 - u) * .8; g.strokeStyle = '#ff9a3c'; g.lineWidth = 6 * (1 - u) * s; g.beginPath(); g.arc(cx, cy - UNIT * .7, UNIT * 1.15 * s, Math.PI * 1.05, a1); g.stroke();
+      g.globalAlpha = (1 - u) * .85; g.strokeStyle = '#ffd27a'; g.lineWidth = 4 * (1 - u) + 1; g.beginPath(); g.ellipse(cx, cy, UNIT * (.3 + u * 1.9) * s, UNIT * (.3 + u * 1.9) * s * .45, 0, 0, 7); g.stroke();
+      g.strokeStyle = '#fff0c0'; g.lineWidth = 2; for (let i = 0; i < 7; i++) { const an = R(i) * 6.28, d1 = UNIT * .25, d2 = UNIT * (.5 + u * 1.5) * (.7 + R(i + 4) * .5) * s; g.globalAlpha = (1 - u) * .8; g.beginPath(); g.moveTo(cx + Math.cos(an) * d1, cy + Math.sin(an) * d1 * .45); g.lineTo(cx + Math.cos(an) * d2, cy + Math.sin(an) * d2 * .45); g.stroke() } }
+  };
+  HEIGHT_FX.sigLightF = (g, e, t, p, a) => {   // a glowing orb flies from the caster in an arc with a sparkle trail, then bursts into a ring and rays
+    const R = SIGR(e), b = a || { x: p.x - UNIT * 2, y: p.y }, k = Math.min(1, t / .5), y0 = b.y - UNIT * 1.0, y1 = p.y - UNIT * .7, at = kk => ({ x: b.x + (p.x - b.x) * kk, y: y0 + (y1 - y0) * kk - Math.sin(kk * Math.PI) * UNIT * .5 }); g.globalCompositeOperation = 'lighter';
+    if (t < .55) { for (let i = 0; i < 9; i++) { const q = at(Math.max(0, k - i * .035)); g.globalAlpha = (1 - i / 9) * .7; g.fillStyle = i % 2 ? '#9fc4ff' : '#d4a8ff'; g.beginPath(); g.arc(q.x + (R(i) - .5) * 5, q.y + (R(i + 3) - .5) * 5, UNIT * .16 * (1 - i / 11), 0, 7); g.fill() }
+      const o = at(k), gr = g.createRadialGradient(o.x, o.y, 0, o.x, o.y, UNIT * .4); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.4, 'rgba(160,190,255,.9)'); gr.addColorStop(1, 'rgba(160,120,255,0)'); g.globalAlpha = 1; g.fillStyle = gr; g.beginPath(); g.arc(o.x, o.y, UNIT * .4, 0, 7); g.fill() }
+    if (t > .45) { const u = (t - .45) / .55, cx = p.x, cy = p.y - UNIT * .7; g.globalAlpha = 1 - u; g.strokeStyle = '#cfe0ff'; g.lineWidth = 3 * (1 - u) + 1; g.beginPath(); g.ellipse(cx, cy + UNIT * .5, UNIT * (.2 + u * 1.0), UNIT * (.2 + u * 1.0) * .45, 0, 0, 7); g.stroke();
+      for (let i = 0; i < 6; i++) { const an = i / 6 * 6.28 + u, L = UNIT * (.25 + u * .9); g.strokeStyle = i % 2 ? '#fff' : '#b8a0ff'; g.beginPath(); g.moveTo(cx + Math.cos(an) * L * .4, cy + Math.sin(an) * L * .4); g.lineTo(cx + Math.cos(an) * L, cy + Math.sin(an) * L); g.stroke() } }
+  };
+  HEIGHT_FX.sigHeavyF = (g, e, t, p, a) => {   // charging light on the caster → a rotating hexagram on the ground under the target + a beam of light falling in
+    const R = SIGR(e), s = e.scale || 1, cx = p.x, cy = p.y, b = a || p; g.globalCompositeOperation = 'lighter';
+    if (t < .3) { const u = t / .3, gr = g.createRadialGradient(b.x, b.y - UNIT * .9, 0, b.x, b.y - UNIT * .9, UNIT * .7); gr.addColorStop(0, 'rgba(255,255,255,.95)'); gr.addColorStop(1, 'rgba(150,130,255,0)'); g.globalAlpha = (1 - u) * .9; g.fillStyle = gr; g.beginPath(); g.arc(b.x, b.y - UNIT * .9, UNIT * (.7 - u * .35), 0, 7); g.fill() }
+    const u = Math.max(0, (t - .15) / .85), grow = Math.min(1, u * 2.2), fade = u < .55 ? 1 : 1 - (u - .55) / .45, rr = UNIT * 1.7 * s * grow, rot = u * 3;
+    g.globalAlpha = fade * .9; g.strokeStyle = '#c9b8ff'; g.lineWidth = 3; g.beginPath(); g.ellipse(cx, cy, rr, rr * .45, 0, 0, 7); g.stroke(); g.beginPath(); g.ellipse(cx, cy, rr * .68, rr * .68 * .45, 0, 0, 7); g.stroke();
+    g.strokeStyle = '#eaf2ff'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const an = rot + i / 6 * 6.28; g.beginPath(); g.moveTo(cx + Math.cos(an) * rr * .68, cy + Math.sin(an) * rr * .68 * .45); g.lineTo(cx + Math.cos(an + 2.09) * rr * .68, cy + Math.sin(an + 2.09) * rr * .68 * .45); g.stroke() }
+    if (u > .3) { const w = (u - .3) / .7, gr = g.createLinearGradient(cx, cy - UNIT * 4, cx, cy); gr.addColorStop(0, 'rgba(180,160,255,0)'); gr.addColorStop(1, 'rgba(220,235,255,.9)'); g.globalAlpha = (1 - w) * .85; g.fillStyle = gr; g.fillRect(cx - UNIT * .5 * s * (1 - w * .5), cy - UNIT * 4, UNIT * s * (1 - w * .5), UNIT * 4) }
+    for (let i = 0; i < 10; i++) { const an = R(i) * 6.28, d = rr * (.2 + R(i + 6) * .8); g.globalAlpha = fade * .8; g.fillStyle = '#e2d9ff'; g.beginPath(); g.arc(cx + Math.cos(an) * d, cy + Math.sin(an) * d * .45 - u * UNIT * 1.2 * R(i + 2), 2 + R(i) * 2, 0, 7); g.fill() }
   };
   HEIGHT_FX.kslash = (g, e, t, p, a) => {
     const names = ['slash_01', 'slash_02', 'slash_03', 'slash_04', 'scratch_01'], n = names[e.seed % names.length], ang = (e.from ? Math.atan2(p.y - a.y, p.x - a.x) : 0) + ((e.seed % 7) - 3) * .12 + (n === 'scratch_01' ? .6 : 0);

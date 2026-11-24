@@ -22,7 +22,7 @@ p.note{margin:8px 16px;color:var(--muted);max-width:980px}
 <p class="note">ทิศ = <b>ใบหน้า</b> มองไปทางไหน (ไม่ใช่ลำตัว) · ซ้าย = มองไปทางซ้ายของจอ · ตอนคุยในเกม คนที่ยืนซ้ายจอต้องมองขวา คนที่ยืนขวาจอต้องมองซ้าย — ระบบจะกลับภาพให้เองตามค่าที่ตั้งไว้ที่นี่ (มองตรง = ไม่กลับภาพ)<br>
 กด <b>ซ้าย / ตรง / ขวา</b> ใต้ภาพ · กดชื่อชุดเพื่อตั้งทั้งชุดในครั้งเดียว · ค่าตั้งต้นมาจากการดูภาพด้วยตา (ตัวเลข "เดา" = ผลจากพิกเซล: ลบ = หน้าไปทางซ้าย · ไม่แม่นกับคนใส่หมวก/ผ้าคลุม) · ตัวอย่างใต้ภาพ = เมื่อยืนซ้ายจอ ภาพจะถูกกลับหรือไม่</p>
 <div class="grid" id="grid"></div>
-<script src="js/editor-store.js?v=v98.1002"></script><script src="js/game-settings.js"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.993"></script><script src="js/portrait-facing.js?v=v98.631"></script>
+<script src="js/editor-store.js?v=v98.1002"></script><script src="js/game-settings.js"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.993"></script><script src="js/portrait-facing.js?v=v98.1025"></script>
 <script>
 const PF = PortraitFacing, grid = document.getElementById('grid'), cards = [];
 const sets = [...new Set(PF.FILES.map(PF.setOf))].sort(); const sel = document.getElementById('setSel'); sets.forEach(s => sel.insertAdjacentHTML('beforeend', `<option>${s}</option>`));

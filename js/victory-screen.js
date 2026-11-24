@@ -62,6 +62,13 @@
 #vsv .b1::after{content:"";width:0;height:0;border-left:8px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
 #vsv .b2[data-a=back]::before{content:"";width:0;height:0;border-right:8px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
 #vsv .b1[disabled]{filter:grayscale(.6) brightness(.7);cursor:default;transform:none}
+#vsv .ex{display:inline-block;position:relative;width:14px;height:14px;margin-left:8px;vertical-align:-2px}#vsv .ex::before,#vsv .ex::after{content:"";position:absolute;left:6px;top:-1px;width:3px;height:16px;background:#ff9a8a;border-radius:2px;transform:rotate(45deg)}#vsv .ex::after{transform:rotate(-45deg)}
+/* defeat: the same report in a cold, dark-red mood */
+#vsv.vs-defeat{background:radial-gradient(ellipse at 50% 40%,#2a0f12aa 0,#07050aee 62%,#030204f2 100%)}#vsv.vs-defeat .rays{background:repeating-conic-gradient(from 0deg,#ff6a5a14 0 4deg,#0000 4deg 20deg)}
+#vsv.vs-defeat .pg{background:linear-gradient(180deg,#1e1518f2,#0d0a0cf5);border-color:#9a5a55}#vsv.vs-defeat .pg::before,#vsv.vs-defeat .pg::after{border-color:#d98a80}
+#vsv.vs-defeat h2{color:#ffb0a0;text-shadow:0 3px 0 #5a1810,0 0 26px #ff5a3c,0 0 60px #c8281c77;letter-spacing:.12em}#vsv.vs-defeat .crest{background:linear-gradient(90deg,#0000,#ff8a7a,#0000)}
+#vsv.vs-defeat .chips span{color:#ffb0a0;border-color:#ff8a7a55}#vsv.vs-defeat .goal{color:#ffb0a0}#vsv.vs-defeat .bar{display:none}
+#vsv.vs-defeat .rp h3{color:#ffb0a0;text-shadow:0 0 18px #ff5a3c66}
 #vsv .chk{display:inline-block;width:7px;height:12px;margin-left:6px;border-right:3px solid #9fe0b0;border-bottom:3px solid #9fe0b0;transform:rotate(40deg) translate(-2px,-2px)}
 #vsv .hint{margin-right:auto;font-size:11.5px;color:#9aa6a0}
 /* page 2 — report */
@@ -95,10 +102,10 @@
       if (!doc.getElementById('vsvCss')) { const c = doc.createElement('style'); c.id = 'vsvCss'; c.textContent = CSS; doc.head.append(c) }
       doc.getElementById('vsv')?.remove();
       const members = (d.members || []).filter(Boolean), S = d.stat || null, id = m => m.id ?? m.key ?? m.name;
-      const el = doc.createElement('div'); el.id = 'vsv'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'ชัยชนะ');
-      const word = 'VICTORY!'.split('').map((c, i) => `<span style="animation-delay:${.2 + i * .08}s">${c}</span>`).join('');
+      const el = doc.createElement('div'); el.id = 'vsv'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', d.defeat ? 'พ่ายแพ้' : 'ชัยชนะ'); if (d.defeat) el.classList.add('vs-defeat');
+      const word = (d.defeat ? 'DEFEAT' : 'VICTORY!').split('').map((c, i) => `<span style="animation-delay:${.2 + i * .08}s">${c}</span>`).join('');
       const t0 = 1.35, step = .36;
-      const chips = [d.kills ? [ic('pack/skull'), 'ล้มศัตรู ' + d.kills + ' ตัว'] : null, d.turns || S?.turns ? [ic('pack/refresh'), (d.turns || S.turns) + ' เทิร์น'] : null, d.gold ? [ic('menu/treasure'), '+' + d.gold + ' เหรียญ'] : null, ...(d.loot || []).map(x => [ic('menu/bag'), x])].filter(Boolean);
+      const chips = [d.kills ? [ic('pack/skull'), 'ล้มศัตรู ' + d.kills + ' ตัว'] : null, d.turns || S?.turns ? [ic('pack/refresh'), (d.turns || S.turns) + ' เทิร์น'] : null, d.gold ? [ic('menu/treasure'), '+' + d.gold + ' เหรียญ'] : null, ...(d.loot || []).map(x => [ic('menu/bag'), x]), ...(d.notes || []).map(x => [ic('pack/def'), x])].filter(Boolean);
       const card = (m, i) => `<div class="card" data-i="${i}" style="animation-delay:${t0 + i * step}s"><div class="face"><img alt="" src="${esc(portrait(m))}" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='assets/cards/portraits/u-${esc(m.pic && !/^hero-/.test(m.pic) ? m.pic : 'hero')}.webp'}else this.remove()"><span>${esc((m.name || '?')[0])}</span></div>
         <div><div class="nm"><span>${esc(m.name)}<span class="lv">${m.lv0 != null ? 'Lv.' + m.lv0 : ''}</span></span><span class="xp" data-g="${m.gain || 0}">${m.gain ? 'EXP +0' : ''}</span></div><div class="bar"><i></i></div>
         <div class="hp"><span>HP</span><div class="hb"><i style="width:${m.max ? Math.max(0, Math.min(100, m.hp / m.max * 100)) : 0}%"></i></div><b>${num(m.hp)}/${num(m.max)}</b></div></div></div>`;
@@ -106,13 +113,13 @@
       const btnD = t0 + members.length * step + .9;
       el.innerHTML = `<div class="rays"></div><canvas></canvas><div class="book">
         <section class="pg fr"><div class="crest"></div><h2>${word}</h2>
-          <div class="sub">${esc(String(d.title || 'ชนะการต่อสู้').replace(/\s*·\s*$/, ''))}</div>${d.goal ? `<div class="goal">${ic('pack/crown')}เป้าหมาย: ${esc(d.goal)}<i class="chk"></i></div>` : ''}
+          <div class="sub">${esc(String(d.title || (d.defeat ? 'พ่ายแพ้' : 'ชนะการต่อสู้')).replace(/\s*·\s*$/, ''))}</div>${d.goal ? `<div class="goal">${ic('pack/crown')}เป้าหมาย: ${esc(d.goal)}${d.defeat ? '<i class="ex"></i>' : '<i class="chk"></i>'}</div>` : ''}
           <div class="chips">${chips.map(([i0, x], i) => `<span style="animation-delay:${1.05 + i * .1}s">${i0}${esc(x)}</span>`).join('')}</div>
           <div class="cards">${members.map(card).join('')}</div>${job}
           <div class="btns" style="--d:${btnD}s">${S ? '<button class="b2" data-a="more" type="button">ดูรายละเอียดการต่อสู้</button>' : ''}<button class="b1" data-a="go" type="button" disabled>Continue</button></div></section>
         <section class="pg rp" hidden>${S ? report(d, members, S) : ''}</section></div>`;
       document.body.append(el);
-      try { root.Sfx?.play?.('victory') } catch (e) { } try { root.GameBGM?.force?.('victory') } catch (e) { }
+      try { root.Sfx?.play?.(d.defeat ? 'lose' : 'victory') } catch (e) { } if (!d.defeat) try { root.GameBGM?.force?.('victory') } catch (e) { }
       /* gold sparks */
       const cv = el.querySelector('canvas'), g = cv.getContext('2d'); let raf = 0, W = 0, H = 0; const P = Array.from({ length: 64 }, () => ({ x: Math.random(), y: Math.random(), s: .4 + Math.random() * 1.3, v: .0004 + Math.random() * .0011, p: Math.random() * 6 }));
       const fit = () => { W = cv.width = innerWidth; H = cv.height = innerHeight }; fit(); addEventListener('resize', fit);
@@ -181,14 +188,14 @@
     const why = !bm ? '' : (kills[best] && kills[best] === Math.max(...ids.map(i => kills[i] || 0)) ? `ล้มศัตรูมากที่สุด ${kills[best]} ตัว · ` : '') + 'ทำดาเมจรวม ' + num(dealt[best] || 0) + (S.maxHit && S.maxHit.by === best ? ` · แรงสุด ${num(S.maxHit.dmg)}` : '');
     const total = ids.reduce((a, i) => a + (dealt[i] || 0), 0);
     const mini = [['pack/atk', total, 'ดาเมจรวมที่ทำ'], ['pack/burst', S.maxHit?.dmg || 0, 'ท่าที่แรงที่สุด'], ['pack/power', S.crit || 0, 'คริติคอล'], ['pack/refresh', S.turns ?? d.turns ?? 0, 'เทิร์นที่ใช้'],
-      ['pack/fire', S.adv || 0, 'ได้เปรียบธาตุ'], ['pack/def', S.dis || 0, 'เสียเปรียบธาตุ'], ['pack/shuriken', S.flank || 0, 'โจมตีข้าง/หลัง'], ['pack/arrow', S.high || 0, 'โจมตีจากที่สูง']];
+      ['pack/fire', S.adv || 0, 'ได้เปรียบธาตุ'], ['pack/def', S.dis || 0, 'เสียเปรียบธาตุ'], ['pack/shuriken', S.flank || 0, 'โจมตีข้าง/หลัง'], ['pack/arrow', S.high || 0, 'โจมตีจากที่สูง'],
+      ['pack/nature', S.dotFoe || 0, 'ดาเมจพิษ/ไฟลุกที่ทำศัตรู'], ['pack/skull', S.dotUs || 0, 'ดาเมจพิษ/ไฟลุกที่เราโดน'], ['pack/heal', Object.values(S.healed || {}).reduce((a, x) => a + x, 0), 'ฟื้นฟูรวมทั้งทีม'], ['menu/potion', S.items || 0, 'ครั้งที่ใช้ไอเทม']];
     return `<h3>รายงานการต่อสู้</h3>
       ${bm ? `<div class="mvp"><div class="face" style="width:64px;height:64px;border-radius:12px;overflow:hidden;border:2px solid #ffd77a;background:#2a3140;display:grid;place-items:center"><img alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 12%" src="${esc(portrait(bm))}" onerror="this.remove()"></div><div><small>ดาวเด่นของการต่อสู้</small><b>${esc(bm.name)}</b><p>${esc(why)}</p></div></div>` : ''}
       <div class="tiles">${mini.map(([i0, v, t]) => `<div class="tile">${ic(i0)}<b>${num(v)}</b><span>${t}</span></div>`).join('')}</div>
       <div class="lbl">แยกตามคน<span class="lg d"></span>ดาเมจที่ทำ  <span class="lg t"></span>ดาเมจที่รับ</div>
       <div class="rows">${ids.map(i => `<div class="row"><div class="n">${esc(nameOf(i))}</div><div class="b"><div class="d"><em>${num(dealt[i] || 0)}</em><i data-w="${Math.round((dealt[i] || 0) / mx * 100)}"></i></div><div class="t"><em>${num(taken[i] || 0)}</em><i data-w="${Math.round((taken[i] || 0) / mx * 100)}"></i></div>${kills[i] || healed[i] ? `<div class="k">${kills[i] ? ic('pack/skull') + 'ล้มศัตรู ' + kills[i] + ' ตัว' : ''}${kills[i] && healed[i] ? ' · ' : ''}${healed[i] ? ic('pack/heal') + 'ฟื้นให้ ' + num(healed[i]) : ''}</div>` : ''}</div></div>`).join('')}</div>
       ${(S.cards || []).length ? `<div class="lbl">การ์ดที่ใช้บ่อย</div><div class="cardsUsed">${S.cards.slice(0, 5).map(([n, c]) => `<span>${esc(n)} <b>×${c}</b></span>`).join('')}</div>` : ''}
-      ${S.items ? `<div class="lbl">ไอเทมที่ใช้ ${S.items} ครั้ง</div>` : ''}
       <div class="btns" style="--d:.2s"><button class="b2" data-a="back" type="button">กลับ</button><button class="b1" data-a="go" type="button">Continue</button></div>`;
   }
 

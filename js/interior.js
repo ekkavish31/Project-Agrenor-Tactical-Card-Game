@@ -616,7 +616,7 @@
 
   /* ---------- input ---------- */
   function personAt(sx, sy) { let best = null, bd = 1e9; for (const a of people.values()) { if (a.leaving) continue; const p = screen(a.vu, a.vv), dx = sx - p.x, dy = sy - (p.y - 40 * Z); if (Math.abs(dx) < 20 * Z && Math.abs(dy) < 48 * Z) { const d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = a } } } return best }
-  cv.addEventListener('pointermove', e => { const a = personAt(e.clientX, e.clientY); hoverId = a ? a.id : null; cv.style.cursor = a ? 'pointer' : 'default' });
+  cv.addEventListener('pointermove', e => { const a = personAt(e.clientX, e.clientY); hoverId = a ? a.id : null; cv.style.cursor = a ? 'pointer' : 'default'; if (a) cv.dataset.agc = 'talk'; else delete cv.dataset.agc });   /* v98.1021 · speech-bubble cursor over a villager (js/game-cursor.js) */
   cv.addEventListener('pointerup', e => {
     if (modalOpen) return;
     const a = personAt(e.clientX, e.clientY);
@@ -955,7 +955,7 @@
     window.VictoryScreen?.fightUI?.(true); document.body.append(fr);
     const res = await new Promise(r => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); r(e.data) } }; addEventListener('message', on) });
     /* v98.996 · a won duel: the Victory report over the scene first, the frame goes after Continue */
-    if (res.outcome === 'win' && window.VictoryScreen) { const fem = (() => { try { return window.HeroVariant?.get?.() === 'female' } catch (e) { return false } })(); await VictoryScreen.show({ title: 'ดวล · นาเดีย', goal: res.goal, kills: res.kills || 0, turns: res.turns, stat: res.stat, members: [{ id: 'hero', name: heroName(), pic: fem ? 'hero-female' : 'hero-male', hp: res.hp, max: S.maxHp || 60, gain: 0 }] }) }
+    if ((res.outcome === 'win' || res.outcome === 'lose') && window.VictoryScreen) { const fem = (() => { try { return window.HeroVariant?.get?.() === 'female' } catch (e) { return false } })(); await VictoryScreen.show({ defeat: res.outcome === 'lose', title: 'ดวล · นาเดีย', goal: res.goal, kills: res.kills || 0, turns: res.turns, stat: res.stat, members: [{ id: 'hero', name: heroName(), pic: fem ? 'hero-female' : 'hero-male', hp: res.hp, max: S.maxHp || 60, gain: 0 }] }) }
     fr.remove(); window.VictoryScreen?.fightUI?.(false); modalOpen = false;
     if (res.outcome === 'win' || res.outcome === 'lose') MIND?.emit(res.outcome === 'win' ? 'duel:win' : 'duel:lose', { who: a.id, witness: [...people.keys()] });
     if (res.outcome === 'win') joinNow(a, 'ฮึ … ไม่เลวนี่ ข้ายอมรับ ข้าจะตามเจ้าไป แต่อย่าคิดว่าข้าจะเชื่อฟังทุกเรื่องนะ');

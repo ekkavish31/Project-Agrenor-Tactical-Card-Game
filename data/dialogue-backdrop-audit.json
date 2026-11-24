@@ -1,0 +1,1204 @@
+{
+  "version": "v98.1027",
+  "rows": [
+    {
+      "kind": "คัตซีน",
+      "id": "opening",
+      "map": "fernvale",
+      "place": "home",
+      "src": "assets/home.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "เปลี่ยนฉากระหว่างบท",
+      "id": "opening:36",
+      "map": "fernvale",
+      "place": "ตามบรรทัด",
+      "src": "assets/new-game-prologue/images/hero-house.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "bookExit",
+      "map": "fernvale",
+      "place": "house",
+      "src": "assets/new-game-prologue/images/hero-house.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "bookFirst",
+      "map": "fernvale",
+      "place": "house",
+      "src": "assets/new-game-prologue/images/hero-house.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "elderMeet",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "goatsDone",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "homeWelcome",
+      "map": "fernvale",
+      "place": "home",
+      "src": "assets/home.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "pumpkinDone",
+      "map": "fernvale",
+      "place": "farm",
+      "src": "assets/generated-village/farm.png",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "seeds",
+      "map": "fernvale",
+      "place": "farm",
+      "src": "assets/generated-village/farm.png",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "tomStall",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "stallDone",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "day2",
+      "map": "fernvale",
+      "place": "home",
+      "src": "assets/home.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "guardTalk",
+      "map": "fernvale",
+      "place": "village-gate",
+      "src": "assets/scenes/dialogue/village-gate.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "crystal",
+      "map": "fernvale",
+      "place": "mine",
+      "src": "assets/scenes/area-mine.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "gusLantern",
+      "map": "fernvale",
+      "place": "forge",
+      "src": "assets/forge.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "lanternsDone",
+      "map": "fernvale",
+      "place": "workshop",
+      "src": "assets/workshop.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "craftDone",
+      "map": "fernvale",
+      "place": "forge",
+      "src": "assets/forge.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "hireDone",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "day3",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "soldOne",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "raid",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "awaken",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "plate",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "safTalk",
+      "map": "fernvale",
+      "place": "healer",
+      "src": "assets/generated-village/healer.png",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "sibSwordIntro",
+      "map": "fernvale",
+      "place": "forge",
+      "src": "assets/forge.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "sibSwordDone",
+      "map": "fernvale",
+      "place": "forge",
+      "src": "assets/forge.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "potionsDone",
+      "map": "fernvale",
+      "place": "healer",
+      "src": "assets/generated-village/healer.png",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "kierHurt",
+      "map": "fernvale",
+      "place": "forest-stream",
+      "src": "assets/scenes/dialogue/forest-stream.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "kierAdmitted",
+      "map": "fernvale",
+      "place": "healer",
+      "src": "assets/generated-village/healer.png",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "homeKier",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "departure",
+      "map": "fernvale",
+      "place": "forest",
+      "src": "assets/scenes/area-forest.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "camp",
+      "map": "fernvale",
+      "place": "camp",
+      "src": "assets/camp.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "guildFirst",
+      "map": "fernvale",
+      "place": "guild",
+      "src": "assets/generated-village/guild.png",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "home",
+      "map": "fernvale",
+      "place": "house",
+      "src": "assets/new-game-prologue/images/hero-house.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "คัตซีน",
+      "id": "finale",
+      "map": "fernvale",
+      "place": "home",
+      "src": "assets/home.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "เปลี่ยนฉากระหว่างบท",
+      "id": "finale:10",
+      "map": "fernvale",
+      "place": "ตามบรรทัด",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "เปลี่ยนฉากระหว่างบท",
+      "id": "finale:12",
+      "map": "fernvale",
+      "place": "ตามบรรทัด",
+      "src": "assets/home.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "ผลประกวดทุกสาขา",
+      "id": "contest",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-data.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "fugitive",
+      "map": "willowshore",
+      "place": "market-alley",
+      "src": "assets/scenes/dialogue/market-alley.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "fugitive",
+      "map": "northgate",
+      "place": "market-alley",
+      "src": "assets/scenes/dialogue/market-alley.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "callup",
+      "map": "willowshore",
+      "place": "willowshore",
+      "src": "assets/scenes/dialogue/willowshore.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "callup",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "callup",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "firstSick",
+      "map": "willowshore",
+      "place": "teahouse-yard",
+      "src": "assets/scenes/dialogue/teahouse-yard.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "firstSick",
+      "map": "deepcairn",
+      "place": "teahouse-yard",
+      "src": "assets/scenes/dialogue/teahouse-yard.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "firstSick",
+      "map": "thornwatch",
+      "place": "teahouse-yard",
+      "src": "assets/scenes/dialogue/teahouse-yard.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "mayaBroker",
+      "map": "haven",
+      "place": "market-alley",
+      "src": "assets/scenes/dialogue/market-alley.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "corvinInvite",
+      "map": "lakenhold",
+      "place": "royal-office",
+      "src": "assets/scenes/dialogue/royal-office.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "convoy",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "moonRite",
+      "map": "northgate",
+      "place": "moon-shrine",
+      "src": "assets/scenes/dialogue/moon-shrine.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "moonRite",
+      "map": "thornwatch",
+      "place": "moon-shrine",
+      "src": "assets/scenes/dialogue/moon-shrine.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "scent",
+      "map": "thornwatch",
+      "place": "forest-camp",
+      "src": "assets/scenes/dialogue/forest-camp.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "armor",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "sickRefugee",
+      "map": "willowshore",
+      "place": "refugee-camp",
+      "src": "assets/scenes/dialogue/refugee-camp.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "sickRefugee",
+      "map": "northgate",
+      "place": "refugee-camp",
+      "src": "assets/scenes/dialogue/refugee-camp.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "languageLeaf",
+      "map": "lakenhold",
+      "place": "royal-library",
+      "src": "assets/scenes/dialogue/royal-library.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "willowshore",
+      "place": "willowshore",
+      "src": "assets/scenes/dialogue/willowshore.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "deepcairn",
+      "place": "deepcairn",
+      "src": "assets/scenes/dialogue/deepcairn.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "thornwatch",
+      "place": "thornwatch",
+      "src": "assets/scenes/dialogue/thornwatch.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "vinehollow",
+      "place": "vinehollow",
+      "src": "assets/scenes/dialogue/vinehollow.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "haven",
+      "place": "haven",
+      "src": "assets/scenes/dialogue/haven.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gouge",
+      "map": "brookmere",
+      "place": "brookmere",
+      "src": "assets/scenes/dialogue/brookmere.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "boudilList",
+      "map": "deepcairn",
+      "place": "mine-tool-yard",
+      "src": "assets/scenes/dialogue/mine-tool-yard.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "lightPass",
+      "map": "thornwatch",
+      "place": "forest-camp",
+      "src": "assets/scenes/dialogue/forest-camp.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "sigrid",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "sigrid",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "bram",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "bram",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "kier",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "kier",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "luna",
+      "map": "lakenhold",
+      "place": "royal-library",
+      "src": "assets/scenes/dialogue/royal-library.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "luna",
+      "map": "thornwatch",
+      "place": "thornwatch",
+      "src": "assets/scenes/dialogue/thornwatch.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "armySupply",
+      "map": "lakenhold",
+      "place": "supply-warehouse",
+      "src": "assets/scenes/dialogue/supply-warehouse.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "armySupply",
+      "map": "haven",
+      "place": "supply-warehouse",
+      "src": "assets/scenes/dialogue/supply-warehouse.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "caravanEscort",
+      "map": "haven",
+      "place": "haven",
+      "src": "assets/scenes/dialogue/haven.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "caravanEscort",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gravenWar",
+      "map": "haven",
+      "place": "supply-warehouse",
+      "src": "assets/scenes/dialogue/supply-warehouse.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gravenWar",
+      "map": "lakenhold",
+      "place": "supply-warehouse",
+      "src": "assets/scenes/dialogue/supply-warehouse.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "gravenWar",
+      "map": "willowshore",
+      "place": "supply-warehouse",
+      "src": "assets/scenes/dialogue/supply-warehouse.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "farmLabor",
+      "map": "fernvale",
+      "place": "wheat-field",
+      "src": "assets/scenes/dialogue/wheat-field.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "refugeeShelter",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "granaryAsk",
+      "map": "fernvale",
+      "place": "granary",
+      "src": "assets/scenes/dialogue/granary.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "leafBeetle",
+      "map": "fernvale",
+      "place": "wheat-field",
+      "src": "assets/scenes/dialogue/wheat-field.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "pilgrimTwo",
+      "map": "fernvale",
+      "place": "inn",
+      "src": "assets/generated-village/inn.png",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "pilgrimTwo",
+      "map": "northgate",
+      "place": "inn",
+      "src": "assets/generated-village/inn.png",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "northPriest",
+      "map": "northgate",
+      "place": "holding-room",
+      "src": "assets/scenes/dialogue/holding-room.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "northPriest",
+      "map": "deepcairn",
+      "place": "holding-room",
+      "src": "assets/scenes/dialogue/holding-room.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "godAnswers",
+      "map": "vinehollow",
+      "place": "vineyard",
+      "src": "assets/scenes/dialogue/vineyard.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "godAnswers",
+      "map": "thornwatch",
+      "place": "moon-shrine",
+      "src": "assets/scenes/dialogue/moon-shrine.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "manMadeGod",
+      "map": "northgate",
+      "place": "army-camp",
+      "src": "assets/scenes/dialogue/army-camp.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "manMadeGod",
+      "map": "thornwatch",
+      "place": "army-camp",
+      "src": "assets/scenes/dialogue/army-camp.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "manMadeGod",
+      "map": "lakenhold",
+      "place": "army-camp",
+      "src": "assets/scenes/dialogue/army-camp.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonTale",
+      "map": "haven",
+      "place": "haven",
+      "src": "assets/scenes/dialogue/haven.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonTale",
+      "map": "vinehollow",
+      "place": "vinehollow",
+      "src": "assets/scenes/dialogue/vinehollow.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonTale",
+      "map": "thornwatch",
+      "place": "thornwatch",
+      "src": "assets/scenes/dialogue/thornwatch.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonAsh",
+      "map": "vinehollow",
+      "place": "vineyard",
+      "src": "assets/scenes/dialogue/vineyard.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonAsh",
+      "map": "haven",
+      "place": "haven",
+      "src": "assets/scenes/dialogue/haven.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonOmen",
+      "map": "haven",
+      "place": "haven",
+      "src": "assets/scenes/dialogue/haven.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonOmen",
+      "map": "vinehollow",
+      "place": "vinehollow",
+      "src": "assets/scenes/dialogue/vinehollow.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonOmen",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonName",
+      "map": "lakenhold",
+      "place": "royal-library",
+      "src": "assets/scenes/dialogue/royal-library.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "ทางแยก",
+      "id": "dragonWell",
+      "map": "thornwatch",
+      "place": "forest-camp",
+      "src": "assets/scenes/dialogue/forest-camp.webp",
+      "source": "js/crossroads.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "fernvale",
+      "place": "square",
+      "src": "assets/market.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "willowshore",
+      "place": "willowshore",
+      "src": "assets/scenes/dialogue/willowshore.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "deepcairn",
+      "place": "deepcairn",
+      "src": "assets/scenes/dialogue/deepcairn.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "thornwatch",
+      "place": "thornwatch",
+      "src": "assets/scenes/dialogue/thornwatch.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "vinehollow",
+      "place": "vinehollow",
+      "src": "assets/scenes/dialogue/vinehollow.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "haven",
+      "place": "haven",
+      "src": "assets/scenes/dialogue/haven.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "news",
+      "map": "brookmere",
+      "place": "brookmere",
+      "src": "assets/scenes/dialogue/brookmere.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "camp",
+      "map": "northgate",
+      "place": "refugee-camp",
+      "src": "assets/scenes/dialogue/refugee-camp.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "camp",
+      "map": "willowshore",
+      "place": "refugee-camp",
+      "src": "assets/scenes/dialogue/refugee-camp.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "ruin",
+      "map": "thornwatch",
+      "place": "ruins",
+      "src": "assets/scenes/area-ruins.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "epilogue",
+      "map": "deepcairn",
+      "place": "deepcairn",
+      "src": "assets/scenes/dialogue/deepcairn.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "epilogue",
+      "map": "thornwatch",
+      "place": "thornwatch",
+      "src": "assets/scenes/dialogue/thornwatch.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "epilogue",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "dragon",
+      "map": "vinehollow",
+      "place": "volcanic-crater",
+      "src": "assets/scenes/dialogue/volcanic-crater.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "dragon",
+      "map": "haven",
+      "place": "volcanic-crater",
+      "src": "assets/scenes/dialogue/volcanic-crater.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "finale",
+      "map": "deepcairn",
+      "place": "deep-mine",
+      "src": "assets/scenes/dialogue/deep-mine.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "pit",
+      "map": "deepcairn",
+      "place": "deep-mine",
+      "src": "assets/scenes/dialogue/deep-mine.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "faith",
+      "map": "northgate",
+      "place": "pilgrim-room",
+      "src": "assets/scenes/dialogue/pilgrim-room.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "clinic",
+      "map": "willowshore",
+      "place": "war-clinic",
+      "src": "assets/scenes/dialogue/war-clinic.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "army",
+      "map": "lakenhold",
+      "place": "supply-warehouse",
+      "src": "assets/scenes/dialogue/supply-warehouse.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "จุดเนื้อเรื่อง",
+      "id": "army",
+      "map": "northgate",
+      "place": "supply-warehouse",
+      "src": "assets/scenes/dialogue/supply-warehouse.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "ferry",
+      "map": "willowshore",
+      "place": "willowshore",
+      "src": "assets/scenes/dialogue/willowshore.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "bounty",
+      "map": "lakenhold",
+      "place": "guild",
+      "src": "assets/generated-village/guild.png",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "tower",
+      "map": "lakenhold",
+      "place": "mage-hall",
+      "src": "assets/scenes/dialogue/mage-hall.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "museum",
+      "map": "lakenhold",
+      "place": "museum",
+      "src": "assets/scenes/dialogue/museum.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "blessing",
+      "map": "lakenhold",
+      "place": "cathedral",
+      "src": "assets/scenes/dialogue/cathedral.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "ferry",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "mine",
+      "map": "deepcairn",
+      "place": "mine",
+      "src": "assets/scenes/area-mine.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "guide",
+      "map": "thornwatch",
+      "place": "forest-camp",
+      "src": "assets/scenes/dialogue/forest-camp.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "tales",
+      "map": "thornwatch",
+      "place": "forest-camp",
+      "src": "assets/scenes/dialogue/forest-camp.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "บริการเมือง",
+      "id": "spring",
+      "map": "vinehollow",
+      "place": "hot-spring",
+      "src": "assets/scenes/dialogue/hot-spring.webp",
+      "source": "js/town-services.js"
+    },
+    {
+      "kind": "ตัวละครประจำเมือง",
+      "id": "corvin",
+      "map": "lakenhold",
+      "place": "lakenhold",
+      "src": "assets/scenes/dialogue/lakenhold.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "ตัวละครประจำเมือง",
+      "id": "helga",
+      "map": "northgate",
+      "place": "northgate",
+      "src": "assets/scenes/dialogue/northgate.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "ตัวละครประจำเมือง",
+      "id": "darren",
+      "map": "deepcairn",
+      "place": "deepcairn",
+      "src": "assets/scenes/dialogue/deepcairn.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "ตัวละครประจำเมือง",
+      "id": "irene",
+      "map": "willowshore",
+      "place": "willowshore",
+      "src": "assets/scenes/dialogue/willowshore.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "ตัวละครประจำเมือง",
+      "id": "vik",
+      "map": "haven",
+      "place": "haven",
+      "src": "assets/scenes/dialogue/haven.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "ตัวละครประจำเมือง",
+      "id": "mierris",
+      "map": "thornwatch",
+      "place": "thornwatch",
+      "src": "assets/scenes/dialogue/thornwatch.webp",
+      "source": "js/story-cast.js"
+    },
+    {
+      "kind": "ตัวละครประจำเมือง",
+      "id": "lorrik",
+      "map": "thornwatch",
+      "place": "thornwatch",
+      "src": "assets/scenes/dialogue/thornwatch.webp",
+      "source": "js/story-cast.js"
+    }
+  ],
+  "liveMapDialogue": [
+    {
+      "source": "js/town-npcs.js + js/village-mind.js",
+      "location": "ตำแหน่ง NPC บน village-town ตามตารางเวลา",
+      "mode": "ใช้แมพจริงด้านหลังกล่องบทพูด"
+    },
+    {
+      "source": "js/interior.js + js/village-place.js",
+      "location": "place/farm ที่กำลังเข้าอยู่",
+      "mode": "ใช้ห้อง/แมพย่อยจริง"
+    },
+    {
+      "source": "js/party-talk.js",
+      "location": "แมพที่ทีมกำลังเดิน/พัก",
+      "mode": "ใช้แมพจริง"
+    },
+    {
+      "source": "js/battle-talk.js + js/town-battle.js",
+      "location": "สนามต่อสู้ที่กำลังเล่น",
+      "mode": "ใช้สนามจริง"
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "dragonTale",
+      "issue": "ข้อความระบุท่าเรือ แต่เปิดที่ vinehollow/thornwatch ได้ด้วย",
+      "handling": "ยึด host town; ไม่สร้างท่าเรือในเมืองที่ไม่มีหลักฐาน"
+    },
+    {
+      "id": "dragonAsh",
+      "issue": "ข้อความระบุไร่องุ่น แต่เปิดที่ haven ได้ด้วย",
+      "handling": "vineyard เฉพาะ vinehollow; haven ใช้ท่าเรือจริง"
+    },
+    {
+      "id": "godAnswers",
+      "issue": "ข้อความมองจันทร์เหนือไร่องุ่น แต่เปิดที่ thornwatch ได้ด้วย",
+      "handling": "vineyard ที่ vinehollow / ศาลป่าที่ thornwatch"
+    }
+  ]
+}

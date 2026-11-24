@@ -8,8 +8,9 @@
   const pic = () => { if (!img) { img = new Image(); img.onerror = () => { img.bad = true }; img.src = 'assets/ui/quest-marker.webp' } return img.complete && img.naturalWidth && !img.bad ? img : null };
   function draw(g, x, headY, t, o = {}) {
     const p = pic(); if (!p) return false;
-    const k = o.k || 1, h = (o.h || 46) * k, w = h * p.naturalWidth / p.naturalHeight, bob = Math.sin(t * .006) * 4 * k, tip = headY - 6 * k - bob;   /* the tip hovers a little above the hair and bobs */
-    g.save(); g.shadowColor = 'rgba(255,200,60,.9)'; g.shadowBlur = 14 * k; g.drawImage(p, x - w / 2, tip - h * .98, w, h); g.restore(); return true;
+    /* v98.1021 · the owner asked: lowered by 50% of its own height and drawn at 50% size (the tip stays the anchor, so it now floats close above the head) */
+    const k = o.k || 1, hFull = (o.h || 46) * k, S = .5, h = hFull * S, w = h * p.naturalWidth / p.naturalHeight, bob = Math.sin(t * .006) * 4 * k * S, tip = headY - 6 * k - bob + hFull * .5;   /* the tip hovers a little above the hair and bobs */
+    g.save(); g.shadowColor = 'rgba(255,200,60,.9)'; g.shadowBlur = 14 * k * S; g.drawImage(p, x - w / 2, tip - h * .98, w, h); g.restore(); return true;
   }
   root.QuestGem = { draw, ready: () => !!pic() };
 })(typeof window !== 'undefined' ? window : globalThis);

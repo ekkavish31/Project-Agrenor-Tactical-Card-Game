@@ -19,9 +19,10 @@
   const ICONS = { goat: '🐐', murk: '🐺', unknown: '❔', boss: '👁' };
   const MOODS = { neutral: 'neutral', happy: 'happy', angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry', calm: 'neutral' };
   /* v98.1021 · boss speakers: who = 'b:<kind>' */
-  const BOSS_ID = { wolf: ['จ่าฝูงหมาป่า', '🐺'], golem: ['โกเล็มหิน', '🗿'], slime: ['สไลม์ยักษ์', '🟢'], frostQueen: ['ราชินีน้ำแข็งแห่งศาลหิมะ', '❄'], bandit: ['หัวหน้าโจร', '🗡'], kobold: ['หัวหน้าโคโบลด์', '⛏'], hunger: ['ก้อนหิว', '🩸'], byrexael: ['มังกรดำจ้าววิญญาณ', '🐉'], pumpkinBoss: ['บอสฟักทอง', '🎃'] };
+  const BOSS_ID = { treant: ['พฤกษาเฒ่าคลั่ง', '🌳'], crystalKing: ['ราชาโกเล็มผลึก', '💎'], bogHydra: ['ไฮดราบึงพิษ', '🐍'], coralGolem: ['โกเล็มปะการัง', '🪸'], voidKing: ['ราชาแห่งความว่างเปล่า', '👑'], wolf: ['จ่าฝูงหมาป่า', '🐺'], golem: ['โกเล็มหิน', '🗿'], slime: ['สไลม์ยักษ์', '🟢'], frostQueen: ['ราชินีน้ำแข็งแห่งศาลหิมะ', '❄'], bandit: ['หัวหน้าโจร', '🗡'], kobold: ['หัวหน้าโคโบลด์', '⛏'], hunger: ['ก้อนหิว', '🩸'], byrexael: ['มังกรดำจ้าววิญญาณ', '🐉'], pumpkinBoss: ['บอสฟักทอง', '🎃'] };
   const bossKind = who => /^b:/.test(who || '') ? String(who).slice(2) : null;
-  const bossSrc = (who, emo) => `assets/portraits/boss-${bossKind(who)}-${({ angry: 'angry', worry: 'worry', sad: 'worry', happy: 'happy' })[emo] || 'neutral'}.webp`;
+  const bossSrc = (who, emo) => `assets/portraits/boss-${bossKind(who)}-${({ angry: 'angry', worry: 'worry', sad: 'worry', surprised: 'worry', happy: 'happy' })[emo] || 'neutral'}.webp`;
+  const PAINTED_BOSSES = new Set(["treant", "crystalKing", "bogHydra", "coralGolem", "frostQueen", "pumpkinBoss", "voidKing", "hunger", "byrexael", "wolf", "golem", "slime", "bandit", "kobold"]);
   const bossOk = new Map();   /* src → true/false, filled by the probe in play() */
   const heroName = () => { try { return (root.WorldState?.heroName?.() || root.s?.village?.heroName) || 'นักผจญภัย' } catch (e) { return 'นักผจญภัย' } };
   const female = () => { try { return /female/.test(root.HeroVariant?.get?.() || '') } catch (e) { return false } };
@@ -43,7 +44,7 @@
   function portrait(who, emo = 'neutral') {
     if (!who) return null; who = ALIAS[who] || who; const m = MOODS[emo] || 'neutral';
     if (who === 'hero') { const g = female() ? 'female' : 'male', e = ({ neutral: 'neutral', happy: 'happy', angry: 'angry', worry: 'worry', sad: 'sad', calm: 'calm' })[emo] || 'neutral'; return `assets/portraits/hero-${g}-${e}.webp` }
-    if (bossKind(who)) { const src = bossSrc(who, emo); return bossOk.get(src) === true ? src : null }
+    if (bossKind(who)) { const src = bossSrc(who, emo); return PAINTED_BOSSES.has(bossKind(who)) || bossOk.get(src) === true ? src : null }
     if (who === 'boss') return 'assets/cards/portraits/en-bandit.webp';
     if (who === 'mip') return 'mip'; if (who === 'sib') return female() ? 'assets/portraits/hero-male-' + m + '.webp' : 'assets/portraits/hero-female-' + m + '.webp';
     if (STORY.has(who)) return `assets/portraits/story/${who}-${m}.webp`;
@@ -84,7 +85,7 @@
     if (running) return running.then(() => play(lines, opt));
     css();
     /* v98.621 · every portrait of this conversation is decoded first (it used to be requested when the person first spoke → an empty stand for a moment) */
-    const probe = Promise.all([...new Set((lines || []).filter(l => bossKind(l.who)).map(l => bossSrc(l.who, l.emo)))].filter(src => !bossOk.has(src)).map(src => new Promise(r => { const im = new Image(); im.onload = () => { bossOk.set(src, true); r() }; im.onerror = () => { bossOk.set(src, false); r() }; im.src = src })));   /* v98.1021 · is the boss picture there yet? (they are being generated) */
+    const probe = Promise.all([...new Set((lines || []).filter(l => bossKind(l.who) && !PAINTED_BOSSES.has(bossKind(l.who))).map(l => bossSrc(l.who, l.emo)))].filter(src => !bossOk.has(src)).map(src => new Promise(r => { const im = new Image(); im.onload = () => { bossOk.set(src, true); r() }; im.onerror = () => { bossOk.set(src, false); r() }; im.src = src })));   /* v98.1021 · is the boss picture there yet? (they are being generated) */
     const pre = Promise.race([probe.then(() => Promise.all([...new Set((lines || []).map(l => l.who && portrait(l.who, l.emo)).filter(x => x && x !== 'mip'))].map(src => { const im = new Image(); im.src = src; return im.decode ? im.decode().catch(() => { }) : Promise.resolve() }))), new Promise(r => setTimeout(r, 1200))]);
     running = pre.then(() => new Promise(resolve => {
       el = document.createElement('div'); el.id = 'btTalk';

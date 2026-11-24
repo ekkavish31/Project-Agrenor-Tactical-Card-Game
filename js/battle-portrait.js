@@ -23,6 +23,11 @@
   const HERO_EXPR = { idle: 'neutral', attack: 'angry', hurt: 'worry', guard: 'calm', heal: 'happy', win: 'happy', down: 'sad' };
   const NPC_EXPR = { idle: 'neutral', attack: 'angry', hurt: 'surprised', guard: 'neutral', heal: 'happy', win: 'happy', down: 'surprised' };
   const LABEL = { idle: '', attack: 'ลงมือ!', hurt: 'เจ็บ!', guard: 'ตั้งรับ', heal: 'ฟื้นฟู', win: 'ชนะ', down: 'ล้ม' };
+  /* v98.1025 · four painted faces for each boss; common species use these only when marked boss. */
+  const BOSS_KINDS = new Set(["treant", "crystalKing", "bogHydra", "coralGolem", "frostQueen", "pumpkinBoss", "voidKing", "hunger", "byrexael", "wolf", "golem", "slime", "bandit", "kobold"]);
+  const UNIQUE_BOSSES = new Set(["treant", "crystalKing", "bogHydra", "coralGolem", "frostQueen", "pumpkinBoss", "voidKing", "hunger", "byrexael"]);
+  const BOSS_EXPR = { idle: 'neutral', guard: 'neutral', attack: 'angry', hurt: 'worry', down: 'worry', heal: 'happy', win: 'happy' };
+  const bossPortrait = u => u?.side === 'monster' && BOSS_KINDS.has(u.evoShow || u.kind) && (!!u.boss || UNIQUE_BOSSES.has(u.evoShow || u.kind));
   const cache = {};
   const hash = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h };
   const SKINS = ['#e8c9a8', '#d9b08c', '#c99a74', '#b88a6a', '#f0d8b8'], HAIRS = ['#2e2a26', '#6a4a2a', '#a8742a', '#cfcfd6', '#8a3a2a', '#e8d28a'], CLOTHS = ['#6a7a5a', '#5a6a8a', '#8a6a4a', '#7a5a6a', '#4a6a6a'];
@@ -90,6 +95,7 @@
     const j = jobOf(u), look = o.look === 'female' ? 'female' : 'male', other = look === 'female' ? 'male' : 'female';
     if (u.side === 'monster') {
       const mk = u.evoShow || u.kind;
+      if (!o.monCode && bossPortrait(u)) return { src: `assets/portraits/boss-${mk}-${BOSS_EXPR[m] || 'neutral'}.webp`, pos: '50% 8%', size: '100%', kind: 'real' };
       return o.monCode && root.CodeMonsters ? { src: root.CodeMonsters.icon(mk), pos: '50% 50%', size: '100%', kind: 'still' } : { src: `assets/cards/portraits/en-${mk}.webp`, pos: '50% 28%', size: '150%', kind: 'still' };
     }
     const isHero = u.id === 'hero', isSib = u.key === 'sib';
@@ -100,7 +106,7 @@
     const src = bust(spec, m);
     return src ? { src, pos: '50% 50%', size: '100%', kind: 'code' } : { src: `assets/village-town/npc/${u.key}/se-stand.webp`, pos: '50% 9%', size: '285%', kind: 'still' };
   }
-  const api = { JOB_COL, JOB_ICON, JOB_BY_ICON, ALLY, LABEL, jobOf, mood, face, bust, specFor, MOODS: ['idle', 'attack', 'hurt', 'guard', 'heal', 'win', 'down'] };
+  const api = { bossPortrait, JOB_COL, JOB_ICON, JOB_BY_ICON, ALLY, LABEL, jobOf, mood, face, bust, specFor, MOODS: ['idle', 'attack', 'hurt', 'guard', 'heal', 'win', 'down'] };
   root.BattlePortrait = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
