@@ -91,16 +91,20 @@ body.cs-open{overflow:hidden}
 /* picture buttons: the owner's gold-framed icons (assets/icons/menu/*.webp) with a small caption */
 .stk-acts button.ib{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:1px;width:62px;cursor:pointer;text-align:center;color:#f1dfb4;font:600 11px/1.15 'VillageThai','Noto Sans Thai',system-ui,sans-serif;text-shadow:0 1px 0 #000c;transition:transform .12s,filter .12s}
 .stk-acts button.ib img{width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 3px 3px #000a);-webkit-user-drag:none}
-.stk-acts button.ib:hover{transform:translateY(-2px);filter:brightness(1.12)}.stk-acts button.ib:active{transform:translateY(1px) scale(.97)}
-.stk-acts button.ib.primary{color:#fff1cf;animation:stkGlow 2.2s ease-in-out infinite}
+.stk-acts button.ib:hover{transform:translateY(-2px)}.stk-acts button.ib:hover img{filter:brightness(1.15) drop-shadow(0 3px 3px #000a)}.stk-acts button.ib:active{transform:translateY(1px) scale(.97)}
+.stk-acts button.ib{position:relative;isolation:isolate}.stk-acts button.ib img{position:relative;z-index:1}
+.stk-acts button.ib.primary{color:#ffe9b0}
+/* soft round glow behind the icon (no filter on a rectangular box) */
+.stk-acts button.ib.primary::before{content:"";position:absolute;z-index:0;left:50%;top:28px;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,206,110,.55) 0,rgba(255,180,70,.22) 42%,rgba(255,170,60,0) 70%);animation:stkGlow 2.2s ease-in-out infinite}
 .stk-acts button.ib:focus-visible{outline:2px solid #ffd77a;outline-offset:2px;border-radius:12px}
 /* text buttons: the battle button picture, 9-sliced */
 .stk-acts button.txt{all:unset;box-sizing:border-box;cursor:pointer;padding:0 8px;min-height:30px;display:inline-flex;align-items:center;justify-content:center;border:6px solid transparent;border-image:url(../assets/ui/battle-btn.webp) 14 fill/6px stretch;color:#fff3d2;font:700 13px/1 'VillageThai','Noto Sans Thai',system-ui,sans-serif;text-shadow:0 1px 0 #000a;transition:filter .12s,transform .12s}
 .stk-acts button.txt:hover{filter:brightness(1.15)}.stk-acts button.txt:active{transform:translateY(1px)}
-.stk-acts button.txt.primary{border-image-source:url(../assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none;animation:stkGlow 2.2s ease-in-out infinite}
+.stk-acts button.txt.primary{border-image-source:url(../assets/ui/battle-btn-hot.webp);color:#2a1a05;text-shadow:none;animation:stkBtnGlow 2.2s ease-in-out infinite}
 .stk-acts button.txt.go::after{content:"";width:0;height:0;margin-left:7px;border-left:7px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
 .stk-acts button:disabled{opacity:.45;cursor:not-allowed;animation:none}
-@keyframes stkGlow{50%{filter:drop-shadow(0 0 9px rgba(255,200,110,.85)) brightness(1.08)}}
+@keyframes stkGlow{0%,100%{opacity:.45;transform:scale(.88)}50%{opacity:1;transform:scale(1.08)}}@keyframes stkBtnGlow{50%{filter:brightness(1.18) saturate(1.1)}}
+@media (prefers-reduced-motion:reduce){.stk-acts button.ib.primary::before,.stk-acts button.txt.primary{animation:none}}
 .stk-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:2px;background:rgba(120,170,255,.2);color:#bcd3ff;border:1px solid rgba(120,170,255,.35)}
 #storyTracker.stk-done .stk-head{background:linear-gradient(90deg,rgba(150,220,140,.25),transparent)}
 #storyTracker.stk-folded .stk-body{display:none}

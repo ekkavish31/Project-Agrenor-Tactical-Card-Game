@@ -9,3 +9,5 @@
 - Respond to the user in Thai.
 
 - Current-era lore update (2026-11-07): read `docs/lore/CURRENT-ERA-CANON.md` and `docs/lore/GAME-LORE-REVISION-BRIEF.md` plus TODO section 11 before lore, story, card, or World Event work. Complete Canon Part A is the latest approved current-era canon; Part B is a game baseline and Part C defines limits. The Revision Brief contains proposals and a pending stone-object retcon; do not promote them to canon. These documents are stored for later work at the user's request: do not begin that implementation until requested. Preserve mystery/reveal boundaries and produce the dependency/impact review specified in the brief before code changes.
+
+- **PMM = Push Merge Main** (คำย่อของผู้ใช้): เมื่อผู้ใช้พิมพ์ "PMM" (หรือ "merge") ให้ push บรานช์ แล้ว merge เข้า `main` และ push `main` ได้ทันที (merge origin/main เข้าบรานช์ก่อน, แก้คอนฟลิกต์ `?v=`/เวอร์ชัน/changelog, bump เวอร์ชันใหม่ต่อจาก main) ห้าม force-push main · ถ้าผู้ใช้ไม่ได้สั่ง ให้ push แค่บรานช์แล้วถาม

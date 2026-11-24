@@ -1,0 +1,40 @@
+/* v98.1024 · SHOP UI — the raw-material shop (js/village-ui.js renderMarket): painted material cards in gold frames, a coin purse, ×1 / ×5 buy buttons.
+   New class names only (shop-*), so the older .market-item / ivory rules cannot fight with it. Painted art: assets/item-<iron|coal|wood|food>.webp */
+#panel .shop-wrap{display:grid;gap:16px}
+#panel .shop-purse{display:flex;align-items:center;gap:14px;padding:10px 18px;border-radius:14px;color:#ffe9b0;background:linear-gradient(180deg,#6a4a20,#3b2812 85%);border:2px solid #d4a94e;box-shadow:inset 0 1px 0 #ffe9b055,inset 0 -8px 16px #0005,0 4px 12px #0004;position:relative;overflow:hidden}
+#panel .shop-purse::before{content:'';position:absolute;inset:0;background:radial-gradient(120% 140% at 0% 0%,#ffdf9a2e,transparent 55%);pointer-events:none}
+#panel .shop-purse small{display:block;font-size:12px;letter-spacing:.06em;color:#e3c98e;opacity:.9}
+#panel .shop-purse strong{display:block;font-size:30px;line-height:1.05;color:#fff0bf;text-shadow:0 2px 6px #000a;font-variant-numeric:tabular-nums}
+#panel .shop-purse em{margin-left:auto;font-style:normal;font-size:13px;color:#e3c98e;text-align:right;opacity:.9}
+#panel .shop-coin{display:inline-block;flex:none;width:17px;height:17px;border-radius:50%;vertical-align:-3px;background:radial-gradient(circle at 34% 28%,#fff3b8,#f1c24a 45%,#a8701e);box-shadow:inset 0 0 0 2px #7a511699,0 1px 2px #0007}
+#panel .shop-coin.big{width:40px;height:40px;position:relative;box-shadow:inset 0 0 0 3px #7a5116aa,0 3px 8px #0009}
+#panel .shop-coin.big::after{content:'';position:absolute;inset:8px;border-radius:50%;border:2px solid #7a511688;background:radial-gradient(circle at 35% 30%,#fff0a8,#e8b53c)}
+#panel .shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:16px}
+#panel .shop-card{position:relative;display:flex;flex-direction:column;gap:6px;padding:6px;border-radius:16px;background:linear-gradient(145deg,#e6c06a,#8c6420 48%,#d2a548);box-shadow:0 8px 18px #0005,inset 0 1px 0 #fff7;transition:transform .16s ease,box-shadow .16s ease}
+#panel .shop-card:hover{transform:translateY(-3px);box-shadow:0 12px 24px #0006,0 0 18px #f0c24f66,inset 0 1px 0 #fff7}
+#panel .shop-art{position:relative;aspect-ratio:1/1;border-radius:11px;overflow:hidden;background:#1a1208;box-shadow:inset 0 0 0 2px #0007,inset 0 0 22px #000a}
+#panel .shop-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease;filter:saturate(1.05) contrast(1.03)}
+#panel .shop-card:hover .shop-art img{transform:scale(1.07)}
+#panel .shop-art::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(100% 90% at 50% 40%,transparent 55%,#000a),linear-gradient(180deg,#0000 62%,#000a)}
+#panel .shop-own{position:absolute;right:8px;top:8px;z-index:2;min-width:44px;padding:3px 9px 4px;text-align:center;line-height:1.05;border-radius:10px;color:#ffe9b0;background:linear-gradient(180deg,#4a3318f2,#2a1d0ef2);border:1.5px solid #d4a94e;box-shadow:0 2px 6px #000a}
+#panel .shop-own b{display:block;font-size:19px;font-variant-numeric:tabular-nums}
+#panel .shop-own small{display:block;font-size:10px;opacity:.85}
+#panel .shop-card.pop .shop-own{animation:shopPop .55s cubic-bezier(.2,1.8,.4,1)}
+@keyframes shopPop{0%{transform:scale(1)}35%{transform:scale(1.35);box-shadow:0 0 16px #ffd36b}100%{transform:scale(1)}}
+#panel .shop-info{padding:8px 10px 9px;border-radius:9px;text-align:center;background:linear-gradient(180deg,#f6e8c3,#e3cd96);box-shadow:inset 0 1px 0 #fff8,inset 0 -1px 0 #0002}
+#panel .shop-info h3{margin:0 0 3px;font-size:18px;color:#4a2f10;text-shadow:0 1px 0 #fff7}
+#panel .shop-info p{margin:0;min-height:2.7em;font-size:12.5px;line-height:1.35;color:#6b5230}
+#panel .shop-buy{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:stretch}
+#panel .shop-price{display:flex;align-items:center;gap:5px;padding:0 10px;border-radius:9px;font-weight:700;font-size:15px;color:#ffe9b0;background:linear-gradient(180deg,#4a3318,#2a1d0e);border:1.5px solid #c79a3f;font-variant-numeric:tabular-nums}
+#panel .shop-card.poor .shop-price{color:#ffb4a0;border-color:#a8503c}
+#panel .shop-btn{min-height:38px;padding:4px 6px;border-radius:9px;cursor:pointer;font:700 14px AgThai,system-ui,"Noto Sans Thai",sans-serif;color:#3a2508;background:linear-gradient(180deg,#f7d98a,#c98f2d);border:1.5px solid #7a5116;box-shadow:0 2px 0 #7a5116,inset 0 1px 0 #fff8;transition:filter .12s,transform .08s}
+#panel .shop-btn small{display:block;font-size:10.5px;font-weight:600;opacity:.8;line-height:1}
+#panel .shop-btn:hover:not(:disabled){filter:brightness(1.1)}
+#panel .shop-btn:active:not(:disabled){transform:translateY(2px);box-shadow:0 0 0 #7a5116,inset 0 1px 0 #fff8}
+#panel .shop-btn:disabled{cursor:not-allowed;filter:grayscale(.85) brightness(.82);opacity:.6}
+#panel .shop-btn:focus-visible{outline:2px solid #fff3b8;outline-offset:2px}
+#panel .shop-note{display:flex;align-items:center;gap:10px;font-size:12.5px;color:#6b5230;text-align:center}
+#panel .shop-note::before,#panel .shop-note::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,#b99552aa,transparent)}
+#panel .shop-away{padding:8px 12px;border-radius:9px;text-align:center;font-size:13px;color:#7a3a22;background:#f3d9c2;border:1px solid #c98a6f}
+@media(max-width:520px){#panel .shop-buy{grid-template-columns:1fr 1fr}#panel .shop-price{grid-column:1/-1;justify-content:center;padding:5px 10px}#panel .shop-purse strong{font-size:24px}#panel .shop-purse em{display:none}}
+@media(prefers-reduced-motion:reduce){#panel .shop-card,#panel .shop-art img{transition:none}#panel .shop-card.pop .shop-own{animation:none}}
