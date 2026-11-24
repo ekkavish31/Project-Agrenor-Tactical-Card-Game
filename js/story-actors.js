@@ -20,6 +20,7 @@
   for (const id of ['oren', 'pip', 'grev', 'gus', 'tom', 'may', 'marta', 'mira', 'saf', 'mil', 'luna', 'bram', 'kier', 'sigrid', 'orla', 'ren', 'nadia', 'olwen']) PAINTED[id] = [id, STORY_FACES];   /* + Mil · Luna · Bram (companions) */   /* v98.536 · + Graven (grev) · Gus · Tom · v98.542 · + May · Marta · Mira · Saf */
   /* v98.1025 · b:<kind> shares the authored battle boss portrait set. */
   for (const id of ["treant", "crystalKing", "bogHydra", "coralGolem", "frostQueen", "pumpkinBoss", "voidKing", "hunger", "byrexael", "wolf", "golem", "slime", "bandit", "kobold"]) PAINTED['b:' + id] = ['boss-' + id, STORY_FACES];
+  for (const id of ['bryn', 'ella', 'joe', 'ken', 'finn', 'berg', 'shep', 'pim', 'tess', 'ash', 'pell', 'hugo']) PAINTED[id] = [id, STORY_FACES];
   PAINTED.graven = PAINTED.grev;
   PAINTED.elder = PAINTED.oren;
   PAINTED.third = PAINTED.corvin;
@@ -203,6 +204,25 @@
   }
   /* v98.222 · the face picture for the dialogue box: the speaker's painted portrait (current mood) when they have a set, else null */
   function facePic(who, sp, face) { const P = PAINTED[sp?.bust || who] || (who === 'hero' ? heroSet() : who === 'sib' ? sibSet() : null); if (!P) return null; const f = Array.isArray(P[1]) ? (P[1].includes(face) ? face : 'neutral') : (P[1][face] || P[1].neutral); return portraitFile(P[0], f) }
+  /* v98.1037 · use the new NPC portraits in the village and interior talk boxes. */
+  const TALK_PORTRAITS = new Set(['bryn', 'ella', 'joe', 'ken', 'finn', 'berg', 'shep', 'pim', 'tess', 'ash', 'pell', 'hugo']);
+  const talkImages = new Map(), talkCanvases = new WeakMap();
+  function drawTalkPortrait(canvas, who, text, active = () => true) {
+    if (!canvas || !TALK_PORTRAITS.has(who)) return false;
+    const src = facePic(who, {}, faceOf({ text: text || '' }));
+    talkCanvases.set(canvas, src);
+    const paint = im => {
+      if (!active() || canvas.isConnected === false || talkCanvases.get(canvas) !== src || !im.naturalWidth) return;
+      const g = canvas.getContext('2d'), k = Math.min(canvas.width / im.naturalWidth, canvas.height / im.naturalHeight);
+      const w = im.naturalWidth * k, h = im.naturalHeight * k;
+      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, canvas.width, canvas.height);
+      g.drawImage(im, (canvas.width - w) / 2, canvas.height - h, w, h); g.restore();
+    };
+    let im = talkImages.get(src);
+    if (im) { if (im.complete) paint(im); else im.addEventListener('load', () => paint(im), { once: true }); }
+    else { im = new Image(); talkImages.set(src, im); im.onload = () => paint(im); im.src = src; }
+    return true;
+  }
   function emote(side, ch) { const st = stands[side]; st.querySelector('.cs-emote')?.remove(); if (!ch) return; const e = document.createElement('div'); e.className = 'cs-emote'; e.textContent = ch; st.append(e); setTimeout(() => e.remove(), 1700) }
   function fx(side, cls) { const st = stands[side]; st.classList.remove('fx-shock', 'fx-hop', 'fx-jump', 'fx-shake', 'fx-sag'); void st.offsetWidth; if (cls) for (const c of cls) st.classList.add(c) }
 
@@ -252,5 +272,5 @@
     const out = new Set(), add = P => { if (!P) return; const [set, f] = P; for (const x of (Array.isArray(f) ? f : Object.values(f))) out.add(portraitFile(set, x)) };
     for (const k of Object.keys(PAINTED)) add(PAINTED[k]); for (const k of Object.keys(HERO_SETS)) add(HERO_SETS[k]); return [...out];
   }
-  root.StoryActors = { allFaces, preload, facePic, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
+  root.StoryActors = { allFaces, preload, facePic, drawTalkPortrait, begin, end, line, talk, faceOf, drawBust, PAINTED, LOOK };
 })(typeof window !== 'undefined' ? window : globalThis);

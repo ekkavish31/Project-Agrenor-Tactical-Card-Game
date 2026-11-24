@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1034';
+  const V = '98.1037';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -612,6 +612,9 @@
   /* v98.253 · the face picture of a fighter (queue chips + inspect card) */
   function faceFor(u) {
     if (window.BattlePortrait?.bossPortrait(u)) return BattlePortrait.face(u, 'idle');
+    if (u.side !== 'monster' && u !== FB.hero(st) && u.key !== 'sib' && window.BattlePortrait) {
+      const face = BattlePortrait.face(u, 'idle'); if (face.kind === 'real') return face;
+    }
     const lookNow = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'female' : 'male' } catch (e) { return 'male' } })(), otherLook = lookNow === 'female' ? 'male' : 'female';
     return u.side === 'monster' ? (MON[u.evoShow || u.kind]?.code && window.CodeMonsters ? { src: CodeMonsters.icon(u.evoShow || u.kind), pos: '50% 50%', size: '100%' } : { src: `assets/cards/portraits/en-${u.evoShow || u.kind}.webp`, pos: '50% 28%', size: '150%' })
       : u === FB.hero(st) ? { src: `assets/portraits/hero-${lookNow}-neutral.webp`, pos: '50% 4%', size: '230%' }
