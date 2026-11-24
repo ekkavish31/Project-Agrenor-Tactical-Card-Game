@@ -19,7 +19,7 @@
     + '#imgGateVeil .gl-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a8701e,#f0c870 70%,#fff2c8);box-shadow:0 0 12px #f0c87088;transition:width .18s ease-out}'
     + '#imgGateVeil .gl-meta{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;color:#c9bb98}#imgGateVeil .gl-meta b{color:#e8c374;font-variant-numeric:tabular-nums}';
   (document.head || document.documentElement).appendChild(css);
-  try { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'css/mip-loader.css?v=v98.188'; (document.head || document.documentElement).appendChild(l) } catch (e) { }
+  try { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'css/mip-loader.css?v=v98.1035'; (document.head || document.documentElement).appendChild(l) } catch (e) { }
   const veil = document.createElement('div'); veil.id = 'imgGateVeil'; veil.setAttribute('role', 'progressbar');
   veil.innerHTML = '<div class="gl-box"><span class="gl-kicker">LOADING</span><h2 class="gl-title">กำลังเตรียมฉาก…</h2>'
     + '<div class="mip-track" aria-hidden="true" style="--mw:min(560px,calc(100vw - 40px));--ms:clamp(76px,11vh,108px)"><div class="mip-go"><div class="mip-flip"><div class="mip-run"><i></i></div><div class="mip-idle"><i></i></div></div></div></div>'
