@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6719 ไฟล์ (532.6 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6709 ไฟล์ (529.3 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -23,7 +23,7 @@
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 672 | 31.4 MB | `assets/tactics` 664 · `assets/objects` 7 · `assets/generated-village` 1 | 639 | 33 |
 | 🃏 การ์ด | 171 | 44.5 MB | `assets/cards` 169 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 158 | 16 |
-| 🎛 UI · ไอคอน · เมนู | 256 | 9.1 MB | `assets/ui` 125 · `assets/icons` 90 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 101 | 11 |
+| 🎛 UI · ไอคอน · เมนู | 257 | 9.6 MB | `assets/ui` 126 · `assets/icons` 90 · `assets/cursor` 33 · `assets/cursor-fantasy-active.png` 1 | 102 | 11 |
 | 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 170 | 22.6 MB | `assets/village-town` 155 · `assets/objects` 15 | 38 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 113 | 9.0 MB | `assets/terrain` 77 · `assets/world` 32 · `assets/v03` 4 | 9 | 2 |
@@ -33,7 +33,7 @@
 | 📖 เปิดเรื่อง · อินโทร · ฉาก | 72 | 83.6 MB | `assets/scenes` 33 · `assets/new-game-prologue` 17 · `assets/generated-village` 12 · `assets/intro` 10 | 45 | 0 |
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
 | 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 248 | 20.5 MB | `assets/_versions` 248 | 0 | 47 |
-| 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 42 | 6.9 MB | `archive/old-scene` 31 · `_archive/undefined-bg` 2 · `adjbox.png` 1 · `art-production/facing-arrows-4.png` 1 | 0 | 12 |
+| 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 31 | 3.1 MB | `archive/old-scene` 31 | 0 | 12 |
 
 ## หมวดย่อยในแต่ละหมวด
 
@@ -87,7 +87,7 @@
 - การ์ด src — 1
 
 ### 🎛 UI · ไอคอน · เมนู
-- UI — 125
+- UI — 126
 - ไอคอน — 90
 - เคอร์เซอร์เกม — 33
 - UI / เคอร์เซอร์ — 8
@@ -134,10 +134,6 @@
 
 ### 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง
 - archive — 31
-- art-production (แผ่นสไปรต์ต้นฉบับ) — 6
-- _archive — 2
-- dev — 2
-- ไฟล์ระดับบนสุดของรีโป — 1
 
 ## ไฟล์ซ้ำที่กินที่มากสุด (เนื้อหาเหมือนกันทุกไบต์ — ตรวจแล้วลบสำเนาได้ ถ้าไม่มีโค้ดอ้างพาธนั้น)
 - 0.8 MB เสียไปกับสำเนา 3 ไฟล์: `assets/objects/_workshop/iron-fence3-corner/L0.webp`, `assets/objects/_workshop/iron-fence4-corner-new-2/L0.webp`, `assets/objects/_workshop/iron-fence4-corner-new/L0.webp`

@@ -165254,6 +165254,20 @@
    "artRevision": "v98.1047",
    "usedIn": "oldKnife · การ์ดอุปกรณ์/อาวุธของตัวเอก",
    "prompt": "Match the approved father knife reference: practical short steel blade, worn dark brown grip, simple brass collar and pommel, stitched brown leather sheath with brass buckle; no magic or ornate embellishments."
+  },
+  {
+   "id": "ui-ivory-panel",
+   "category": "ui",
+   "name": "กรอบกระดาษงาช้าง · สมุดผนึก",
+   "file": "assets/ui/ivory-panel.webp",
+   "status": "final",
+   "transparent": true,
+   "size": 454334,
+   "usedIn": [
+    "css/ivory-ui.css",
+    "js/npc-emote.js"
+   ],
+   "note": "9-slice 12%; HUD, quest tracker, buttons, speech and loading. See assets/ui/ivory-panel.md."
   }
  ],
  "studioReviews": {

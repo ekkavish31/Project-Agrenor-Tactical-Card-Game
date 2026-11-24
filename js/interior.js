@@ -560,8 +560,9 @@
     if (day < 1) { g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = `rgba(15,20,55,${(1 - day) * .38})`; g.fillRect(0, 0, cv.width, cv.height) }
     /* speech bubbles on top, in screen space */
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    placed = []; for (const a of people.values()) if (a.bubble && t < a.bubble.until) bubble(a, a.bubble.txt);
     if (hoverId && people.get(hoverId)) { const a = people.get(hoverId), p = screen(a.vu, a.vv); label(a.p.name + ' · ' + fill(a.p.role), p.x, p.y - 100 * Z) }
+    placed = []; for (const a of people.values()) if (a.bubble && t < a.bubble.until) bubble(a, a.bubble.txt);
+    window.SceneLoad?.painted();
   }
   /* v95.01 · the villager the current intro quest wants (js/story-quests.js) gets a gold ◆ */
   let qT = null, qAt = 0;
@@ -649,7 +650,7 @@
   function leave() { if (KIND === 'farm') { location.href = /^[a-z0-9_-]+\.html$/i.test(Q.get('back') || '') ? Q.get('back') : 'world-map.html'; return } if (EMBED) { parent.postMessage({ source: 'project-a-place', type: 'leave' }, '*'); return } location.href = 'village-town.html?from=' + encodeURIComponent(PLACE) }
   if (EMBED) {
     addEventListener('message', e => { if (e.source !== parent || e.data?.source !== 'project-a-game') return; if (e.data.type === 'visibility') shown = !!e.data.visible });
-    addEventListener('load', () => { parent.postMessage({ source: 'project-a-place', type: 'ready' }, '*'); if (KIND === 'guild') setTimeout(() => { try { parent.Story?.guildFirst?.() } catch (e) { } }, 1400) });   /* v98.584 · the clerk's first talk (js/story-quests.js) */
+    addEventListener('load', async () => { if(window.SceneLoad)await SceneLoad.done;parent.postMessage({ source: 'project-a-place', type: 'ready', place: PLACE }, '*'); if (KIND === 'guild') setTimeout(() => { try { parent.Story?.guildFirst?.() } catch (e) { } }, 1400) });   /* v98.584 · the clerk's first talk (js/story-quests.js) */
   }
 
   /* ---------- UI ---------- */
