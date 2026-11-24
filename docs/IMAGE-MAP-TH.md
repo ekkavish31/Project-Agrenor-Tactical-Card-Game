@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6611 ไฟล์ (523.4 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6608 ไฟล์ (526.4 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -28,12 +28,12 @@
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 113 | 9.0 MB | `assets/terrain` 77 · `assets/world` 32 · `assets/v03` 4 | 9 | 2 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
-| ✨ เอฟเฟกต์ | 68 | 4.0 MB | `assets/fx` 68 | 0 | 0 |
+| ✨ เอฟเฟกต์ | 76 | 10.7 MB | `assets/fx` 76 | 8 | 0 |
 | 🎒 ไอเทม · อาวุธ · พืชผล | 61 | 5.3 MB | `assets/crops` 36 · `assets/weapons` 7 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 25 | 1 |
 | 📖 เปิดเรื่อง · อินโทร · ฉาก | 72 | 83.6 MB | `assets/scenes` 33 · `assets/new-game-prologue` 17 · `assets/generated-village` 12 · `assets/intro` 10 | 45 | 0 |
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
 | 🕘 ประวัติเวอร์ชัน (เก็บไว้ย้อน) | 248 | 20.5 MB | `assets/_versions` 248 | 0 | 47 |
-| 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 42 | 6.9 MB | `archive/old-scene` 31 · `_archive/undefined-bg` 2 · `adjbox.png` 1 · `art-production/facing-arrows-4.png` 1 | 0 | 12 |
+| 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง | 31 | 3.1 MB | `archive/old-scene` 31 | 0 | 12 |
 
 ## หมวดย่อยในแต่ละหมวด
 
@@ -113,7 +113,7 @@
 - ไอคอนสถานที่ / เบ็ดเตล็ด (ระดับบนสุดของ assets) — 3
 
 ### ✨ เอฟเฟกต์
-- เอฟเฟกต์ — 68
+- เอฟเฟกต์ — 76
 
 ### 🎒 ไอเทม · อาวุธ · พืชผล
 - พืชผล — 36
@@ -134,10 +134,6 @@
 
 ### 🗄 เก็บถาวร · ชั่วคราว · ตัวอย่าง
 - archive — 31
-- art-production (แผ่นสไปรต์ต้นฉบับ) — 6
-- _archive — 2
-- dev — 2
-- ไฟล์ระดับบนสุดของรีโป — 1
 
 ## ไฟล์ซ้ำที่กินที่มากสุด (เนื้อหาเหมือนกันทุกไบต์ — ตรวจแล้วลบสำเนาได้ ถ้าไม่มีโค้ดอ้างพาธนั้น)
 - 0.8 MB เสียไปกับสำเนา 3 ไฟล์: `assets/objects/_workshop/iron-fence3-corner/L0.webp`, `assets/objects/_workshop/iron-fence4-corner-new-2/L0.webp`, `assets/objects/_workshop/iron-fence4-corner-new/L0.webp`

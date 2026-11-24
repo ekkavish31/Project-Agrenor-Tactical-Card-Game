@@ -109,6 +109,10 @@
   {
    "id": "battle-field",
    "name": "สนามรบ (พื้นผิวและพร็อพ)"
+  },
+  {
+   "id": "vfx",
+   "name": "เอฟเฟกต์ภาพเคลื่อนไหว"
   }
  ],
  "statuses": {
@@ -162342,6 +162346,166 @@
     941
    ],
    "usedIn": "TownEvents.card · เหตุการณ์เมืองเดิม v98.947"
+  },
+  {
+   "id": "spell-anim-ice",
+   "file": "assets/fx/anim/ice-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์น้ำแข็ง 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-lightning",
+   "file": "assets/fx/anim/lightning-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์สายฟ้า 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-water",
+   "file": "assets/fx/anim/water-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์น้ำ 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-wind",
+   "file": "assets/fx/anim/wind-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์ลม 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-earth",
+   "file": "assets/fx/anim/earth-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์ดิน 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-dark",
+   "file": "assets/fx/anim/dark-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์ราตรี 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-heal",
+   "file": "assets/fx/anim/heal-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์รักษา 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
+  },
+  {
+   "id": "spell-anim-shield",
+   "file": "assets/fx/anim/shield-cast.webp",
+   "category": "vfx",
+   "status": "final",
+   "size": [
+    1774,
+    887
+   ],
+   "transparent": true,
+   "subject": "เอฟเฟกต์โล่ 8 เฟรม (4×2)",
+   "usedIn": "VfxKit painted8; BattleVFX / town-battle",
+   "frames": 8,
+   "cols": 4,
+   "rows": 2,
+   "anchor": [
+    0.5,
+    0.82
+   ]
   }
  ],
  "studioReviews": {
