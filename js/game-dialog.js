@@ -26,7 +26,8 @@ window.prompt=(msg,def)=>ask('prompt',msg,def);
 // styles live here so every page that loads this file gets the game window look
 let css=document.createElement('style');css.textContent=`.game-dialog{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:#0a1020a8;animation:gd-in .18s ease-out}
 .gd-box{width:min(440px,calc(100vw - 32px));background:linear-gradient(#1d2a44,#121b2e);color:#f5e6c4;border:2px solid #d9b46b;border-radius:14px;box-shadow:0 0 0 4px #00000055,0 18px 50px #000c,inset 0 0 0 1px #ffe8a633;padding:14px 18px 14px;font:15px/1.55 AgThai,system-ui,sans-serif}
-.gd-box header{font:700 17px AgThai,Georgia,serif;color:#ffe8a6;letter-spacing:.5px;border-bottom:1px solid #d9b46b55;padding-bottom:8px;margin-bottom:10px}
+.gd-box header{display:flex;align-items:center;gap:10px;padding-left:0;background:none;font:700 17px AgThai,Georgia,serif;color:#ffe8a6;letter-spacing:.5px;border-bottom:1px solid #d9b46b55;padding-bottom:8px;margin-bottom:10px}
+.gd-box header::before{content:'';flex:none;width:38px;height:38px;margin:-4px 0 -4px -4px;background:url(assets/icons/menu/quest.webp) center/contain no-repeat;filter:drop-shadow(0 2px 4px #0009)}   /* v98.1051 · asset icon (was the page header's ✧ diamond leaking in) */
 .gd-box p{margin:0 0 12px;white-space:normal}.gd-box input{width:100%;box-sizing:border-box;margin:0 0 12px;padding:8px 10px;border-radius:8px;border:1px solid #a88a58;background:#f7e8c5;color:#2a2318;font:inherit}
 .gd-box footer{display:flex;justify-content:flex-end;gap:8px}.gd-box button{min-width:92px;padding:8px 14px;border-radius:9px;border:1px solid #a88a58;background:#f7e8c5;color:#2a2318;font:600 14px AgThai,system-ui,sans-serif;cursor:pointer}
 .gd-box button.primary{background:linear-gradient(#f0c560,#c9901f);border-color:#7a4b06;color:#2a1a05}.gd-box button:focus-visible{outline:3px solid #ffe8a6;outline-offset:2px}

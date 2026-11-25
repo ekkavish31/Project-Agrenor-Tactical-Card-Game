@@ -190,18 +190,6 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 /* tide — a calm cross-dissolve with a slow settle (no sideways move or rotation: the old "wave" shook) */
 #titleScreen .ts-story-layer.fx-tide:not(.fx-done){animation-name:fx-tide;animation-duration:2.2s}
 @keyframes fx-tide{0%{opacity:0;transform:scale(1.06);filter:blur(10px) brightness(1.1)}100%{opacity:1;transform:none;filter:var(--b)}}
-/* gender choice on the name form */
-#titleScreen .ts-name .ts-gender{display:flex;justify-content:center;gap:14px;margin:4px 0 14px}
-#titleScreen .ts-name .ts-g{width:100px;padding:8px 6px 7px;border-radius:12px;border:2px solid #d9b46b55;background:#0d1424b8;color:#d8c9a4;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font:600 14px AgThai,system-ui,sans-serif;transition:border-color .15s,transform .15s,background .15s}
-#titleScreen .ts-name .ts-g .ts-gframe{position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;background:radial-gradient(#fff4d2,#d9c08a);border:2px solid #8a6a3a}
-/* the sprite is 384×384 with the head at x 120–264, y 80–224: show that square (scale .5) */
-#titleScreen .ts-name .ts-g .ts-gframe img{position:absolute;max-width:none;width:192px;height:192px;left:-60px;top:-40px;pointer-events:none;image-rendering:auto}
-#titleScreen .ts-name .ts-g:hover{transform:translateY(-2px);border-color:#ffe6a9}
-#titleScreen .ts-name .ts-g.on{border-color:#ffd978;background:linear-gradient(#3a2c12e6,#1d2a44e6);color:#ffe8a6;box-shadow:0 0 0 2px #ffd97855}
-#titleScreen .ts-name .ts-g:focus-visible{outline:3px solid #ffe8a6;outline-offset:2px}
-#titleScreen .ts-name .ts-g .ts-gframe.portrait img{width:128px;height:auto;top:-4px}
-#titleScreen .ts-name .ts-g[data-g=female] .ts-gframe.portrait img{width:112px;left:-2px;top:2px}
-#titleScreen .ts-name .ts-g[data-g=male] .ts-gframe.portrait img{left:-30px;top:-8px}
 
 /* heat — warm light blooms in and the picture settles from a slight zoom; never dips dark (the old "ember" flicker looked like a power cut) */
 #titleScreen .ts-story-layer.fx-heat:not(.fx-done){animation-name:fx-heat;animation-duration:2.4s}
@@ -210,33 +198,64 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 /* v98.216 · prologue narration text is twice as big (was 18–25 px → 36–50 px). The box is wider and taller so a page still holds a whole sentence or two; longer passages split into more pages at sentence ends (DialogueFX). */
 #titleScreen .ts-story-text{width:min(1240px,calc(100vw - 48px));font-size:clamp(34px,4.4vw,50px);line-height:1.55;letter-spacing:.005em;margin-bottom:clamp(60px,9vh,96px);min-height:3.2em}
 @media(max-width:700px){#titleScreen .ts-story-text{font-size:clamp(26px,6.4vw,34px);line-height:1.5}}
-/* v98.230 · name both heroes: two cards, each with its own name field; the highlighted card is the one you play */
-#titleScreen .ts-name{width:min(560px,calc(100vw - 32px))}
-#titleScreen .ts-name .ts-gender{gap:16px;align-items:stretch}
-#titleScreen .ts-name .ts-g{width:min(230px,44vw);padding:10px 10px 9px;gap:6px;cursor:pointer}
-#titleScreen .ts-name .ts-g input{margin-top:2px;padding:8px 10px;font-size:16px;text-align:center}
-#titleScreen .ts-name .ts-g small{font:600 12px AgThai,system-ui,sans-serif;color:#d8c9a4;min-height:1.2em}
-#titleScreen .ts-name .ts-g.on small{color:#ffe8a6}
 /* v98.230 · loading screen waiting for a key press before the prologue */
 #gameLoading.gl-gate .gl-tip{font-size:18px;font-weight:700;color:#ffe8a6;animation:glGate 1.3s ease-in-out infinite}
 @keyframes glGate{0%,100%{opacity:.55}50%{opacity:1}}
-/* v98.235 · name form: the two heroes' half-body dialogue portraits face each other (the picker); the name fields sit below, outside the picker */
-#titleScreen .ts-name{width:min(700px,calc(100vw - 24px))}
-#titleScreen .ts-name .ts-gender{gap:0;justify-content:center;align-items:flex-end;margin:2px 0 8px}
-#titleScreen .ts-name .ts-g{width:min(300px,46vw);height:min(300px,40vh);padding:0 6px 8px;position:relative;overflow:hidden;justify-content:flex-end;gap:2px;background:radial-gradient(ellipse at 50% 85%,#3a4a70aa,#0d1424b8 70%)}
-#titleScreen .ts-name .ts-g .ts-gframe{position:absolute;inset:0 0 54px 0;width:auto;height:auto;border:0;border-radius:0;background:none;overflow:hidden}
-#titleScreen .ts-name .ts-g .ts-gframe img,#titleScreen .ts-name .ts-g .ts-gframe.portrait img{position:absolute;left:50%;top:0;width:auto!important;height:100%!important;max-width:none;transform:translateX(-50%);object-fit:contain;filter:brightness(.62) saturate(.75);transition:filter .25s}
-#titleScreen .ts-name .ts-g[data-g=female] .ts-gframe img{transform:translateX(-50%) scaleX(-1)}   /* the left hero looks right, the right one looks left: they face each other */
-#titleScreen .ts-name .ts-g.on .ts-gframe img{filter:none}
-#titleScreen .ts-name .ts-g b,#titleScreen .ts-name .ts-g small{position:relative;text-shadow:0 1px 4px #000}
-#titleScreen .ts-name .ts-g[data-g=female]{border-radius:14px 0 0 14px}#titleScreen .ts-name .ts-g[data-g=male]{border-radius:0 14px 14px 0}
-#titleScreen .ts-name .ts-names{display:flex;gap:14px;justify-content:center;margin:0 0 4px}
-#titleScreen .ts-name .ts-nm{flex:1;max-width:300px;display:flex;flex-direction:column;gap:4px;text-align:left;font:600 13px AgThai,system-ui,sans-serif;color:#d8c9a4}
-#titleScreen .ts-name .ts-nm input{text-align:center}
 /* v98.247 · the loading screen's tip line has a fixed height, so swapping it for the bigger "press any key" text no longer changes the box height (the picture and bar used to jump) */
 #gameLoading .gl-tip{height:64px;line-height:28px;overflow:visible}
 #gameLoading.gl-gate .gl-tip{line-height:28px}
-#titleScreen .ts-name .ts-inw{position:relative;display:block}#titleScreen .ts-name .ts-inw input{padding-right:40px}#titleScreen .ts-name .ts-edit{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border-radius:7px;border:1px solid #a88a58;background:#e4cf9c;color:#5a3a10;font:16px/1 system-ui;cursor:pointer}#titleScreen .ts-name .ts-edit:hover{background:#ffe8a6}
 
 /* v98.1024 · loading screen +50% (zoom keeps every proportion) */
 #gameLoading .gl-box{zoom:1.5;width:min(560px,calc((100vw - 40px)/1.5))}#gameLoading .gl-box .mip-track{--mw:100%!important}
+
+/* v98.1049 · name form redesigned: game-style gold frame, two bright "stage" cards that pop off the dark panel, nothing chosen by default, start button locked until a hero is picked and both names typed */
+#titleScreen .ts-name{width:min(760px,calc(100vw - 24px));max-height:calc(100vh - 16px);overflow:auto;padding:22px 28px 22px;border:2px solid #e8c374;border-radius:16px;background:radial-gradient(ellipse 80% 50% at 50% 0,#2c3f6a 0,#16223a 55%,#0c1322 100%);box-shadow:0 0 0 3px #0008,0 0 0 5px #b8862f88,0 24px 70px #000e,inset 0 0 60px #0006}
+#titleScreen .ts-name .ts-c{position:absolute;width:22px;height:22px;border:3px solid #ffd978;pointer-events:none;filter:drop-shadow(0 0 4px #ffb94a88)}
+#titleScreen .ts-name .ts-c1{left:6px;top:6px;border-right:0;border-bottom:0;border-top-left-radius:10px}#titleScreen .ts-name .ts-c2{right:6px;top:6px;border-left:0;border-bottom:0;border-top-right-radius:10px}
+#titleScreen .ts-name .ts-c3{left:6px;bottom:6px;border-right:0;border-top:0;border-bottom-left-radius:10px}#titleScreen .ts-name .ts-c4{right:6px;bottom:6px;border-left:0;border-top:0;border-bottom-right-radius:10px}
+#titleScreen .ts-name h2{margin:8px 0 6px;font-size:30px;text-shadow:0 2px 0 #0008,0 0 18px #ffb94a55}
+#titleScreen .ts-name .ts-orn{display:flex;align-items:center;gap:10px;justify-content:center;margin:0 auto 6px;width:min(320px,70%)}
+#titleScreen .ts-name .ts-orn i{flex:1;height:2px;background:linear-gradient(90deg,#0000,#e8c374,#0000)}#titleScreen .ts-name .ts-orn b{color:#ffd978;font-size:14px;line-height:1}
+#titleScreen .ts-name .ts-sub{margin:0 0 14px;font-size:14px;color:#e6d8b4}
+#titleScreen .ts-name .ts-cols{display:flex;gap:22px;justify-content:center;align-items:flex-start;margin:0 0 6px}
+#titleScreen .ts-name .ts-col{flex:1;max-width:320px;display:flex;flex-direction:column;gap:10px}
+/* the card: a lit stage (warm sky + floor glow) so the portrait stands out from the navy window */
+#titleScreen .ts-name .ts-g{position:relative;width:100%;height:min(340px,42vh);padding:0 8px 10px;border-radius:14px;border:2px solid #8a6a3a;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:1px;cursor:pointer;color:#f3e4bd;font:600 14px AgThai,system-ui,sans-serif;background:radial-gradient(ellipse 70% 55% at 50% 78%,#f2c66a66,#0000 70%),linear-gradient(180deg,#6f86b8 0,#4a5f92 45%,#2b3a63 100%);box-shadow:inset 0 0 0 1px #ffffff22,inset 0 -40px 50px #0a0f1d99,0 6px 16px #0007;transition:transform .18s,border-color .18s,box-shadow .18s,filter .25s}
+#titleScreen .ts-name .ts-g::before{content:"";position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 70%,#ffe8a600 0 7deg,#ffe8a61f 7deg 14deg);opacity:0;transition:opacity .3s;pointer-events:none}
+#titleScreen .ts-name .ts-g .ts-gframe{position:absolute;inset:0 0 60px 0;width:auto;height:auto;border:0;border-radius:0;background:none;overflow:hidden}
+#titleScreen .ts-name .ts-g .ts-gframe img{position:absolute;left:50%;top:6px;width:auto;height:calc(100% - 6px);max-width:none;transform:translateX(-50%);object-fit:contain;pointer-events:none;filter:drop-shadow(0 6px 8px #000a);transition:filter .25s,transform .25s}
+#titleScreen .ts-name .ts-g[data-g=female] .ts-gframe img{transform:translateX(-50%) scaleX(-1)}   /* the left hero looks right, the right one looks left: they face each other */
+#titleScreen .ts-name .ts-g .ts-tag{position:relative;font-style:normal;font:700 12px AgThai,system-ui,sans-serif;letter-spacing:.08em;padding:2px 12px;border-radius:99px;background:#0b1222cc;color:#c9bb98;border:1px solid #ffffff22}
+#titleScreen .ts-name .ts-g .ts-tag:empty{display:none}
+#titleScreen .ts-name .ts-g b{position:relative;font:700 22px AgThai,Georgia,serif;color:#fff1c8;text-shadow:0 2px 5px #000}
+#titleScreen .ts-name .ts-g small{position:relative;font:600 12px AgThai,system-ui,sans-serif;color:#e6d8b4;min-height:1.2em;text-shadow:0 1px 4px #000}
+#titleScreen .ts-name .ts-g:hover{transform:translateY(-3px);border-color:#ffe6a9;box-shadow:inset 0 0 0 1px #ffffff33,inset 0 -40px 50px #0a0f1d88,0 10px 22px #000a,0 0 18px #ffd97844}
+#titleScreen .ts-name .ts-g:focus-visible{outline:3px solid #ffe8a6;outline-offset:3px}
+/* picked: gold frame, rays, full colour, lifted */
+#titleScreen .ts-name .ts-g.on{transform:translateY(-4px) scale(1.02);border-color:#ffd978;box-shadow:inset 0 0 0 2px #ffd978aa,0 0 0 3px #ffd97877,0 0 34px 6px #ffb94a88,0 12px 26px #000b;background:radial-gradient(ellipse 75% 60% at 50% 75%,#ffe39a99,#0000 72%),linear-gradient(180deg,#8aa0d4 0,#5a70a8 45%,#33436f 100%)}
+#titleScreen .ts-name .ts-g.on::before{opacity:1;animation:ts-rays 14s linear infinite}
+#titleScreen .ts-name .ts-g.on .ts-tag{background:linear-gradient(#ffe39a,#d9a43a);color:#3a2403;border-color:#7a4b06;box-shadow:0 0 10px #ffd97899}
+#titleScreen .ts-name .ts-g.on small{color:#ffe8a6}
+/* the other card steps back so the choice reads at a glance */
+#titleScreen .ts-name .ts-g.off{filter:grayscale(.65) brightness(.62);transform:scale(.97)}
+#titleScreen .ts-name .ts-g.off:hover{filter:grayscale(.2) brightness(.85)}
+@keyframes ts-rays{to{transform:rotate(360deg) scale(1.4)}}
+/* name fields */
+#titleScreen .ts-name .ts-nm{display:flex;flex-direction:column;gap:4px;text-align:left;font:600 13px AgThai,system-ui,sans-serif;color:#d8c9a4}
+#titleScreen .ts-name .ts-inw{position:relative;display:block}
+#titleScreen .ts-name .ts-inw input{padding:10px 40px 10px 12px;font-size:17px;border:2px solid #a88a58;background:#f7e8c5;box-shadow:inset 0 2px 5px #0003}
+#titleScreen .ts-name .ts-inw input::placeholder{color:#8a7a58;font-weight:500}
+#titleScreen .ts-name .ts-edit{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;padding:0;border-radius:7px;border:1px solid #a88a58;background:#e4cf9c;color:#5a3a10;font:16px/1 system-ui;cursor:pointer}
+#titleScreen .ts-name .ts-edit:hover{background:#ffe8a6}
+/* status line + start button */
+#titleScreen .ts-name .ts-need{margin:8px 0 10px;min-height:1.4em;font:600 13px AgThai,system-ui,sans-serif;color:#f0b97a}
+#titleScreen .ts-name.ts-ready .ts-need{color:#a8e6a0}
+#titleScreen .ts-name .ts-go{width:min(360px,100%);display:block;margin:0 auto;padding:13px;border-radius:11px;font-size:18px;letter-spacing:.04em;box-shadow:0 0 0 2px #7a4b06,0 6px 0 #7a4b06,0 10px 18px #0008;transition:transform .15s,box-shadow .15s,filter .2s}
+#titleScreen .ts-name .ts-go:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.1)}
+#titleScreen .ts-name .ts-go:not(:disabled):active{transform:translateY(3px);box-shadow:0 0 0 2px #7a4b06,0 3px 0 #7a4b06}
+#titleScreen .ts-name.ts-ready .ts-go{animation:ts-go-pulse 1.6s ease-in-out infinite}
+@keyframes ts-go-pulse{0%,100%{box-shadow:0 0 0 2px #7a4b06,0 6px 0 #7a4b06,0 10px 18px #0008,0 0 0 0 #ffd97800}50%{box-shadow:0 0 0 2px #7a4b06,0 6px 0 #7a4b06,0 10px 18px #0008,0 0 22px 4px #ffd978aa}}
+#titleScreen .ts-name .ts-go:disabled{cursor:not-allowed;filter:grayscale(1) brightness(.55);background:linear-gradient(#6b6b6b,#4a4a4a);color:#bbb;border-color:#333;box-shadow:0 0 0 2px #222,0 4px 0 #222}
+@media(max-height:620px){#titleScreen .ts-name{padding:14px 22px}#titleScreen .ts-name h2{font-size:24px;margin:4px 0}#titleScreen .ts-name .ts-g{height:min(240px,38vh)}#titleScreen .ts-name .ts-sub{margin-bottom:8px}}
+@media(max-width:520px){#titleScreen .ts-name .ts-cols{gap:10px}#titleScreen .ts-name{padding:18px 14px}}
+@media(prefers-reduced-motion:reduce){#titleScreen .ts-name .ts-g.on::before,#titleScreen .ts-name.ts-ready .ts-go{animation:none}}
