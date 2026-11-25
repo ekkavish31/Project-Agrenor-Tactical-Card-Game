@@ -3,6 +3,9 @@
 html body #fbHud,html body #storyTracker,html body #fbPause .box,html body #fbAlly,html body #fbCoach,html body #fbInspect,html body #btTalk .bt-box,html body #btTalk .bt-name,html body #townPreview,html body #npcTalk{
  background:transparent!important;border:18px solid transparent!important;border-image:var(--ivory-art) 12% fill / 18px / 0 stretch!important;border-radius:0!important;color:var(--ivory-ink)!important;box-shadow:none!important;filter:drop-shadow(0 5px 8px #22150960)!important;text-shadow:none!important
 }
+/* v98.1049 · hover preview card (ชื่อสถานที่/คำอธิบาย) was cream text on cream paper: use dark ink */
+html body #townPreview h3{color:var(--ivory-ink)!important;text-shadow:none!important}
+html body #townPreview p{color:#4a3419!important;text-shadow:none!important}
 html body #fbHud{padding:3px 7px!important;width:280px;max-height:calc(100dvh - 24px);overflow:auto;scrollbar-width:thin;scrollbar-color:#ae8749 #ead9b0}
 html body #fbHud :is(.grp,.mini,small,.help,#fbGoal,#fbLog),html body #storyTracker :is(small,.stk-hint,.stk-night,.stk-goal,.stk-head b),html body #btTalk :is(.bt-text,.bt-hint),html body #npcTalk :is(p,small,h3){color:var(--ivory-muted)!important;text-shadow:none!important}
 html body #fbHud .grp{border-top-color:#98743b55}
