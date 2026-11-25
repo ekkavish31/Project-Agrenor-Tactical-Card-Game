@@ -171,7 +171,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  <nav class="ts-menu" aria-label="เมนูหลัก">
   <button data-act="new"><span>New Game</span><small>เริ่มเกมใหม่</small></button>
   <button data-act="continue" ${hasSave?'':'disabled hidden'}><span>Continue</span><small>${hasSave?saveSummary():'ยังไม่มีเซฟ'}</small></button>
-  ${(()=>{const n=[1,2,3].filter(i=>{try{return !!localStorage.getItem('projectA.slot.'+i)}catch(e){return false}}).length;return n?`<button data-act="load"><span>Load</span><small>โหลดจากช่องเซฟ (${n} ช่อง)</small></button>`:''})()}
+  ${(()=>{if(root.RunSlots)return root.RunSlots.anyRun()?`<button data-act="load"><span>Load</span><small>เลือก Run · เซฟอัตโนมัติ / เซฟมือ</small></button>`:'';const n=[1,2,3].filter(i=>{try{return !!localStorage.getItem('projectA.slot.'+i)}catch(e){return false}}).length;return n?`<button data-act="load"><span>Load</span><small>โหลดจากช่องเซฟ (${n} ช่อง)</small></button>`:''})()}
   <button data-act="options"><span>Options</span><small>ตั้งค่าเกม</small></button>
   <button data-act="extra"><span>Extra</span><small>วิธีเล่น · คลังภาพ · เครดิต</small></button>
   <div class="ts-tools" ${DEV?'':'hidden'}><a href="editor.html" target="_blank" rel="noopener" title="แก้ภาพ/แอนิเมชัน การ์ด แผนที่ สนามต่อสู้ (เปิดแท็บใหม่)">✎ Editor</a></div>
@@ -216,11 +216,15 @@ for(const ev of ['fullscreenchange','webkitfullscreenchange'])document.addEventL
 async function act(a){if(busyTitle)return;
  /* v97.05 · New Game over a save asks first and then reloads (which leaves fullscreen anyway); going fullscreen before the question made the dialog jump. The reload re-enters fullscreen on the next click */
  /* v98.341 · Continue no longer goes fullscreen by itself (user request); the in-game fullscreen button still works */
- if(a==='new'){if(hasSave){const ok=await (root.GameDialog?root.GameDialog.confirm('เริ่มเกมใหม่?\nความคืบหน้าในเซฟปัจจุบันจะถูกแทนที่ (ระบบเก็บสำเนาเซฟเดิมไว้ให้ 1 ชุด) · การ์ดที่ออกแบบและผังหมู่บ้านยังอยู่'):Promise.resolve(root.confirm('เริ่มเกมใหม่?')));if(!ok)return;
-   try{localStorage.setItem('three-card-forge-before-newgame',localStorage.getItem(SAVE)||'');localStorage.removeItem(SAVE);localStorage.removeItem(STARTED);for(const k of ['agrenor-world-v1','agrenor-mind-v1','agrenor-clock-v1','agrenor-standalone-v1'])localStorage.removeItem(k);/* v94: the world map, village memory and old clock start over too */sessionStorage.setItem(NEW_FLAG,'1')}catch{}busyTitle=true;title.classList.add('ts-out');await wait(reduced?0:300);location.reload();return}
-  prepareStory();return}
+ if(a==='new'){const go=async n=>{if(n)try{root.RunSlots.beginNew(n)}catch{}/* v98.1055 · the chosen Run slot becomes active; the previous run keeps its saves */
+   if(hasSave){try{localStorage.setItem('three-card-forge-before-newgame',localStorage.getItem(SAVE)||'')}catch{}}
+   if(hasSave){try{localStorage.removeItem(SAVE);localStorage.removeItem(STARTED);for(const k of ['agrenor-world-v1','agrenor-mind-v1','agrenor-clock-v1','agrenor-standalone-v1'])localStorage.removeItem(k);sessionStorage.setItem(NEW_FLAG,'1')}catch{}busyTitle=true;title.classList.add('ts-out');await wait(reduced?0:300);location.reload();return}
+   prepareStory()};
+  if(root.RunSlots){root.RunSlots.ui('new',n=>go(n));return}
+  if(hasSave){const ok=await (root.GameDialog?root.GameDialog.confirm('เริ่มเกมใหม่?\nความคืบหน้าในเซฟปัจจุบันจะถูกแทนที่ (ระบบเก็บสำเนาเซฟเดิมไว้ให้ 1 ชุด) · การ์ดที่ออกแบบและผังหมู่บ้านยังอยู่'):Promise.resolve(root.confirm('เริ่มเกมใหม่?')));if(!ok)return}
+  go(0);return}
  if(a==='continue'&&hasSave){enter(false);return}
- if(a==='load'){root.ConsoleUI?.slotMenu('load');return}
+ if(a==='load'){if(root.RunSlots)root.RunSlots.ui('load');else root.ConsoleUI?.slotMenu('load');return}
  if(a==='options'){if(typeof root.openSettings==='function')root.openSettings();return}
  if(a==='extra'){title.querySelector('.ts-extra').hidden=false;tab('howto');return}
  if(a==='close-extra'){title.querySelector('.ts-extra').hidden=true;title.querySelector('[data-act="extra"]').focus();return}
