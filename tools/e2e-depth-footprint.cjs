@@ -1,5 +1,5 @@
 // v98.146 · depth by footprint + cover look: (1) a walker beside the END of a long wall is ordered by the wall's footprint, not by its centre point;
-// (2) a tall part in front of a walker fades (drawn several times in rings) and the walker is redrawn as a ghost; a low part only obeys the order (drawn once).
+// (2) a tall part in front of a walker fades (v98.1064: drawn once outside a box around the walker + once into a scratch box that is faded) and the walker is redrawn as a ghost; a low part only obeys the order (drawn once).
 // Run: node tools/e2e-depth-footprint.cjs   (needs Playwright + Chromium; serves the repo itself)
 const http = require('node:http'), fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict');
 const { chromium } = require('playwright');
@@ -14,7 +14,7 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
     const mk = (id, u, v, ex = {}) => { const q = project(u, v); return { id, x: q.x, y: q.y, place: 'inn', draw: gg => { ord.push(id) }, ...ex } };
     const run = (parts, wu, wv) => { ord.length = 0; const body = { y: o.y * MY, building: true, place: 'inn', isBuilding: true, x: project(c.u, c.v).x, draw: () => ord.push('body') };
       const w = (() => { const q = project(wu, wv); return { hero: true, mobile: true, x: q.x, y: q.y, z: 0, draw: () => ord.push('walker') } })();
-      const list = [body, ...parts, w]; occludeByBuildings(list); drawSorted(list); return [...ord] };
+      const list = [body, ...parts, w]; occludeByBuildings(list); g.save(); g.setTransform(1, 0, 0, 1, cv.width / 2 - w.x, cv.height / 2 - w.y); try { drawSorted(list) } finally { g.restore() } return [...ord] };   /* the walker centred on screen: the faded box is drawn only where it is visible */
     // (1) long wall along u at v = c.v + 3 (thickness .4), centre at c.u
     const wall = () => mk('wall', c.u, c.v + 3, { label: 'รั้ว', fp: { u0: c.u - 3, u1: c.u + 3, v0: c.v + 2.8, v1: c.v + 3.2 } });
     out.frontAtEnd = run([wall()], c.u - 2.6, c.v + 3.9);          // in front of the wall, near its left end: wall first, walker after
@@ -31,9 +31,9 @@ const serve = () => new Promise(r => { const s = http.createServer((q, res) => {
   assert.ok(idx(r.frontAtEnd, 'wall') < idx(r.frontAtEnd, 'walker'), 'walker beside the end of a long wall, in front of it → drawn after it: ' + r.frontAtEnd);
   assert.ok(idx(r.behind, 'walker') < idx(r.behind, 'wall'), 'walker behind the wall → drawn before it: ' + r.behind);
   const n = (a, k) => a.filter(x => x === k).length;
-  assert.ok(n(r.coverTall, 'tree') >= 4 && n(r.coverTall, 'walker') === 2, 'tall cover: ring draws + ghost: ' + r.coverTall);
+  assert.ok(n(r.coverTall, 'tree') === 2 && n(r.coverTall, 'walker') === 2, 'tall cover: one pass + one faded box + ghost: ' + r.coverTall);
   assert.equal(n(r.coverLow, 'fence'), 1, 'low part: one plain draw'); assert.equal(n(r.coverLow, 'walker'), 1);
-  assert.ok(n(r.coverLowFade, 'fence') >= 4, 'low part with "โปร่งด้วย": fades'); assert.equal(n(r.coverSolid, 'tree'), 1, 'solid setting: no fade');
+  assert.ok(n(r.coverLowFade, 'fence') === 2, 'low part with "โปร่งด้วย": fades'); assert.equal(n(r.coverSolid, 'tree'), 1, 'solid setting: no fade');
   console.log('ok footprint order + cover', JSON.stringify({ frontAtEnd: r.frontAtEnd, tall: [n(r.coverTall, 'tree'), n(r.coverTall, 'walker')], low: n(r.coverLow, 'fence') }));
   assert.deepEqual(errs, [], errs.join('|')); console.log('depth footprint e2e: all cases passed'); await browser.close(); server.close();
 })().catch(e => { console.error('FAIL', e.message); process.exit(1) });

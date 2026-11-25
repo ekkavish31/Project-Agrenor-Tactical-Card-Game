@@ -65,14 +65,25 @@
     let e = seen.get(k); if (!e) seen.set(k, e = { r, lo: r, hi: r, sw: Math.round(sw), dw: Math.round(dwCss), n: 0 });
     e.r = r; e.lo = Math.min(e.lo, r); e.hi = Math.max(e.hi, r); e.sw = Math.round(sw); e.dw = Math.round(dwCss); e.n++;
   }
-  function flush() {
-    if (!seen.size) return; let all = {}; try { all = JSON.parse(ls.get(KEY) || '{}') || {} } catch (e) { }
+  /* v98.1064 · FPS: the report used to be merged into localStorage every 240 frames (JSON.parse + stringify of up to 5000 rows ≈ 10–20 ms on the
+     main thread → a dropped frame every ~4 s while walking). Now the stored table is read once, merged in memory, and written at most every 30 s,
+     when the browser is idle (and on pagehide). */
+  let table = null, dirty = false, lastWrite = 0;
+  function merge() {
+    if (!seen.size) return; if (!table) { try { table = JSON.parse(ls.get(KEY) || '{}') || {} } catch (e) { table = {} } }
     const page = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '');
-    for (const [k, e] of seen) all[k] = { r: +e.r.toFixed(3), lo: +e.lo.toFixed(3), hi: +e.hi.toFixed(3), sw: e.sw, dw: e.dw, n: (all[k]?.n || 0) + e.n, p: page, t: Date.now() };
-    seen.clear(); const keys = Object.keys(all); if (keys.length > 5000) { keys.sort((a, b) => all[a].t - all[b].t).slice(0, keys.length - 5000).forEach(k => delete all[k]) }
-    ls.set(KEY, JSON.stringify(all));
+    for (const [k, e] of seen) table[k] = { r: +e.r.toFixed(3), lo: +e.lo.toFixed(3), hi: +e.hi.toFixed(3), sw: e.sw, dw: e.dw, n: (table[k]?.n || 0) + e.n, p: page, t: Date.now() };
+    seen.clear(); dirty = true;
   }
-  (function loop() { frame++; spent = 0; sampling = frame % 30 === 0 && !document.hidden; if (frame % 240 === 0) flush(); requestAnimationFrame(loop) })();
+  function flush() {
+    merge(); if (!dirty) return;
+    try { const other = JSON.parse(ls.get(KEY) || '{}') || {}; for (const k in other) if (!table[k] || other[k].t > table[k].t) table[k] = other[k] } catch (e) { }   /* other pages of the game write the same table */
+    const keys = Object.keys(table); if (keys.length > 5000) { keys.sort((a, b) => table[a].t - table[b].t).slice(0, keys.length - 5000).forEach(k => delete table[k]) }
+    ls.set(KEY, JSON.stringify(table)); dirty = false; lastWrite = performance.now();
+  }
+  const idle = f => (root.requestIdleCallback ? root.requestIdleCallback(f, { timeout: 5000 }) : setTimeout(f, 0));
+  let queued = false;
+  (function loop() { frame++; spent = 0; sampling = frame % 30 === 0 && !document.hidden; if (frame % 240 === 0) { merge(); if (dirty && !queued && performance.now() - lastWrite > 30000) { queued = true; idle(() => { queued = false; flush() }) } } requestAnimationFrame(loop) })();
   addEventListener('pagehide', flush);
 
   CanvasRenderingContext2D.prototype.drawImage = function (im) {
@@ -92,7 +103,7 @@
 
   root.TexelNorm = {
     enable(v) { on = !!v; ls.set(NORM_KEY, on ? '1' : '0'); cache.clear(); bytes = 0 },
-    enabled: () => on, flush, clear() { ls.set(KEY, '{}'); seen.clear() },
+    enabled: () => on, flush, clear() { ls.set(KEY, '{}'); seen.clear(); table = {}; dirty = false },
     stats() { flush(); try { return JSON.parse(ls.get(KEY) || '{}') || {} } catch (e) { return {} } },
     info: () => ({ on, cached: cache.size, mb: +(bytes / 1048576).toFixed(1), hits, builds })
   };

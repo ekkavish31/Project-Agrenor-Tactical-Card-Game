@@ -65,7 +65,11 @@
         g.save(); g.beginPath(); g.rect(-BIG, -BIG, BIG * 2, BIG * 2); oval(1.75); g.clip('evenodd'); part.draw(g); g.restore();   // outside every ring: untouched
         for (let i = rings.length - 1; i >= 0; i--) { g.save(); g.beginPath(); oval(rings[i][0]); if (i > 0) oval(rings[i - 1][0]); g.clip(i > 0 ? 'evenodd' : 'nonzero'); g.globalAlpha *= rings[i][1]; part.draw(g); g.restore() }
       } else part.draw(g);
-      if (ghost) {
+      if (ghost) api.ghost(g, walker, cx, cy, h, fade);
+    },
+    /* v98.1064 · the walker's ghost (white outline) only — also used by the one-pass cover draw in village-town.html */
+    ghost(g, walker, cx, cy, h, fade) {
+      {
         g.save(); g.globalAlpha *= fade ? .78 : .92;   /* v98.846 · a covered walker is easier to find: stronger ghost + a thicker white outline */
         /* v98.784 · the white-outline filter works on the whole clip region: clip to the walker's box first (it was the whole screen ×4 passes every frame → 2.8 fps in the market) */
         g.beginPath(); g.rect(cx - h * .8, cy - h * .8, h * 1.6, h * 1.6); g.clip();
