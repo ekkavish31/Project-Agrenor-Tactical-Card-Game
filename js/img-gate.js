@@ -9,7 +9,7 @@
  root.SceneLoad={done,painted:()=>{painted=true}};
  function TrackedImage(w,h){const im=new Orig(w,h);if(open)list.push(im);return im}
  TrackedImage.prototype=Orig.prototype;root.Image=TrackedImage;
- for(const href of ['css/mip-loader.css?v=v98.1035','css/ivory-ui.css?v=v98.1049']){const l=document.createElement('link');l.rel='stylesheet';l.href=href;(document.head||document.documentElement).appendChild(l)}
+ for(const href of ['css/mip-loader.css?v=v98.1035','css/ivory-ui.css?v=v98.1055']){const l=document.createElement('link');l.rel='stylesheet';l.href=href;(document.head||document.documentElement).appendChild(l)}
  const css=document.createElement('style');css.textContent='#imgGateVeil{position:fixed;inset:0;z-index:2147483000}#imgGateVeil .mip-track{--mw:100%}#imgGateVeil progress{width:100%;accent-color:#a67e3e;height:9px}#imgGateVeil button[hidden]{display:none}';(document.head||document.documentElement).appendChild(css);
  const veil=document.createElement('div');veil.id='imgGateVeil';veil.className='scene-transit';veil.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#f2e7ca;color:#3e2a18';veil.setAttribute('role','status');veil.setAttribute('aria-live','polite');
  veil.innerHTML='<div class="load-card"><h2>กำลังเตรียมฉาก…</h2><div class="mip-track" aria-hidden="true"><div class="mip-go"><div class="mip-flip"><div class="mip-run"><i></i></div><div class="mip-idle"><i></i></div></div></div></div><progress max="100" value="0" aria-label="ภาพของฉาก"></progress><p>กำลังเปิดหน้าบันทึกการเดินทาง</p><button hidden type="button">ลองโหลดใหม่</button></div>';

@@ -30,3 +30,12 @@ html body #fbDuel .cl{width:40px;height:40px;font-size:20px;margin:0 -8px}
 .scene-transit p{margin:10px 0 0;color:var(--ivory-muted)}
 .scene-transit button{color:var(--ivory-ink);background:#eadbb9;border:1px solid #94703a;padding:8px 20px;border-radius:5px;font:inherit;cursor:pointer}
 @media(max-height:560px){html body #fbHud{width:228px;font-size:11px;border-width:13px!important;border-image-width:13px!important}html body #storyTracker{max-height:calc(100dvh - 96px);overflow:auto}}
+/* v98.1055 · place loading screen = the same black loading look as the game's loading screen; nothing (quest tracker, toasts) floats over it */
+.scene-transit.st-dark{background:#05080d;color:#f5e6c4;place-items:end center;padding-bottom:9vh;box-sizing:border-box}
+.scene-transit.st-dark .load-card{border:0;border-image:none;background:none;filter:none;padding:0;width:min(560px,calc(100vw - 40px));text-align:left}
+.scene-transit.st-dark .st-kicker{display:block;font:600 11px/1 AgThai,system-ui,sans-serif;letter-spacing:.32em;color:#e8c374}
+.scene-transit.st-dark h2{margin:8px 0 14px;font:700 28px AgThai,Georgia,serif;color:#ffe8a6;text-shadow:0 3px 14px #000}
+.scene-transit.st-dark p{color:#c9bb98cc;font-size:13px}
+.scene-transit.st-dark button{background:#0d1424cc;color:#f5e6c4;border:1px solid #d9b46b88;border-radius:9px;font-weight:600}
+body.scene-loading #storyTracker,body.scene-loading #storyToasts{display:none!important}
+
