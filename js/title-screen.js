@@ -297,6 +297,7 @@ async function prepareStory(){if(preparing)return;preparing=true;title.classList
 /* ---------- into the game ---------- */
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
  if(!isNew&&title)title.style.visibility='hidden';   /* v98.352 · the menu must not show again while the loading screen fades out */
+ if(!(isNew&&storyReady))   /* v98.1060 · New Game: everything was already loaded by the prologue loading screen, so no second loading screen after the name form */
  await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',share:.3,items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
  /* v97.04 · New Game: the opening cutscene (mother wakes the hero) fades in over the last prologue page and the title goes away underneath it,
     so the village map never shows in between (the story loop only starts a cutscene once T.active is false) */
