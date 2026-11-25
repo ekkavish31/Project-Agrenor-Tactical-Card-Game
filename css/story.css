@@ -253,3 +253,17 @@ body.fb-open #storyTracker{display:none!important}
 .cs-next{right:27px;bottom:15px;font-size:18px}
 @media (max-width:1100px){.cs-name{font-size:27px}}
 @media (max-width:640px){.cs-box{padding:18px 21px 24px;gap:15px;bottom:calc(6vh + 15px)}.cs-name{font-size:24px}.cs-text{font-size:20px}}
+
+/* v98.1062 · dialogue layout sized by the screen width (matches the reference at 67 % browser zoom, at any zoom):
+   the window is ~72 % wide so it covers only about half of a half-body portrait, type and buttons scale together,
+   and each button hugs its own corner of the picture (Log top-left · Auto/เร่ง top-right · ข้ามฉาก bottom-right) */
+.cs-box{width:min(72vw,1500px);padding:1.15vw 1.6vw 1.3vw;border-radius:1vw;gap:1.2vw;bottom:calc(9vh + 1.4vw)}
+.cs-name{font-size:max(15px,1.75vw);margin-bottom:.3vw}
+.cs-text{font-size:max(13px,1.55vw);min-height:3.3em}
+.cs-next{right:1.3vw;bottom:.7vw;font-size:max(11px,.9vw)}
+.cs-ib{height:max(28px,2.05vw);padding:0 max(10px,.8vw) 0 max(8px,.6vw);border-radius:2vw;gap:max(4px,.35vw);font-size:max(11px,.72vw)}
+.cs-ib svg{width:max(14px,.95vw);height:max(14px,.95vw)}
+.cs-log-btn{top:calc(9vh + .8vw);left:.8vw}
+.cut-tools{top:calc(9vh + .8vw);right:.8vw;gap:.5vw}
+.cs-skip{right:.8vw;bottom:calc(9vh + .8vw)}
+@media (max-width:640px){.cs-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;bottom:calc(6vh + 12px)}.cs-name{font-size:17px}.cs-text{font-size:15px}.cs-log-btn,.cut-tools{top:calc(6vh + 8px);left:8px}.cut-tools{left:auto;right:8px}.cs-skip{right:8px;bottom:calc(6vh + 8px)}.cs-ib{height:32px;font-size:12px}}
