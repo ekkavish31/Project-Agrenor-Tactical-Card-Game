@@ -31,9 +31,10 @@
     journal: `<path d="M12 10h20a4 4 0 0 1 4 4v24H16a4 4 0 0 1-4-4z" ${S}/><path d="M12 34a4 4 0 0 1 4-4h20M19 17h11M19 23h8" ${S}/>`,
     farm: `<path d="M24 40V22" ${S}/><path d="M24 26c-8 0-11-5-11-11 7 0 11 4 11 11zM24 22c0-7 4-11 11-11 0 6-3 11-11 11" ${S}/><path d="M12 40h24" ${S}/>`
   };
+  G.quests = G.activity;
   const svg = k => `<svg viewBox="0 0 48 48" aria-hidden="true">${G[k]}</svg>`;
   /* v98.16 · the picture icons from assets/icons/menu replace the drawn glyphs (same pack as the game's top bar; Editor → ไอคอนเมนู can override: key 'hud-<id>', '-' = drawn glyph) */
-  const PICS = { map: 'map', today: 'calendar', me: 'party', go: 'portal', menu: 'settings', activity: 'quest', journal: 'spellbook', farm: 'treasure', character: 'party', bag: 'cardbook', deck: 'deck', job: 'forge', element: 'collection' };
+  const PICS = { map: 'v2-town-map', today: 'v2-today', me: 'v2-party', go: 'v2-travel', menu: 'v2-system-menu', quests: 'v2-quests', activity: 'v2-activities', journal: 'v2-journal', farm: 'v2-farm', character: 'v2-character', bag: 'v2-card-book', deck: 'v2-deck', job: 'v2-jobs', element: 'v2-elements' };
   const pick = k => { let v; try { v = (JSON.parse(localStorage.getItem('menu-icons-v1')) || {})['hud-' + k] } catch (e) { } return v === '-' ? '' : (v || PICS[k] || '') };
   const pic = k => { const p = pick(k); return p ? `<img src="assets/icons/menu/${p}.webp" alt="" draggable="false">` : svg(k) };
   const click = sel => { const b = typeof sel === 'string' ? store.querySelector(sel) || document.querySelector(sel) : sel; if (b) b.click(); return !!b };
@@ -46,7 +47,7 @@
 
   const MENUS = {
     today: () => [
-      ...(storyInfo().closed ? [['activity', '📜 ภารกิจ' + (storyInfo().count ? ' (' + storyInfo().count + ')' : '') + ' · ' + storyInfo().title, () => { try { parent.Story.openTracker() } catch (e) { } badge() }]] : []),
+      ...(storyInfo().closed ? [['quests', '📜 ภารกิจ' + (storyInfo().count ? ' (' + storyInfo().count + ')' : '') + ' · ' + storyInfo().title, () => { try { parent.Story.openTracker() } catch (e) { } badge() }]] : []),
       ['activity', 'กิจกรรมวันนี้', () => click('#activities')],
       ['journal', 'สมุดหมู่บ้าน', () => click('[data-game="journal"]')],
       ...(farmHere() ? [['farm', 'ไร่ของเรา', () => { const f = farmHere(); location.href = 'place-interior.html?place=farm&farm=' + encodeURIComponent(f.id) + '&name=' + encodeURIComponent('ไร่ · ' + f.name) + '&back=village-town.html' }]] : [])

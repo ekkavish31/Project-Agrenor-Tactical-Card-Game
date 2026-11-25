@@ -165268,6 +165268,1071 @@
     "js/npc-emote.js"
    ],
    "note": "9-slice 12%; HUD, quest tracker, buttons, speech and loading. See assets/ui/ivory-panel.md."
+  },
+  {
+   "id": "menu-v2-new-game",
+   "name": "เริ่มเกมใหม่",
+   "file": "assets/icons/menu/v2-new-game.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: new-game",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    0,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-continue",
+   "name": "เล่นต่อ",
+   "file": "assets/icons/menu/v2-continue.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: continue",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-load-game",
+   "name": "โหลดเกม",
+   "file": "assets/icons/menu/v2-load-game.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: load-game",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-save-game",
+   "name": "บันทึกเกม",
+   "file": "assets/icons/menu/v2-save-game.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: save-game",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    3,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-options",
+   "name": "ตั้งค่า",
+   "file": "assets/icons/menu/v2-options.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: options",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-extras",
+   "name": "พิเศษ",
+   "file": "assets/icons/menu/v2-extras.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: extras",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-editor",
+   "name": "แก้ไขเกม",
+   "file": "assets/icons/menu/v2-editor.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: editor",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-intro-replay",
+   "name": "ดูบทเปิดอีกครั้ง",
+   "file": "assets/icons/menu/v2-intro-replay.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: intro-replay",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    3,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-gallery",
+   "name": "คลังภาพ",
+   "file": "assets/icons/menu/v2-gallery.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: gallery",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    0,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-credits",
+   "name": "เครดิต",
+   "file": "assets/icons/menu/v2-credits.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: credits",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-quit-title",
+   "name": "กลับหน้าเริ่มเกม",
+   "file": "assets/icons/menu/v2-quit-title.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: quit-title",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    2,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-fullscreen",
+   "name": "เต็มจอ",
+   "file": "assets/icons/menu/v2-fullscreen.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: fullscreen",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    3,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-audio",
+   "name": "เสียง",
+   "file": "assets/icons/menu/v2-audio.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: audio",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    0,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-controls",
+   "name": "การควบคุม",
+   "file": "assets/icons/menu/v2-controls.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: controls",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-graphics",
+   "name": "กราฟิก",
+   "file": "assets/icons/menu/v2-graphics.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: graphics",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    2,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-system-menu",
+   "name": "เมนูระบบ",
+   "file": "assets/icons/menu/v2-system-menu.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: system-menu",
+   "source": "assets/icons/menu-v2-source/sheet-1.webp",
+   "sourceCell": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-town-map",
+   "name": "แผนที่เมือง",
+   "file": "assets/icons/menu/v2-town-map.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: town-map",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    0,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-world-map",
+   "name": "แผนที่โลก",
+   "file": "assets/icons/menu/v2-world-map.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: world-map",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-travel",
+   "name": "ออกเดินทาง",
+   "file": "assets/icons/menu/v2-travel.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: travel",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-today",
+   "name": "วันนี้",
+   "file": "assets/icons/menu/v2-today.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: today",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    3,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-quests",
+   "name": "ภารกิจ",
+   "file": "assets/icons/menu/v2-quests.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: quests",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-activities",
+   "name": "กิจกรรม",
+   "file": "assets/icons/menu/v2-activities.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: activities",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-journal",
+   "name": "สมุดหมู่บ้าน",
+   "file": "assets/icons/menu/v2-journal.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: journal",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-farm",
+   "name": "ไร่",
+   "file": "assets/icons/menu/v2-farm.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: farm",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    3,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-character",
+   "name": "ตัวละคร",
+   "file": "assets/icons/menu/v2-character.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: character",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    0,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-party",
+   "name": "กลุ่มตัวละคร",
+   "file": "assets/icons/menu/v2-party.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: party",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-deck",
+   "name": "สำรับ",
+   "file": "assets/icons/menu/v2-deck.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: deck",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    2,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-card-book",
+   "name": "สมุดผนึก",
+   "file": "assets/icons/menu/v2-card-book.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: card-book",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    3,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-jobs",
+   "name": "อาชีพ",
+   "file": "assets/icons/menu/v2-jobs.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: jobs",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    0,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-elements",
+   "name": "ธาตุ",
+   "file": "assets/icons/menu/v2-elements.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: elements",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-inventory",
+   "name": "กระเป๋า",
+   "file": "assets/icons/menu/v2-inventory.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: inventory",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    2,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-equipment",
+   "name": "อุปกรณ์",
+   "file": "assets/icons/menu/v2-equipment.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: equipment",
+   "source": "assets/icons/menu-v2-source/sheet-2.webp",
+   "sourceCell": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-skills",
+   "name": "ทักษะ",
+   "file": "assets/icons/menu/v2-skills.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: skills",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    0,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-items",
+   "name": "ของใช้",
+   "file": "assets/icons/menu/v2-items.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: items",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-materials",
+   "name": "วัตถุดิบ",
+   "file": "assets/icons/menu/v2-materials.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: materials",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-collection",
+   "name": "สะสมและของทั่วไป",
+   "file": "assets/icons/menu/v2-collection.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: collection",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    3,
+    0
+   ]
+  },
+  {
+   "id": "menu-v2-forge",
+   "name": "โรงตีเหล็ก",
+   "file": "assets/icons/menu/v2-forge.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: forge",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-market",
+   "name": "ตลาด",
+   "file": "assets/icons/menu/v2-market.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: market",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-guild",
+   "name": "กิลด์",
+   "file": "assets/icons/menu/v2-guild.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: guild",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-inn",
+   "name": "โรงแรม",
+   "file": "assets/icons/menu/v2-inn.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: inn",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    3,
+    1
+   ]
+  },
+  {
+   "id": "menu-v2-healer",
+   "name": "หมอยา",
+   "file": "assets/icons/menu/v2-healer.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: healer",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    0,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-temple",
+   "name": "วิหาร",
+   "file": "assets/icons/menu/v2-temple.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: temple",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-achievements",
+   "name": "ความสำเร็จ",
+   "file": "assets/icons/menu/v2-achievements.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: achievements",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    2,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-reputation",
+   "name": "ชื่อเสียง",
+   "file": "assets/icons/menu/v2-reputation.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: reputation",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    3,
+    2
+   ]
+  },
+  {
+   "id": "menu-v2-bounty",
+   "name": "ประกาศจับ",
+   "file": "assets/icons/menu/v2-bounty.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: bounty",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    0,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-village-projects",
+   "name": "พัฒนาหมู่บ้าน",
+   "file": "assets/icons/menu/v2-village-projects.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: village-projects",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-help",
+   "name": "วิธีเล่น",
+   "file": "assets/icons/menu/v2-help.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: help",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    2,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-back",
+   "name": "ย้อนกลับ",
+   "file": "assets/icons/menu/v2-back.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    256,
+    256
+   ],
+   "artRevision": "v98.1065",
+   "usedIn": "Title / HUD / menus / book / service action icons; available in Asset Studio",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subject: back",
+   "source": "assets/icons/menu-v2-source/sheet-3.webp",
+   "sourceCell": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "menu-v2-source-1",
+   "file": "assets/icons/menu-v2-source/sheet-1.webp",
+   "category": "ui-packs",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1254,
+    1254
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 4,
+    "names": [
+     "new-game",
+     "continue",
+     "load-game",
+     "save-game",
+     "options",
+     "extras",
+     "editor",
+     "intro-replay",
+     "gallery",
+     "credits",
+     "quit-title",
+     "fullscreen",
+     "audio",
+     "controls",
+     "graphics",
+     "system-menu"
+    ]
+   },
+   "usedIn": "Source atlas for 16 semantic menu icons",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subjects in row-major order: new-game, continue, load-game, save-game, options, extras, editor, intro-replay, gallery, credits, quit-title, fullscreen, audio, controls, graphics, system-menu"
+  },
+  {
+   "id": "menu-v2-source-2",
+   "file": "assets/icons/menu-v2-source/sheet-2.webp",
+   "category": "ui-packs",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1254,
+    1254
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 4,
+    "names": [
+     "town-map",
+     "world-map",
+     "travel",
+     "today",
+     "quests",
+     "activities",
+     "journal",
+     "farm",
+     "character",
+     "party",
+     "deck",
+     "card-book",
+     "jobs",
+     "elements",
+     "inventory",
+     "equipment"
+    ]
+   },
+   "usedIn": "Source atlas for 16 semantic menu icons",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subjects in row-major order: town-map, world-map, travel, today, quests, activities, journal, farm, character, party, deck, card-book, jobs, elements, inventory, equipment"
+  },
+  {
+   "id": "menu-v2-source-3",
+   "file": "assets/icons/menu-v2-source/sheet-3.webp",
+   "category": "ui-packs",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1254,
+    1254
+   ],
+   "atlas": {
+    "cols": 4,
+    "rows": 4,
+    "names": [
+     "skills",
+     "items",
+     "materials",
+     "collection",
+     "forge",
+     "market",
+     "guild",
+     "inn",
+     "healer",
+     "temple",
+     "achievements",
+     "reputation",
+     "bounty",
+     "village-projects",
+     "help",
+     "back"
+    ]
+   },
+   "usedIn": "Source atlas for 16 semantic menu icons",
+   "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subjects in row-major order: skills, items, materials, collection, forge, market, guild, inn, healer, temple, achievements, reputation, bounty, village-projects, help, back"
   }
  ],
  "studioReviews": {

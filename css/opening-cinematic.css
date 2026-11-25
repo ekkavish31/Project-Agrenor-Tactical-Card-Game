@@ -29,11 +29,11 @@
 #titleScreen.ag-title .ts-menu button:not(:disabled):hover small,#titleScreen.ag-title .ts-menu button:not(:disabled):focus small{color:#d3dcee}
 #titleScreen.ag-title .ts-menu button:not(:disabled):hover::before,#titleScreen.ag-title .ts-menu button:not(:disabled):focus::before{opacity:1;transform:scale(1.12);background:var(--ag-icon) center/contain no-repeat;width:clamp(34px,3vw,44px);height:clamp(34px,3vw,44px);border:0;filter:drop-shadow(0 0 7px #ffd978) drop-shadow(0 2px 3px #0008)}   /* v98.1064 · the painted icon keeps its picture on hover (it used to turn into a plain cream square) and lifts with a gold glow */
 #titleScreen.ag-title .ts-menu button:not(:disabled):hover::after,#titleScreen.ag-title .ts-menu button:not(:disabled):focus::after{opacity:1}
-#titleScreen.ag-title .ts-menu button[data-act="new"]{--ag-icon:url("../assets/icons/menu/portal.webp")}
-#titleScreen.ag-title .ts-menu button[data-act="continue"]{--ag-icon:url("../assets/icons/menu/replay.webp")}
-#titleScreen.ag-title .ts-menu button[data-act="load"]{--ag-icon:url("../assets/icons/menu/cardbook.webp")}
-#titleScreen.ag-title .ts-menu button[data-act="options"]{--ag-icon:url("../assets/icons/menu/settings.webp")}
-#titleScreen.ag-title .ts-menu button[data-act="extra"]{--ag-icon:url("../assets/icons/menu/collection.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="new"]{--ag-icon:url("../assets/icons/menu/v2-new-game.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="continue"]{--ag-icon:url("../assets/icons/menu/v2-continue.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="load"]{--ag-icon:url("../assets/icons/menu/v2-load-game.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="options"]{--ag-icon:url("../assets/icons/menu/v2-options.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="extra"]{--ag-icon:url("../assets/icons/menu/v2-extras.webp")}
 #titleScreen.ag-title .ag-replay{position:absolute;left:clamp(16px,3.4vw,60px);bottom:clamp(36px,5.6vh,60px);pointer-events:auto}
 #titleScreen.ag-title .ts-foot{color:var(--ag-ink2);text-shadow:0 0 6px #fff,0 0 12px #ffffffc0}
 #titleScreen.ag-title .ag-horizon{position:absolute;right:clamp(14px,2.4vw,40px);bottom:clamp(34px,5.4vh,58px);font:italic 500 clamp(14px,1.6vw,24px)/1 AgThai,Georgia,serif;letter-spacing:.04em;color:#f6efdc;text-shadow:0 1px 2px #1b2b47,0 0 6px #1b2b47e6,0 0 16px #1b2b47b0;pointer-events:none}
@@ -95,3 +95,7 @@
 #titleScreen.ag-title .ag-replay.ag-skiptoggle.off{background:#6b7280e6;color:#fff;border-bottom-color:#3f4551}
 #titleScreen.ag-title .ag-replay.ag-reloadassets{left:calc(clamp(16px,3.4vw,60px) + 240px);font-size:12px;opacity:.9}#titleScreen.ag-title .ag-replay.ag-reloadassets:hover{opacity:1}#titleScreen.ag-title .ag-replay.ag-reloadassets:disabled{opacity:.6;cursor:wait}
 @media (max-width:640px){#titleScreen.ag-title .ag-replay.ag-skiptoggle{left:clamp(16px,3.4vw,60px);bottom:64px}#titleScreen.ag-title .ag-replay.ag-reloadassets{left:calc(clamp(16px,3.4vw,60px) + 112px);bottom:64px}}
+
+/* v98.1065 · distinct title sub-menu artwork. */
+#titleScreen .ts-tabs img,#titleScreen .ts-tools img{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:7px;flex:none}
+#titleScreen.ag-title .ag-replay:not(.ag-skiptoggle):not(.ag-reloadassets)::before{content:'';width:26px;height:26px;display:inline-block;vertical-align:middle;margin-right:6px;background:url(../assets/icons/menu/v2-intro-replay.webp) center/contain no-repeat}

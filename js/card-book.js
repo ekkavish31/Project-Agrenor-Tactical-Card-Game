@@ -13,11 +13,11 @@
   if (typeof renderBag !== 'function') return;
   const ICON = n => `assets/icons/menu/${n}.webp`;
   const TABS = [
-    { id: 'use', icon: ICON('potion'), name: 'ของใช้', tip: 'ใช้แล้วหมดไป' },
-    { id: 'gear', icon: ICON('battle'), name: 'อุปกรณ์', tip: 'สวมใส่ได้ 1 ใบ' },
-    { id: 'mat', icon: ICON('forge'), name: 'วัตถุดิบ', tip: 'ใช้ผลิตที่โรงตีเหล็ก' },
-    { id: 'goods', icon: ICON('treasure'), name: 'ทั่วไป', tip: 'ขายได้ที่ตลาด' },
-    { id: 'event', icon: ICON('mail'), name: 'เหตุการณ์', tip: 'ใช้แล้วเกิดเรื่องราว' }
+    { id: 'use', icon: ICON('v2-items'), name: 'ของใช้', tip: 'ใช้แล้วหมดไป' },
+    { id: 'gear', icon: ICON('v2-equipment'), name: 'อุปกรณ์', tip: 'สวมใส่ได้ 1 ใบ' },
+    { id: 'mat', icon: ICON('v2-materials'), name: 'วัตถุดิบ', tip: 'ใช้ผลิตที่โรงตีเหล็ก' },
+    { id: 'goods', icon: ICON('v2-collection'), name: 'ทั่วไป', tip: 'ขายได้ที่ตลาด' },
+    { id: 'event', icon: ICON('v2-quests'), name: 'เหตุการณ์', tip: 'ใช้แล้วเกิดเรื่องราว' }
   ];
   const PER_PAGE = 6, PER_SPREAD = PER_PAGE * 2, SIDE_CAP = 6;
   /* v98.904 · page-turn pictures: the owner's 20-frame turn (assets/ui/bookturn/turn-01..20.webp, same 1672×941 as the open book, top-right ornament removed to match): forward = frames 1→20 (the right page lifts and falls to the left), backward = the same frames in reverse. The content is swapped (mid) when the turning page stands over the spine (about frame 10). */
