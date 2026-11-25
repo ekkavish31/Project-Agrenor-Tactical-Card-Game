@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1057';
+  const V = '98.1058';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -519,7 +519,7 @@
   #fbFace [data-f]{position:fixed;width:var(--s,52px);height:var(--s,52px);margin:calc(var(--s,52px)/-2) 0 0 calc(var(--s,52px)/-2);padding:0;border:0;background:none;color:#f3e9c9;font:22px AgThai,system-ui;cursor:pointer;pointer-events:auto;display:grid;place-items:center;box-shadow:none;outline:none;transition:transform .12s,background .12s}#fbFace [data-f]:focus-visible{outline:2px solid #ffd978;outline-offset:2px;border-radius:50%}
   #fbFace [data-f] svg{display:block;overflow:visible;filter:drop-shadow(0 3px 5px #000a) brightness(.9);transition:filter .12s}#fbFace [data-f].on svg{filter:drop-shadow(0 0 9px #ffb080) brightness(1.2)}#fbFace [data-f] span{display:inline-block}#fbFace [data-f] img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 3px 6px #000a) brightness(.86) saturate(.85);transition:filter .12s}#fbFace [data-f].on img{filter:drop-shadow(0 0 10px #ffd978) brightness(1.12)}#fbFace [data-f].on{transform:scale(1.15)}#fbFace [data-f]:hover{transform:scale(1.2)}
   #fbFace .nj{display:block;width:100%;height:100%;animation:fbNudge 1.1s ease-in-out infinite alternate}@keyframes fbNudge{from{transform:translate(calc(var(--dx)*-.5),calc(var(--dy)*-.5))}to{transform:translate(calc(var(--dx)*.5),calc(var(--dy)*.5))}}@media (prefers-reduced-motion:reduce){#fbFace .nj{animation:none}}   /* v98.279 · the facing arrows slide in and out along their own axis (centre → tip, away from / towards the fighter) by 20 % of their length (58 px → 11.6 px) */
- #fbFace [data-f] .nj{position:relative}#fbFace [data-f] img.fi{position:absolute;width:auto;height:auto;max-width:none;object-fit:fill;pointer-events:none;filter:drop-shadow(0 3px 4px #000a);transition:none}#fbFace [data-f] img.s{display:none}#fbFace [data-f].on img.n{display:none}#fbFace [data-f].on img.s{display:block;filter:drop-shadow(0 0 4px #fff3b0) drop-shadow(0 0 12px #ffc83a) brightness(1.12)}#fbFace [data-f].on,#fbFace [data-f]:hover{transform:none}
+ #fbFace [data-f] .nj{position:relative}#fbFace [data-f] img.fi{position:absolute;width:auto;height:auto;max-width:none;object-fit:fill;pointer-events:none;filter:drop-shadow(0 3px 4px #000a);transition:none}#fbFace [data-f] img.s{display:none}#fbFace [data-f].on img.n{display:none}#fbFace [data-f].on img.s{display:block;filter:drop-shadow(0 0 4px #fff3b0) drop-shadow(0 0 12px #ffc83a) brightness(1.12)}#fbFace [data-f].on,#fbFace [data-f]:hover{transform:none}#fbFace [data-f].bk .nj{visibility:hidden}
   #fbFace .aura{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(closest-side,#fff0a8cc 0,#ffcf4fb0 38%,#ffb02e55 68%,#ffb02e00 100%);opacity:0;pointer-events:none;transition:opacity .12s;mix-blend-mode:screen}#fbFace [data-f].on .aura{opacity:1;animation:fbAura 1s ease-in-out infinite alternate}@keyframes fbAura{from{filter:brightness(.85) blur(1px)}to{filter:brightness(1.25) blur(3px)}}@media (prefers-reduced-motion:reduce){#fbFace .aura{animation:none!important}}   /* v98.632 · gold aura on the block being pointed at */
   #fbFace .bar{position:fixed;left:24px;top:446px;display:flex;gap:8px;pointer-events:auto}   /* v98.629 · off to the left so it never covers the facing wedges around the fighter */#fbFace .bar .hb{display:flex;flex-direction:column;align-items:center;gap:3px}#fbFace .bar .hudb{--s:58px}#fbFace .bar .hb span{color:#f3e9c9;font:600 12px AgThai,system-ui,"Noto Sans Thai",sans-serif;text-shadow:0 1px 3px #000}#fbFace .bar small{opacity:.7;font-weight:400}
   #fbPause{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#05080dcc;backdrop-filter:blur(3px)}#fbPause .box{display:flex;flex-direction:column;gap:8px;min-width:280px;max-width:92vw;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f3e9c9;font:14px AgThai,system-ui,"Noto Sans Thai",sans-serif;box-shadow:0 16px 40px #000a}
@@ -1377,7 +1377,7 @@
      click an enemy: it becomes the target and the best card for it shows (gold); click it again to play — walking next to it first
      (with a move card if needed) when no card reaches it from here. Click a cell: walk there, playing the smallest move card that reaches it.
      Cards can still be played by hand as before. */
-  let pend = null, walks = [], facing = null;
+  let pend = null, walks = [], facing = null, faceDraw = null;   /* faceDraw: while the facing wedges are up, the two BACK arrows (north side of the screen) are painted on the canvas BEHIND the fighter */
   const handBtn = (group, uid) => hand?.querySelector(`.fb-card[data-group="${group}"][data-uid="${uid}"]`);
   function markAuto() { hand?.querySelectorAll('.fb-card.auto').forEach(e => e.classList.remove('auto')); if (!pend) return; handBtn('combat', pend.combatUid)?.classList.add('auto'); if (pend.moveUid) handBtn('movement', pend.moveUid)?.classList.add('auto') }
   /* v98.1006 · clicking a foe no card can reach from here: NO walk-and-attack — say why and what to do (walk next to it first with a move card) */
@@ -1411,7 +1411,20 @@
     const sk = (B.y - A.y < 0 ? 'N' : 'S') + (B.x - A.x < 0 ? 'W' : 'E'), K = FBLK[sk], vx = (K.t[0] - K.b[0]) * 128, vy = (K.t[1] - K.b[1]) * 128, s = Math.hypot(B.x - A.x, B.y - A.y) / Math.hypot(vx, vy), len = Math.hypot(vx, vy) * s, size = 128 * s;
     const ox = (.5 - (K.b[0] + K.t[0]) / 2) * size, oy = (.5 - (K.b[1] + K.t[1]) / 2) * size, bw = Math.abs(vx) * s + len * .5, bh = Math.abs(vy) * s + len * .5, nm = d => `assets/fx/facing/${sk.toLowerCase()}-${d}.webp`;
     const svg = `<u class="aura" style="width:${(len * 1.7).toFixed(1)}px;height:${(len * 1.05).toFixed(1)}px"></u><img class="fi n" src="${nm('normal')}" alt="" draggable="false" style="width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;left:calc(50% + ${(ox - size / 2).toFixed(1)}px);top:calc(50% + ${(oy - size / 2).toFixed(1)}px)"><img class="fi s" src="${nm('selected')}" alt="" draggable="false" style="width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;left:calc(50% + ${(ox - size / 2).toFixed(1)}px);top:calc(50% + ${(oy - size / 2).toFixed(1)}px)">`;
-    return { x: mid.x, y: mid.y, w: bw, h: bh, left: bw / 2, top: bh / 2, ang: Math.atan2(vy, vx), svg, cell: len / .08 * .2 };
+    return { back: B.y - A.y < 0, x: mid.x, y: mid.y, w: bw, h: bh, left: bw / 2, top: bh / 2, ang: Math.atan2(vy, vx), svg, cell: len / .08 * .2 };
+  }
+  /* v98.1058 · the back arrows (those that point up the screen) are drawn on the canvas just before the fighter, so the body covers them and they only show through its transparent parts */
+  function drawFaceBack(g, t) {
+    const fd = faceDraw; if (!fd) return; const h = fd.h;
+    for (const [f, du, dv] of FACES) {
+      const at = (a, b) => project(h.vu + du * a - dv * b, h.vv + dv * a + du * b), A = at(.5, 0), B = at(1.1, 0); if (B.y - A.y >= 0) continue;
+      const sk = 'N' + (B.x - A.x < 0 ? 'W' : 'E'), K = FBLK[sk], vx = (K.t[0] - K.b[0]) * 128, vy = (K.t[1] - K.b[1]) * 128, s = Math.hypot(B.x - A.x, B.y - A.y) / Math.hypot(vx, vy), len = Math.hypot(vx, vy) * s, size = 128 * s;
+      const ox = (.5 - (K.b[0] + K.t[0]) / 2) * size, oy = (.5 - (K.b[1] + K.t[1]) / 2) * size, mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, ang = Math.atan2(vy, vx), nud = Math.sin(t / 1100 * Math.PI * 2 / 2) * .1 * len, on = fd.on === f;
+      const pic = im('assets/fx/facing/' + sk.toLowerCase() + (on ? '-selected' : '-normal') + '.webp'); if (!pic) continue;
+      g.save(); g.translate(mx + Math.cos(ang) * nud, my + Math.sin(ang) * nud);
+      if (on) { const gr = g.createRadialGradient(0, 0, 0, 0, 0, len * .85); gr.addColorStop(0, 'rgba(255,240,168,.75)'); gr.addColorStop(.5, 'rgba(255,200,70,.4)'); gr.addColorStop(1, 'rgba(255,176,46,0)'); g.fillStyle = gr; g.beginPath(); g.ellipse(0, 0, len * .85, len * .52, 0, 0, 7); g.fill() }
+      g.drawImage(pic, ox - size / 2, oy - size / 2, size, size); g.restore()
+    }
   }
   function pickFacing(unit, forced) {
     return new Promise(res => {
@@ -1420,9 +1433,10 @@
       box.innerHTML = `<div class="tip">${forced ? 'หมดคริสตัลแล้ว — เลือกทิศที่จะหัน' : 'หันหน้าไปทางไหน?'} <small>ศัตรูตีจากด้านหลัง ×1.2 · ด้านข้าง ×1.1</small></div>` +
         btns.map(b => `<button data-f="${b.f}" style="left:${(b.x - b.left + b.w / 2).toFixed(1)}px;top:${(b.y - b.top + b.h / 2).toFixed(1)}px;width:${b.w.toFixed(1)}px;height:${b.h.toFixed(1)}px;margin:${(-b.h / 2).toFixed(1)}px 0 0 ${(-b.w / 2).toFixed(1)}px" title="หันไปทางนี้แล้วจบเทิร์น"><i class="nj" style="--dx:${(Math.cos(b.ang) * b.cell * .08).toFixed(1)}px;--dy:${(Math.sin(b.ang) * b.cell * .08).toFixed(1)}px">${b.svg}</i></button>`).join('') +
         `<div class="bar"><div class="hb"><button class="ok hudb hudb-check" title="จบเทิร์น (Enter)" aria-label="จบเทิร์น"></button><span>จบเทิร์น <small>Enter</small></span></div>${forced ? '' : '<div class="hb"><button class="no hudb hudb-x" title="ยกเลิก (Esc)" aria-label="ยกเลิก"></button><span>ยกเลิก <small>Esc</small></span></div>'}</div>`;
-      document.body.append(box); facing = box;
-      const set = f => { h.face = f; h.dir = f; box.querySelectorAll('[data-f]').forEach(b => b.classList.toggle('on', b.dataset.f === f)) };
-      const done = ok => { removeEventListener('keydown', key, true); box.remove(); facing = null; if (!ok) { h.face = f0; h.dir = d0 } else sfx('cast', .3); res(ok) };
+      document.body.append(box); facing = box; faceDraw = { h, on: null };
+      box.querySelectorAll('[data-f]').forEach(b => { const w = btns.find(x => x.f === b.dataset.f); if (w && w.back) b.classList.add('bk') });
+      const set = f => { h.face = f; h.dir = f; if (faceDraw) faceDraw.on = f; box.querySelectorAll('[data-f]').forEach(b => b.classList.toggle('on', b.dataset.f === f)) };
+      const done = ok => { removeEventListener('keydown', key, true); box.remove(); facing = null; faceDraw = null; if (!ok) { h.face = f0; h.dir = d0 } else sfx('cast', .3); res(ok) };
       const key = e => { const A = { ArrowRight: 0, ArrowDown: Math.PI / 2, ArrowLeft: Math.PI, ArrowUp: -Math.PI / 2 }[e.key];
         if (A != null) { e.preventDefault(); e.stopPropagation(); let best = null, bd = 9; for (const b of btns) { const d = Math.abs(Math.atan2(Math.sin(b.ang - A), Math.cos(b.ang - A))); if (d < bd) { bd = d; best = b } } set(best.f); return }
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); done(true) } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); if (!forced) done(false) } };
@@ -1934,7 +1948,7 @@
       const u = it.unit, o = kbOff(u, t); g.save(); g.translate(o.x, o.y);
       if (u.deadAt && t > u.deadAt && !MON[u.kind]?.loot) { const e = (t - u.deadAt) / 1400; g.globalAlpha = e < .55 ? 1 : Math.max(0, 1 - (e - .55) / .45); if ('filter' in g) { const k = Math.min(1, (t - u.deadAt) / 400); g.filter = 'grayscale(' + (.85 * k).toFixed(2) + ') brightness(' + (1 - .22 * k).toFixed(2) + ')' } }   /* v98.610 · stays solid while it slumps, goes grey, fades only at the end (it used to be see-through at once) */
       const isSel = u.hp > 0 && (u === selUnit || u === hoverU || u === pickU) && !u.deadAt; if (isSel && SEL_OUTLINE && u.side === 'monster') { g.shadowColor = '#fff'; g.shadowBlur = 6 * (devicePixelRatio || 1) }   /* v98.324 · the selected character: thin white edge + soft aura · v98.632: only on monsters now — the hero and companions have the head arrow instead */
-      drawUnit(u); g.restore();
+      if (faceDraw && faceDraw.h === u) drawFaceBack(g, t); drawUnit(u); g.restore();
     }
     smokeDraw(g, t);
     for (const u of st.units) if (u.deadAt && t > u.deadAt) deathFx(g, u, t);   /* v98.610 · grey aura + smoke + the soul leaving the body */
