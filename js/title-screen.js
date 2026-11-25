@@ -290,7 +290,7 @@ const pageLoaded=()=>document.readyState==='complete'?Promise.resolve():Promise.
 const settle=()=>new Promise(r=>{let n=0;const f=()=>++n>=12?r():requestAnimationFrame(f);requestAnimationFrame(f)});   // a few quiet frames after the heavy work
 let storyReady=false,preparing=false;
 async function prepareStory(){if(preparing)return;preparing=true;title.classList.add('ts-quick','ts-story-pre');try{root.GameBGM?.refresh?.()}catch{}   /* v98.213 · switch the music NOW (the 100 ms timer can be starved while the village frame loads) */   /* v98.201 · the menu stays hidden behind the loading screen (it flashed up before the first picture) */
- await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'เพลงบทนำ',items:[()=>root.GameBGM?.preloadPrologue?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTown(),wait(12000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900,gate:'กดปุ่มใดก็ได้เพื่อไปต่อ'});
+ await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'เพลงบทนำ',items:[()=>root.GameBGM?.preloadPrologue?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTownDrawn(),wait(16000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900,gate:'กดปุ่มใดก็ได้เพื่อไปต่อ'});
  storyReady=true;story()}
 
 
