@@ -15,7 +15,7 @@ const I={
 const svg=k=>`<svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>`;
 // v12: a picture from assets/icons/menu can replace the drawn icon (chosen in Editor → ไอคอนเมนู)
 /* v98.16 · picture icons are the default; a choice saved in Editor → ไอคอนเมนู wins, and '-' there means the drawn icon */
-const DEFAULT_PICS={map:'map',bag:'bag',upgrade:'deck',settings:'settings',editor:'quest'};
+const DEFAULT_PICS={map:'v2-world-map',bag:'v2-inventory',upgrade:'v2-skills',settings:'v2-options',editor:'v2-editor',develop:'v2-village-projects',fullscreen:'v2-fullscreen'};
 const MENU_KEY='menu-icons-v1',pick=id=>{let v;try{v=(JSON.parse(localStorage.getItem(MENU_KEY))||{})[id]}catch(e){}if(v==='-')return '';return v||DEFAULT_PICS[id]||''};
 const icon=(id,k)=>{let p=pick(id);return p?`<img class="nav-img" src="assets/icons/menu/${p}.webp" alt="">`:svg(k)};
 const key=id=>id==='motion'?(typeof reduced!=='undefined'&&reduced?'motionOff':'motionOn'):id==='fullscreen'?(document.fullscreenElement?'fullscreenExit':'fullscreen'):id;

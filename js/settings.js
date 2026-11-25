@@ -3,19 +3,20 @@
 // • tips show once each the first time you see the village, a battle, the adventure map and the deck builder
 (function(){
 const DEF={speed:1,tips:true};
+const settingArt=k=>`<img src="assets/icons/menu/v2-${k}.webp" alt="" width="28" height="28" style="object-fit:contain;vertical-align:middle;margin-right:8px">`;
 function S(){if(typeof s==='undefined'||!s.village)return {...DEF};s.village.settings||={...DEF};for(let k in DEF)s.village.settings[k]??=DEF[k];return s.village.settings}
 function apply(){let c=S();window.GAME_SPEED=c.speed||1}
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 window.openSettings=function(){let c=S();
  villageDialog('ตั้งค่า',`<div class="settings-box">
- <label>ชื่อตัวเอก <span><b>${esc(window.heroName?.()||'')}</b> <button onclick="HeroIdentity.askHeroName(false);openSettings()">เปลี่ยนชื่อ</button></span></label>
- <label>ความเร็วแอนิเมชันต่อสู้ <select onchange="GameSettings.set('speed',+this.value)">${[[.75,'ช้า'],[1,'ปกติ'],[1.5,'เร็ว'],[2.2,'เร็วมาก']].map(([v,n])=>`<option value="${v}" ${c.speed==v?'selected':''}>${n}</option>`).join('')}</select></label>
- <label>ปุ่มควบคุมบนจอ (จอยสติ๊ก + ปุ่มคุย) <select onchange="try{localStorage.setItem('projectA.touchUI',this.value)}catch(e){}">${(()=>{let m='auto';try{m=localStorage.getItem('projectA.touchUI')||'auto'}catch(e){}return [['auto','อัตโนมัติ (แสดงบนจอสัมผัส)'],['on','แสดงเสมอ'],['off','ซ่อน']].map(([v,n])=>`<option value="${v}" ${m===v?'selected':''}>${n}</option>`).join('')})()}</select></label>
- <label>เสียงเอฟเฟกต์ <input type="range" min="0" max="1" step=".05" value="${window.BattlePolish?.volume??.65}" oninput="BattlePolish.set('volume',+this.value)"></label>
- <label>เพลงพื้นหลัง <input type="range" min="0" max="1" step=".05" value="${window.BattlePolish?.musicVolume??.24}" oninput="BattlePolish.set('musicVolume',+this.value)"></label>
- <label>คำแนะนำครั้งแรก <span><input type="checkbox" ${c.tips?'checked':''} onchange="GameSettings.set('tips',this.checked)"> แสดง <button onclick="GameSettings.resetTips()">ดูคำแนะนำอีกครั้ง</button></span></label>
- <label>ลดความละเอียดอัตโนมัติเมื่อกระตุก (ภาพจะเบาลงเมื่อเครื่องช้า · ปกติปิดไว้) <span><input type="checkbox" ${(()=>{try{return localStorage.getItem('projectA.autoRes')==='1'?'checked':''}catch(e){return ''}})()} onchange="try{localStorage.setItem('projectA.autoRes',this.checked?'1':'0')}catch(e){};GameSettings&&alert('มีผลเมื่อโหลดหน้าใหม่')"> เปิด</span></label>
- <label>วัดประสิทธิภาพ (fps) <span><button onclick="GameSettings.perf()">📊 วัดประสิทธิภาพ</button></span></label>
+ <label><span>${settingArt('character')}ชื่อตัวเอก</span> <span><b>${esc(window.heroName?.()||'')}</b> <button onclick="HeroIdentity.askHeroName(false);openSettings()">เปลี่ยนชื่อ</button></span></label>
+ <label><span>${settingArt('skills')}ความเร็วแอนิเมชันต่อสู้</span> <select onchange="GameSettings.set('speed',+this.value)">${[[.75,'ช้า'],[1,'ปกติ'],[1.5,'เร็ว'],[2.2,'เร็วมาก']].map(([v,n])=>`<option value="${v}" ${c.speed==v?'selected':''}>${n}</option>`).join('')}</select></label>
+ <label><span>${settingArt('controls')}ปุ่มควบคุมบนจอ (จอยสติ๊ก + ปุ่มคุย)</span> <select onchange="try{localStorage.setItem('projectA.touchUI',this.value)}catch(e){}">${(()=>{let m='auto';try{m=localStorage.getItem('projectA.touchUI')||'auto'}catch(e){}return [['auto','อัตโนมัติ (แสดงบนจอสัมผัส)'],['on','แสดงเสมอ'],['off','ซ่อน']].map(([v,n])=>`<option value="${v}" ${m===v?'selected':''}>${n}</option>`).join('')})()}</select></label>
+ <label><span>${settingArt('audio')}เสียงเอฟเฟกต์</span> <input type="range" min="0" max="1" step=".05" value="${window.BattlePolish?.volume??.65}" oninput="BattlePolish.set('volume',+this.value)"></label>
+ <label><span>${settingArt('audio')}เพลงพื้นหลัง</span> <input type="range" min="0" max="1" step=".05" value="${window.BattlePolish?.musicVolume??.24}" oninput="BattlePolish.set('musicVolume',+this.value)"></label>
+ <label><span>${settingArt('help')}คำแนะนำครั้งแรก</span> <span><input type="checkbox" ${c.tips?'checked':''} onchange="GameSettings.set('tips',this.checked)"> แสดง <button onclick="GameSettings.resetTips()">ดูคำแนะนำอีกครั้ง</button></span></label>
+ <label><span>${settingArt('graphics')}ลดความละเอียดอัตโนมัติเมื่อกระตุก (ภาพจะเบาลงเมื่อเครื่องช้า · ปกติปิดไว้)</span> <span><input type="checkbox" ${(()=>{try{return localStorage.getItem('projectA.autoRes')==='1'?'checked':''}catch(e){return ''}})()} onchange="try{localStorage.setItem('projectA.autoRes',this.checked?'1':'0')}catch(e){};GameSettings&&alert('มีผลเมื่อโหลดหน้าใหม่')"> เปิด</span></label>
+ <label><span>${settingArt('graphics')}วัดประสิทธิภาพ (fps)</span> <span><button onclick="GameSettings.perf()">📊 วัดประสิทธิภาพ</button></span></label>
  <p class="muted small">เดินด้วยจอยสติ๊กหรือแป้น W A S D / ลูกศร · ปุ่มใหญ่ (E หรือ Space) = คุย / เข้าประตู / ออก · เสียงและเพลงเริ่มหลังคลิกหรือกดปุ่มครั้งแรก · สำรอง/นำเข้าเซฟอยู่ท้ายหน้าเกม</p></div>`)};
 const TIPS={
  village:['ยินดีต้อนรับสู่หมู่บ้าน','เดินทางด้วยปุ่ม <b>แผนที่</b> · โรงตีเหล็กใช้คราฟต์อาวุธ 9 ชนิด · ตลาดซื้อขายและจ้างเพื่อนร่วมทาง · ทางออกรอบหมู่บ้านพาไปผจญภัย (★ = ความยาก)'],
