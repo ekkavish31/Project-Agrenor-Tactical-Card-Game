@@ -87,6 +87,10 @@
   addEventListener('pointerdown', e => { if (!pop.hidden && !e.target.closest('.hud-pop,.hud-ico')) closePop() }, true);
   addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { closePop(); e.preventDefault(); e.stopImmediatePropagation() } }, true);
 
+  /* v98.1063 · the top HUD (status pill + icon row) is drawn in fixed pixels sized for a big screen: on a laptop at 100 % browser zoom it filled the picture.
+     Scale it with the window width instead (full size from ~2700 px wide, down to 62 % at ~1700 px) · phones (≤ 900 px) keep their own rules */
+  { const st = document.createElement('style'); st.textContent = '@media (min-width:901px){#townGameHud,.town-icon-row{zoom:var(--hud-s,1)}}'; document.head.appendChild(st);
+    const fit = () => document.documentElement.style.setProperty('--hud-s', String(Math.round(Math.max(.62, Math.min(1, innerWidth / 2700)) * 100) / 100)); fit(); addEventListener('resize', fit) }
   const css = document.createElement('style'); css.textContent = `
   .town-icon-row{gap:14px!important;top:12px!important;right:14px!important;align-items:flex-start}
   .town-icon-row>.hud-ico{width:84px;min-height:0;display:flex;flex-direction:column;align-items:center;gap:5px;padding:0;border:0;background:none;cursor:pointer;color:#f6e7bf;transition:transform .15s;text-shadow:none}
