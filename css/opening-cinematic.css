@@ -20,20 +20,20 @@
 /* frosted-white haze behind the tagline so it stays readable over the busy cliffs/river */
 #titleScreen.ag-title .ts-brand .ts-kicker::before{content:'';position:absolute;z-index:-1;inset:-.9em -3.2em;background:radial-gradient(ellipse 50% 52% at 50% 50%,#fffffff2 0%,#ffffffd9 42%,#ffffff8c 72%,#ffffff00 100%);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);-webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 50%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 50% 50%,#000 55%,transparent 100%)}
 #titleScreen.ag-title .ts-menu{position:absolute;left:clamp(12px,2.6vw,44px);bottom:clamp(64px,14vh,190px);width:clamp(250px,28vw,430px);gap:2px;pointer-events:auto}
-#titleScreen.ag-title .ts-menu button{isolation:isolate;border:0;border-radius:0;color:var(--ag-ink);background:linear-gradient(90deg,#1b2b4759,transparent 82%) left bottom/100% 1px no-repeat;padding:10px 18px 11px clamp(58px,5.6vw,84px);min-height:clamp(46px,7.4vh,72px);justify-content:center;transform:none;transition:color .18s,background-color .18s}
+#titleScreen.ag-title .ts-menu button{isolation:isolate;border:0;border-radius:0;color:var(--ag-ink);background:linear-gradient(90deg,#1b2b4759,transparent 82%) left bottom/100% 1px no-repeat;padding:10px 18px 11px clamp(78px,7vw,100px);min-height:clamp(46px,7.4vh,72px);justify-content:center;transform:none;transition:color .18s,background-color .18s}
 #titleScreen.ag-title .ts-menu button span{font:600 clamp(17px,1.65vw,26px)/1.15 AgThai,Georgia,'Times New Roman',serif;letter-spacing:.02em}
 #titleScreen.ag-title .ts-menu button small{font:400 clamp(11px,1vw,15px)/1.3 AgThai,system-ui,sans-serif;color:var(--ag-ink2)}
-#titleScreen.ag-title .ts-menu button::before{content:'';position:absolute;left:clamp(24px,2.5vw,38px);top:50%;width:clamp(24px,2.3vw,34px);height:clamp(24px,2.3vw,34px);margin:calc(clamp(24px,2.3vw,34px)/-2) 0 0;border:0;transform:none;opacity:.88;background:currentColor;-webkit-mask:var(--ag-icon) center/contain no-repeat;mask:var(--ag-icon) center/contain no-repeat}
+#titleScreen.ag-title .ts-menu button::before{content:'';position:absolute;left:clamp(24px,2.5vw,38px);top:50%;width:clamp(34px,3vw,44px);height:clamp(34px,3vw,44px);margin:calc(clamp(34px,3vw,44px)/-2) 0 0;border:0;transform:none;opacity:1;background:var(--ag-icon) center/contain no-repeat;filter:drop-shadow(0 2px 3px #0006)}   /* v98.1063 · painted menu icons (assets/icons/menu) instead of the code-drawn SVG masks */
 #titleScreen.ag-title .ts-menu button::after{content:'';position:absolute;inset:1.5px;z-index:-1;background:linear-gradient(90deg,#1c3558f2,#27456fdb);clip-path:polygon(0 50%,15px 0,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,15px 100%);opacity:0}
 #titleScreen.ag-title .ts-menu button:not(:disabled):hover,#titleScreen.ag-title .ts-menu button:not(:disabled):focus{outline:none;color:#f6ecd0;background:linear-gradient(90deg,#e3c07a,#b98d3f);clip-path:polygon(0 50%,16px 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,16px 100%);text-shadow:none;transform:none}
 #titleScreen.ag-title .ts-menu button:not(:disabled):hover small,#titleScreen.ag-title .ts-menu button:not(:disabled):focus small{color:#d3dcee}
 #titleScreen.ag-title .ts-menu button:not(:disabled):hover::before,#titleScreen.ag-title .ts-menu button:not(:disabled):focus::before{opacity:1;transform:none;background:currentColor}
 #titleScreen.ag-title .ts-menu button:not(:disabled):hover::after,#titleScreen.ag-title .ts-menu button:not(:disabled):focus::after{opacity:1}
-#titleScreen.ag-title .ts-menu button[data-act="new"]{--ag-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9.2' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M12 3.2l2.3 6.5 6.5 2.3-6.5 2.3L12 20.8l-2.3-6.5L3.2 12l6.5-2.3z' fill='black'/%3E%3C/svg%3E")}
-#titleScreen.ag-title .ts-menu button[data-act="continue"]{--ag-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3.5 5.5C7 4 9.6 4.3 12 6c2.4-1.7 5-2 8.5-.5V19c-3.500-1.500-6.100-1.200-8.500.5-2.400-1.700-5-2-8.500-.5z' fill='none' stroke='black' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M12 6v13.500' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E")}
-#titleScreen.ag-title .ts-menu button[data-act="load"]{--ag-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3.500v11.500M7.200 10.500L12 15.300l4.800-4.800M4.500 19.500h15' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
-#titleScreen.ag-title .ts-menu button[data-act="options"]{--ag-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='3.300' fill='none' stroke='black' stroke-width='1.8'/%3E%3Ccircle cx='12' cy='12' r='6.400' fill='none' stroke='black' stroke-width='2.600' stroke-dasharray='2.700 2.540'/%3E%3C/svg%3E")}
-#titleScreen.ag-title .ts-menu button[data-act="extra"]{--ag-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='5.500' y='3.500' width='13' height='17' rx='2' fill='none' stroke='black' stroke-width='1.700'/%3E%3Cpath d='M9 8.500h6M9 12h6M9 15.500h3.500' stroke='black' stroke-width='1.600' stroke-linecap='round'/%3E%3C/svg%3E")}
+#titleScreen.ag-title .ts-menu button[data-act="new"]{--ag-icon:url("../assets/icons/menu/portal.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="continue"]{--ag-icon:url("../assets/icons/menu/replay.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="load"]{--ag-icon:url("../assets/icons/menu/cardbook.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="options"]{--ag-icon:url("../assets/icons/menu/settings.webp")}
+#titleScreen.ag-title .ts-menu button[data-act="extra"]{--ag-icon:url("../assets/icons/menu/collection.webp")}
 #titleScreen.ag-title .ag-replay{position:absolute;left:clamp(16px,3.4vw,60px);bottom:clamp(36px,5.6vh,60px);pointer-events:auto}
 #titleScreen.ag-title .ts-foot{color:var(--ag-ink2);text-shadow:0 0 6px #fff,0 0 12px #ffffffc0}
 #titleScreen.ag-title .ag-horizon{position:absolute;right:clamp(14px,2.4vw,40px);bottom:clamp(34px,5.4vh,58px);font:italic 500 clamp(14px,1.6vw,24px)/1 AgThai,Georgia,serif;letter-spacing:.04em;color:#f6efdc;text-shadow:0 1px 2px #1b2b47,0 0 6px #1b2b47e6,0 0 16px #1b2b47b0;pointer-events:none}
@@ -59,14 +59,14 @@
 @media(max-width:700px){
   #titleScreen.ag-title{--ag-logo-w:min(80vw,460px);--ag-menu-r:0px}
   #titleScreen.ag-title .ts-menu{width:min(290px,78vw);bottom:max(70px,11vh)}
-  #titleScreen.ag-title .ts-menu button{padding-left:58px;min-height:44px}
+  #titleScreen.ag-title .ts-menu button{padding-left:76px;min-height:44px}
     #titleScreen .ag-audio-notice{right:12px;bottom:12px;max-width:68vw;font-size:11px}
 }
 @media(max-height:520px){
   #titleScreen.ag-title{--ag-logo-w:min(40vw,62vh,520px);--ag-menu-r:calc(2.6vw + min(270px,38vw))}
   #titleScreen.ag-title .ts-brand .ts-kicker{margin-top:4px;font-size:10px;letter-spacing:.2em}
   #titleScreen.ag-title .ts-menu{bottom:62px;width:min(270px,38vw)}
-  #titleScreen.ag-title .ts-menu button{padding-top:3px;padding-bottom:4px;min-height:34px;padding-left:46px}
+  #titleScreen.ag-title .ts-menu button{padding-top:3px;padding-bottom:4px;min-height:34px;padding-left:62px}
   #titleScreen.ag-title .ts-menu button::before{left:14px;width:22px;height:22px;margin:-11px 0 0}
   #titleScreen.ag-title .ts-menu button span{font-size:16px}
   #titleScreen.ag-title .ts-menu button small{display:none}
