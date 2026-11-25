@@ -91,9 +91,9 @@
         else { el.classList.remove('on'); el.classList.add('off'); setTimeout(finish, 460) }
       };
       const next = () => { if (closing) return; if (i < items.length - 1) { i++; paint() } else close() };
-      const key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close() } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); next() } };
+      const key = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation() } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); next() } };
       document.addEventListener('keydown', key, true);
-      el.addEventListener('click', next);
+      el.addEventListener('click', e => e.stopPropagation());   /* v98.1053 · only the button moves on / closes: a click anywhere else does nothing */
       requestAnimationFrame(() => { el.classList.add('on'); paint() });
     });
   }
