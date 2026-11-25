@@ -1,35 +1,27 @@
 /* Shared painted parchment: the seal-book's paper, fine brass and leather. */
 :root{--ivory-art:url('../assets/ui/ivory-panel.webp');--ivory-ink:#3e2a18;--ivory-muted:#705737;--ivory-gold:#9b722f}
-html body #fbHud,html body #storyTracker,html body #fbPause .box,html body #fbAlly,html body #fbCoach,html body #fbInspect,html body #btTalk .bt-box,html body #btTalk .bt-name,html body #townPreview,html body #npcTalk{
+html body #storyTracker,html body #townPreview,html body #npcTalk{
  background:transparent!important;border:18px solid transparent!important;border-image:var(--ivory-art) 12% fill / 18px / 0 stretch!important;border-radius:0!important;color:var(--ivory-ink)!important;box-shadow:none!important;filter:drop-shadow(0 5px 8px #22150960)!important;text-shadow:none!important
 }
 /* v98.1049 · hover preview card (ชื่อสถานที่/คำอธิบาย) was cream text on cream paper: use dark ink */
 html body #townPreview h3{color:var(--ivory-ink)!important;text-shadow:none!important}
 html body #townPreview p{color:#4a3419!important;text-shadow:none!important}
-html body #fbHud{padding:3px 7px!important;width:280px;max-height:calc(100dvh - 24px);overflow:auto;scrollbar-width:thin;scrollbar-color:#ae8749 #ead9b0}
-html body #fbHud :is(.grp,.mini,small,.help,#fbGoal,#fbLog),html body #storyTracker :is(small,.stk-hint,.stk-night,.stk-goal,.stk-head b),html body #btTalk :is(.bt-text,.bt-hint),html body #npcTalk :is(p,small,h3){color:var(--ivory-muted)!important;text-shadow:none!important}
-html body #fbHud .grp{border-top-color:#98743b55}
-html body #fbHud :is(button,.ord button),html body #storyTracker .stk-acts button.txt,html body #fbPick button.pk,html body #fbActions button{
+html body #storyTracker :is(small,.stk-hint,.stk-night,.stk-goal,.stk-head b),html body #npcTalk :is(p,small,h3){color:var(--ivory-muted)!important;text-shadow:none!important}
+html body #storyTracker .stk-acts button.txt,html body #fbPick button.pk,html body #fbActions button{
  background:transparent!important;border:8px solid transparent!important;border-image:var(--ivory-art) 12% fill / 8px / 0 stretch!important;border-radius:0!important;color:var(--ivory-ink)!important;text-shadow:none!important;box-shadow:none;filter:drop-shadow(0 2px 2px #3d241c40)
 }
-html body #fbHud :is(button,.ord button):hover:not(:disabled),html body #storyTracker .stk-acts button.txt:hover:not(:disabled),html body #fbActions button:hover:not(:disabled){filter:brightness(1.05) drop-shadow(0 0 3px #ad7c34)}
-html body #fbHud #fbMin{border:0!important;border-image:none!important;background:url('../assets/ui/battle-controls-v34.webp') 33.333% 100%/400% 200% no-repeat!important}
+html body #storyTracker .stk-acts button.txt:hover:not(:disabled),html body #fbActions button:hover:not(:disabled){filter:brightness(1.05) drop-shadow(0 0 3px #ad7c34)}
 html body #storyTracker .stk-acts button.ib{color:var(--ivory-ink);text-shadow:none}
 html body #storyTracker .stk-head{border-bottom-color:#97713e66}
 html body #storyTracker .stk-head .stk-fold{color:#7a552b}
 html body #storyTracker .stk-tag{background:#d8c39b;color:#594321;border-color:#9a7c42}
-html body #fbDuel .dc{background:transparent;border:9px solid transparent;border-image:var(--ivory-art) 12% fill / 9px stretch;color:var(--ivory-ink);box-shadow:none;padding:5px}
-html body #fbDuel .nm small{color:var(--ivory-muted)}
-html body #fbDuel .pf{box-sizing:border-box;background-color:#ede0bd;border-width:2px}
-html body #fbDuel:not(.min) .dc{width:calc(var(--pw) + 28px)}
-html body #fbDuel .cl{width:40px;height:40px;font-size:20px;margin:0 -8px}
 .scene-transit{position:absolute;inset:0;z-index:10;display:grid;place-items:center;background:#f2e7ca;color:var(--ivory-ink);font:15px/1.5 VillageThai,AgThai,system-ui,sans-serif}
 .scene-transit[hidden]{display:none}
 .scene-transit .load-card{width:min(480px,86vw);box-sizing:border-box;border:26px solid transparent;border-image:var(--ivory-art) 12% fill / 26px stretch;padding:20px;text-align:center;filter:drop-shadow(0 8px 16px #46321e33)}
 .scene-transit h2{font-size:23px;margin:0 0 10px;color:var(--ivory-ink)}
 .scene-transit p{margin:10px 0 0;color:var(--ivory-muted)}
 .scene-transit button{color:var(--ivory-ink);background:#eadbb9;border:1px solid #94703a;padding:8px 20px;border-radius:5px;font:inherit;cursor:pointer}
-@media(max-height:560px){html body #fbHud{width:228px;font-size:11px;border-width:13px!important;border-image-width:13px!important}html body #storyTracker{max-height:calc(100dvh - 96px);overflow:auto}}
+@media(max-height:560px){html body #storyTracker{max-height:calc(100dvh - 96px);overflow:auto}}
 /* v98.1055 · place loading screen = the same black loading look as the game's loading screen; nothing (quest tracker, toasts) floats over it */
 .scene-transit.st-dark{background:#05080d;color:#f5e6c4;place-items:end center;padding-bottom:9vh;box-sizing:border-box}
 .scene-transit.st-dark .load-card{border:0;border-image:none;background:none;filter:none;padding:0;width:min(560px,calc(100vw - 40px));text-align:left}

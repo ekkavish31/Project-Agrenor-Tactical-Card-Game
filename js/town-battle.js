@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1048';
+  const V = '98.1056';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -379,7 +379,7 @@
   #fbHud .arow{margin:3px 0 5px}#fbHud .arow.down{opacity:.45}#fbHud .ord{display:flex;gap:3px;margin-top:2px}#fbHud .ord button{padding:2px 6px;font-size:12px;background:#33463e;border-radius:6px}#fbHud .ord button.on{background:#5d8a6e;box-shadow:inset 0 0 0 1px #bfe8c8}#fbHud .ord button.sk{flex:1;background:#6b4e9a;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #fbHud .grp{margin:6px 0 2px;color:#bba57f;font-size:11px;border-top:1px solid #ffffff1a;padding-top:4px}#fbHud .grp small{opacity:.7}
   /* v98.252 · battle info window + action row made of pictures (assets/ui/battle-*.webp, bar-*.webp, gem-*.webp; icons from assets/icons/pack) */
-  #fbHud{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;border-style:solid!important;border-width:30px!important;border-image:url(assets/ui/battle-panel.webp) 40 fill/30px stretch!important;padding:0!important;width:300px;left:6px;top:6px;filter:drop-shadow(0 8px 14px #000a)}
+  #fbHud{width:300px;left:6px;top:6px;filter:drop-shadow(0 8px 14px #000a)}   /* v98.1056 · the code-drawn panel (green + brass edge) again: the painted-paper frame made the HUD blend into the scene */
   #fbHud .hd{display:flex;align-items:center;gap:6px}#fbHud .hd b{flex:1}
   #fbHud .bi{width:20px;height:20px;vertical-align:-5px;margin-right:4px}
   #fbHud #fbMin{width:30px;height:30px;padding:0;border-radius:0;background:url(assets/ui/battle-controls-v34.webp) no-repeat;background-size:400% 200%;background-position:33.333% 100%;filter:drop-shadow(0 2px 3px #000a)}#fbHud.min #fbMin{background-position:0 100%}
