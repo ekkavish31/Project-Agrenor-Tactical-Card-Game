@@ -7911,3 +7911,7 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 ## v98.1063 — 25 พ.ย. 2026 · แก้ New Game ไม่ขึ้นอะไร + ไอคอนเมนูใช้ภาพ asset
 - สาเหตุ New Game "ไม่ขึ้นอะไร" (ตอนมีเซฟ): v98.1061 เพิ่มหน้าเลือกช่อง Run (`#runSlotsUI` ใน `js/run-slots.js`) แต่กฎ `html.title-boot body>*:not(...){visibility:hidden}` ใน `css/title-screen.css` ซ่อน element ที่ต่อท้าย body ทุกตัวที่ไม่อยู่ในรายการยกเว้น หน้าเลือก Run จึงมองไม่เห็นระหว่างอยู่หน้าเมนู (Load ก็โดนแบบเดียวกัน) · เพิ่ม `:not(#runSlotsUI)` · ตรวจด้วยเบราว์เซอร์ทดสอบ: หน้าเลือก Run ขึ้นแล้ว
 - ไอคอนเมนูหลัก (`css/opening-cinematic.css`): เลิกใช้ SVG mask ที่วาดด้วยโค้ด ใช้ภาพจาก `assets/icons/menu/` แทน (New Game=portal · Continue=replay · Load=cardbook · Options=settings · Extra=collection) ขยายไอคอนและเพิ่มช่องว่างซ้ายของข้อความ
+
+## v98.1064 — 25 พ.ย. 2026 · ไฮไลท์เมนูไม่เป็นสี่เหลี่ยมเปล่า + ตรวจเวอร์ชันใหม่ไม่ค้าง
+- `css/opening-cinematic.css`: ตอน hover/focus ปุ่มเมนู ไอคอนกลายเป็นสี่เหลี่ยมครีมเปล่า (กฎ hover ใน `css/title-screen.css` ทับ `background` ของ `::before`) · กำหนดภาพไอคอนซ้ำในกฎ hover พร้อมขยาย ×1.12 และเรืองทอง
+- `js/title-screen.js` `checkGitHub`: เมนูบอก "ล่าสุดแล้ว" ทั้งที่มีเวอร์ชันใหม่ เพราะคำตอบ GitHub API ถูกแคชใน localStorage 30 นาที · ลดเหลือ 3 นาที และเพิ่มการเช็ก `js/game-version.js` ที่เผยแพร่จริงโดยตรง (no-store) ถ้าเลขใหม่กว่าให้ขึ้นปุ่ม "↻ โหลดเวอร์ชันใหม่"
