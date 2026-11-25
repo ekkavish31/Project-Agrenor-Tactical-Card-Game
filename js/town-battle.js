@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1056';
+  const V = '98.1057';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -193,7 +193,7 @@
     /* v97 CT: speed by unit (hero 8 · companions by key · monsters 5 + move) and a random head start for everyone but the hero */
     const SPD = { bram: 6, luna: 7, kier: 8, mil: 9 };
     for (const u of st.units) { if (u.id === 'hero') continue; u.speed = u.side === 'monster' ? Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))) : SPD[u.key] || 8; u.ct = SCENE ? (u.side === 'monster' ? (u.ct ?? u.speed * 3) : 40) : u.side === 'monster' ? Math.floor(Math.random() * u.speed * 5) : 55 + Math.floor(Math.random() * 40) }
-    for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir; { const o = u.side === 'monster' ? FB.hero(st) : FB.monster(st), du = o.u - u.u, dv = o.v - u.v; u.frontDir = du >= dv ? 'SE' : 'SW'; u.idle0 = { u: u.u, v: u.v, face: u.face } } }
+    for (const u of st.units) { u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.dir = 'SE'; u.pose = 'idle'; if (u.side === 'monster') u.dir = dirTo(u, FB.hero(st)); else u.dir = dirTo(u, FB.monster(st)); u.face = u.dir; { const o = u.side === 'monster' ? FB.hero(st) : FB.monster(st), du = o.u - u.u, dv = o.v - u.v; u.frontDir = du >= dv ? 'SE' : 'SW'; u.dir = u.face = u.frontDir; u.idle0 = { u: u.u, v: u.v, face: u.face } } }   /* v98.1057 · the opening pose looks left/right only as SW / SE (never the back-facing NW / NE) */
     /* v97.08 · same-named enemies get a number (โจรป่า 1, โจรป่า 2 …) so the queue, the list and the log tell them apart */
     { const n = {}, k = {}; for (const u of FB.monsters(st)) n[u.name] = (n[u.name] || 0) + 1; for (const u of FB.monsters(st)) if (n[u.name] > 1) { k[u.name] = (k[u.name] || 0) + 1; u.label = u.name + ' ' + k[u.name] } for (const u of FB.monsters(st)) if (u.label) { u.name = u.label; delete u.label } }
     if (Q.get('imm') === '1') for (const u of st.units) if (u.side === 'hero' && (u.id === 'hero' || u.key === 'sib')) u.immortal = true;   /* v98.331 · prologue tutorials: HP can drop, never below 1 */
@@ -209,7 +209,7 @@
   function mkSpawn(kind, pos, extra = {}) {
     const T = MON[kind]; if (!T) return null; const hp = Math.round(T.hp * HPX * (extra.hpMul || 1)), n = ++waveN, hero = FB.hero(st);
     const u = { id: 'wave' + n, side: 'monster', ai: true, ...pos, kind, name: T.name + ' ' + (n + 2), hp, maxHp: hp, atk: Math.round(T.atk * ATKX), def: 1, move: T.move, range: T.range || 1, boss: false, iq: T.iq || 0, shove: !!T.shove, el: T.el, fly: !!T.fly, passive: !!T.passive, evo: null, evoGroup: null, variant: null, ...extra };
-    if (st.fp > 1) u.fp = st.fp; u.speed = Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))); u.ct = u.speed * 2; u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.pose = 'idle'; u.dir = dirTo(u, hero); u.face = u.dir; return u;
+    if (st.fp > 1) u.fp = st.fp; u.speed = Math.max(5, Math.min(10, Math.round(5 + (u.move || 3)))); u.ct = u.speed * 2; u.vu = u.u + OFF; u.vv = u.v + OFF; u.shown = u.hp; u.pose = 'idle'; u.dir = (hero.u - u.u >= hero.v - u.v) ? 'SE' : 'SW'; u.face = u.dir; return u;   /* v98.1057 · SW / SE only at the start */
   }
   function attachScene() {
     if (!SCENE || !st) return; st.rules = window.SetPieces.rules(SCENE, { alive: u => u.hp > 0, free: (s, u, v) => !s.units.some(x => x.hp > 0 && x.u === u && x.v === v), mk: mkSpawn });
