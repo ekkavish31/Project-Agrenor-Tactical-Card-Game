@@ -48,10 +48,32 @@ const CREDITS=[
  ['แรงบันดาลใจ','Final Fantasy Tactics · Disgaea']
 ];
 const TIPS=['โจมตีจากด้านหลังศัตรูแรงกว่าด้านหน้า','ยืนบนที่สูงช่วยให้ตีแรงขึ้นและหลบได้ดีขึ้น','กด "รอ" แทนการเดินจะได้ CT คืนบางส่วน','อุปกรณ์ที่ดีต้องใช้วัตถุดิบจากพื้นที่ที่ยากขึ้น','นอนที่บ้านเพื่อฟื้นแรงและชีวิตเต็ม','ล็อกเป้าแล้วดูหน้าต่างทำนายผลก่อนโจมตี'];
+/* v98.1065 · LORE lines for the loading screen. [spoiler level, text]. Level = MainStory stage's `spoiler` (docs/lore/MAIN-STORY-CANON.md S0…S3): a line shows only when the player's story has reached it.
+   Every line is CONFIRMED canon only (docs/lore/CURRENT-ERA-CANON.md Part A · GAME-ERA.md "ข้อตกลงที่ใช้ในเกม") and is worded the way ordinary villagers would know it — no ancient names (Glaelanar, Wyridean…), no gods in person, nothing about the mine / infection / Mip's secret.
+   S2 and S3 are left EMPTY on purpose: add a line there only after the matching story beat exists in the game. */
+const LORE=[
+ [0,'เฟิร์นเวลอยู่ในที่ราบลุ่มแม่น้ำ ผู้คนแถบนี้ผูกพันกับธาตุดินและน้ำมาหลายชั่วอายุคน'],
+ [0,'ทางเหนือคือดินแดนหิมะหนาว ทางใต้คือแดนไฟและภูเขาไฟ ส่วนทางตะวันตกไกลคือหมู่เกาะกลางทะเล'],
+ [0,'ชาวบ้านเรียกแสงสีทองบนฟ้าว่า "ดวงทอง" มันลอยค้างอยู่ที่หนึ่งนาน ๆ แล้วค่อยย้ายไปที่อื่น ไม่ใช่ลางร้าย'],
+ [0,'ป่าใหญ่ทางตะวันออกดูไม่มีที่สิ้นสุด แผนที่วาดไว้แค่ชายขอบ นักผจญภัยน้อยคนนักจะกลับออกมา'],
+ [0,'คนส่วนใหญ่เกิดมาพร้อมแก่นธาตุดิน น้ำ หรือลม ธาตุอื่นมีอยู่จริงแต่พบได้ยาก'],
+ [0,'ลูกไม่จำเป็นต้องได้ธาตุเดียวกับพ่อแม่ ธาตุของแต่ละคนเป็นของเขาเอง'],
+ [0,'เผ่าพันธุ์อื่นมีอยู่จริง แต่คนส่วนใหญ่ไม่เคยพบ จะเจอก็ตามเมืองท่า เมืองชายแดน และเส้นทางค้าขาย'],
+ [0,'การ์ดเวทคือแผ่นผนึกที่จารวงจรเวทไว้ ผู้ถือส่งพลังของตนเข้าไป วงจรจะจัดรูปพลังให้กลายเป็นเวท'],
+ [0,'การ์ดไม่ใช่บ่อพลังไร้ขีดจำกัด ใครอัดพลังเกินที่วงจรรับไหว วงจรจะไหม้จนใช้ไม่ได้อีก'],
+ [0,'การ์ดชั่วคราวใช้ได้ครั้งเดียวแล้วสลายไป จึงแรงกว่าการ์ดทั่วไป แต่ก็มีขีดจำกัดเหมือนกัน'],
+ [0,'ใช้การ์ดต่างธาตุได้ โดยไม่ทำให้แก่นธาตุของตัวเองเปลี่ยน แต่จะได้แค่ผลพื้นฐานของการ์ดนั้น'],
+ [0,'ตามที่สอนกันในอาณาจักรมนุษย์ จอมเวทผู้ยิ่งใหญ่คนหนึ่งเป็นผู้คิดค้นการ์ดเวทขึ้นมา'],
+ [0,'อาณาจักรใหญ่ ๆ รับซื้อฝีมือเวทจากผู้ใช้เวท แล้วถอดแบบไปทำเป็นการ์ดจำหน่ายเป็นรายได้'],
+ [1,'ข่าวจากด่านหินทางเหนือบอกว่าสงครามยืดเยื้อ และฝั่งเราเป็นฝ่ายเสียเปรียบ'],
+ [1,'มีข่าวลือว่าราชสำนักเร่งขุดแร่พลังงานชนิดหนึ่งเพื่อใช้ในสงคราม']
+];
+function loreLevel(){try{const g=typeof s!=='undefined'&&s?s:root.WorldState?.game?.();const m=root.MainStory?.stage?.(g);return Number.isFinite(m?.spoiler)?m.spoiler:0}catch{return 0}}
+function pickLore(level){const ok=LORE.filter(x=>x[0]<=level);return ok.length?ok[Math.floor(Math.random()*ok.length)][1]:''}
 
 /* v97.13 · a save slot picked in Load (js/console-ui.js) is copied over the auto save here, before the game page reads it */
 try{const n=sessionStorage.getItem('projectA.pendingSlot');if(n){sessionStorage.removeItem('projectA.pendingSlot');sessionStorage.setItem('projectA.startHome','1');localStorage.removeItem('projectA.resume');   /* v98.340 · a main-save slot starts at home; the temporary save is dropped */const o=JSON.parse(localStorage.getItem('projectA.slot.'+n)||'null');if(o?.data)for(const [k,v] of Object.entries(o.data)){if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v)}}}catch(e){}
-/* v97.10 · developer tools (✎ Editor on the title) only on the creator's machine: a GitHub token is set for ⬆ Push, or ?dev=1 (remembered; ?dev=0 forgets) */
+/* v97.10 · developer tools (Editor on the title) only on the creator's machine: a GitHub token is set for ⬆ Push, or ?dev=1 (remembered; ?dev=0 forgets) */
 const DEV=(()=>{try{const q=new URLSearchParams(location.search).get('dev');if(q==='1')localStorage.setItem('projectA.dev','1');if(q==='0')localStorage.removeItem('projectA.dev');return localStorage.getItem('projectA.dev')==='1'||!!JSON.parse(localStorage.getItem('projectA.github')||'{}').token}catch(e){return false}})();root.PROJECT_DEV=DEV;
 const SAVE='three-card-forge-v4',STARTED='project-a-started-v1',NEW_FLAG='project-a-newgame',VERSION=(root.GAME_VERSION?.v||'v50');
 const params=new URLSearchParams(location.search);
@@ -90,7 +112,7 @@ const uniq=list=>[...new Set(list.filter(Boolean))];
 function heroFrames(){const t=root.TACTICS_SPRITES;if(!t?.directions)return[];const out=[];for(const p of Object.values(t.directions))for(const f of Object.values(p).flat())if(f?.src)out.push(f.src);return out}
 const VILLAGE=['grass','paving','soil','meadow-details','garden-pond','props','fountain','player-house','inn','healer','shop','market','temple','forge'].map(f=>'assets/village-town/'+f+'.png').concat(['broadleaf','pine','old-oak'].map(f=>'assets/village-town/nature/'+f+'.webp'));
 /* v98.1001 · + the CURRENT book picture (cardbook2-open) and its 20 page-turn frames (they were never in this list → the first flip blinked). v98.679 · the card book (สมุดผนึก) is the first thing the lesson opens: its pictures are fetched during the loading screen so it never pops in late */
-const BOOK_ART=['assets/ui/cardbook2-open.webp',...Array.from({length:20},(_,i)=>'assets/ui/bookturn/turn-'+String(i+1).padStart(2,'0')+'.webp'),'assets/ui/cardbook-open.webp','assets/ui/grimoire-open.webp','assets/ui/close-x.webp','assets/icons/menu/cardbook.webp','assets/icons/menu/potion.webp','assets/icons/menu/battle.webp','assets/icons/menu/forge.webp','assets/icons/menu/treasure.webp','assets/icons/menu/mail.webp','assets/cards/item/potion.webp','assets/cards/item/momWater.webp','assets/cursor/cursor-atlas.webp','assets/cursor/talk-atlas.webp','assets/cursor/walk-atlas.webp','assets/ui/quest-marker.webp','assets/cursor/pointer.png','assets/cursor/pointer@2x.png','assets/cursor/grab.png','assets/cursor/grabbing.png','assets/cursor/zoom.png'];
+const BOOK_ART=['assets/ui/cardbook2-open.webp',...Array.from({length:20},(_,i)=>'assets/ui/bookturn/turn-'+String(i+1).padStart(2,'0')+'.webp'),'assets/ui/cardbook-open.webp','assets/ui/grimoire-open.webp','assets/ui/close-x.webp','assets/icons/menu/cardbook.webp','assets/icons/menu/potion.webp','assets/icons/menu/battle.webp','assets/icons/menu/forge.webp','assets/icons/menu/treasure.webp','assets/icons/menu/mail.webp',...['items','equipment','materials','collection','quests'].map(k=>'assets/icons/menu/v2-'+k+'.webp'),'assets/cards/item/potion.webp','assets/cards/item/momWater.webp','assets/cursor/cursor-atlas.webp','assets/cursor/talk-atlas.webp','assets/cursor/walk-atlas.webp','assets/ui/quest-marker.webp','assets/cursor/pointer.png','assets/cursor/pointer@2x.png','assets/cursor/grab.png','assets/cursor/grabbing.png','assets/cursor/zoom.png'];
 /* v98.687 · all story portraits (~10 MB, stored once by the service worker) are fetched behind the Mip loading screen so a talk never shows a missing / previous face */
 function portraitSet(){try{return uniq(root.StoryActors?.allFaces?.()||[])}catch(e){return[]}}
 function villageSet(){return uniq([...VILLAGE,...heroFrames(),'assets/hero.webp','assets/home.webp','assets/market.webp','assets/workshop.webp',...['bag','upgrade','map','develop'].map(k=>'assets/ui-'+k+'.webp'),'assets/audio/bgm/bgm-village-festival-01.mp3',...BOOK_ART])}
@@ -105,7 +127,7 @@ function areaKinds(area){const e=root.ADVENTURE_DATA?.AREAS?.[area]?.enemies;ret
 /* ---------- loading screen ---------- */
 let screen=null;
 function loadingScreen(){if(screen)return screen;const el=document.createElement('div');el.id='gameLoading';el.className='gl';el.hidden=true;el.setAttribute('role','progressbar');el.setAttribute('aria-valuemin','0');el.setAttribute('aria-valuemax','100');
- el.innerHTML='<div class="gl-bg"></div><div class="gl-box"><span class="gl-kicker">LOADING</span><h2 class="gl-title"></h2>'+(root.MipLoader?root.MipLoader.html({width:'min(560px,calc(100vw - 40px))',size:'clamp(76px,11vh,108px)'}):'')+'<div class="gl-bar"><i></i></div><div class="gl-meta"><span class="gl-step"></span><b class="gl-pct">0%</b></div><p class="gl-tip"></p><button type="button" class="gl-skip" tabindex="-1" aria-hidden="true">เข้าเกมเลย · โหลดส่วนที่เหลือเบื้องหลัง</button></div>';
+ el.innerHTML='<div class="gl-bg"></div><div class="gl-box"><span class="gl-kicker">LOADING</span><h2 class="gl-title"></h2>'+(root.MipLoader?root.MipLoader.html({width:'min(560px,calc(100vw - 40px))',size:'clamp(76px,11vh,108px)'}):'')+'<div class="gl-bar"><i></i></div><div class="gl-meta"><span class="gl-step"></span><b class="gl-pct">0%</b></div><p class="gl-tip"></p><p class="gl-lore"></p><button type="button" class="gl-skip" tabindex="-1" aria-hidden="true">เข้าเกมเลย · โหลดส่วนที่เหลือเบื้องหลัง</button></div>';
  document.body.appendChild(el);return screen=el}
 function setProgress(el,f,step){const pct=Math.round(f*100);el.querySelector('.gl-bar i').style.width=pct+'%';el.querySelector('.gl-pct').textContent=pct+'%';el.setAttribute('aria-valuenow',pct);if(step!=null)el.querySelector('.gl-step').textContent=step}
 /* run(title, groups[, {bg, minMs, quiet}]) — groups: [{label, items:[url|promise|fn]}]. quiet = only show if it takes >150ms */
@@ -117,7 +139,7 @@ async function runNow(title,groups,opt={}){const el=loadingScreen(),items=groups
  const sumShare=groups.reduce((a,g)=>a+(g.share&&g.items.length?g.share:0),0),others=items.filter(x=>!x.share).length;for(const x of items)x.w=x.share?x.share/x.n:(others?(1-sumShare)/others:0);
  let lastLabel='',doneW=0,shown=!opt.quiet,start=performance.now();const running=new Set();let shownF=0;
  const frac=()=>{let f=doneW;const now=performance.now();for(const x of running)f+=x.w*.93*(1-Math.exp(-(now-x.t0)/4500));shownF=Math.max(shownF,Math.min(.995,f));return shownF};
- el.querySelector('.gl-title').textContent=title;el.querySelector('.gl-tip').textContent='เคล็ดลับ · '+TIPS[Math.floor(Math.random()*TIPS.length)];el.querySelector('.gl-bg').style.backgroundImage=opt.bg?`url("${opt.bg}")`:'';setProgress(el,0,groups[0]?.label||'');
+ el.querySelector('.gl-title').textContent=title;el.querySelector('.gl-tip').textContent='เคล็ดลับ · '+TIPS[Math.floor(Math.random()*TIPS.length)];{const lo=el.querySelector('.gl-lore'),tx=pickLore(opt.lore0?0:loreLevel());lo.textContent=tx?'เรื่องเล่าจากโลก · '+tx:'';lo.hidden=!tx}el.querySelector('.gl-bg').style.backgroundImage=opt.bg?`url("${opt.bg}")`:'';setProgress(el,0,groups[0]?.label||'');
  const reveal=()=>{if(!el.hidden)return;el.hidden=false;el.classList.remove('gl-out');shown=true};if(shown)reveal();const timer=opt.quiet?setTimeout(reveal,150):0;
  // a few at a time, in order, so the bar moves steadily and the first scene's files come first
  const queue=items.slice(),workers=Array.from({length:Math.min(6,queue.length)},async()=>{while(queue.length){const x=queue.shift();x.t0=performance.now();if(x.share)running.add(x);await load(x.it);running.delete(x);doneW+=x.w;lastLabel=x.label;setProgress(el,frac(),x.label)}}),tick=setInterval(()=>setProgress(el,frac(),running.size?[...running][0].label:lastLabel),90);
@@ -177,10 +199,10 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
   ${(()=>{if(root.RunSlots)return root.RunSlots.anyRun()?`<button data-act="load"><span>Load</span><small>เลือก Run · เซฟอัตโนมัติ / เซฟมือ</small></button>`:'';const n=[1,2,3].filter(i=>{try{return !!localStorage.getItem('projectA.slot.'+i)}catch(e){return false}}).length;return n?`<button data-act="load"><span>Load</span><small>โหลดจากช่องเซฟ (${n} ช่อง)</small></button>`:''})()}
   <button data-act="options"><span>Options</span><small>ตั้งค่าเกม</small></button>
   <button data-act="extra"><span>Extra</span><small>วิธีเล่น · คลังภาพ · เครดิต</small></button>
-  <div class="ts-tools" ${DEV?'':'hidden'}><a href="editor.html" target="_blank" rel="noopener" title="แก้ภาพ/แอนิเมชัน การ์ด แผนที่ สนามต่อสู้ (เปิดแท็บใหม่)">✎ Editor</a></div>
+  <div class="ts-tools" ${DEV?'':'hidden'}><a href="editor.html" target="_blank" rel="noopener" title="แก้ภาพ/แอนิเมชัน การ์ด แผนที่ สนามต่อสู้ (เปิดแท็บใหม่)"><img src="assets/icons/menu/v2-editor.webp" alt="" draggable="false">Editor</a></div>
  </nav></div>
  <div class="ts-foot"><span class="ts-ver">Project A ${VERSION}${root.GAME_VERSION?.date?" · "+root.GAME_VERSION.date:""} <em class="ts-gh">· กำลังเช็ก GitHub…</em></span><span>↑↓ เลือก · Enter ยืนยัน</span></div>
- <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto">วิธีเล่น</button><button role="tab" data-tab="gallery">คลังภาพ</button><button role="tab" data-tab="credits">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="ปิด">✕</button></div><div class="ts-extra-body"></div></div></section>
+ <section class="ts-extra" hidden aria-label="Extra"><div class="ts-extra-box"><div class="ts-extra-head"><div class="ts-tabs" role="tablist"><button role="tab" data-tab="howto"><img src="assets/icons/menu/v2-help.webp" alt="" draggable="false">วิธีเล่น</button><button role="tab" data-tab="gallery"><img src="assets/icons/menu/v2-gallery.webp" alt="" draggable="false">คลังภาพ</button><button role="tab" data-tab="credits"><img src="assets/icons/menu/v2-credits.webp" alt="" draggable="false">เครดิต</button></div><button class="ts-close" data-act="close-extra" aria-label="กลับเมนูหลัก" title="กลับเมนูหลัก"><img src="assets/icons/menu/v2-quit-title.webp" alt="" width="30" height="30" draggable="false"></button></div><div class="ts-extra-body"></div></div></section>
  <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><canvas class="ts-story-art"></canvas><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
   <form class="ts-name" hidden novalidate>
    <i class="ts-c ts-c1"></i><i class="ts-c ts-c2"></i><i class="ts-c ts-c3"></i><i class="ts-c ts-c4"></i>
@@ -300,7 +322,7 @@ const pageLoaded=()=>document.readyState==='complete'?Promise.resolve():Promise.
 const settle=()=>new Promise(r=>{let n=0;const f=()=>++n>=12?r():requestAnimationFrame(f);requestAnimationFrame(f)});   // a few quiet frames after the heavy work
 let storyReady=false,preparing=false;
 async function prepareStory(){if(preparing)return;preparing=true;title.classList.add('ts-quick','ts-story-pre');try{root.GameBGM?.refresh?.()}catch{}   /* v98.213 · switch the music NOW (the 100 ms timer can be starved while the village frame loads) */   /* v98.201 · the menu stays hidden behind the loading screen (it flashed up before the first picture) */
- await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'เพลงบทนำ',items:[()=>root.GameBGM?.preloadPrologue?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTownDrawn(),wait(16000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900,gate:'กดปุ่มใดก็ได้เพื่อไปต่อ'});
+ await run('กำลังเตรียมบทนำ',[{label:'ฟอนต์',items:fonts()},{label:'ฉากบทนำ',items:[()=>root.SceneArt?.warm?.()]},{label:'เพลงบทนำ',items:[()=>root.GameBGM?.preloadPrologue?.()]},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',items:[Promise.race([whenTownDrawn(),wait(16000)])]},{label:'เตรียมเกม',items:[()=>pageLoaded().then(settle)]}],{minMs:900,gate:'กดปุ่มใดก็ได้เพื่อไปต่อ',lore0:true});
  storyReady=true;story()}
 
 
@@ -308,7 +330,7 @@ async function prepareStory(){if(preparing)return;preparing=true;title.classList
 async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.setItem(STARTED,'1')}catch{}
  if(!isNew&&title)title.style.visibility='hidden';   /* v98.352 · the menu must not show again while the loading screen fades out */
  if(!(isNew&&storyReady))   /* v98.1060 · New Game: everything was already loaded by the prologue loading screen, so no second loading screen after the name form */
- await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',share:.3,items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady});
+ await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',share:.3,items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady,lore0:isNew});
  /* v97.04 · New Game: the opening cutscene (mother wakes the hero) fades in over the last prologue page and the title goes away underneath it,
     so the village map never shows in between (the story loop only starts a cutscene once T.active is false) */
  if(isNew&&root.Story&&root.Cutscene){T.active=false;const t0=Date.now();while(!root.Cutscene.isPlaying()&&Date.now()-t0<4000)await wait(100);if(root.Cutscene.isPlaying())await wait(reduced?0:600)}

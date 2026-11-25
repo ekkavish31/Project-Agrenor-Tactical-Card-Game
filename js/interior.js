@@ -992,7 +992,7 @@
   }
   /* the same registry as the village (js/interactables.js): villagers in the room + the door. Hold the big button on a villager = choices. */
   /* hold the big button on a villager = a ring of what THIS person can do (the same actions as the talk panel's choice lists) */
-  const ROLE_ICON = { recruit: 'guild', teach: 'spellbook', work: 'trade', drink: 'potion', room: 'castle' }, optCache = new Map();
+  const ROLE_ICON = { recruit: 'v2-guild', teach: 'v2-skills', work: 'v2-market', drink: 'v2-items', room: 'v2-inn' }, optCache = new Map();
   function personOptions(a) {
     const c = optCache.get(a.id); if (c && performance.now() - c.t < 2000) return c.o;
     const p = a.p; S = L.save(); const rec = p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null, jobs = MIND && L.P[p.id] && !(p.recruit && !L.inParty(S, p.id)) ? MIND.canWork(p.id, p.benched) : [];
@@ -1003,7 +1003,7 @@
   }
   window.Interactables?.add(() => {
     const out = [], dd = { u: DOOR.u + .5, v: DOOR.v + .5 };
-    out.push({ id: 'door', kind: 'exit', u: dd.u, v: dd.v, r: 1.9, bumpR: 1.1, bumpT: .12, bump: true, pri: -.6, label: 'ออกไปข้างนอก', icon: 'portal', run: () => leave() });
+    out.push({ id: 'door', kind: 'exit', u: dd.u, v: dd.v, r: 1.9, bumpR: 1.1, bumpT: .12, bump: true, pri: -.6, label: 'ออกไปข้างนอก', icon: 'v2-travel', run: () => leave() });
     for (const [id, a] of people) {
       if (a.leaving || a.fade < .5) continue; const nm = a.p?.name || id;
       out.push({ id: 'p:' + id, kind: 'talk', u: a.vu, v: a.vv, r: 2.5, bumpR: 1.3, bumpT: .3, bump: true, label: 'คุย · ' + nm, icon: 'party', run: () => talk(a), get options() { return personOptions(a) } });

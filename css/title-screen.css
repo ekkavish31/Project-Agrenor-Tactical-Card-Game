@@ -206,7 +206,7 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #gameLoading.gl-gate .gl-tip{line-height:28px}
 
 /* v98.1024 · loading screen +50% (zoom keeps every proportion) */
-#gameLoading .gl-box{zoom:1.5;width:min(560px,calc((100vw - 40px)/1.5))}#gameLoading .gl-box .mip-track{--mw:100%!important}
+#gameLoading .gl-box{zoom:.75;width:min(560px,calc((100vw - 40px)/.75))}#gameLoading .gl-box .mip-track{--mw:100%!important}
 
 /* v98.1049 · name form redesigned: game-style gold frame, two bright "stage" cards that pop off the dark panel, nothing chosen by default, start button locked until a hero is picked and both names typed */
 #titleScreen .ts-name{width:min(760px,calc(100vw - 24px));max-height:calc(100vh - 16px);overflow:auto;padding:22px 28px 22px;border:2px solid #e8c374;border-radius:16px;background:radial-gradient(ellipse 80% 50% at 50% 0,#2c3f6a 0,#16223a 55%,#0c1322 100%);box-shadow:0 0 0 3px #0008,0 0 0 5px #b8862f88,0 24px 70px #000e,inset 0 0 60px #0006}
@@ -259,3 +259,6 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 @media(max-height:620px){#titleScreen .ts-name{padding:14px 22px}#titleScreen .ts-name h2{font-size:24px;margin:4px 0}#titleScreen .ts-name .ts-g{height:min(240px,38vh)}#titleScreen .ts-name .ts-sub{margin-bottom:8px}}
 @media(max-width:520px){#titleScreen .ts-name .ts-cols{gap:10px}#titleScreen .ts-name{padding:18px 14px}}
 @media(prefers-reduced-motion:reduce){#titleScreen .ts-name .ts-g.on::before,#titleScreen .ts-name.ts-ready .ts-go{animation:none}}
+
+/* v98.1065 · loading screen −50% (zoom 1.5 → .75) + lore line under the tip */
+#gameLoading .gl-lore{margin:6px 0 0;font-size:15px;line-height:1.6;color:#e6d6ac;min-height:48px}#gameLoading .gl-lore[hidden]{display:none}
