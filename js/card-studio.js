@@ -38,7 +38,7 @@ const DEFAULT_RARITIES=[{key:'common',name:'ธรรมดา',color:'#c9ccd2',
 // zones: % of the card (x,y,w,h); fs = base font in % of card width; dir row|col; justify start|center|end|between; valign start|center|end
 const DEFAULT_ZONES={
  art:{label:'หน้าต่างภาพ',x:6,y:15.6,w:87.1,h:42.6},
- orb:{label:'มุมลูกแก้ว',x:-1.5,y:-1.2,w:19,h:12.9,fs:4,square:true,dir:'row',justify:'center',valign:'center'},
+ orb:{label:'มุมลูกแก้ว',x:-0.5,y:0.9,w:21,h:14.3,fs:4,square:true,dir:'row',justify:'center',valign:'center'},
  title:{label:'แถบหัว · ชื่อ',x:18,y:5.6,w:52,h:7.6,fs:6.2,dir:'row',justify:'center',valign:'center'},
  cost:{label:'แถบหัว · ค่าใช้',x:69,y:6,w:22,h:7,fs:3.6,dir:'row',justify:'end',valign:'center',gap:1.2},
  level:{label:'ป้ายมุมภาพ',x:80,y:51.6,w:11,h:4.8,fs:3.6,dir:'row',justify:'center',valign:'center',bg:'#2b2116d9'},
@@ -124,7 +124,7 @@ function frameFor(c,tk){let f=tk==='unit'?'assets/cards/frame-unit.webp':tk==='b
 // zones fitted to the gold master frame (name bar · big art window · info box)
 // v19 frame (top name banner · big art window · bottom parchment panel) — same shape for unit / enemy / boss, colour by rank
 const FRAMED_ZONES=()=>({art:{label:'หน้าต่างภาพ',x:7.1,y:14.6,w:85.8,h:62.7},
- orb:{label:'มุมลูกแก้ว',x:-2.5,y:-2,w:17.5,h:11.9,fs:4,square:true,dir:'row',justify:'center',valign:'center'},
+ orb:{label:'มุมลูกแก้ว',x:-0.5,y:0.9,w:21,h:14.3,fs:4,square:true,dir:'row',justify:'center',valign:'center'},
  title:{label:'แถบหัว · ชื่อ',x:15,y:5.3,w:52,h:6.4,fs:5.2,dir:'row',justify:'center',valign:'center'},
  cost:{label:'แถบหัว · Lv/ระดับ',x:66,y:6.1,w:24.5,h:4.8,fs:3.3,dir:'row',justify:'end',valign:'center',gap:1},
  artTag:{label:'ป้ายบนภาพ',x:10,y:16.6,w:56,h:4.6,fs:3.1,dir:'row',justify:'start',valign:'center',gap:.8},
@@ -223,7 +223,7 @@ function gameCards(){let out=[],rk=n=>({'ธรรมดา':'common','ดี':'
  let W=C?.WEAPONS||{};
  for(let id of ['sword','hammer','knife','spear','rapier','staff','bow','axe','tome'])if(W[id]){let w=W[id],k=mk('e-'+id,'equip',{ref:id,name:w.name,element:C.WEAPON_ELEMENT?.[id]||'fire',type:'อาวุธ',range:w.range,cost:{energy:w.stamina,minutes:0},main:{value:String(w.damage),label:'ความเสียหาย'},effects:[C.WEAPON_TRAITS?.[id]||'ใช้กับไพ่ โจมตี / ท่าพิเศษ']},{atk:w.damage,def:0,price:(typeof RECIPES!=='undefined'&&RECIPES[id]?.sell)||30});k.art.src=window.weaponImg?weaponImg(id):['sword','hammer'].includes(id)?'assets/'+id+'.webp':'';out.push(k)}
  // A separate card face for the father's heirloom; combat remains the knife type.
- {const base=out.find(c=>c.id==='e-knife');if(base){const k=clone(base);Object.assign(k,{id:'oldKnife',ref:'oldKnife',name:'มีดสั้นเก่าของพ่อ'});k.art.src=asset('weapon-oldKnife')||'assets/weapons/oldKnife.webp';out.push(k)}}
+ {const base=out.find(c=>c.id==='e-knife');if(base){const k=clone(base);Object.assign(k,{id:'oldKnife',ref:'oldKnife',name:'มีดสั้นเก่าของพ่อ'});k.art={...k.art,src:asset('weapon-oldKnife')||'assets/weapons/oldKnife.webp',fit:'contain',x:0,y:0,scale:1,rot:0};out.push(k)}}
  out.push(mk('e-shield','equip',{ref:'shield',name:'โล่ไม้หุ้มเหล็ก',element:'light',type:'โล่',effects:['ไพ่ตั้งรับกันได้ 16 แทน 8']},{atk:0,def:8,price:24}));
  // materials
  const MEL={iron:'earth',coal:'fire',wood:'nature',food:'water'},MT={iron:'โลหะ',coal:'เชื้อเพลิง',wood:'ไม้',food:'อาหาร'},MC={iron:'ดาบ ค้อน',coal:'ดาบ ค้อน (เชื้อเพลิง)',wood:'ด้ามค้อน',food:'พักกินอาหาร'};
