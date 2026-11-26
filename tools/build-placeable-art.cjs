@@ -129,7 +129,9 @@ const OTHER = [
   [V + 'decor/fence-picket', 'รั้วไม้', G.fence, 110], [V + 'decor/stone-wall-low', 'กำแพงหินเตี้ย', G.fence, 110], [V + 'decor/hedge-row', 'แนวพุ่มไม้', G.fence, 120],
   [V + 'decor/flower-bed', 'แปลงดอกไม้', G.town, 118], [V + 'decor/flower-box', 'กระบะดอกไม้', G.town, 90], [V + 'decor/stepping-stones', 'หินทางเดิน', G.town, 130],
   [V + 'decor/pond-lilies', 'บ่อบัว', G.town, 220], [V + 'decor/bench', 'ม้านั่ง', G.town, 110], [V + 'decor/market-stall-red', 'แผงตลาดแดง', G.shop, 230],
-  [V + 'decor/market-stall-blue', 'แผงตลาดน้ำเงิน', G.shop, 230], [V + 'decor/banner-pole', 'เสาธง', G.town, 75], [V + 'decor/woodpile', 'กองฟืน', G.town, 115],
+  [V + 'decor/market-stall-blue', 'แผงตลาดน้ำเงิน', G.shop, 230],
+  [V + 'decor/market-stall-red-ne', 'แผงตลาดแดง ด้านหลัง NE', G.shop, 230],
+  [V + 'decor/market-stall-blue-ne', 'แผงตลาดน้ำเงิน ด้านหลัง NE', G.shop, 230], [V + 'decor/banner-pole', 'เสาธง', G.town, 75], [V + 'decor/woodpile', 'กองฟืน', G.town, 115],
   [V + 'decor/signpost', 'ป้ายบอกทาง', G.town, 70], [V + 'decor/well', 'บ่อน้ำ', G.town, 120], [V + 'decor/cart', 'เกวียน', G.town, 150], [V + 'decor/hay', 'กองฟาง', G.farm, 95],
   [V + 'decor/lamp-post', 'เสาตะเกียง', G.town, 35],
   // sheet V1 · town gates and street things

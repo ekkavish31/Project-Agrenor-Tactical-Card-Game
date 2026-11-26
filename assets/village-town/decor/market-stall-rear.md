@@ -1,0 +1,4 @@
+# Market stalls rear views · v98.1090
+Generated with the built-in image tool from each live front sprite; blue additionally referenced red rear for consistent angle. Files: market-stall-red-ne.webp, market-stall-blue-ne.webp. SW retains original art; NE is new; SE/NW use runtime horizontal mirrors. Same canvas and alpha bounding footprint as each front. No ground tile or baked shadow. No changes to collision/placement/save data.
+
+Prompt: rear view of the exact existing red/ivory fruit stall and blue/ivory textile/ceramic stall; keep timber details, canopy, orthographic elevated camera and 2:1 base-edge tilt; show structural back wall, wares on far side, transparent background, no text/people/ground. Imported through alpha crop, horizontal mirror to NE, and resize to original canvas bounds. Runtime keeps original size datum and disables wind shear only for these rigid stalls.
