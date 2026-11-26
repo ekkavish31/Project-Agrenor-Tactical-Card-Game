@@ -372,7 +372,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
   const introId=typeof step.intro==='function'?step.intro():step.intro;
   if(introId&&!d.introSeen){d.introSeen=true;if(introId==='opening'){V().story.bookSeen=true;V().story.bookIntro=true}doSave();draw();await root.Cutscene.play(sceneAt(introId));if(introId==='opening')await bookTour()}
-  if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
+  if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();if(step.id==='wake'&&root.GuidedTour&&!V().story.walkTour)await walkTour();else await lessonCard(step.id)}
   if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();try{root.RunSlots?.tm?.mark()}catch(e){}   /* v98.1080 · time machine checkpoint at every new step */
    const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
@@ -458,6 +458,31 @@ const BOOK_TOUR=[   /* v98.659 · the lesson is a talk between the two siblings 
  {face:'think',who:'B',text:'…ทำไมทุกเรื่องวกมาที่ข้าทำของหายตลอดเลย'},
  {face:'happy',who:'S',text:'งั้นกดกากบาทมุมขวาบนปิดสมุด แล้วไปหาผู้ใหญ่บ้านโอเรนกัน!',target:'#panel .cb-close'}];
 let tourBusy=false;
+/* v98.1094 · WALKING LESSON woven into the first quest (go to the village head): the sibling teaches ONE thing at a time and waits until the player really does it
+   (click the ground → keyboard (mouse/keyboard devices only) → "stuck? the 📍 auto-walk button"). The player keeps playing (free steps: nothing is blocked). Esc skips.
+   When it is done a small 💡 tips card lists the extras once (Shift-walk · E/Space · camera · Esc menu). Old saves that already saw the lesson card are not taught again. */
+const walkFrame=()=>{try{const V=root.VillageTown,f=/^place:/.test(scene())?V.marketFrame:V.frame;return f?.contentWindow||null}catch(e){return null}};
+const heroXY=()=>{try{return walkFrame()?.ResumeHook?.get?.()||null}catch(e){return null}};
+let walkTipEl=null;
+function walkTips(){const v=V();if(!v||(v.story||{}).walkTipSeen)return;v.story.walkTipSeen=true;doSave();
+ const fine=!!(root.matchMedia&&matchMedia('(pointer:fine)').matches);
+ const rows=[fine&&['⇧','กด Shift ค้างไว้ → เคอร์เซอร์เป็นรอยเท้า คลิกพื้นตรงไหนก็เดินไปตรงนั้นอย่างเดียว (ไม่คุย ไม่เข้าสถานที่ ไม่หยิบของ)'],['E','กด E หรือ Space = ทำสิ่งตรงหน้า (คุย เข้าอาคาร เก็บของ) · กดค้างครึ่งวินาทีเปิดวงกลมตัวเลือก'],['🖱','ลากพื้นเพื่อเลื่อนกล้อง · หมุนล้อเมาส์เพื่อซูม'],['Esc','กด Esc เปิดเมนู (สมุดผนึก สำรับ ตัวละคร บันทึกเกม)']].filter(Boolean);
+ if(!document.getElementById('walkTipCss')){const c=document.createElement('style');c.id='walkTipCss';c.textContent=`#walkTip{position:fixed;right:14px;bottom:14px;z-index:1500;width:min(380px,calc(100vw - 28px));padding:12px 14px 12px;border-radius:12px;background:#14231ff4;border:1px solid #b9c48a88;box-shadow:0 10px 28px #000b;color:#f5e6c4;font:13px/1.5 VillageThai,AgThai,system-ui,sans-serif}
+#walkTip h4{margin:0 0 6px;font-size:14px;color:#f6d79b;display:flex;align-items:center}#walkTip h4 span{flex:1}#walkTip button{width:26px;height:26px;border-radius:50%;border:1px solid #b9c48a66;background:#33463e;color:#f3e9c9;cursor:pointer;padding:0}
+#walkTip p{margin:5px 0;display:flex;gap:8px;align-items:flex-start}#walkTip kbd{flex:none;min-width:34px;text-align:center;padding:1px 5px;border-radius:6px;background:#0005;border:1px solid #fff3;font:700 12px inherit;color:#ffe2a8}`;document.head.append(c)}
+ walkTipEl?.remove();const d=walkTipEl=document.createElement('div');d.id='walkTip';d.innerHTML=`<h4><span>💡 เคล็ดลับการเดิน</span><button type="button" aria-label="ปิด">✕</button></h4>${rows.map(r=>`<p><kbd>${esc(r[0])}</kbd><span>${esc(r[1])}</span></p>`).join('')}`;
+ d.querySelector('button').onclick=()=>{d.remove();walkTipEl=null};document.body.append(d);setTimeout(()=>{if(walkTipEl===d){d.remove();walkTipEl=null}},45000)}
+async function walkTour(){if(tourBusy||!root.GuidedTour)return false;tourBusy=true;const v=V();
+ try{v.story=v.story||{};try{const st=story();if(st&&st.mode==='active'){st.closed=false;draw(true)}}catch(e){}   /* the quest window must be up: step 3 points at its auto-walk button */
+  const fine=!!(root.matchMedia&&matchMedia('(pointer:fine)').matches);let key=false;const onKey=e=>{if(/^(w|a|s|d|arrowup|arrowdown|arrowleft|arrowright)$/i.test(e.key))key=true};const keyWins=[root];try{const f=walkFrame();if(f&&f!==root)keyWins.push(f)}catch(e){}for(const w of keyWins)try{w.addEventListener('keydown',onKey,true)}catch(e){}   /* the village map is an iframe: the keys go to ITS window */
+  const mover=(need)=>{let p0=null,t0=0;return ()=>{const p=heroXY();if(!p){t0||=Date.now();return Date.now()-t0>4000}if(!p0){p0={u:p.u,v:p.v};return false}return Math.hypot(p.u-p0.u,p.v-p0.v)>=need}};
+  const steps=[
+   {who:'sib',free:true,text:'ต่อไปลองเดินดูกัน — คลิกที่พื้นถนนตรงไหนก็ได้ ตัวละครจะเดินไปตรงนั้นให้',wait:mover(1.6)},
+   ...(fine?[{who:'sib',free:true,text:'เดินด้วยคีย์บอร์ดก็ได้นะ ลองกด W A S D หรือปุ่มลูกศรดูสิ',wait:(()=>{const m=mover(1.4);return ()=>m()&&key})()}]:[]),
+   {who:'sib',text:'ผู้ใหญ่โอเรนอยู่ที่ตลาดนะ ถ้าหลงทางกดปุ่ม เดินอัตโนมัติ ในกรอบเควสตรงนี้ ตัวละครจะเดินไปเอง',target:'#storyTracker [data-act="0"]',wait:'next',showTracker:true}];
+  const ok=await root.GuidedTour.run(steps,{bright:true});
+  for(const w of keyWins)try{w.removeEventListener('keydown',onKey,true)}catch(e){}v.story.walkTour=true;doSave();if(ok)setTimeout(walkTips,600);return ok}
+ finally{tourBusy=false}}
 async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{v.story=v.story||{};if(!v.story.bookGift){v.story.bookGift=true;const b=v.bag||(v.bag={});b.potion=(b.potion||0)+1;b.momWater=(b.momWater||0)+1;b.mayBread=(b.mayBread||0)+4;doSave();await root.ItemGet?.show([{key:'potion',n:1},{key:'momWater',n:1},{key:'mayBread',n:4}],{kicker:'ของจากแม่',text:'แม่ห่อของใส่สมุดผนึกของทั้งสองคนไว้ให้ก่อนออกจากบ้าน'})}   /* v98.668 · the ของใช้ page is not empty: 1 potion (+HP) and 1 water from mother (+stamina) · v98.1022 · + the 4 loaves of Aunt May's bread that mother counted ("แม่นับขนมปังไว้แล้ว สี่ก้อน") */
   const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
 async function bookFirst(){return false}   /* v98.613 · the book lesson now plays at the end of the opening scene */

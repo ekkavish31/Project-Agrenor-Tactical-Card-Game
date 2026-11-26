@@ -27,6 +27,9 @@
 #gtour .box small{position:absolute;right:1.3vw;bottom:.7vw;color:#d8b46acc;font-size:max(11px,.9vw)}
 #gtour .skip{position:fixed;right:.8vw;bottom:.8vw;z-index:5;background:#14100af0;border:1px solid #d8b46a;color:#f0dfb4;border-radius:999px;padding:max(5px,.45vw) max(12px,1.1vw);font-size:max(11px,.72vw);font-weight:700;cursor:pointer;pointer-events:auto;box-shadow:0 4px 14px #0008}#gtour .skip:hover{background:#2a2016}
 body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility:hidden!important}
+/* v98.1094 · FREE step (step.free): the player keeps playing — no blockers / veil / ring / portraits, clicks pass through to the game; only a compact talk box (the sibling) and the skip button stay */
+#gtour.free .blk,#gtour.free .veil,#gtour.free .ring,#gtour.free .arrow,#gtour.free .pic{display:none!important}
+#gtour.free .box{width:min(44vw,760px);bottom:1vw;cursor:default}
 /* v98.665 · bright tour (the book lesson): no dark veil, no dark ring shadow — the book stays fully lit the whole time; only the gold ring + arrow point */
 #gtour.bright .veil{display:none}#gtour.bright .ring{box-shadow:0 0 22px #ffd77a,inset 0 0 14px #ffd77a55;animation-name:gtPulseB}
 @keyframes gtPulseB{50%{box-shadow:0 0 34px #ffe9a8,inset 0 0 20px #ffd77a88}}
@@ -54,7 +57,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     const lead = { hero: lookOf('hero'), sib: lookOf('sib') };
     for (const [side, w] of [['L', 'hero'], ['R', 'sib']]) { const img = new Image(); img.alt = ''; const src = `assets/portraits/${lead[w]}-neutral.webp`; img.src = src; if (root.PortraitFacing?.flip(src, side)) img.style.transform = 'scaleX(-1)'; $('.pic.' + side).append(img) }
     let skipped = false, targetEl = null, stepDone = null, typeTimer = 0, typed = '', shown = '', lastTarget = null, warpAt = 0, curNext = false;
-    const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); skipped = true; stepDone?.() } else if ((e.key === 'Enter' || e.key === ' ') && (!targetEl || curNext)) { e.preventDefault(); e.stopPropagation(); advance() } };
+    const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); skipped = true; stepDone?.() } else if ((e.key === 'Enter' || e.key === ' ') && (!targetEl || curNext) && !curFree) { e.preventDefault(); e.stopPropagation(); advance() } };
     addEventListener('keydown', onKey, true);
     /* v98.667 · a "read this" step (wait:'next') only POINTS at its target: a click on it must advance the talk, never open what is underneath (a card's detail window would trap the lesson) */
     const onClick = e => { if (!curNext || !targetEl || !targetEl.contains?.(e.target)) return; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); advance() };
@@ -62,12 +65,14 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     el.append($('.skip'));   /* the box is transformed (fixed children would be placed against it): the skip button lives on the overlay root so it sits in the screen's bottom-right corner */
     $('.skip').onclick = e => { e.stopPropagation(); skipped = true; stepDone?.() };
     const finishType = () => { clearInterval(typeTimer); typeTimer = 0; say.textContent = typed; shown = typed };
-    const advance = () => { if (typeTimer) { finishType(); return } if (!targetEl || curNext) stepDone?.() };
+    const advance = () => { if (typeTimer) { finishType(); return } if (curFree) return; if (!targetEl || curNext) stepDone?.() };
     /* v98.1000 · a "read" step goes on with a click ANYWHERE on the screen (the invisible blockers + the box all bubble to the overlay); an "action" step (a target that must be clicked) still ignores everything but that target */
     el.addEventListener('click', e => { if (e.target.closest('.skip')) return; advance() });
     let curSpec = null;
+    let curFree = false;
     const place = () => {   /* keep the spotlight on the (possibly moving) target */
       mount();
+      if (curFree) return;   /* v98.1094 · a free step shows no spotlight */
       if (curSpec && targetEl && !targetEl.isConnected) { const e = query(curSpec); if (e) targetEl = e }   /* the book redraws itself: follow the new element */
       const W = innerWidth, H = innerHeight;
       const veil = $('.veil');
@@ -98,7 +103,8 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
         const who = resolve(C, st.who || 'S'), side = who === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('dim', side !== 'L'); $('.pic.R').classList.toggle('dim', side !== 'R');
         { const fem = root.HeroVariant?.get?.() === 'female'; nm.textContent = who === 'hero' ? (C?.fill ? C.fill('{hero}') : (fem ? 'น้องสาว' : 'พี่ชาย')) : (C?.fill ? C.fill('{sib}') : (fem ? 'พี่ชาย' : 'น้องสาว')) }
         typed = fill(st.text); say.textContent = ''; let i = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { i += 2; say.textContent = typed.slice(0, i); if (i >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 22);
-        curNext = st.wait === 'next'; el.classList.toggle('adv', !st.target || curNext); box.querySelector('small').textContent = st.target && !curNext ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกที่ไหนก็ได้เพื่อไปต่อ';
+        curFree = !!st.free; el.classList.toggle('free', curFree); document.body.classList.toggle('gt-on', !(st.free || st.showTracker));   /* a free step / a step that points at the quest window leaves the quest window visible */
+        curNext = st.wait === 'next'; el.classList.toggle('adv', (!st.target || curNext) && !curFree); box.querySelector('small').textContent = curFree ? 'ลองทำตามนี้ได้เลย · Esc = ข้ามบทสอน' : st.target && !curNext ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกที่ไหนก็ได้เพื่อไปต่อ';
         if (st.prep) { try { st.prep() } catch (e) { } await sleep(350) }   /* e.g. re-open the book if the previous click closed it */
         curSpec = st.target || null; targetEl = st.target ? await findTarget(st.target) : null;
         if (skipped) break;
