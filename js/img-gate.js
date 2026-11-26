@@ -9,12 +9,10 @@
  root.SceneLoad={done,painted:()=>{painted=true}};
  function TrackedImage(w,h){const im=new Orig(w,h);if(open)list.push(im);return im}
  TrackedImage.prototype=Orig.prototype;root.Image=TrackedImage;
- for(const href of ['css/mip-loader.css?v=v98.1035','css/ivory-ui.css?v=v98.1056']){const l=document.createElement('link');l.rel='stylesheet';l.href=href;(document.head||document.documentElement).appendChild(l)}
- const css=document.createElement('style');css.textContent='#imgGateVeil{position:fixed;inset:0;z-index:2147483000}#imgGateVeil .mip-track{--mw:100%}#imgGateVeil progress{width:100%;accent-color:#a67e3e;height:9px}#imgGateVeil button[hidden]{display:none}';(document.head||document.documentElement).appendChild(css);
- const veil=document.createElement('div');veil.id='imgGateVeil';veil.className='scene-transit';veil.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#f2e7ca;color:#3e2a18';veil.setAttribute('role','status');veil.setAttribute('aria-live','polite');
- veil.innerHTML='<div class="load-card"><h2>กำลังเตรียมฉาก…</h2><div class="mip-track" aria-hidden="true"><div class="mip-go"><div class="mip-flip"><div class="mip-run"><i></i></div><div class="mip-idle"><i></i></div></div></div></div><progress max="100" value="0" aria-label="ภาพของฉาก"></progress><p>กำลังเปิดหน้าบันทึกการเดินทาง</p><button hidden type="button">ลองโหลดใหม่</button></div>';
+ /* v98.1108 · the standard loading screen (js/game-loader.js: same look as the game's own loading screen) */
+ const veil=(root.StdLoader?root.StdLoader.make({id:'imgGateVeil',title:'กำลังเตรียมฉาก',step:'กำลังเปิดหน้าบันทึกการเดินทาง'}):document.createElement('div'));veil.id='imgGateVeil';
  document.documentElement.appendChild(veil);
- const progress=veil.querySelector('progress'),msg=veil.querySelector('p'),retry=veil.querySelector('button');retry.onclick=()=>location.reload();
+ const progress={set value(v){root.StdLoader&&root.StdLoader.progress(veil,v/100)}},msg={set textContent(t){root.StdLoader&&root.StdLoader.step(veil,t)}},retry=veil.querySelector('.gl-retry')||{};retry.onclick=()=>location.reload();
  // Include the mascot too: CSS background images do not use new Image().
  const mascot=new root.Image();mascot.src='assets/ui/mip-sheet.webp?v=2';
  const t0=performance.now();let count=0;

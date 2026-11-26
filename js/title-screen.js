@@ -48,7 +48,7 @@ const CREDITS=[
  ['ฟอนต์','Noto Sans Thai · SIL Open Font License'],
  ['แรงบันดาลใจ','Final Fantasy Tactics · Disgaea']
 ];
-const TIPS=['โจมตีจากด้านหลังศัตรูแรงกว่าด้านหน้า','ยืนบนที่สูงช่วยให้ตีแรงขึ้นและหลบได้ดีขึ้น','กด "รอ" แทนการเดินจะได้ CT คืนบางส่วน','อุปกรณ์ที่ดีต้องใช้วัตถุดิบจากพื้นที่ที่ยากขึ้น','นอนที่บ้านเพื่อฟื้นแรงและชีวิตเต็ม','ล็อกเป้าแล้วดูหน้าต่างทำนายผลก่อนโจมตี'];
+const TIPS=root.StdLoader?.TIPS||['โจมตีจากด้านหลังศัตรูแรงกว่าด้านหน้า','ยืนบนที่สูงช่วยให้ตีแรงขึ้นและหลบได้ดีขึ้น','กด "รอ" แทนการเดินจะได้ CT คืนบางส่วน','อุปกรณ์ที่ดีต้องใช้วัตถุดิบจากพื้นที่ที่ยากขึ้น','นอนที่บ้านเพื่อฟื้นแรงและชีวิตเต็ม','ล็อกเป้าแล้วดูหน้าต่างทำนายผลก่อนโจมตี'];
 /* v98.1065 · LORE lines for the loading screen. [spoiler level, text]. Level = MainStory stage's `spoiler` (docs/lore/MAIN-STORY-CANON.md S0…S3): a line shows only when the player's story has reached it.
    Every line is CONFIRMED canon only (docs/lore/CURRENT-ERA-CANON.md Part A · GAME-ERA.md "ข้อตกลงที่ใช้ในเกม") and is worded the way ordinary villagers would know it — no ancient names (Glaelanar, Wyridean…), no gods in person, nothing about the mine / infection / Mip's secret.
    S2 and S3 are left EMPTY on purpose: add a line there only after the matching story beat exists in the game. */

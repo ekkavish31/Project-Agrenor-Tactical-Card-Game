@@ -1,0 +1,21 @@
+/* v98.1108 · THE standard loading screen (same look as the game's own loading screen, js/title-screen.js #gameLoading): black scene, LOADING kicker, gold title,
+   Mip running, gold bar, a tip line. Every "preparing…" cover (place frames, scenes, the village) uses it through js/game-loader.js. */
+.gl-std{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:flex-end;justify-content:center;background:#05080d;color:#f5e6c4;font:14px/1.5 AgThai,VillageThai,system-ui,Tahoma,sans-serif;transition:opacity .4s ease}
+.gl-std.gl-abs{position:absolute;z-index:10}
+.gl-std[hidden]{display:none}
+.gl-std.gl-out{opacity:0;pointer-events:none}
+.gl-std .gl-box{position:relative;width:min(560px,calc((100vw - 40px)/1.125));margin-bottom:9vh;zoom:1.125}
+.gl-std .gl-kicker{display:block;font:600 11px/1 AgThai,system-ui,sans-serif;letter-spacing:.32em;color:#e8c374}
+.gl-std .gl-title{margin:8px 0 14px;font:700 28px AgThai,Georgia,serif;color:#ffe8a6;text-shadow:0 3px 14px #000}
+.gl-std .mip-track{--mw:100%!important;--ms:clamp(114px,16.5vh,162px)}
+.gl-std .gl-bar{height:10px;border-radius:6px;background:#0b1220;border:1px solid #d9b46b66;overflow:hidden;box-shadow:inset 0 1px 3px #000}
+.gl-std .gl-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a8701e,#f0c870 70%,#fff2c8);box-shadow:0 0 12px #f0c87088;transition:width .18s ease-out}
+.gl-std .gl-bar.ind i{width:38%;animation:glInd 1.5s ease-in-out infinite}
+@keyframes glInd{0%{transform:translateX(-100%)}100%{transform:translateX(265%)}}
+.gl-std .gl-meta{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;color:#c9bb98;min-height:1.5em}
+.gl-std .gl-tip{display:flex;align-items:flex-start;gap:12px;margin:18px 0 0;min-height:64px;font-size:15px;line-height:1.6;color:#c4e4ff;text-align:left}
+.gl-std .gl-note-icon{display:block;flex:0 0 40px;width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 4px #0008)}
+.gl-std .gl-note-text{flex:1;min-width:0;align-self:center;overflow-wrap:anywhere}
+.gl-std .gl-retry{margin-top:10px;padding:8px 16px;border-radius:9px;border:1px solid #d9b46b88;background:#0d1424cc;color:#f5e6c4;font:600 13px AgThai,system-ui,sans-serif;cursor:pointer}
+.gl-std .gl-retry[hidden]{display:none}
+@media(prefers-reduced-motion:reduce){.gl-std .gl-bar.ind i{animation:none;width:100%;opacity:.6}}
