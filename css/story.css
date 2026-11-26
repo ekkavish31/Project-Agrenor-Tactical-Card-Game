@@ -115,7 +115,7 @@ body.cs-open #storyTracker,body.tactics-open #storyTracker{display:none}
 /* toasts */
 #storyToasts{position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:9600;display:grid;gap:8px;pointer-events:none;width:max-content;max-width:min(92vw,620px);justify-items:center}   /* v98.617 · a toast keeps its width (it was squeezed into a 4-line column) and never runs past two lines */
 .st-toast{font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;padding:9px 22px;border-radius:18px;max-width:100%;line-height:1.4;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;background:rgba(20,14,8,.88);color:#fff1d2;border:1px solid rgba(232,201,138,.6);box-shadow:0 6px 20px rgba(0,0,0,.4);animation:stIn .35s ease-out;font-size:14px;text-align:center}
-.st-toast.good{border-color:#9fe08a}.st-toast.quest{background:linear-gradient(90deg,rgba(120,80,20,.92),rgba(60,40,10,.92));border-color:#ffd68c;font-size:15px}
+.st-toast.st-toast--good{border-color:#9fe08a}.st-toast.st-toast--quest{background:linear-gradient(90deg,rgba(120,80,20,.92),rgba(60,40,10,.92));border-color:#ffd68c;font-size:15px}
 .st-toast.out{opacity:0;transform:translateY(-8px);transition:.5s}@keyframes stIn{from{opacity:0;transform:translateY(-10px) scale(.96)}}
 
 /* ---------------- mini-games (temporary, code-only) ---------------- */
@@ -261,3 +261,9 @@ body.fb-open #storyTracker{display:none!important}
 .cs-text{font-size:max(13px,1.55vw);min-height:3.3em}
 .cs-next{right:1.3vw;bottom:.7vw;font-size:max(11px,.9vw)}
 @media (max-width:640px){.cs-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;bottom:calc(6vh + 12px)}.cs-name{font-size:17px}.cs-text{font-size:15px}.cs-log-btn,.cut-tools{top:max(2px,calc((6vh - 28px)/2));left:8px}.cut-tools{left:auto;right:8px}.cs-skip{right:8px;bottom:max(2px,calc((6vh - 28px)/2))}.cs-ib{--cs-icon:28px;font-size:12px}.cut-tools{gap:10px}}
+
+/* v98.1119 · quest notification: 9-slice painted ribbon; never inherits legacy .quest map layout. */
+#storyToasts .st-toast.st-toast--quest{position:static;inset:auto;transform:none;box-sizing:border-box;display:block;width:max-content;min-width:min(280px,calc(100vw - 32px));max-width:100%;min-height:60px;padding:4px 6px;border:solid transparent;border-width:12px 52px;border-image:url('../assets/ui/quest-ribbon-red.webp') 28 148 fill / 12px 52px / 0 stretch;border-radius:0;background:transparent;box-shadow:none;filter:drop-shadow(0 4px 6px #18060077);color:#fff2cb;font-size:17px;font-weight:700;line-height:1.5;text-align:center;text-shadow:0 1px 2px #390508;white-space:normal;word-break:normal;overflow-wrap:anywhere;overflow:visible;-webkit-line-clamp:unset}
+#storyToasts .st-toast.st-toast--quest.out{transform:translateY(-8px)}
+@media(max-width:480px){#storyToasts .st-toast.st-toast--quest{border-left-width:36px;border-right-width:36px;border-image-width:12px 36px;font-size:15px}}
+@media(prefers-reduced-motion:reduce){#storyToasts .st-toast{animation:none;transition:none}}
