@@ -69,7 +69,7 @@
 #btTalk .bt-pic .bt-icon{font-size:min(18vh,150px);filter:drop-shadow(0 6px 10px #000c);margin-bottom:10%}
 #btTalk .bt-pic.dim{filter:brightness(.45) saturate(.7);transform:scale(.94)}
 #btTalk .bt-pic.R.shake img,#btTalk .bt-pic.L.shake img{animation:btShake .3s}@keyframes btShake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-#btTalk .bt-box{position:relative;z-index:2;width:min(72vw,1500px);min-height:0;margin:0 0 1.4vw;padding:1.15vw 1.6vw 1.3vw;box-sizing:border-box;border-radius:1vw;background:linear-gradient(180deg,rgba(28,22,14,.86),rgba(14,10,6,.92));border:1px solid rgba(232,201,138,.45);box-shadow:0 10px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,236,190,.15);color:#f6ead0;pointer-events:auto}
+#btTalk .bt-box{position:relative;z-index:2;width:min(72vw,1500px);min-height:0;margin:0 0 .9vw;padding:1.15vw 1.6vw 1.3vw;box-sizing:border-box;border-radius:1vw;background:linear-gradient(180deg,rgba(28,22,14,.86),rgba(14,10,6,.92));border:1px solid rgba(232,201,138,.45);box-shadow:0 10px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,236,190,.15);color:#f6ead0;pointer-events:auto}
 #btTalk .bt-name{position:static;display:block;padding:0;margin:0 0 .3vw;border:0;border-radius:0;background:none;box-shadow:none;color:#f0c977;font:400 max(15px,1.75vw)/1.4 AgThai,VillageThai,system-ui,sans-serif;letter-spacing:.04em}
 #btTalk .bt-name.R{left:auto;right:auto}#btTalk .bt-name:empty{display:none}
 #btTalk .bt-text{margin:0;font:max(13px,1.55vw)/1.65 AgThai,VillageThai,system-ui,sans-serif;min-height:3.3em;white-space:pre-wrap}
@@ -79,7 +79,7 @@
 #btTalk .bt-skip{position:absolute;z-index:3;right:.8vw;bottom:.8vw;top:auto;display:inline-flex;align-items:center;gap:6px;height:clamp(28px,6.5vh,52px);padding:0 8px 0 0;border:0;border-radius:5px;background:transparent;color:#f6e6c2;font:600 clamp(11px,.85vw,16px)/1 VillageThai,AgThai,system-ui,sans-serif;text-shadow:0 1px 3px #000;cursor:pointer;pointer-events:auto;white-space:nowrap}
 #btTalk .bt-skip img{width:clamp(28px,6.5vh,52px);height:clamp(28px,6.5vh,52px);object-fit:contain;pointer-events:none}
 #btTalk .bt-skip:hover{color:#fff;transform:translateY(-1px)}
-@media(max-width:640px){#btTalk .bt-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;margin-bottom:12px}#btTalk .bt-name{font-size:17px}#btTalk .bt-text{font-size:15px}#btTalk .bt-pic{width:52vw}#btTalk .bt-row{height:58vh}}`;
+@media(max-width:640px){#btTalk .bt-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;margin-bottom:8px}#btTalk .bt-name{font-size:17px}#btTalk .bt-text{font-size:15px}#btTalk .bt-pic{width:52vw}#btTalk .bt-row{height:58vh}}`;
     document.head.append(s);
   }
 

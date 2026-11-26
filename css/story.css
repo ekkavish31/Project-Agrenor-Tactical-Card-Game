@@ -256,11 +256,11 @@ body.fb-open #storyTracker{display:none!important}
 /* v98.1062 · dialogue layout sized by the screen width (matches the reference at 67 % browser zoom, at any zoom):
    the window is ~72 % wide so it covers only about half of a half-body portrait, type and buttons scale together,
    and each button hugs its own corner of the picture (Log top-left · Auto/เร่ง top-right · ข้ามฉาก bottom-right) */
-.cs-box{width:min(72vw,1500px);padding:1.15vw 1.6vw 1.3vw;border-radius:1vw;gap:1.2vw;bottom:calc(9vh + 1.4vw)}
+.cs-box{width:min(72vw,1500px);padding:1.15vw 1.6vw 1.3vw;border-radius:1vw;gap:1.2vw;bottom:.9vw}   /* v98.1130 · the box sits almost on the bottom edge of the screen (over the letterbox bar) */
 .cs-name{font-size:max(15px,1.75vw);margin-bottom:.3vw}
 .cs-text{font-size:max(13px,1.55vw);min-height:3.3em}
 .cs-next{right:1.3vw;bottom:.7vw;font-size:max(11px,.9vw)}
-@media (max-width:640px){.cs-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;bottom:calc(6vh + 12px)}.cs-name{font-size:17px}.cs-text{font-size:15px}.cs-log-btn,.cut-tools{top:max(2px,calc((6vh - 28px)/2));left:8px}.cut-tools{left:auto;right:8px}.cs-skip{right:8px;bottom:max(2px,calc((6vh - 28px)/2))}.cs-ib{--cs-icon:28px;font-size:12px}.cut-tools{gap:10px}}
+@media (max-width:640px){.cs-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;bottom:8px}.cs-name{font-size:17px}.cs-text{font-size:15px}.cs-log-btn,.cut-tools{top:max(2px,calc((6vh - 28px)/2));left:8px}.cut-tools{left:auto;right:8px}.cs-skip{right:8px;bottom:max(2px,calc((6vh - 28px)/2))}.cs-ib{--cs-icon:28px;font-size:12px}.cut-tools{gap:10px}}
 
 /* v98.1119 · quest notification: 9-slice painted ribbon; never inherits legacy .quest map layout. */
 #storyToasts .st-toast.st-toast--quest{position:static;inset:auto;transform:none;box-sizing:border-box;display:block;width:max-content;min-width:min(280px,calc(100vw - 32px));max-width:100%;min-height:60px;padding:4px 6px;border:solid transparent;border-width:12px 52px;border-image:url('../assets/ui/quest-ribbon-red.webp') 28 148 fill / 12px 52px / 0 stretch;border-radius:0;background:transparent;box-shadow:none;filter:drop-shadow(0 4px 6px #18060077);color:#fff2cb;font-size:17px;font-weight:700;line-height:1.5;text-align:center;text-shadow:0 1px 2px #390508;white-space:normal;word-break:normal;overflow-wrap:anywhere;overflow:visible;-webkit-line-clamp:unset}
