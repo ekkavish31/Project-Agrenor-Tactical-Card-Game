@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1080';
+  const V = '98.1081';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -90,7 +90,7 @@
   const STI = { burn: 'burn', poison: 'poison', freeze: 'freeze', stun: 'stun', shock: 'shock', slowed: 'slow', weak: 'weak', sleep: 'sleep', silence: 'silence', bind: 'root' };
   const stiSrc = k => STI[k] ? 'assets/ui/status/' + STI[k] + '.webp' : null;
   const stiHtml = (k, title) => { const s = stiSrc(k); return s ? `<img class="sti" src="${s}" alt="" draggable="false"${title ? ` title="${title}"` : ''}>` : `<span${title ? ` title="${title}"` : ''}>${(FB.STATUS[k] || {}).icon || ''}</span>` };
-  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farInfo = null, inspectU = null, inspectMap = null, hoverU = null, pickU = null;   /* v98.358 · hoverU: the unit under the pointer (white edge + info window) · pickU: the unit last clicked (grey crystal over its head) */
+  let FB = null, TD = null, ready = false, userCam = false, st = null, cells = null, busy = false, reachMap = null, farMap = null, farMap2 = null, farInfo = null, inspectU = null, inspectMap = null, hoverU = null, pickU = null;   /* v98.358 · hoverU: the unit under the pointer (white edge + info window) · pickU: the unit last clicked (grey crystal over its head) */
   let texts = [], anims = [], effects = [], hud = null, hand = null, seenUids = new Set();
   const wait = ms => new Promise(r => setTimeout(r, ms / SPD()));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -272,7 +272,8 @@
   function refresh() { if (pickEl && (busy || !st || st.turn !== 'hero' || st.outcome)) closePick(); snapSoon(); if (TUT && !coachState.t0 && st) coachState.t0 = st.turns || 1; setTimeout(coach, 0); reachMap = (st.turn === 'hero' || st.turn === 'ally') && !st.acted && !st.outcome && st.mp > 0 ? FB.reach(st, FB.actor(st)) : null;
     /* v98.244 · second layer: where the farthest move card in hand would take you */
     if (inspectU && (inspectU.hp <= 0 || !st.units.includes(inspectU))) inspectU = null; inspectMap = inspectU && !st.outcome ? FB.reach(st, inspectU, inspectU.move || 4) : null; inspectSync();
-    farInfo = st.turn === 'hero' ? FB.farMove?.(st) || null : null; farMap = farInfo ? FB.reach(st, FB.actor(st), st.mp + farInfo.move) : null; allyBar(); hudSync(); handSync() }
+    /* v98.1078 · two layers: green = the best ONE walking step (a move card, or the emergency step) · yellow = the best TWO steps (two move cards, or a card + the emergency step) */
+    { const P = st.turn === 'hero' && FB.movePlan ? FB.movePlan(st) : null, a = FB.actor(st); farInfo = null; farMap = P?.one ? FB.reach(st, a, st.mp + P.one.move) : null; farMap2 = P?.two ? FB.reach(st, a, st.mp + P.two.move) : null } allyBar(); hudSync(); handSync() }
   /* ---------- camera director ----------
      cam = world point at the screen centre + zoom. Normal: frame both fighters (shifted right/up so the HUD and the hand don't cover them).
      Cinematic: push in on attacker + target. Shake and roll kick are added on top. */
@@ -803,7 +804,11 @@
     document.body.append(el);
     /* a combat card plays as a cut-scene: the card stands at about one third from the left and the camera keeps the pair to its right */
     const s = CINE && group === 'combat' && !r?.self ? { x: cardX(), y: Math.max(70, H / 2 - 190) } : sideSpot(210, 340); el.style.left = s.x + 'px'; el.style.top = s.y + 'px';
-    if (fromEl) fromEl.style.visibility = 'hidden';
+    if (fromEl) { const a = fromEl.getBoundingClientRect(), fc = fromEl.querySelector('.face'), reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; fromEl.style.visibility = 'hidden';
+      /* v98.1078 · the card flies up out of the hand row to where it is shown big (it used to just appear there: hard to see which hand card was used) */
+      if (fc && a.width && !reduced) { el.style.visibility = 'hidden'; el.classList.remove('play'); void el.offsetWidth; const tgt = el.querySelector('.face').getBoundingClientRect(), f = document.createElement('div'); f.className = 'fb-fly fb-fly-up'; f.innerHTML = fc.outerHTML; f.style.left = a.left + 'px'; f.style.top = a.top + 'px'; f.style.width = a.width + 'px'; f.querySelector('.face').style.width = '100%'; f.style.transformOrigin = '0 0'; f.style.transition = 'transform .34s cubic-bezier(.2,.8,.3,1)'; document.body.append(f);
+        requestAnimationFrame(() => requestAnimationFrame(() => { f.style.transform = `translate(${tgt.left - a.left}px,${tgt.top - a.top}px) scale(${tgt.width / a.width}) rotate(0deg)` }));
+        setTimeout(() => { f.remove(); el.style.visibility = ''; el.classList.add('play') }, 350) } }
     return { el, done: async () => { const pile = hand.querySelector('#fbDiscard').getBoundingClientRect(), me = el.getBoundingClientRect(); el.style.setProperty('--tx', (pile.left + pile.width / 2 - me.left - me.width / 2) + 'px'); el.style.setProperty('--ty', (pile.top + pile.height / 2 - me.top - me.height / 2) + 'px'); el.style.setProperty('--rot', (Math.random() * 30 - 15) + 'deg'); el.classList.remove('play'); el.classList.add('out'); await wait(460); el.remove() } };
   }
   /* small copies of hand cards flying somewhere (discard pile) */
@@ -1375,12 +1380,15 @@
      Click a cell you can reach → the move cards that would take you there open beside it: pick one, the hero walks. Out of reach → the old one-click planner (walk + attack). */
   let pickEl = null;
   function closePick() { pickEl?.remove(); pickEl = null }
-  function pickCss() { if (document.getElementById('fbPickCss')) return; const c = document.createElement('style'); c.id = 'fbPickCss'; c.textContent = `#fbPick{position:fixed;z-index:70;width:238px;display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:12px;background:linear-gradient(#2f2418f6,#1b140de6);border:1px solid #d8b46a;box-shadow:0 12px 30px #000a;font:13px VillageThai,system-ui,sans-serif;color:#f6e7bf;animation:fbPickIn .16s ease-out}@keyframes fbPickIn{from{opacity:0;transform:translateX(-8px)}}#fbPick h4{margin:0 0 2px;font:700 13px VillageThai,system-ui;color:#ffe2a8;display:flex;justify-content:space-between;gap:6px}#fbPick h4 i{font-style:normal;opacity:.7;font-weight:400;font-size:11px}#fbPick button.pk{display:grid;grid-template-columns:1fr auto;gap:1px 8px;text-align:left;padding:7px 9px;border-radius:8px;border:1px solid #8a6a2a;background:#3a2d1c;color:inherit;font:inherit;cursor:pointer}#fbPick button.pk:hover,#fbPick button.pk:focus-visible{background:#5a4528;border-color:#ffd88a;outline:0}#fbPick .pk b{font-weight:700}#fbPick .pk em{font-style:normal;color:#ffd0a0;font-weight:700}#fbPick .pk small{grid-column:1/-1;color:#c9b88f;font-size:11.5px}#fbPick .pk.best{border-color:#ffd25a}`; document.head.append(c) }
+  function pickCss() { if (document.getElementById('fbPickCss')) return; const c = document.createElement('style'); c.id = 'fbPickCss'; c.textContent = `#fbPick{position:fixed;z-index:70;width:238px;display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:12px;background:linear-gradient(#2f2418f6,#1b140de6);border:1px solid #d8b46a;box-shadow:0 12px 30px #000a;font:13px VillageThai,system-ui,sans-serif;color:#f6e7bf;animation:fbPickIn .16s ease-out}@keyframes fbPickIn{from{opacity:0;transform:translateX(-8px)}}#fbPick h4{margin:0 0 2px;font:700 13px VillageThai,system-ui;color:#ffe2a8;display:flex;justify-content:space-between;gap:6px}#fbPick h4 i{font-style:normal;opacity:.7;font-weight:400;font-size:11px}#fbPick button.pk{display:grid;grid-template-columns:1fr auto;gap:1px 8px;text-align:left;padding:7px 9px;border-radius:8px;border:1px solid #8a6a2a;background:#3a2d1c;color:inherit;font:inherit;cursor:pointer}#fbPick button.pk:hover,#fbPick button.pk:focus-visible{background:#5a4528;border-color:#ffd88a;outline:0}#fbPick .pk b{font-weight:700}#fbPick .pk em{font-style:normal;color:#ffd0a0;font-weight:700}#fbPick .pk small{grid-column:1/-1;color:#c9b88f;font-size:11.5px}#fbPick .pk.best{border-color:#ffd25a}#fbPick.cards{width:auto;min-width:238px;max-width:min(560px,calc(100vw - 16px))}#fbPick button.pk.pkc{grid-template-columns:auto 1fr;align-items:center;gap:10px}#fbPick .pkf{display:flex;gap:5px}#fbPick .pkcard{position:relative;display:block;width:84px;flex:none}#fbPick .pkcard .fb-tag{position:absolute;z-index:3;left:3px;right:3px;bottom:3px;padding:2px 3px;border-radius:5px;background:#101a17e6;color:#f6e7c1;font-size:10.5px;line-height:1.25;text-align:center}#fbPick .pkcard .fb-tag b{display:block;font-size:11px;color:#fff}#fbPick .pkf .face{width:84px;aspect-ratio:750/1101;border-radius:8px;overflow:hidden;flex:none;box-shadow:0 3px 8px #0008}#fbPick.cards .pkt b{font-size:14px}#fbPick.cards .pkt em{color:#9a4a12!important}#fbPick.cards .pkt small{color:#6b5232!important}#fbPick .pkf .face .gcard{width:100%}#fbPick .pkt{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-content:center;min-width:120px}#fbPick .pkt small{grid-column:1/-1}`; document.head.append(c) }
   function scrOf(vu, vv) { const q = project(vu, vv), k = scale * zoom, r = cv.getBoundingClientRect(); return { x: r.left + (q.x - WORLD_W / 2) * k + W / 2 + pan.x, y: r.top + (q.y - WORLD_H / 2) * k + H / 2 + pan.y } }
   function showPick(title, sub, rows, vu, vv) {
     pickCss(); closePick(); const el = pickEl = document.createElement('div'); el.id = 'fbPick';
-    el.innerHTML = `<h4><span>${esc(title)}</span><i>${esc(sub)} · Esc ปิด</i></h4>` + rows.map((r, i) => `<button type="button" class="pk${i === 0 && r.best ? ' best' : ''}" data-i="${i}"><b>${esc(r.name)}</b><em>${esc(r.badge)}</em><small>${esc(r.note)}</small></button>`).join('');
-    document.body.append(el); const p = scrOf(vu, vv), w = 238, h = el.offsetHeight;
+    /* v98.1078 · each choice shows the card's own picture, as in the hand row (the hand card's face is copied; a card not in the hand is rendered) */
+    const faceOf = f => { const b = handBtn(f.group, f.uid), fc = b?.querySelector('.face'), tg = b?.querySelector('.fb-tag'); return `<span class="pkcard">${fc ? fc.outerHTML : `<div class="face">${faceHTML(f.group, f.id, true)}</div>`}${tg ? tg.outerHTML : `<span class="fb-tag"><b>${esc(cardName(f.group, f.id))}</b>${esc(cardLine(f.group, f.id))}</span>`}</span>` };
+    el.innerHTML = `<h4><span>${esc(title)}</span><i>${esc(sub)} · Esc ปิด</i></h4>` + rows.map((r, i) => `<button type="button" class="pk${r.faces?.length ? ' pkc' : ''}${i === 0 && r.best ? ' best' : ''}" data-i="${i}">${r.faces?.length ? `<span class="pkf">${r.faces.map(faceOf).join('')}</span><span class="pkt"><b>${esc(r.name)}</b><em>${esc(r.badge)}</em><small>${esc(r.note)}</small></span>` : `<b>${esc(r.name)}</b><em>${esc(r.badge)}</em><small>${esc(r.note)}</small>`}</button>`).join('');
+    if (rows.some(r => r.faces?.length)) el.classList.add('cards');
+    document.body.append(el); const p = scrOf(vu, vv), w = el.offsetWidth || 238, h = el.offsetHeight;
     el.style.left = Math.max(8, Math.min(innerWidth - w - 8, p.x + 56)) + 'px'; el.style.top = Math.max(70, Math.min(innerHeight - h - 150, p.y - h / 2 - 30)) + 'px';
     el.onclick = async e => { const b = e.target.closest('button.pk'); if (!b) return; const r = rows[+b.dataset.i]; closePick(); if (r?.run) await r.run() };
     el.addEventListener('pointerdown', e => e.stopPropagation()); el.querySelector('button.pk')?.focus({ preventScroll: true });
@@ -1389,14 +1397,19 @@
     const all = FB.attackOptions(st, m.id); if (!all.length) return false;
     const cnt = {}; for (const o of all) cnt[o.id] = (cnt[o.id] || 0) + 1; const opts = all.filter((o, i) => all.findIndex(x => x.id === o.id) === i);   /* identical copies are listed once (×n) */
     FB.setTarget(st, m.id); pickU = m; sfx('cast', .25); hudSync(); handSync(); pend = null; markAuto();
-    const rows = opts.map((o, i) => { const E = window.ElementWheel?.info(o.el); return { name: (E ? E.icon + ' ' : '') + cardName('combat', o.id) + (cnt[o.id] > 1 ? ' ×' + cnt[o.id] : ''), badge: '≈ −' + o.pv.total + (o.pv.kill ? ' ☠' : ''), note: (o.pv.hits > 1 ? o.pv.hits + ' ครั้ง · ' : '') + (o.pv.notes.length ? o.pv.notes.join(' · ') + ' · ' : '') + 'แรง ' + o.stamina, best: i === 0,
+    const rows = opts.map((o, i) => { const E = window.ElementWheel?.info(o.el); return { name: (E ? E.icon + ' ' : '') + cardName('combat', o.id) + (cnt[o.id] > 1 ? ' ×' + cnt[o.id] : ''), badge: '≈ −' + o.pv.total + (o.pv.kill ? ' ☠' : ''), note: (o.pv.hits > 1 ? o.pv.hits + ' ครั้ง · ' : '') + (o.pv.notes.length ? o.pv.notes.join(' · ') + ' · ' : '') + 'แรง ' + o.stamina, best: i === 0, faces: [{ group: 'combat', uid: o.uid, id: o.id }],
       run: async () => { FB.setTarget(st, m.id); const b = handBtn('combat', o.uid); if (b) await cardClick(b) } } });
     showPick('ใช้ไพ่ไหนโจมตี ' + m.name + '?', 'ไพ่ที่ใช้ได้ ' + rows.length + ' ใบ', rows, m.vu, m.vv); return true;
   }
   function openMovePick(to) {
-    const w = FB.walkOptions(st, to); if (w.reason || w.free || !w.cards.length) return false;
+    const w = FB.walkOptions(st, to); if (w.reason || w.free) return false;
+    if (!w.cards.length) {   /* v98.1078 · only two steps reach it (yellow layer): offer that pair, with both card pictures */
+      const o = FB.walkPlan?.(st, to); if (!o || o.steps.length < 2) return false;
+      const nm = s => s.emergency ? 'เดินฉุกเฉิน' : cardName('movement', s.id), cards = o.steps.filter(s => !s.emergency);
+      showPick('ใช้ไพ่เดิน 2 ขั้น?', 'ช่องเหลือง', [{ name: o.steps.map(nm).join(' + '), badge: 'เดิน +' + o.move, note: 'ใช้ ' + cards.length + ' คริสตัล · แรง ' + o.stamina, best: true, faces: cards.map(s => ({ group: 'movement', uid: s.uid, id: s.id })), run: async () => { if (await playSteps(o)) await heroMove(to) } }], to.u + OFF, to.v + OFF); return true;
+    }
     const cnt = {}; for (const c of w.cards) cnt[c.id] = (cnt[c.id] || 0) + 1; const uniq = w.cards.filter((c, i) => w.cards.findIndex(x => x.id === c.id) === i);
-    const rows = uniq.map((c, i) => ({ name: '👣 ' + cardName('movement', c.id) + (cnt[c.id] > 1 ? ' ×' + cnt[c.id] : ''), badge: 'เดิน +' + c.move, note: 'ใช้ ' + c.cost + ' แต้ม · แรง ' + c.stamina, best: i === 0,
+    const rows = uniq.map((c, i) => ({ name: cardName('movement', c.id) + (cnt[c.id] > 1 ? ' ×' + cnt[c.id] : ''), badge: 'เดิน +' + c.move, note: 'ใช้ ' + c.cost + ' แต้ม · แรง ' + c.stamina, best: i === 0, faces: [{ group: 'movement', uid: c.uid, id: c.id }],
       run: async () => { const b = handBtn('movement', c.uid); if (!b) return; await cardClick(b); await heroMove(to) } }));
     showPick('ใช้ไพ่เดินใบไหน?', 'ถึงช่องนี้ได้ ' + rows.length + ' ใบ', rows, to.u + OFF, to.v + OFF); return true;
   }
@@ -1404,7 +1417,7 @@
      click an enemy: it becomes the target and the best card for it shows (gold); click it again to play — walking next to it first
      (with a move card if needed) when no card reaches it from here. Click a cell: walk there, playing the smallest move card that reaches it.
      Cards can still be played by hand as before. */
-  let pend = null, walks = [], facing = null, faceDraw = null;   /* faceDraw: while the facing wedges are up, the two BACK arrows (north side of the screen) are painted on the canvas BEHIND the fighter */
+  let pend = null, walks = [], facing = null, faceDraw = null, tbHover = null;   /* faceDraw: while the facing wedges are up, the two BACK arrows (north side of the screen) are painted on the canvas BEHIND the fighter */
   const handBtn = (group, uid) => hand?.querySelector(`.fb-card[data-group="${group}"][data-uid="${uid}"]`);
   function markAuto() { hand?.querySelectorAll('.fb-card.auto').forEach(e => e.classList.remove('auto')); if (!pend) return; handBtn('combat', pend.combatUid)?.classList.add('auto'); if (pend.moveUid) handBtn('movement', pend.moveUid)?.classList.add('auto') }
   /* v98.1006 · clicking a foe no card can reach from here: NO walk-and-attack — say why and what to do (walk next to it first with a move card) */
@@ -1413,11 +1426,20 @@
     floatText(m, 'TARGET', '#ffd25a', true); flash(FB.attackWhy(st, m.id) || 'ไม่มีไพ่โจมตีที่ถึงเป้านี้');
   }
   async function walkTo(to) {
-    const p = FB.autoWalk(st, to); if (p.reason) { flash(p.reason); return }
-    if (p.emergency) { const e = FB.playEmergency(st); if (!e.ok) { flash(e.reason); return } floatText(FB.hero(st), 'เดินฉุกเฉิน +1', '#ffd25a', true); hint('เดินฉุกเฉิน: ไม่มีไพ่เดินที่ใช้ได้ — เดินฟรี 1 ช่อง (ไม่เสียคริสตัล)'); hudSync() }
-    if (p.moveCard != null && farInfo && farMap?.has(to.u + ',' + to.v)) p.moveCard = farInfo.index;   /* v98.244 · beyond the free walk: play the card the yellow layer showed (the farthest one), not the smallest that would do */
-    if (p.moveCard != null) { const b = handBtn('movement', st.deck.movement.hand[p.moveCard].uid); if (!b) return; await cardClick(b) }
+    const p = FB.autoWalk(st, to);
+    if (!p.reason && p.moveCard == null && !p.emergency) { await heroMove(to); return }   /* the walking points already in hand reach it */
+    const o = FB.walkPlan ? FB.walkPlan(st, to) : null;   /* v98.1078 · the cheapest one- or two-step way (green / yellow layer) */
+    if (!o) { flash(p.reason || 'เดินไม่ถึง'); return }
+    if (!(await playSteps(o))) return;
     await heroMove(to);
+  }
+  /* plays the walking steps of a plan in order: move cards (they fly up from the hand) and/or the emergency step → false when one fails */
+  async function playSteps(o) {
+    for (const s of o.steps) {
+      if (s.emergency) { const e = FB.playEmergency(st); if (!e.ok) { flash(e.reason); return false } floatText(FB.hero(st), 'เดินฉุกเฉิน +1', '#ffd25a', true); hint('เดินฉุกเฉิน: ไม่มีไพ่เดินที่ใช้ได้ — เดินฟรี 1 ช่อง (ไม่เสียคริสตัล)'); hudSync(); continue }
+      const b = handBtn('movement', s.uid); if (!b) return false; const before = st.mp; await cardClick(b); if (st.mp <= before) return false;
+    }
+    return true;
   }
   function hint(text) { let d = document.getElementById('fbHint'); if (!d) { d = document.createElement('div'); d.id = 'fbHint'; document.body.append(d) } d.textContent = text; d.classList.remove('on'); void d.offsetWidth; d.classList.add('on'); clearTimeout(hint.t); hint.t = setTimeout(() => d.classList.remove('on'), 4200) }
   /* ---------- v97.08 · undo a walk until the hero acts ---------- */
@@ -1922,8 +1944,10 @@
       OV(u, v, () => { polyC(g, u, v); if (col) { g.fillStyle = col; g.fill() } if (lines) { g.lineWidth = 1; g.strokeStyle = k === 'blocked' ? 'rgba(255,120,120,.35)' : 'rgba(255,255,255,.22)'; g.stroke() } });
     }
     if (inspectMap && !busy && !EDIT) { const foeI = inspectU.side === 'monster'; for (const e of inspectMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = foeI ? 'rgba(236,96,72,.30)' : 'rgba(150,200,255,.28)'; g.fill(); g.strokeStyle = foeI ? 'rgba(255,170,150,.9)' : 'rgba(200,225,255,.9)'; g.lineWidth = 1.5; g.setLineDash([5, 4]); g.stroke(); g.setLineDash([]) }) } }   /* next-turn cells of the picked fighter */
-    if (farMap && !busy && !EDIT) for (const e of farMap.values()) { if (e.cost === 0 || (reachMap && reachMap.has(e.u + ',' + e.v))) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }) }   /* yellow = needs the farthest move card */
-    if (reachMap && !busy && !EDIT) for (const e of reachMap.values()) { if (e.cost === 0) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(70,150,255,.34)'; g.fill(); g.strokeStyle = 'rgba(150,200,255,.8)'; g.lineWidth = 1.5; g.stroke() }) }
+    /* v98.1078 · walking range in two layers: green = reached now or with one more walking step · yellow = needs two steps */
+    if (!busy && !EDIT) { const inG = k => (reachMap && reachMap.has(k)) || (farMap && farMap.has(k));
+      if (farMap2) for (const e of farMap2.values()) { if (e.cost === 0 || inG(e.u + ',' + e.v)) continue; OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(255,200,60,.34)'; g.fill(); g.strokeStyle = 'rgba(255,228,140,.85)'; g.lineWidth = 1.5; g.stroke() }) }
+      const seen = new Set(); for (const M of [reachMap, farMap]) if (M) for (const e of M.values()) { const k = e.u + ',' + e.v; if (e.cost === 0 || seen.has(k)) continue; seen.add(k); OV(e.u, e.v, () => { poly(g, e.u, e.v); g.fillStyle = 'rgba(70,200,110,.34)'; g.fill(); g.strokeStyle = 'rgba(165,240,175,.85)'; g.lineWidth = 1.5; g.stroke() }) } }
     /* v97.22 · objective cells: green exits (escape) · a gold banner cell (defend) */
     if (st.flee?.cells && !st.outcome) for (const c of st.flee.cells) { const pul = .5 + .5 * Math.sin(t * .005); OV(c.u, c.v, () => { polyC(g, c.u, c.v); g.fillStyle = `rgba(90,190,255,${.26 + .2 * pul})`; g.fill(); g.strokeStyle = '#bfe8ff'; g.lineWidth = 2.5; g.stroke() }) }
     if (st.obj?.cells) for (const c of st.obj.cells) { const esc_ = st.obj.type === 'escape', pul = .5 + .5 * Math.sin(t * .005); polyC(g, c.u, c.v); g.fillStyle = esc_ ? `rgba(80,230,120,${.22 + .18 * pul})` : `rgba(255,200,60,${.25 + .2 * pul})`; g.fill(); g.strokeStyle = esc_ ? '#7dffa0' : '#ffd25a'; g.lineWidth = 2.5; g.stroke();
@@ -1947,7 +1971,8 @@
     if (st.turn === 'ally' && st.cur && st.cur.hp > 0) { if (!footRing(g, st.cur, false, t)) { polyF(g, st.cur.u, st.cur.v); g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.stroke() } }
     if (pendAlly?.to && !busy) { poly(g, pendAlly.to.u, pendAlly.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pendAlly.to.u, pendAlly.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
     if (pend?.to && !busy) { poly(g, pend.to.u, pend.to.v); g.fillStyle = 'rgba(255,210,90,.28)'; g.fill(); if (!cellFrame(g, 'yellow', pend.to.u, pend.to.v)) { g.strokeStyle = '#ffd25a'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.lineDashOffset = -t * .02; g.stroke(); g.setLineDash([]) } }
-    if (!EDIT && typeof hoverCell !== 'undefined' && hoverCell && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hoverCell.u + ',' + hoverCell.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hoverCell.u + .5, hoverCell.v + .5), w = cellW(hoverCell.u, hoverCell.v) * 1.06; OV(hoverCell.u, hoverCell.v, () => G?.corners(g, p.x, p.y, w, w * .56, t)) }   /* v98.282 · glowing corners on the cell under the mouse */
+    const hc = tbHover || (typeof hoverCell !== 'undefined' ? hoverCell : null);
+    if (!EDIT && hc && !busy && !st.outcome && st.turn === 'hero' && !padOn && cells.has(hc.u + ',' + hc.v)) { const G = CODE_ART ? window.GroundArtCode : window.GroundArt, p = project(hc.u + OFF, hc.v + OFF), w = cellW(hc.u, hc.v) * 1.06; OV(hc.u, hc.v, () => { poly(g, hc.u, hc.v); g.fillStyle = 'rgba(16,52,150,.62)'; g.fill(); g.strokeStyle = 'rgba(120,170,255,.95)'; g.lineWidth = 2; g.stroke(); G?.corners(g, p.x, p.y, w, w * .56, t) }) }   /* v98.282 · glowing corners on the cell under the mouse · v98.1078: the cell itself turns dark blue */
     g.restore();
     }   /* end of the ground pass */
     if (mode === 'ground') return;
@@ -2080,6 +2105,8 @@
     g.restore();
   }
   /* the page's own pointerup is replaced by TownUX, so the battle listens for a plain click itself (no drag = click) */
+  /* v98.1078 · the cell under the mouse, tracked here so it works in village fights too (field-host.js keeps its own hoverCell on the battle-field page) */
+  cv.addEventListener('pointermove', e => { try { const w = world(e); tbHover = anchorAt(inv(w.x, w.y)) } catch (x) { tbHover = null } }); cv.addEventListener('pointerleave', () => { tbHover = null });
   { let down = null; cv.addEventListener('pointerdown', e => { if (e.button === 0) down = { x: e.clientX, y: e.clientY } }, true);
     /* v98.358 · pointing at a character / monster: white edge + a short info window; clicking marks it with the grey crystal */
     const unitAt = wp => { let best = null, by = -1e9; for (const u of st.units) { if (u.hp <= 0 || u.deadAt) continue; const g0 = inv(wp.x, wp.y), p = project(u.vu, u.vv); const same = inBlock(u, g0), box = Math.abs(wp.x - p.x) < 30 && wp.y < p.y + 6 && wp.y > p.y - UNIT * 1.5; if ((same || box) && p.y > by) { best = u; by = p.y } } return best };

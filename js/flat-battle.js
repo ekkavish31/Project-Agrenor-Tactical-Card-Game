@@ -867,6 +867,35 @@
     st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (!m || h.stamina < m.stamina) return; if (!best || m.move > best.move) best = { index: i, move: m.move, name: m.name } });
     return best;
   }
+  /* v98.1078 · walking with up to TWO steps this turn (the two-layer range): every way to add walking points — one move card (1 crystal + its stamina),
+     two move cards (2 crystals, stamina for both), a move card then the emergency step (allowed only when no other move card is usable after it),
+     or the emergency step alone (no usable move card). The emergency step stays once per turn, so "emergency ×2" never appears.
+     moveSteps(st) → [{move, stamina, steps:[{uid,id,move}|{emergency:true,move:1}]}] */
+  function moveSteps(st) {
+    if (!st.cards || st.outcome || st.turn !== 'hero' || st.acted) return [];
+    const h = hero(st); if (h.sts?.bind) return [];
+    const TD = deckLib(), cr = crystals(st), hand = st.deck.movement.hand, out = [];
+    const usable = (stam, skip) => hand.map((c, i) => ({ c, i, m: TD.MOVE[c.id] })).filter(x => x.m && x.i !== skip && stam >= x.m.stamina);
+    const step = x => ({ uid: x.c.uid, id: x.c.id, move: x.m.move });
+    if (cr >= 1) for (const x of usable(h.stamina)) {
+      out.push({ move: x.m.move, stamina: x.m.stamina, steps: [step(x)] });
+      const rest = usable(h.stamina - x.m.stamina, x.i);
+      if (cr >= 2) for (const y of rest) if (y.i > x.i) out.push({ move: x.m.move + y.m.move, stamina: x.m.stamina + y.m.stamina, steps: [step(x), step(y)] });
+      if (!st.emergency && !rest.length) out.push({ move: x.m.move + 1, stamina: x.m.stamina, steps: [step(x), { emergency: true, move: 1 }] });
+    }
+    if (emergencyOk(st)) out.push({ move: 1, stamina: 0, steps: [{ emergency: true, move: 1 }] });
+    return out;
+  }
+  const better = (a, b) => !b || a.move > b.move || (a.move === b.move && a.stamina < b.stamina);
+  /* the farthest one-step and two-step options → { one, two } (either may be null) */
+  function movePlan(st) { let one = null, two = null; for (const o of moveSteps(st)) { if (o.steps.length === 1) { if (better(o, one)) one = o } else if (better(o, two)) two = o } return { one, two } }
+  /* the cheapest option that reaches `to` (fewest steps, then the shortest card, then the least stamina) → option | null */
+  function walkPlan(st, to) {
+    const h = hero(st), k = key(to.u, to.v);
+    const opts = moveSteps(st).sort((a, b) => a.steps.length - b.steps.length || a.move - b.move || a.stamina - b.stamina);
+    for (const o of opts) if (reach(st, h, st.mp + o.move).has(k)) return o;
+    return null;
+  }
   function autoWalk(st, to) {
     if (!st.cards || st.outcome || st.turn !== 'hero') return { reason: 'ไม่ใช่ตาคุณ' };
     if (st.acted) return { reason: 'โจมตีแล้ว เดินต่อไม่ได้' };
@@ -925,6 +954,6 @@
     const cards = []; st.deck.movement.hand.forEach((c, i) => { const m = TD.MOVE[c.id]; if (!m || h.stamina < m.stamina) return; const e = reach(st, h, st.mp + m.move).get(key); if (e && e.cost > 0) cards.push({ index: i, uid: c.uid, id: c.id, name: m.name, move: m.move, stamina: m.stamina, cost: e.cost }) });
     return { cards };
   }
-  const api = { setSignature, applyForge, cardEl, baseRule: id => CARD_BASE[id] || null, ITEM, ITEM_NAME, itemRule, itemDraw, itemBlock, useItem, free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, CRYSTAL_STAMINA, HAND, crystals, refill, crystalStamina, redrawHand, emergencyOk, playEmergency, attackWhy, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
+  const api = { setSignature, applyForge, cardEl, baseRule: id => CARD_BASE[id] || null, ITEM, ITEM_NAME, itemRule, itemDraw, itemBlock, useItem, free, inside, insideCell, cost, overlap, attackOptions, walkOptions, setLoan, farMove, moveSteps, movePlan, walkPlan, evoChance, evolveCheck, evolveNow, objText, OBJ_TEXT, STATUS, inflict, tickStatus, beginAllyTurn, allyHit, allyPlan, allySkillNow, allyAuto, endAllyTurn, allyEstimate, preview, autoPlan, autoAttack, autoWalk, sideOf, faceOf, FACE_V, queue, runCT, endTurnCT, beginHeroTurn, SPELL_CARDS, cardBonus, WEAPON_EL, CARD_EL, lv, climbOk, heightMult, gap, meleeOk, ALLY_SKILL, SKILL_CD, skillBlock, allySkill, setOrder, monsters, allies, opponents, alliesTurn, aiAct, pickTarget, setTarget, checkOutcome, CRIT, CRYSTALS, CRYSTAL_STAMINA, HAND, crystals, refill, crystalStamina, redrawHand, emergencyOk, playEmergency, attackWhy, CARD, cardRule, combatBlock, playMove, playCombat, hurt, KINDS, distField, create, hero, monster, actor, foe, kind, reach, pathTo, canMove, move, targets, damageFor, attack, endTurn, monsterTurn, dist, alive };
   root.FlatBattle = api; if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
