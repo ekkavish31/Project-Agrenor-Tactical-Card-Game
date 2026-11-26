@@ -28,7 +28,7 @@
    kind(id, it.n, it.g, p => {
     const m = pic(it.src, id); if (!m) return;
     const g = getG(), w = it.tw, h = w * m.naturalHeight / m.naturalWidth;
-    g.save(); g.fillStyle = '#00000028'; g.beginPath(); g.ellipse(p.x, p.y, w * .36, w * .11, 0, 0, Math.PI * 2); g.fill();
+    g.save();   /* v98.1093 · no extra dark ellipse under the picture: the art carries its own shadow (the ellipse showed as a mystery dark patch on the ground) */
     const rect = [p.x - w / 2, p.y - h * it.ay, w, h];
     if (window.TownArt?.draw) { let near = null; try { near = project(hero.u, hero.v) } catch (e) { } window.TownArt.draw(g, m, null, rect, near) } else g.drawImage(m, ...rect);
     g.restore();

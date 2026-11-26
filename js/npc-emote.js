@@ -28,7 +28,7 @@
     return true;
   }
   function bubble(g, x, tipY, text, o = {}) {
-    const view=g.getTransform?.();if(view&&g.canvas&&view.a>0&&view.d>0)o={minX:(8*(root.devicePixelRatio||1)-view.e)/view.a,maxX:(g.canvas.width-8*(root.devicePixelRatio||1)-view.e)/view.a,minY:(8*(root.devicePixelRatio||1)-view.f)/view.d,...o};
+    const view=g.getTransform?.();if(view&&g.canvas&&view.a>0&&view.d>0)o={minX:(8*(root.devicePixelRatio||1)-view.e)/view.a,maxX:(g.canvas.width-(o.edgeR||8)*(root.devicePixelRatio||1)-view.e)/view.a,minY:(8*(root.devicePixelRatio||1)-view.f)/view.d,...o};
     const k = o.k || 1, F = 18 * k, NF = 14 * k, LH = 26 * k, PAD = 13 * k, maxW = Math.max(60*k,Math.min(300*k,(o.maxX??Infinity)-(o.minX??0)-60*k)), ER = o.emoji ? 19 * k : 0;
     g.save(); g.font = `600 ${F}px VillageThai,AgThai,system-ui,"Noto Sans Thai",sans-serif`;
     const lines = wrap(g, text, maxW), nameW = o.name ? (g.font = `800 ${NF}px VillageThai,AgThai,system-ui,sans-serif`, g.measureText(o.name).width) : 0; g.font = `600 ${F}px VillageThai,AgThai,system-ui,"Noto Sans Thai",sans-serif`;

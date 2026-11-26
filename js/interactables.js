@@ -44,7 +44,9 @@
       document.body.append(tip);
     }
     if (tipFor !== it.id) { tipFor = it.id; tip.textContent = (it.quest ? '★ ' : '') + (it.label || it.id) }
-    tip.hidden = false; tip.style.left = Math.min(innerWidth - 8, cx + 14) + 'px'; tip.style.top = Math.max(4, cy - 34) + 'px';
+    tip.hidden = false;
+    /* v98.1093 · the tip sits to the lower RIGHT of the pointer (it used to cover the cursor icon itself); near the right edge it flips to the left, near the bottom it goes above */
+    { const w = tip.offsetWidth || 120, h = tip.offsetHeight || 26; let x = cx + 30, y = cy + 22; if (x + w > innerWidth - 8) x = cx - w - 30; if (y + h > innerHeight - 8) y = cy - h - 22; tip.style.left = Math.max(4, x) + 'px'; tip.style.top = Math.max(4, y) + 'px' }
   }
   /* ---- which item is "live": under the mouse, or what the big button would act on (stick / keys / pad). Drawn with a white outline by each page. */
   let hoverId = null, focusId = null;
