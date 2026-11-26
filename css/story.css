@@ -290,3 +290,7 @@ body.quest-announcement-open #storyTracker{visibility:hidden}
 @media(prefers-reduced-motion:reduce){#questAnnouncement .qa-title{transition:none}}
 
 @media(max-width:599px){#questAnnouncement .qa-title{font-size:clamp(20px,5vw,30px)}}
+/* v98.1129 · the "new quest" ribbon: twice as big (zoom 2) and in the MIDDLE of the screen (was a small band under the top bar) */
+#storyToasts:has(.st-toast--quest){top:50%;transform:translate(-50%,-50%);max-width:min(96vw,1400px)}
+#storyToasts .st-toast.st-toast--quest{zoom:2;max-width:calc(min(96vw,1400px)/2 - 8px)}
+@media(max-width:700px){#storyToasts .st-toast.st-toast--quest{zoom:1.4;max-width:calc(96vw/1.4 - 8px)}}
