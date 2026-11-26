@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1122';
+  const V = '98.1124';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1512,6 +1512,8 @@
 
     /* v98.332 · free CC0 light / slash sprites (Kenney Particle Pack, assets/fx/kenney) on top of the old effects: a sweep for melee, a flare + star + ring for elements */
     if (to && !o.noK) { const base = effects[effects.length - 1], col = KFX_BURST[kind];
+      const visual = window.VfxKit?.choiceOf(kind);
+      if (visual === 'atlas' || visual === 'painted8' || visual === 'paintedLight' || SPECIAL_ART[kind]) return dur;
       if (KFX_MELEE.has(kind)) effects.push({ ...base, kind: 'kslash', color: '#fff0c0', duration: 380 });
       else if (col) effects.push({ ...base, kind: 'kburst', color: col, duration: 560 }) }
     return dur;
@@ -1565,11 +1567,35 @@
     const cy = p.y - UNIT * .55, al = t < .2 ? t * 5 : 1 - (t - .2) / .8; g.globalCompositeOperation = 'lighter';
     kdraw(g, 'circle_05', e.color, p.x, cy, UNIT * (.6 + t * 1.3), 0, al * .7); kdraw(g, 'magic_03', e.color, p.x, cy, UNIT * (.5 + t * .7), t * 2.2, al * .85);
     kdraw(g, 'flare_01', '#ffffff', p.x, cy, UNIT * (1.8 - t * .6), 0, al * .9); kdraw(g, 'star_04', '#fff6d8', p.x, cy, UNIT * (.4 + (1 - Math.abs(t - .3)) * .5), t * 1.4, al); if (e.kind === 'kburst' && e.color === '#e4dcff') kdraw(g, 'spark_05', '#e4dcff', p.x, cy - UNIT * .3, UNIT * 1.4, 0, al) };
+  const SPECIAL_ART = {
+    rockfall: ['earth', .34], climbUp: ['wind', 0],
+    fallDust: ['blunt', 0], diveTrail: ['spear', 0],
+    sigLightM: ['knife', .31], sigHeavyM: ['sword', .24],
+    sigLightF: ['dark', 0], sigHeavyF: ['lightning', .26]
+  };
+  function specialArt(g, e, t, p, a) {
+    const spec = SPECIAL_ART[e.kind];
+    const battle = window.BattleVFX;
+    if (!spec || !battle) return false;
+    const [kind, strike] = spec;
+    if (t < strike) {
+      // A small illustrated charge or dust plume leads into the original hit beat.
+      const q = a;
+      if (e.kind === 'rockfall') return false; // Keep the falling rocks until the painted ground impact.
+      return battle.stamp(g, 'particle/mote',
+        q.x, q.y - UNIT * (.8 + (1 - t / strike) * .8), UNIT * .58,
+        { alpha: Math.sin(t / strike * Math.PI) * .65 });
+    }
+    const keepSource = e.kind === 'diveTrail' || e.kind === 'sigLightF';
+    return battle.draw({ ...e, kind, from: keepSource ? e.from : null }, (t - strike) / (1 - strike),
+      p, keepSource || e.kind === 'sigHeavyM' ? a : p, g, { w: UNIT });
+  }
   function fxDraw(g, now) {
     effects = effects.filter(e => now < e.start + e.duration);
     for (const e of effects) {
       const t = Math.min(1, (now - e.start) / e.duration), p = project(e.to.x, e.to.y), a = e.from ? project(e.from.x, e.from.y) : p;
-      g.save(); let ok = HEIGHT_FX[e.kind] ? (HEIGHT_FX[e.kind](g, e, t, p, a), true) : false; if (!ok) try { ok = window.BattleVFX?.draw(e, t, p, a, g, { w: UNIT, h: UNIT / 2 }) } catch (err) { ok = false }
+      g.save(); let ok = specialArt(g, e, t, p, a);
+      if (!ok && HEIGHT_FX[e.kind]) { HEIGHT_FX[e.kind](g, e, t, p, a); ok = true } if (!ok) try { ok = window.BattleVFX?.draw(e, t, p, a, g, { w: UNIT, h: UNIT / 2 }) } catch (err) { ok = false }
       if (!ok) { g.globalAlpha = 1 - t; g.strokeStyle = e.color || '#ffd27a'; g.lineWidth = 4; g.beginPath(); g.ellipse(p.x, p.y - UNIT * .6, Math.max(0, UNIT * (.3 + t * .6)), Math.max(0, UNIT * (.18 + t * .35)), 0, 0, 7); g.stroke() }
       g.restore();
     }
@@ -1670,6 +1696,9 @@
       g.globalCompositeOperation = 'source-over'; gr = g.createRadialGradient(0, 0, 0, 0, 0, R); gr.addColorStop(0, `rgba(36,40,50,${.38 * ak})`); gr.addColorStop(1, 'rgba(36,40,50,0)'); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, R, 0, 7); g.fill(); g.restore();
     }
     let h = 7; for (const c of String(u.id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    if (window.VfxKit?.uses('death') && window.BattleVFX?.draw(
+      { kind: 'death', seed: h, scale: big }, e / 2300, p, p, g, { w: UNIT }
+    )) return;
     for (let i = 0; i < 9; i++) {
       const k = (e - i * 110) / 1500; if (k < 0 || k > 1) continue; const rnd = ((h >> i) & 7) / 7, x = p.x + Math.sin(k * 5 + i * 1.7 + rnd * 6) * UNIT * .22 * (.4 + k), y = p.y - UNIT * .5 * big - k * UNIT * 1.9 * big, r = UNIT * (.16 + .2 * k) * big;
       g.save(); g.globalAlpha = Math.sin(Math.PI * k) * .5; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(238,241,248,.9)'); gr.addColorStop(1, 'rgba(180,186,204,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.restore();
