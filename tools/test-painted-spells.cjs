@@ -19,7 +19,8 @@ function setup({ loading = false, reduced = false, search = '', values = {} } = 
   await Promise.all(images.map(im => im.decode()));
   const canvas = createCanvas(300, 300), ctx = canvas.getContext('2d');
   for (const kind of kinds) {
-    assert.equal(kit.choiceOf(kind), 'painted8'); assert.ok(kit.uses(kind));
+    assert.equal(kit.choiceOf(kind), ['ice', 'lightning'].includes(kind) ? 'drawnImpact' : 'painted8');
+    kit.setChoice(kind, 'painted8'); assert.ok(kit.uses(kind));
     assert.ok(kit.variants(kind).some(v => v[0] === 'painted8'));
     const file = 'assets/fx/anim/' + kind + '-cast.webp';
     const im = images.find(i => i.src === file); assert.ok(im, file);
@@ -49,6 +50,20 @@ function setup({ loading = false, reduced = false, search = '', values = {} } = 
     assert.ok(ctx.getImageData(0, 0, 300, 300).data.every(v => v === 0), 'effect ends transparently');
     kit.setChoice(kind, 'old'); assert.equal(kit.choiceOf(kind), 'old');
     kit.setChoice(kind, 'new'); assert.equal(kit.choiceOf(kind), 'new');
+  }
+  const hybrid = setup();
+  await Promise.all(hybrid.images.map(im => im.decode()));
+  for (const kind of ['lightning', 'ice']) {
+    const active = new Set();
+    const probe = createCanvas(300, 350).getContext('2d');
+    const paint = probe.drawImage.bind(probe);
+    probe.drawImage = (...args) => {
+      if (args[0].src === 'assets/fx/anim/' + kind + '-drawn.webp') active.add(args.slice(1, 3).join(','));
+      return paint(...args);
+    };
+    for (let f = 0; f <= 60; f++)
+      assert.ok(hybrid.kit.draw({ kind, seed: 17 }, f / 60, { x: 150, y: 285 }, null, probe, { w: 60 }));
+    assert.equal(active.size, 8, kind + ' plays all eight distinct painted cells');
   }
   const pending = setup({ loading: true }).kit;
   assert.equal(pending.draw({ kind: 'ice' }, .4, { x: 10, y: 20 }, null, ctx, { w: 60 }), false, 'loading falls back');
