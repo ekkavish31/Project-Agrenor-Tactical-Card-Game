@@ -144,6 +144,6 @@ const Cutscene={play,fill,roleWho,roleName,speakers:{},isPlaying:()=>!!playing,f
 root.Cutscene=Cutscene;
 
 /* ---------------- small floating toast for quest feedback (used outside cutscenes) ---------------- */
-root.StoryToast=function(html,kind=''){let host=document.getElementById('storyToasts');if(!host){host=document.createElement('div');host.id='storyToasts';host.setAttribute('role','status');host.setAttribute('aria-live','polite');document.body.appendChild(host)}
+root.StoryToast=function(html,kind=''){if(kind==='quest'&&root.QuestAnnouncement)return root.QuestAnnouncement.show({titleHTML:html});let host=document.getElementById('storyToasts');if(!host){host=document.createElement('div');host.id='storyToasts';host.setAttribute('role','status');host.setAttribute('aria-live','polite');document.body.appendChild(host)}
  const t=document.createElement('div');t.className='st-toast'+(kind?' st-toast--'+kind:'');t.innerHTML=html;host.appendChild(t);setTimeout(()=>t.classList.add('out'),2600);setTimeout(()=>t.remove(),3200)};
 })(globalThis);
