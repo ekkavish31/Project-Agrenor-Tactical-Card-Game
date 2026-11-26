@@ -55,28 +55,31 @@
   let el = null, running = null, T = null;
   function css() {
     if (document.getElementById('btCss')) return; const s = document.createElement('style'); s.id = 'btCss';
-    s.textContent = `#btTalk{position:fixed;inset:0;z-index:2500;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-family:AgThai,system-ui,sans-serif;user-select:none;-webkit-user-select:none;cursor:pointer;background:linear-gradient(to top,#04060cd8 0,#04060c66 34%,#04060c00 62%);animation:btIn .22s ease-out}
+    /* v98.1128 · SAME LAYOUT AS THE GENERAL STORY SCENE (css/story.css .cs-box · js/story-actors.js .cs-actor): a box 72 % of the screen wide with type that scales with the width, the speaker's name inside it in gold,
+       big half-body portraits left / right standing behind the box, the painted "ข้ามฉาก" button in the bottom-right corner. No dark backdrop and no bars: the battle field is the scene. */
+    s.textContent = `#btTalk{position:fixed;inset:0;z-index:2500;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-family:AgThai,VillageThai,system-ui,sans-serif;user-select:none;-webkit-user-select:none;cursor:pointer;animation:btIn .22s ease-out}
 #btTalk.out{animation:btOut .2s ease-in forwards}@keyframes btIn{from{opacity:0}to{opacity:1}}@keyframes btOut{to{opacity:0}}
-#btTalk .bt-row{position:relative;width:min(1040px,100vw);height:min(46vh,430px);pointer-events:none}
-#btTalk .bt-pic{position:absolute;bottom:-2px;height:100%;aspect-ratio:1/1;display:flex;align-items:flex-end;justify-content:center;transition:filter .2s,opacity .2s,transform .28s cubic-bezier(.2,.9,.3,1.2)}
-#btTalk .bt-pic.L{left:1%;transform:translateX(0)}#btTalk .bt-pic.R{right:1%;transform:translateX(0)}
+#btTalk .bt-row{position:absolute;left:0;right:0;bottom:4vh;height:min(74vh,640px);pointer-events:none}
+#btTalk .bt-pic{position:absolute;bottom:0;height:100%;width:min(48vw,600px);display:flex;align-items:flex-end;justify-content:center;transition:filter .2s,opacity .2s,transform .28s cubic-bezier(.2,.9,.3,1.2)}
+#btTalk .bt-pic.L{left:max(0px,calc(50% - 700px));transform:translateX(0)}#btTalk .bt-pic.R{right:max(0px,calc(50% - 700px));transform:translateX(0)}
 #btTalk .bt-pic.in.L{animation:btL .3s cubic-bezier(.2,.9,.3,1.1)}#btTalk .bt-pic.in.R{animation:btR .3s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes btL{from{transform:translateX(-60px);opacity:0}}@keyframes btR{from{transform:translateX(60px);opacity:0}}
-#btTalk .bt-pic img,#btTalk .bt-pic .bt-sprite{max-width:100%;max-height:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 8px 14px #000c);-webkit-mask-image:linear-gradient(to bottom,#000 84%,#0000 100%);mask-image:linear-gradient(to bottom,#000 84%,#0000 100%)}
+#btTalk .bt-pic img,#btTalk .bt-pic .bt-sprite{max-width:100%;max-height:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 2px #0009) drop-shadow(0 18px 28px #0008)}
 #btTalk .bt-pic .bt-sprite{width:70%;aspect-ratio:1/1;background:url(assets/ui/mip-sheet.webp?v=2) 27.2727% 50%/1200% 100% no-repeat}
 #btTalk .bt-pic .bt-icon{font-size:min(18vh,150px);filter:drop-shadow(0 6px 10px #000c);margin-bottom:10%}
-#btTalk .bt-pic.dim{filter:brightness(.45) saturate(.6);transform:scale(.95)}
+#btTalk .bt-pic.dim{filter:brightness(.45) saturate(.7);transform:scale(.94)}
 #btTalk .bt-pic.R.shake img,#btTalk .bt-pic.L.shake img{animation:btShake .3s}@keyframes btShake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-#btTalk .bt-box{position:relative;width:min(980px,calc(100vw - 24px));min-height:128px;margin:0 0 14px;padding:26px 28px 16px;box-sizing:border-box;border-radius:14px;background:linear-gradient(#1b2438f2,#0e1424f2);border:2px solid #d9b46b;box-shadow:0 0 0 3px #0008,0 14px 40px #000b,inset 0 0 0 1px #ffe8a633;color:#f6ead0;pointer-events:auto}
-#btTalk .bt-name{position:absolute;top:-17px;left:26px;padding:3px 20px;border-radius:9px;background:linear-gradient(#e3bb68,#b98a34);color:#2a1d08;font:700 17px/1.4 AgThai,system-ui,sans-serif;box-shadow:0 3px 8px #0009;border:1.5px solid #fff3c4aa}
-#btTalk .bt-name.R{left:auto;right:26px}#btTalk .bt-name:empty{display:none}
-#btTalk .bt-text{font:19px/1.65 AgThai,system-ui,sans-serif;min-height:3.3em;white-space:pre-wrap}
-#btTalk .bt-narr .bt-text{text-align:center;font-style:italic;color:#e8dcc0}
-#btTalk .bt-next{position:absolute;right:16px;bottom:8px;font-size:15px;color:#ffd98a;animation:btBob 1s ease-in-out infinite;opacity:0}#btTalk.more .bt-next{opacity:1}
+#btTalk .bt-box{position:relative;z-index:2;width:min(72vw,1500px);min-height:0;margin:0 0 1.4vw;padding:1.15vw 1.6vw 1.3vw;box-sizing:border-box;border-radius:1vw;background:linear-gradient(180deg,rgba(28,22,14,.86),rgba(14,10,6,.92));border:1px solid rgba(232,201,138,.45);box-shadow:0 10px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,236,190,.15);color:#f6ead0;pointer-events:auto}
+#btTalk .bt-name{position:static;display:block;padding:0;margin:0 0 .3vw;border:0;border-radius:0;background:none;box-shadow:none;color:#f0c977;font:400 max(15px,1.75vw)/1.4 AgThai,VillageThai,system-ui,sans-serif;letter-spacing:.04em}
+#btTalk .bt-name.R{left:auto;right:auto}#btTalk .bt-name:empty{display:none}
+#btTalk .bt-text{margin:0;font:max(13px,1.55vw)/1.65 AgThai,VillageThai,system-ui,sans-serif;min-height:3.3em;white-space:pre-wrap}
+#btTalk .bt-narr{text-align:center}#btTalk .bt-narr .bt-text{font-style:italic;color:#efe4cc}
+#btTalk .bt-next{position:absolute;right:1.3vw;bottom:.7vw;font-size:max(11px,.9vw);color:#f0c977;animation:btBob 1s ease-in-out infinite;opacity:0}#btTalk.more .bt-next{opacity:1}
 @keyframes btBob{50%{transform:translateY(4px)}}
-#btTalk .bt-skip{position:absolute;top:12px;right:14px;padding:5px 14px;border-radius:9px;border:1.5px solid #b49a5a;background:#1b1624dd;color:#ffe2a8;font:600 14px AgThai,system-ui,sans-serif;cursor:pointer;pointer-events:auto}
-#btTalk .bt-skip:hover{background:#2c2440}
-@media(max-width:700px){#btTalk .bt-row{height:34vh}#btTalk .bt-text{font-size:16.5px}}`;
+#btTalk .bt-skip{position:absolute;z-index:3;right:.8vw;bottom:.8vw;top:auto;display:inline-flex;align-items:center;gap:6px;height:clamp(28px,6.5vh,52px);padding:0 8px 0 0;border:0;border-radius:5px;background:transparent;color:#f6e6c2;font:600 clamp(11px,.85vw,16px)/1 VillageThai,AgThai,system-ui,sans-serif;text-shadow:0 1px 3px #000;cursor:pointer;pointer-events:auto;white-space:nowrap}
+#btTalk .bt-skip img{width:clamp(28px,6.5vh,52px);height:clamp(28px,6.5vh,52px);object-fit:contain;pointer-events:none}
+#btTalk .bt-skip:hover{color:#fff;transform:translateY(-1px)}
+@media(max-width:640px){#btTalk .bt-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;margin-bottom:12px}#btTalk .bt-name{font-size:17px}#btTalk .bt-text{font-size:15px}#btTalk .bt-pic{width:52vw}#btTalk .bt-row{height:58vh}}`;
     document.head.append(s);
   }
 
@@ -89,7 +92,7 @@
     const pre = Promise.race([probe.then(() => Promise.all([...new Set((lines || []).map(l => l.who && portrait(l.who, l.emo)).filter(x => x && x !== 'mip'))].map(src => { const im = new Image(); im.src = src; return im.decode ? im.decode().catch(() => { }) : Promise.resolve() }))), new Promise(r => setTimeout(r, 1200))]);
     running = pre.then(() => new Promise(resolve => {
       el = document.createElement('div'); el.id = 'btTalk';
-      el.innerHTML = '<button type="button" class="bt-skip">ข้าม ▸▸</button><div class="bt-row"></div><div class="bt-box"><div class="bt-name"></div><div class="bt-text"></div><div class="bt-next">▼</div></div>';
+      el.innerHTML = '<button type="button" class="bt-skip" title="ข้ามบทสนทนา (Esc)"><img src="assets/ui/story-controls/skip-scene.webp" alt="" draggable="false"><span>ข้ามฉาก</span></button><div class="bt-row"></div><div class="bt-box"><div class="bt-name"></div><div class="bt-text"></div><div class="bt-next">▼</div></div>';
       document.body.append(el);
       const row = el.querySelector('.bt-row'), box = el.querySelector('.bt-box'), nm = el.querySelector('.bt-name'), tx = el.querySelector('.bt-text');
       const slots = {}; let i = -1, done = false, typing = false;
