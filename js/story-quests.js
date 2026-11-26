@@ -138,7 +138,7 @@ const STEPS=[
  talkStep({id:'wake',chapter:'วันที่ 1 · เตรียมงานเทศกาล',intro:'opening',outro:'elderMeet',title:'ไปหาผู้ใหญ่บ้าน',talk:'oren',goal:'เดินไปหาผู้ใหญ่บ้านโอเรน แล้วคลิกที่ตัวเพื่อคุย',
   hint:'ช่วงเช้าผู้ใหญ่บ้านอยู่ที่ตลาด · '+HINT_WALK}),
  {id:'goats',tag:'real',title:'แพะหนีออกจากคอก',goal:'ตามจับแพะของปิ๊บ 2 ตัวที่หนีไปทั่วหมู่บ้าน',hint:'คลิกที่แพะเพื่อวิ่งตาม · มันวิ่งหนีเมื่อเข้าใกล้ แต่วิ่งได้ไม่นานก็หอบ พอแตะตัวมัน จะเข้าสู่ฉากต่อสู้จับแพะ (ตัวเอกไม่ล้มในฉากนี้) · ลูกศรขอบจอชี้ไปทางแพะ',
-  spot:SPOT.goats,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
+  spot:SPOT.goats,check:d=>(d.got||0)>=2,acts:[guideBtn],   /* v98.1086 · no progress bar / counter: both goats are won in ONE fight */
   onSpot:async d=>{const r=await questBattle(d,{title:'จับแพะของปิ๊บ ·',ms:'goat*1,goat*1',tut:'goat',seed:4101,r:6,biome:'grass',scene:'goatStreet',keepBgm:true}   /* v98.570 · a fixed town-street scene (was: the village map around the fountain) */);
    if(r==='win'){d.got=2;try{root.Story?.mystery?.('seen')}catch(e){}return {msg:'🐐 จับแพะได้ครบ 2 ตัวแล้ว!',consume:true}}return {msg:r==='busy'?'':'แพะยังหนีอยู่ · กลับไปจับต่อได้เลย',consume:false}}},
  talkStep({id:'goatsBack',outro:'goatsDone',reward:()=>{addCoins(15);toast('รางวัล: +15 เหรียญ')},title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
