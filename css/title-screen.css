@@ -205,8 +205,8 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #gameLoading .gl-tip{height:64px;line-height:28px;overflow:visible}
 #gameLoading.gl-gate .gl-tip{line-height:28px}
 
-/* v98.1024 · loading screen +50% (zoom keeps every proportion) */
-#gameLoading .gl-box{zoom:.75;width:min(560px,calc((100vw - 40px)/.75))}#gameLoading .gl-box .mip-track{--mw:100%!important}
+/* v98.1077 · loading screen box: zoom .75 → 1.125 (+50 %, user request) */
+#gameLoading .gl-box{zoom:1.125;width:min(560px,calc((100vw - 40px)/1.125))}#gameLoading .gl-box .mip-track{--mw:100%!important}
 
 /* v98.1049 · name form redesigned: game-style gold frame, two bright "stage" cards that pop off the dark panel, nothing chosen by default, start button locked until a hero is picked and both names typed */
 #titleScreen .ts-name{width:min(760px,calc(100vw - 24px));max-height:calc(100vh - 16px);overflow:auto;padding:22px 28px 22px;border:2px solid #e8c374;border-radius:16px;background:radial-gradient(ellipse 80% 50% at 50% 0,#2c3f6a 0,#16223a 55%,#0c1322 100%);box-shadow:0 0 0 3px #0008,0 0 0 5px #b8862f88,0 24px 70px #000e,inset 0 0 60px #0006}
