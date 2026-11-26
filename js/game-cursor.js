@@ -11,6 +11,9 @@
   'use strict';
   if (root.GameCursor || typeof document === 'undefined') return;
   const Q = location.search; if (/[?&](editor|edit)=/.test(Q) || /[?&]cursor=0/.test(Q)) return;
+  /* v98.1068 · NO FLOATING TIPS: the browser's tooltip (the title="…" bubble that floats under the pointer) is removed in the game — the text moves to aria-label
+     (still read by screen readers) just before the browser would show it. Editors (?editor= / ?edit=) keep their tips (returned above). */
+  addEventListener('pointerover', e => { try { for (let n = e.target; n && n.nodeType === 1; n = n.parentElement) if (n.hasAttribute('title')) { const t = n.getAttribute('title'); if (t && !n.hasAttribute('aria-label') && !n.textContent.trim()) n.setAttribute('aria-label', t); n.removeAttribute('title') } } catch (x) { } }, true);
   try { if (localStorage.getItem('projectA.cursor') === '0') return } catch (e) { }
   if (!root.matchMedia || !matchMedia('(pointer:fine)').matches) return;
   const D = 'assets/cursor/', H = document.documentElement;
@@ -27,6 +30,7 @@
 html.agc-hide,html.agc-hide *{cursor:none!important}
 html.agc-fantasy,html.agc-fantasy *{cursor:url(assets/cursor-fantasy.png) 4 3,default!important}
 html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=button],html.agc-sys .station{cursor:pointer!important}
+#agcEdge{position:fixed;left:0;top:0;width:48px;height:48px;pointer-events:none;z-index:2147483647;display:none;background-repeat:no-repeat;background-size:48px 48px}
 #agcCur{position:fixed;left:0;top:0;width:48px;height:48px;transform-origin:0 0;pointer-events:none;z-index:2147483647;display:none;will-change:transform;background-repeat:no-repeat}
 #agcCur.agc-hand{background-image:url(${D}cursor-atlas.webp);background-size:384px 144px;filter:drop-shadow(0 1px 2px #0007)}
 #agcCur.agc-talk{background-image:url(${D}talk-atlas.webp);background-size:384px 48px;filter:drop-shadow(0 1px 2px #0007)}
@@ -41,6 +45,15 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
   const mount = () => { const h = host(); if (el.parentNode !== h) h.appendChild(el) };
   /* v98.1012 · the talk cursor is drawn 30 % smaller (SC.talk = .7): scale about the top-left corner, the hot-spot shrinks with it */
   const SC = { talk: .7 };
+  /* v98.1068 · NEAR THE WINDOW EDGE the browser refuses a custom OS cursor bigger than 32 px whose picture would stick out of the page and shows the Windows arrow instead.
+     There (and only there) the same picture is drawn by the page (#agcEdge) and the OS cursor is hidden. */
+  const edgeEl = document.createElement('div'); edgeEl.id = 'agcEdge'; edgeEl.setAttribute('aria-hidden', 'true'); let edgeOn = false;
+  const edgeUpdate = () => {
+    let out = false, hs = null, k = '';
+    if (on && seen && !seq) { for (const c of H.classList) if (c.startsWith('agc-os-')) k = c.slice(7); hs = OSK[k]; if (hs) out = x - hs[0] < 1 || y - hs[1] < 1 || x - hs[0] + 48 > innerWidth - 1 || y - hs[1] + 48 > innerHeight - 1 }
+    if (out) { const h = host(); if (edgeEl.parentNode !== h) h.appendChild(edgeEl); edgeEl.style.backgroundImage = `url(${D}os-${k}.png)`; edgeEl.style.transform = `translate(${Math.round(x - hs[0])}px,${Math.round(y - hs[1])}px)`; edgeEl.style.display = 'block'; H.classList.add('agc-hide'); edgeOn = true }
+    else if (edgeOn) { edgeEl.style.display = 'none'; edgeOn = false; if (!seq) H.classList.remove('agc-hide') }
+  };
   const place = () => { const hs = kind === 'arrow' ? GOLD_HS : (HAND[kind]?.hs || [0, 0]), k = SC[kind] || 1; el.style.transform = `translate(${Math.round(x - hs[0] * k)}px,${Math.round(y - hs[1] * k)}px)` + (k !== 1 ? ` scale(${k})` : '') };
   /* ---- what is under the pointer? read its authored cursor with our own class lifted ---- */
   const classify = e => {
@@ -83,10 +96,10 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
   /* a short animation: the page cursor shows it (OS cursor hidden meanwhile) and goes away again at its end */
   function play(r, frames, ms, looping) { if (!HAND[kind] || !seen) return; seq = { r, frames, ms, loop: !!looping, t0: performance.now() }; mount(); el.className = HAND[kind].img ? 'agc-' + kind : 'agc-hand'; place(); el.style.display = 'block'; H.classList.add('agc-hide'); if (!raf) raf = requestAnimationFrame(loop) }
   /* ---- events ---- */
-  const check = () => { pend = false; if (!on) return; let k = classify(target); if (held && k === 'grab') k = 'grabbing'; apply(k) };
+  const check = () => { pend = false; if (!on) return; let k = classify(target); if (held && k === 'grab') k = 'grabbing'; apply(k); edgeUpdate() };
   const sched = () => { if (!pend) { pend = true; requestAnimationFrame(check) } };
   const isMouse = e => !e.pointerType || e.pointerType === 'mouse' || e.pointerType === 'pen';
-  addEventListener('pointermove', e => { if (!isMouse(e)) return; x = e.clientX; y = e.clientY; target = e.target; const was = seen; seen = true; if (!was && kind === 'talk' && !seq) play(0, [0, 1, 2, 3, 4, 5, 6, 7], HAND.talk.loop, true); if (seq) place(); if (target && (target.tagName === 'IFRAME' || target.tagName === 'FRAME') && kind !== 'frame') { pend = false; check() } else sched() }, true);
+  addEventListener('pointermove', e => { if (!isMouse(e)) return; x = e.clientX; y = e.clientY; target = e.target; const was = seen; seen = true; if (!was && kind === 'talk' && !seq) play(0, [0, 1, 2, 3, 4, 5, 6, 7], HAND.talk.loop, true); if (seq) place(); edgeUpdate(); if (target && (target.tagName === 'IFRAME' || target.tagName === 'FRAME') && kind !== 'frame') { pend = false; check() } else sched() }, true);
   /* v98.804 · when the pointer enters another element / a frame the kind is decided RIGHT NOW (it used to wait for the next animation frame): while the game was loading or stuttering that frame came late, so the old hand stayed painted next to the OS arrow of the frame / overlay now under the pointer (two cursors at once) */
   addEventListener('pointerover', e => { if (!isMouse(e)) return; target = e.target; x = e.clientX; y = e.clientY; if (on) { pend = false; check() } else sched() }, true);
   addEventListener('pointerdown', e => {
@@ -95,7 +108,7 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
   }, true);
   const up = () => { held = false; sched() };
   addEventListener('pointerup', up, true); addEventListener('pointercancel', up, true);
-  const gone = () => { seen = false; if (seq) animEnd() };
+  const gone = () => { seen = false; if (seq) animEnd(); edgeUpdate() };
   document.addEventListener('mouseleave', gone); addEventListener('blur', gone);
   document.addEventListener('mouseenter', () => { seen = true });
   root.GameCursor = { enable(v) { on = !!v; try { localStorage.setItem('projectA.cursor', on ? '1' : '0') } catch (e) { } if (!on) { apply(''); kind = '' } }, kind: () => kind, debug: () => ({ kind, seq, raf, on, held }) };
