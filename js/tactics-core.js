@@ -309,7 +309,7 @@ function create(seed,theme,mode,opts={}){
  // FFT-style queue: every unit has a speed and a CT gauge; each controlled unit has its own two decks
  for(let u of units){u.speed||=u.side==='enemy'?ENEMY_TYPES[u.kind]?.speed||6:8;u.ct=Math.floor(rng()*u.speed*4);if(u.side==='ally'&&u!==hero&&u.controlled&&D)u.deck=D.create(opts.decks?.[u.key]||(D.defaultFor?D.defaultFor(u.key):D.DEFAULT),rng)}
  if(map.mode==='battle'){st.active=null;st.phase='queue'}else{hero.ct=100;st.active=hero}
- placeLargeUnits(st);initEnvironment(st,opts.minutes??540);faceFoes(st);
+ placeLargeUnits(st);initEnvironment(st,opts.minutes??540);faceFoes(st);for(let u of st.units)if(u.facing==='NE')u.facing='SE';else if(u.facing==='NW')u.facing='SW';/* v98.1077 · every unit STARTS the fight facing SW or SE (never showing its back); turns afterwards face freely */
  return st}
 // v73: trees, big rocks and rune stones take a 2x2 footprint (drawn twice as big) when there is room and no route is cut
 function bigProps(map){const BIG=['tree','pine','standstone','mossrock','rock','stalagmite'],spawn=new Set([...(map.spawns?.allies||[]),...(map.spawns?.enemies||[])].map(p=>p.x+','+p.y)),N4=[[1,0],[-1,0],[0,1],[0,-1]];map.objects||=[];

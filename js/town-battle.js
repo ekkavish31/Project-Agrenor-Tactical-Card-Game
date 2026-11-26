@@ -425,6 +425,8 @@
   #fbDuel:not(.min) .pf{width:var(--pw);height:var(--pw);border-radius:16px}#fbDuel:not(.min) .dc.t .pf{width:var(--pw);height:var(--pw)}
   #fbDuel:not(.min) .nm b{font-size:16px}#fbDuel:not(.min) .nm small{font-size:12px}#fbDuel:not(.min) .hp{height:9px}#fbDuel:not(.min) .mo{font-size:15px;min-height:19px}
   #fbDuel:not(.min) .tools{position:absolute;right:0;bottom:-28px}
+  /* v98.1077 · the two portrait cards (you vs the foe) sit ABOVE the camera compass (bottom right) at 70 % size (was top right, full size) */
+  @media (min-width:861px) and (min-height:561px){#fbDuel:not(.min){top:auto;bottom:128px;right:14px;transform:scale(.7);transform-origin:100% 100%}}
   #fbDuel .cl{align-self:center;position:relative;width:70px;height:70px;margin:0 -14px;z-index:5;pointer-events:none;display:grid;place-items:center;font-size:30px;filter:drop-shadow(0 2px 4px #000)}
   #fbDuel .cl i{font-style:normal;opacity:.55}
   #fbDuel .cl.on i{opacity:1;animation:fbClash .55s ease-out}
