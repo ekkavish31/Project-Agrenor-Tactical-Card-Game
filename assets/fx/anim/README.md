@@ -28,3 +28,11 @@ Loading/missing images fall back through `BattleVFX` to the existing still art.
 Reduced motion holds the peak frame and fades it without projectile travel.
 
 The earlier fire sheets and their `atlas` variant remain separate.
+
+## Runtime smoothing (v98.1112)
+
+The source sheets keep their original 8 / 16 keyframes. `js/vfx-kit.js` renders
+continuous in-betweens with premultiplied RGBA blending in a single reusable
+384px-wide canvas (192px on low quality), preserving timing and anchors.
+Element-specific deterministic particles use the same battle clock. Reduced
+motion draws one still without particles. No new AI-painted source frames.
