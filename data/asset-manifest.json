@@ -166483,6 +166483,66 @@
    "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
    "artRevision": "v98.1080",
    "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "cursor-door-source",
+   "subject": "เคอร์เซอร์ประตู · door-source.webp",
+   "file": "assets/cursor/door-source.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1774,
+    887
+   ],
+   "usedIn": "js/game-cursor.js",
+   "artRevision": "v98.1084",
+   "prompt": "Eight progressive opening poses of a single arched wooden door, fixed camera/frame, ivory stone with restrained antique gold trim, warm interior glow, painterly fantasy JRPG UI, transparent background, no text/grid/scenery."
+  },
+  {
+   "id": "cursor-door-atlas",
+   "subject": "เคอร์เซอร์ประตู · door-atlas.webp",
+   "file": "assets/cursor/door-atlas.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    768,
+    96
+   ],
+   "usedIn": "js/game-cursor.js",
+   "artRevision": "v98.1084",
+   "prompt": "Eight progressive opening poses of a single arched wooden door, fixed camera/frame, ivory stone with restrained antique gold trim, warm interior glow, painterly fantasy JRPG UI, transparent background, no text/grid/scenery."
+  },
+  {
+   "id": "cursor-os-door",
+   "subject": "เคอร์เซอร์ประตู · os-door.png",
+   "file": "assets/cursor/os-door.png",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    48,
+    48
+   ],
+   "usedIn": "js/game-cursor.js",
+   "artRevision": "v98.1084",
+   "prompt": "Eight progressive opening poses of a single arched wooden door, fixed camera/frame, ivory stone with restrained antique gold trim, warm interior glow, painterly fantasy JRPG UI, transparent background, no text/grid/scenery."
+  },
+  {
+   "id": "cursor-os-door@2x",
+   "subject": "เคอร์เซอร์ประตู · os-door@2x.png",
+   "file": "assets/cursor/os-door@2x.png",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    96,
+    96
+   ],
+   "usedIn": "js/game-cursor.js",
+   "artRevision": "v98.1084",
+   "prompt": "Eight progressive opening poses of a single arched wooden door, fixed camera/frame, ivory stone with restrained antique gold trim, warm interior glow, painterly fantasy JRPG UI, transparent background, no text/grid/scenery."
   }
  ],
  "studioReviews": {
