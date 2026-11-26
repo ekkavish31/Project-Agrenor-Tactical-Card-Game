@@ -457,6 +457,25 @@
   @media (max-width:760px){#fbActions{bottom:118px;flex-wrap:wrap;justify-content:center;max-width:94vw}#fbHud{width:250px}}
   #fbHud .mini{position:relative;display:flex;justify-content:space-between;font-size:11.5px;padding:2px 5px 4px;margin:2px 0;border-radius:6px;background:#0003;cursor:default;overflow:hidden}#fbHud .mini i{position:absolute;left:0;bottom:0;height:3px}#fbHud .mini.down{opacity:.4}#fbHud .mini.tgt{outline:2px solid #ffd25a}#fbHud .mini[data-id^=monster]{cursor:pointer}
   #fbHud{max-height:calc(100vh - 210px);overflow:auto}
+  /* v98.1079 · COMPACT HUD: a narrow summary (turn · goal · crystals · the unit under the pointer · HP/stamina) + chips; each section opens as its own modal */
+  #fbHud{width:236px;padding:7px 9px;font-size:12px;max-height:none;overflow:visible;filter:none!important;box-shadow:0 6px 16px #000a}
+  #fbHud .hd{gap:4px}#fbHud .hd b{font-size:13px}#fbHud .bi{width:16px;height:16px;vertical-align:-3px;margin-right:3px}
+  #fbHud #fbGoal{font-size:11px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:2px 0 0!important}#fbHud #fbTurn{font-size:11.5px;margin:1px 0 4px!important}
+  #fbHud .gemi{width:18px;height:18px;vertical-align:-5px}
+  #fbHud .bar{height:10px;border-width:3px;border-image-width:3px;margin:2px 0 4px}
+  #fbHud .chips{display:flex;gap:4px;margin:6px 0 2px}#fbHud .chips button{flex:1;padding:4px 4px;font-size:11.5px;border-radius:7px;background:#33463e;border:1px solid #b9c48a44;color:#f3e9c9;white-space:nowrap}#fbHud .chips button:hover{background:#41584d}
+  #fbHud .fb-sec{display:none}
+  #fbHud[data-open]::before{content:'';position:fixed;inset:0;background:#000a;z-index:59}
+  #fbHud[data-open=team] .fb-sec[data-sec=team],#fbHud[data-open=foes] .fb-sec[data-sec=foes],#fbHud[data-open=log] .fb-sec[data-sec=log],#fbHud[data-open=help] .fb-sec[data-sec=help]{display:block;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;width:min(460px,92vw);max-height:78vh;overflow:auto;box-sizing:border-box;padding:12px 16px 14px;border-radius:14px;background:#1b302af8;border:1px solid #b9c48a99;box-shadow:0 18px 50px #000c;font-size:14px}
+  #fbHud .sec-h{display:flex;align-items:center;gap:8px;margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid #ffffff22}#fbHud .sec-h b{flex:1;font-size:16px;color:#f6d79b}#fbHud .sec-h small{color:#bba57f;font-size:11.5px}
+  #fbHud .sec-x{width:28px;height:28px;padding:0!important;border-radius:50%!important;background:#33463e!important;border:1px solid #b9c48a66!important;color:#f3e9c9!important}
+  #fbHud .fb-sec .mini{font-size:13.5px;padding:5px 8px 7px;margin:4px 0}#fbHud .fb-sec .ord button{font-size:12.5px;padding:3px 8px}
+  /* the unit panel of the field (live portrait · name · HP · stats) now lives inside the HUD, compact */
+  #fbHud .unit{display:none;gap:8px;align-items:center;margin:4px 0 5px;padding:5px 7px;border-radius:9px;background:#0004;border:1px solid #b9c48a33}
+  #fbHud .unit canvas{flex:none;width:48px;height:48px;border-radius:8px;border:2px solid #d8c890;background:#0b120f}#fbHud .unit.foe canvas{border-color:#e2705f}
+  #fbHud .unit>div{flex:1;min-width:0}#fbHud .unit b{font-size:13px}#fbHud .unit .side{color:#cdd7bf;font-size:11px}
+  #fbHud .unit .hp{height:6px;border-radius:4px;background:#0008;overflow:hidden;margin:3px 0 2px}#fbHud .unit .hp i{display:block;height:100%;background:#6fd18a}#fbHud .unit.foe .hp i{background:#e2705f}
+  #fbHud .unit .stats{display:block;font-size:10.5px;line-height:1.25;color:#cdd7bf}
   #fbHud .gem{display:inline-block;width:14px;height:14px;margin-right:3px;transform:rotate(45deg) scale(.8);border-radius:3px;background:#3b4c55;border:1px solid #8fb7c9}
   #fbHud .gem.on{background:radial-gradient(circle at 35% 35%,#e6fbff,#56c8f5 55%,#1b6b99);box-shadow:0 0 8px #6fd6ff}
   #fbHand{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:41;display:flex;align-items:flex-end;gap:10px;padding:8px 12px 6px;border-radius:16px;background:linear-gradient(#0000,#0b1512cc 35%);max-width:calc(100vw - 16px);font:12px AgThai,system-ui,"Noto Sans Thai",sans-serif;color:#f3e9c9}
@@ -562,11 +581,15 @@
   const turnGoal = () => st.obj?.turns ? '/' + st.obj.turns : '';
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
-    d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 8px"></div><div id="fbUnits"></div>
+    d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 6px"></div><div id="fbUnitSlot"></div><div id="fbUnits"></div>
       <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbCrSt" title="ดูดซับคริสตัล 1 ก้อน → ฟื้นแรง +15"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ดูดซับคริสตัล · แรง +15</span></button><button id="fbCrDraw" title="หลอมคริสตัล 1 ก้อน → สลับไพ่ใหม่ทั้งมือ (1 ครั้ง/เทิร์น)"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>หลอมคริสตัล · สลับไพ่</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '' : ''}</div>
-      <div id="fbLog" style="max-height:96px;overflow:auto;font-size:12px;color:#d8caa0"></div>
-      <div class="help" style="margin-top:6px;font-size:11px;color:#9aa68a">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = ต้องเดินเข้าไปก่อน เกมไม่พาเดินให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div>`;
+      <div class="fb-sec" data-sec="log"><div class="sec-h"><b>📜 บันทึกการต่อสู้</b><button class="sec-x" aria-label="ปิด">✕</button></div><div id="fbLog" style="max-height:60vh;overflow:auto;font-size:13px;color:#d8caa0"></div></div>
+      <div class="fb-sec help" data-sec="help"><div class="sec-h"><b>❓ วิธีเล่น</b><button class="sec-x" aria-label="ปิด">✕</button></div><div style="font-size:13px;line-height:1.6;color:#cbd6bd">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = ต้องเดินเข้าไปก่อน เกมไม่พาเดินให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div></div>`;
     document.body.append(d); hud = d;
+    /* v98.1079 · compact HUD: each section (team · foes · log · how-to) opens as its own modal (chips row) · Esc / ✕ / click outside closes */
+    { const close = () => { delete d.dataset.open }, open = k => { if (d.dataset.open === k) close(); else d.dataset.open = k };
+      d.addEventListener('click', e => { const o = e.target.closest('[data-sec-open]'); if (o) { open(o.dataset.secOpen); return } if (e.target.closest('.sec-x')) { close(); return } if (d.dataset.open && e.target === d) close() });
+      addEventListener('keydown', e => { if (e.key === 'Escape' && d.dataset.open) { e.preventDefault(); e.stopImmediatePropagation(); close() } }, true) }
     d.querySelector('#fbEnd').onclick = () => endHeroTurn();
     d.querySelector('#fbAuto').onclick = () => setAuto(!auto);
     const q = document.createElement('div'); q.id = 'fbQueue'; document.body.append(q);
@@ -592,8 +615,9 @@
     hud.querySelector('#fbUnits').innerHTML =
       `<div>${esc(h.name)}${Object.keys(h.sts || {}).map(k => ' ' + stiHtml(k, esc(FB.STATUS[k].name) + ' ' + h.sts[k] + ' เทิร์น')).join('')} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff"><img class="sti" src="assets/ui/status/guard.webp" alt="" draggable="false"> ' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
       `<div><small style="color:#bba57f">แรง (stamina)</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
-      (FB.allies(st).length ? '<div class="grp">ทีม <small>(สั่งการ · ท่าพิเศษใช้ 1 คริสตัล)</small></div>' + FB.allies(st).map(u => allyRow(u)).join('') : '') +
-      '<div class="grp">ศัตรู <small>(คลิกเพื่อเล็งเป้า)</small></div>' + FB.monsters(st).map(u => mini(u, '#e2705f')).join('');
+      `<div class="chips"><button data-sec-open="team">👥 ทีม ${FB.allies(st).filter(u => u.hp > 0).length + 1}</button><button data-sec-open="foes">☠ ศัตรู ${FB.monsters(st).filter(u => u.hp > 0).length}</button><button data-sec-open="log">📜</button><button data-sec-open="help">❓</button></div>` +
+      '<div class="fb-sec" data-sec="team"><div class="sec-h"><b>👥 ทีม</b><small>สั่งการ · ท่าพิเศษใช้ 1 คริสตัล</small><button class="sec-x" aria-label="ปิด">✕</button></div>' + (FB.allies(st).length ? FB.allies(st).map(u => allyRow(u)).join('') : '<small>ยังไม่มีเพื่อนร่วมทีม</small>') + '</div>' +
+      '<div class="fb-sec" data-sec="foes"><div class="sec-h"><b>☠ ศัตรู</b><small>คลิกเพื่อเล็งเป้า</small><button class="sec-x" aria-label="ปิด">✕</button></div>' + FB.monsters(st).map(u => mini(u, '#e2705f')).join('') + '</div>';
     hud.querySelectorAll('#fbUnits [data-order]').forEach(e => e.onclick = () => { if (busy) return; FB.setOrder(st, e.dataset.ally, e.dataset.order); floatText(st.units.find(u => u.id === e.dataset.ally), { charge: 'CHARGE!', follow: 'FOLLOW', guard: 'HOLD' }[e.dataset.order], '#bfe8ff', true); hudSync() });
     hud.querySelectorAll('#fbUnits [data-skill]').forEach(e => e.onclick = () => allySkillAct(e.dataset.skill));
     hud.querySelectorAll('#fbUnits [data-ctl]').forEach(e => e.onclick = () => { const u = st.units.find(x => x.id === e.dataset.ctl); if (!u) return; u.autoCtl = !u.autoCtl; floatText(u, u.autoCtl ? 'AI' : 'MANUAL', '#bfe8ff', true); hudSync() });

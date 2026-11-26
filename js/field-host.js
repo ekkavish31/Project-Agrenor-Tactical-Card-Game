@@ -520,7 +520,9 @@ let panelAt = 0;
 function panel(now) {
   if (now - panelAt < 150 || !window.FieldHeight) return;
   if (new URLSearchParams(location.search).get('edit') === '1') { ui.querySelectorAll('.cell,.unit').forEach(x => x.style.display = 'none'); return }   /* v98.311 · BG editor: no game hover chips */ panelAt = now;
-  const st = window.TownBattle?.state?.(), box = ui.querySelector('.unit'); if (!st) { box.style.display = 'none'; return }
+  const st = window.TownBattle?.state?.(), box = ui.querySelector('.unit') || document.querySelector('#fbUnitSlot .unit'); if (!box) return;
+  { const slot = document.getElementById('fbUnitSlot'); if (slot && box.parentNode !== slot) slot.append(box) }   /* v98.1079 · the unit panel lives inside the compact battle HUD */
+  if (!st) { box.style.display = 'none'; return }
   const alive = st.units.filter(u => u.hp > 0), u = (hoverCell && alive.find(x => x.u === hoverCell.u && x.v === hoverCell.v)) || (st.turn === 'ally' && st.cur && alive.includes(st.cur) && st.cur) || (st.target && alive.find(x => x.id === st.target)) || alive.find(x => x.id === 'hero') || alive[0];
   /* v97.08 · the cell under the pointer: height and ground type */
   { let ci = ui.querySelector('.cell'); if (!ci) { ci = document.createElement('div'); ci.className = 'cell'; ui.append(ci) }
