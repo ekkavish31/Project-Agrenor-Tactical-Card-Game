@@ -20,42 +20,62 @@
   const bucket = w => Math.max(16, Math.round(Math.pow(1.1, Math.ceil(Math.log(w) / Math.log(1.1)))));
   const srcKey = im => String(im.currentSrc || im.src || '').replace(/^[a-z]+:\/\/[^/]+\//i, '').replace(/[?#].*$/, '');
 
-  /* ---------- the one sharpening rule: amount grows with how much the picture was shrunk ---------- */
-  function sharpen(c, down) {
-    const amt = Math.min(.55, .2 * Math.log2(down)); if (amt < .04) return;
-    try {
-      const g = c.getContext('2d', { willReadFrequently: true }), w = c.width, h = c.height; if (w < 4 || h < 4) return;
-      const im = g.getImageData(0, 0, w, h), d = im.data, o = new Uint8ClampedArray(d);
-      for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
-        const i = (y * w + x) * 4, a = d[i + 3]; if (a < 24) continue;
-        let sr = 0, sg = 0, sb = 0, sw = 0, j, aj;
-        j = i - 4; aj = d[j + 3]; if (aj) { sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
-        j = i + 4; aj = d[j + 3]; if (aj) { sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
-        j = i - w * 4; aj = d[j + 3]; if (aj) { sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
-        j = i + w * 4; aj = d[j + 3]; if (aj) { sr += d[j] * aj; sg += d[j + 1] * aj; sb += d[j + 2] * aj; sw += aj }
-        if (!sw) continue; const br = sr / sw, bg = sg / sw, bb = sb / sw;
-        o[i] = d[i] + amt * (d[i] - br); o[i + 1] = d[i + 1] + amt * (d[i + 1] - bg); o[i + 2] = d[i + 2] + amt * (d[i + 2] - bb);
-      }
-      im.data.set(o); g.putImageData(im, 0, 0);
-    } catch (e) { /* tainted canvas: leave as is */ }
-  }
-  function shrunk(im, sx, sy, sw, sh, target) {
-    const key = idOf(im) + '|' + sx + '|' + sy + '|' + sw + '|' + sh + '|' + target, hit = cache.get(key);
-    if (hit) { cache.delete(key); cache.set(key, hit); hits++; return hit }
-    if (spent > 4) return null;   /* v98.665 · BUILD BUDGET: at most ~4 ms of shrinking per frame — new pictures that walk into view are drawn as they are for a frame or two and shrunk later, instead of freezing the frame (the 'jerk' while walking) */
-    const t0 = performance.now();
-    const f = target / sw, tw = Math.max(1, Math.round(sw * f)), th = Math.max(1, Math.round(sh * f));
-    let cw = sw, ch = sh, src = im, rx = sx, ry = sy, rw = sw, rh = sh, c = null;
+  /* v98.1073 · FPS: a new copy is no longer built INSIDE the frame that first needs it (one big picture = 100–200 ms → the jerk when a decoration walks into view;
+     the old 4 ms budget was only checked before a build, so a single build could still take the whole frame). Builds are queued and done when the browser is idle:
+     the shrink steps first, then the sharpening in row slices that stop when the idle time runs out. Until a copy is ready the picture is drawn as it is. */
+  const jobs = new Map(); let pumping = false;
+  const idleRun = f => (root.requestIdleCallback ? root.requestIdleCallback(f, { timeout: 800 }) : setTimeout(() => f(null), 16));
+  const late = dl => !!(dl && dl.timeRemaining) && dl.timeRemaining() < 3;
+  function finish(key, c) { jobs.delete(key); builds++; cache.set(key, c); bytes += c.width * c.height * 4;
+    while (bytes > MAX_BYTES && cache.size > 8) { const k = cache.keys().next().value, v = cache.get(k); cache.delete(k); bytes -= v.width * v.height * 4 } }
+  function prepare(j) {
+    const { im, sx, sy, sw, sh, target } = j, f = target / sw, tw = Math.max(1, Math.round(sw * f)), th = Math.max(1, Math.round(sh * f));
+    let cw = sw, ch = sh, src = im, rx = sx, ry = sy, rw = sw, rh = sh;
     while (cw / 2 >= tw) {   /* each step at most ½ */
       const nw = Math.max(tw, Math.ceil(cw / 2)), nh = Math.max(1, Math.ceil(ch / 2)), n = document.createElement('canvas'); n.width = nw; n.height = nh;
       const g = n.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; draw0.call(g, src, rx, ry, rw, rh, 0, 0, nw, nh);
-      src = n; rx = ry = 0; rw = nw; rh = nh; cw = nw; ch = nh; c = n;
+      src = n; rx = ry = 0; rw = nw; rh = nh; cw = nw; ch = nh;
     }
-    if (!c || c.width !== tw || c.height !== th) { const n = document.createElement('canvas'); n.width = tw; n.height = th; const g = n.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; draw0.call(g, src, rx, ry, rw, rh, 0, 0, tw, th); c = n }
-    sharpen(c, sw / tw); builds++; spent += performance.now() - t0;
-    cache.set(key, c); bytes += c.width * c.height * 4;
-    while (bytes > MAX_BYTES && cache.size > 8) { const k = cache.keys().next().value, v = cache.get(k); cache.delete(k); bytes -= v.width * v.height * 4 }
-    return c;
+    /* the final copy is a CPU-side canvas (willReadFrequently before the first draw): the sharpening reads its pixels back cheaply */
+    const c = document.createElement('canvas'); c.width = tw; c.height = th; const g = c.getContext('2d', { willReadFrequently: true }); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; draw0.call(g, src, rx, ry, rw, rh, 0, 0, tw, th);
+    j.c = c; j.amt = Math.min(.55, .2 * Math.log2(sw / tw));
+    if (j.amt < .04 || tw < 4 || th < 4) return true;
+    try { j.g = g; j.img = g.getImageData(0, 0, tw, th); j.d = j.img.data; j.o = new Uint8ClampedArray(j.d); j.y = 1 } catch (e) { return true }   /* tainted: keep it unsharpened */
+    return false;
+  }
+  function sharpenRows(j, dl) {   /* the one sharpening rule (amount grows with how much the picture was shrunk), resumable */
+    const { d, o, amt } = j, w = j.c.width, h = j.c.height;
+    for (; j.y < h - 1; j.y++) {
+      const y = j.y;
+      for (let x = 1; x < w - 1; x++) {
+        const i = (y * w + x) * 4, a = d[i + 3]; if (a < 24) continue;
+        let sr = 0, sg = 0, sb = 0, sw = 0, k, ak;
+        k = i - 4; ak = d[k + 3]; if (ak) { sr += d[k] * ak; sg += d[k + 1] * ak; sb += d[k + 2] * ak; sw += ak }
+        k = i + 4; ak = d[k + 3]; if (ak) { sr += d[k] * ak; sg += d[k + 1] * ak; sb += d[k + 2] * ak; sw += ak }
+        k = i - w * 4; ak = d[k + 3]; if (ak) { sr += d[k] * ak; sg += d[k + 1] * ak; sb += d[k + 2] * ak; sw += ak }
+        k = i + w * 4; ak = d[k + 3]; if (ak) { sr += d[k] * ak; sg += d[k + 1] * ak; sb += d[k + 2] * ak; sw += ak }
+        if (!sw) continue; const br = sr / sw, bg = sg / sw, bb = sb / sw;
+        o[i] = d[i] + amt * (d[i] - br); o[i + 1] = d[i + 1] + amt * (d[i + 1] - bg); o[i + 2] = d[i + 2] + amt * (d[i + 2] - bb);
+      }
+      if ((y & 7) === 0 && late(dl)) { j.y++; return false }
+    }
+    j.img.data.set(o); j.g.putImageData(j.img, 0, 0); return true;
+  }
+  function work(dl) {
+    pumping = false; const t0 = performance.now();
+    while (jobs.size) {
+      const [key, j] = jobs.entries().next().value;
+      try { if (!j.c) { if (prepare(j)) { finish(key, j.c); } } else if (sharpenRows(j, dl)) finish(key, j.c) } catch (e) { jobs.delete(key) }
+      if (late(dl) || (!dl && performance.now() - t0 > 6)) break;
+    }
+    if (jobs.size) pump();
+  }
+  function pump() { if (!pumping && jobs.size) { pumping = true; idleRun(work) } }
+  function shrunk(im, sx, sy, sw, sh, target) {
+    const key = idOf(im) + '|' + sx + '|' + sy + '|' + sw + '|' + sh + '|' + target, hit = cache.get(key);
+    if (hit) { cache.delete(key); cache.set(key, hit); hits++; return hit }
+    if (!jobs.has(key) && jobs.size < 96) { jobs.set(key, { im, sx, sy, sw, sh, target }); pump() }
+    return null;
   }
 
   /* ---------- sampling for the report ---------- */
@@ -102,9 +122,9 @@
   };
 
   root.TexelNorm = {
-    enable(v) { on = !!v; ls.set(NORM_KEY, on ? '1' : '0'); cache.clear(); bytes = 0 },
+    enable(v) { on = !!v; ls.set(NORM_KEY, on ? '1' : '0'); cache.clear(); jobs.clear(); bytes = 0 },
     enabled: () => on, flush, clear() { ls.set(KEY, '{}'); seen.clear(); table = {}; dirty = false },
     stats() { flush(); try { return JSON.parse(ls.get(KEY) || '{}') || {} } catch (e) { return {} } },
-    info: () => ({ on, cached: cache.size, mb: +(bytes / 1048576).toFixed(1), hits, builds })
+    info: () => ({ on, cached: cache.size, mb: +(bytes / 1048576).toFixed(1), hits, builds, queued: jobs.size })
   };
 })(globalThis);

@@ -120,11 +120,11 @@
    if (bld) {
     if (ov && artSpecs[id]) { artSpecs[id][0] = w; if (fx != null) { artSpecs[id][1] = fx; artSpecs[id][2] = fy } } // v91.46: width written by "ส่งกลับต้นฉบับ" (image was baked) // v91.23: a whole building picture added from the "เปลี่ยนภาพ" window
     if (!artSpecs[id]) { artSpecs[id] = [w, fx ?? .3, fy ?? .88]; BUILDINGS[id] = file || ('assets/village-town/buildings/' + id + '.png'); bldName[id] = name }
-    if (!images['building_' + id]) { const im = new Image(); im.onload = () => { terrainDirty = true }; im.src = BUILDINGS[id]; images['building_' + id] = im }
+    if (!images['building_' + id]) { const im = new Image(); im.onload = () => { ((typeof EDIT_PAGE !== 'undefined' && EDIT_PAGE) || (typeof editing !== 'undefined' && editing)) && (terrainDirty = true) }; im.src = BUILDINGS[id];   /* v98.1073 · drawn per frame: no ground repaint while playing */ images['building_' + id] = im }
     continue
    }
    if (!DECOR_W[id]) { DECOR_W[id] = [name, w]; kind('decor:' + id, name, 'ของประดับ (ที่เพิ่มเอง)', p => decor(id, p, DECOR_W[id][1], false)) }
-   if (!decorImg[id]) { const im = new Image(); im.onload = () => { decorImg[id] = im; terrainDirty = true }; im.src = 'assets/village-town/decor/' + id + '.png' }
+   if (!decorImg[id]) { const im = new Image(); im.onload = () => { decorImg[id] = im; ((typeof EDIT_PAGE !== 'undefined' && EDIT_PAGE) || (typeof editing !== 'undefined' && editing)) && (terrainDirty = true) }; im.src = 'assets/village-town/decor/' + id + '.png' }
   }
  }
  /* v91.23 · building pictures (called by js/asset-request.js with preset 'building'): a known id gets its picture replaced in place, a new id is registered as a choice in "เปลี่ยนภาพ" */
