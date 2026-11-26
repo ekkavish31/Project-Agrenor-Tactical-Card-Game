@@ -119,22 +119,41 @@
     const when = t => t ? new Date(t).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '';
     const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     /* v98.1088 · pick a slot (it turns into a paper card, dark ink) and then press the Start button: nothing happens on the slot click itself */
-    const css = 'display:block;width:100%;text-align:left;margin:4px 0;padding:8px 12px;border-radius:9px;border:2px solid #b9c48a77;background:#1d2f29;color:#f5e6c4;font:inherit;cursor:pointer';
+    const css = 'display:block;width:100%;text-align:left;margin:5px 0;cursor:pointer';
     const rows = api.list().map(r => {
       if (mode === 'new') return `<button class="rs-slot" style="${css}" aria-pressed="false" data-n="${r.n}" data-full="${r.empty ? '' : '1'}"><b>Run ${r.n}</b>${r.active ? ' · กำลังเล่น' : ''} · ${esc(r.empty ? 'ว่าง' : r.text)}<br><small data-hint>${r.empty ? 'เริ่มเกมใหม่ที่ช่องนี้' : 'มีเซฟอยู่แล้ว · เริ่มใหม่จะแทนที่ (เซฟมือของ Run นี้ถูกลบด้วย)'}</small></button>`;
       if (r.empty) return '';
-      return `<div style="margin:8px 0;padding:6px;border:1px solid #b9c48a44;border-radius:10px"><b>Run ${r.n}</b>${r.active ? ' · กำลังเล่น' : ''}`
+      return `<div class="rs-group"><b>Run ${r.n}</b>${r.active ? ' · กำลังเล่น' : ''}`
         + `<button class="rs-slot" style="${css}" aria-pressed="false" data-n="${r.n}" data-kind="auto">เซฟอัตโนมัติ · ${esc(r.text)}<br><small>${when(r.at)}</small></button>`
         + r.manual.filter(m => !m.empty).map(m => `<button class="rs-slot" style="${css}" aria-pressed="false" data-n="${r.n}" data-kind="manual" data-i="${m.i}">💾 เซฟมือ ${m.i} · ${esc(m.text)}<br><small>${when(m.at)}</small></button>`).join('') + '</div>';
     }).join('');
-    d.innerHTML = `<style>#runSlotsUI .rs-slot small{color:#cdbb92}#runSlotsUI .rs-slot:hover{border-color:#ffd88a}#runSlotsUI .rs-slot[aria-pressed=true]{background:#f2e7ca!important;color:#3e2a18!important;border-color:#c9901f!important;box-shadow:0 0 0 2px #ffd97866}#runSlotsUI .rs-slot[aria-pressed=true] small{color:#705737}#runSlotsUI .rs-bar{display:flex;gap:10px;margin:10px 0 0}#runSlotsUI .rs-bar>button{flex:1 1 0;margin:0!important;width:auto!important}#runSlotsUI .rs-close{padding:11px!important;font:700 17px inherit!important;text-align:center}#runSlotsUI .rs-go{display:block;margin:0;padding:11px;border-radius:10px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9901f);color:#2a1a05;font:700 17px inherit;cursor:pointer}#runSlotsUI .rs-go:disabled{cursor:not-allowed;background:#4a4f4c;border-color:#333;color:#aaa}</style>`
-      + `<div style="width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 40px);overflow:auto;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f5e6c4"><h2 style="margin:0 0 8px">${mode === 'new' ? 'เริ่มเกมใหม่ · เลือกช่อง Run' : '📂 โหลดเกม · เลือก Run'}</h2>${rows || '<p>ยังไม่มีเซฟ</p>'}`
-      + `<p class="rs-note" style="margin:8px 0 0;min-height:1.4em;font-size:13px;color:#f0b97a">เลือกช่องก่อน แล้วกดปุ่มด้านล่าง</p>`
+    /* v98.1122 · VA shared parchment and stitched leather frame. */
+    d.innerHTML = `<style>
+#runSlotsUI .rs-panel{box-sizing:border-box;display:flex;flex-direction:column;width:min(600px,calc(100vw - 24px));max-height:calc(100dvh - 32px);padding:12px 14px;border:32px solid transparent;border-image:url(assets/ui/va-frame.webp) 128 fill / 32px / 0 stretch;border-radius:0;background:none;color:#493019;filter:drop-shadow(0 14px 26px #0009)}
+#runSlotsUI h2{flex:none;margin:0 0 12px;color:#573611;font-size:23px;line-height:1.4}
+#runSlotsUI .rs-list{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:2px 4px 3px;scrollbar-color:#aa8046 #ead6ab}
+#runSlotsUI .rs-group{margin:8px 0;padding:8px;border:1px solid #a5804b66;border-radius:5px;background:#fff5d533}
+#runSlotsUI .rs-slot,#runSlotsUI .rs-close{box-sizing:border-box;padding:10px 12px;border:1px solid #ad874d;border-radius:5px;background:linear-gradient(#fff3d6dd,#ead5aaa6);color:#493019;font:inherit;box-shadow:inset 0 1px #fff8,0 2px 3px #6a42151c;text-shadow:none}
+#runSlotsUI .rs-slot small{color:#765a36;line-height:1.5}
+#runSlotsUI .rs-slot:hover,#runSlotsUI .rs-close:hover{background:#fff0c9;border-color:#89602c}
+#runSlotsUI .rs-slot[aria-pressed=true]{background:linear-gradient(#ffe9aa,#e7c47c)!important;color:#3e2913!important;border-color:#92601d!important;box-shadow:inset 4px 0 #8a5222,0 0 0 2px #b783314d}
+#runSlotsUI .rs-slot[aria-pressed=true] small{color:#604018}
+#runSlotsUI button:focus-visible{outline:3px solid #8d652a;outline-offset:2px}
+#runSlotsUI .rs-note{flex:none;margin:10px 0 0;min-height:1.5em;font-size:13px;color:#775433}
+#runSlotsUI .rs-bar{flex:none;display:flex;gap:10px;margin:12px 0 0}
+#runSlotsUI .rs-bar>button{flex:1 1 0;margin:0!important;width:auto!important;min-height:46px;text-align:center;font:700 17px/1.4 AgThai,system-ui,sans-serif}
+#runSlotsUI .rs-go{box-sizing:border-box;display:block;padding:10px 14px;border-radius:5px;border:1px solid #8b5a1f;background:linear-gradient(#f4d68e,#d4a34e);color:#3e2810;box-shadow:inset 0 1px #fff8,0 2px 0 #956b31;cursor:pointer}
+#runSlotsUI .rs-go:hover:not(:disabled){background:linear-gradient(#ffe7ab,#e7ba65)}
+#runSlotsUI .rs-go:disabled{cursor:not-allowed;background:#d4c8ae;border-color:#b4a489;color:#827561;box-shadow:none}
+@media(max-width:480px),(max-height:560px){#runSlotsUI .rs-panel{border-width:24px;border-image-width:24px;padding:8px;max-height:calc(100dvh - 16px)}#runSlotsUI h2{font-size:20px;margin-bottom:8px}#runSlotsUI .rs-slot{padding:8px 10px}#runSlotsUI .rs-bar{margin-top:8px}}
+</style>`
+      + `<div class="rs-panel"><h2>${mode === 'new' ? 'เริ่มเกมใหม่ · เลือกช่อง Run' : '📂 โหลดเกม · เลือก Run'}</h2><div class="rs-list">${rows || '<p>ยังไม่มีเซฟ</p>'}</div>`
+      + `<p class="rs-note">เลือกช่องก่อน แล้วกดปุ่มด้านล่าง</p>`
       + `<div class="rs-bar"><button class="rs-go" type="button" disabled>${mode === 'new' ? 'Start · เริ่มเกม' : 'Start · โหลด'}</button><button class="rs-close" style="${css};text-align:center" data-x="1">ปิด</button></div></div>`;
     document.body.append(d);
     let sel = null; const go = d.querySelector('.rs-go'), note = d.querySelector('.rs-note');
     const pick = b => { sel = b; d.querySelectorAll('.rs-slot').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); go.disabled = false;
-      note.textContent = mode === 'new' && b.dataset.full ? '⚠ Run นี้มีเซฟอยู่ · กด Start จะเริ่มใหม่ทับ' : 'พร้อมแล้ว · กด Start'; note.style.color = mode === 'new' && b.dataset.full ? '#ffb48a' : '#a8e6a0' };
+      note.textContent = mode === 'new' && b.dataset.full ? '⚠ Run นี้มีเซฟอยู่ · กด Start จะเริ่มใหม่ทับ' : 'พร้อมแล้ว · กด Start'; note.style.color = mode === 'new' && b.dataset.full ? '#98451e' : '#38612d' };
     const start = () => { if (!sel) return; const n = +sel.dataset.n; d.remove(); if (mode === 'new') cb && cb(n); else api.load(n, sel.dataset.kind || 'auto', +sel.dataset.i || 0) };
     d.onclick = e => {
       const b = e.target.closest('button'); if (e.target === d || b?.dataset.x) { d.remove(); return }
