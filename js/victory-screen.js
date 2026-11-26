@@ -88,6 +88,41 @@
 @keyframes vsIn{from{opacity:0}}@keyframes vsSpin{to{transform:rotate(360deg)}}@keyframes vsLine{to{width:min(440px,72vw)}}
 @keyframes vsLetter{to{opacity:1;transform:none}}@keyframes vsFade{to{opacity:1}}@keyframes vsCard{to{opacity:1;transform:none}}@keyframes vsPop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
 @media (max-width:560px){#vsv .tiles{grid-template-columns:repeat(2,1fr)}#vsv .pg{padding:16px 14px}}
+
+/* ===== v98.1100 · VA (Vibe Agrenor): paper-coloured panel in the stitched leather + gold-corner frame (assets/ui/va-frame.webp) · light aura + falling colour paper instead of sun-rays ===== */
+#vsv .aura{position:absolute;left:50%;top:42%;width:130vmin;height:130vmin;margin:-65vmin 0 0 -65vmin;border-radius:50%;background:radial-gradient(circle,#fff3c4f0 0,#ffd36a99 22%,#ffb52e3d 46%,#0000 70%);animation:vsAura 3.6s ease-in-out infinite;pointer-events:none}
+@keyframes vsAura{50%{transform:scale(1.14);opacity:.78}}
+#vsv .rays{display:none}
+#vsv .book{width:min(700px,96vw)}
+#vsv .pg{padding:12px 14px 10px;border:46px solid transparent;border-image:url(assets/ui/va-frame.webp) 128 fill/46px stretch;border-radius:0;background:none;box-shadow:none;filter:drop-shadow(0 22px 34px #000b);color:#4a2e12}
+#vsv .pg::before,#vsv .pg::after{display:none}
+#vsv .pg{max-height:94vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#b58a45 #0000}
+#vsv .crest{background:linear-gradient(90deg,#0000,#b5651d,#0000)}
+#vsv h2{color:#a5521a;text-shadow:0 2px 0 #fff3cf,0 0 22px #ffd77a,0 0 50px #ffc95a99}
+#vsv .sub{color:#5a3a18}#vsv .goal{color:#2c6a3c}
+#vsv .chips span{background:#fff4d6d9;border-color:#b58a45;color:#7a4a14}
+#vsv .card{background:linear-gradient(100deg,#f7e7bf,#ecd7a3);border:1px solid #c9a35a}
+#vsv .face{border-color:#b58a45;background:#e5d0a0;color:#8a5a1a}
+#vsv .nm{color:#4a2e12}#vsv .nm .lv{color:#8a6a3a}#vsv .nm .lv.up{color:#c4561c}#vsv .nm .xp{color:#b5651d}
+#vsv .bar{background:#cdb27a}#vsv .bar i{box-shadow:0 0 6px #e8b23a99}
+#vsv .hp{color:#6a5430}#vsv .hp .hb{background:#cdb27a}#vsv .hp b{color:#2c6a3c}
+#vsv .up-note{color:#c4561c}
+#vsv .job{background:#fff4d655;border-color:#b58a4588;color:#4a2e12}
+#vsv .hint{color:#7a6238}
+#vsv .rp h3{color:#a5521a;text-shadow:0 1px 0 #fff3cf,0 0 14px #ffd77a99}
+#vsv .mvp{background:linear-gradient(100deg,#f7e7bf,#ecd7a3);border-color:#b58a45;box-shadow:none}
+#vsv .mvp small{color:#a5521a}#vsv .mvp b{color:#4a2e12}#vsv .mvp p{color:#6a5430}
+#vsv .tile{background:#fff4d6aa;border-color:#c9a35a88}#vsv .tile b{color:#a5521a}#vsv .tile span{color:#6a5430}
+#vsv .row .b div{color:#5a4424}#vsv .row .k{color:#a5521a}
+#vsv .cardsUsed span{background:#fff4d6aa;border-color:#c9a35a88;color:#4a2e12}#vsv .cardsUsed b{color:#a5521a}
+#vsv .lbl{color:#7a6238}
+#vsv .ic{filter:drop-shadow(0 1px 1px #5a3a1855)}
+#vsv.vs-defeat{background:radial-gradient(ellipse at 50% 40%,#2a0f12aa 0,#07050aee 62%,#030204f2 100%)}
+#vsv.vs-defeat .aura{background:radial-gradient(circle,#c8908066 0,#a0504033 30%,#0000 66%)}
+#vsv.vs-defeat .pg{border-image-source:url(assets/ui/va-frame.webp);filter:saturate(.55) brightness(.82) drop-shadow(0 22px 34px #000b);background:none;border-color:transparent}
+#vsv.vs-defeat h2{color:#8a2a1c;text-shadow:0 2px 0 #f2d6c8,0 0 20px #d96a52aa}
+#vsv.vs-defeat .chips span,#vsv.vs-defeat .goal{color:#8a3a2c}
+@media (max-width:560px){#vsv .pg{border-width:34px;padding:8px 8px 6px}}
 @media (prefers-reduced-motion:reduce){#vsv,#vsv *{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important}}`;
 
   const portrait = m => 'assets/portraits/' + (m.pic || m.id || 'hero-male') + '-neutral.webp';   /* v98.996 · the NORMAL face (not happy) */
@@ -111,7 +146,7 @@
         <div class="hp"><span>HP</span><div class="hb"><i style="width:${m.max ? Math.max(0, Math.min(100, m.hp / m.max * 100)) : 0}%"></i></div><b>${num(m.hp)}/${num(m.max)}</b></div></div></div>`;
       const job = d.job ? `<div class="job"><b>${esc((d.job.icon || '') + ' ' + (d.job.name || ''))}</b><span class="lv${d.job.ups?.length ? ' up' : ''}">Lv.${d.job.lv}</span><div class="bar"><i style="width:${d.job.lv >= d.job.max ? 100 : Math.min(100, d.job.jp / d.job.need * 100)}%;background:${esc(d.job.col || '#ffd77a')}"></i></div><span>${d.job.ups?.length ? 'อาชีพเลเวลอัป!' : 'แต้มอาชีพ'}</span></div>` : '';
       const btnD = t0 + members.length * step + .9;
-      el.innerHTML = `<div class="rays"></div><canvas></canvas><div class="book">
+      el.innerHTML = `<div class="aura"></div><canvas></canvas><div class="book">
         <section class="pg fr"><div class="crest"></div><h2>${word}</h2>
           <div class="sub">${esc(String(d.title || (d.defeat ? 'พ่ายแพ้' : 'ชนะการต่อสู้')).replace(/\s*·\s*$/, ''))}</div>${d.goal ? `<div class="goal">${ic('pack/crown')}เป้าหมาย: ${esc(d.goal)}${d.defeat ? '<i class="ex"></i>' : '<i class="chk"></i>'}</div>` : ''}
           <div class="chips">${chips.map(([i0, x], i) => `<span style="animation-delay:${1.05 + i * .1}s">${i0}${esc(x)}</span>`).join('')}</div>
@@ -121,9 +156,11 @@
       document.body.append(el);
       try { root.Sfx?.play?.(d.defeat ? 'lose' : 'victory') } catch (e) { } if (!d.defeat) try { root.GameBGM?.force?.('victory') } catch (e) { }
       /* gold sparks */
-      const cv = el.querySelector('canvas'), g = cv.getContext('2d'); let raf = 0, W = 0, H = 0; const P = Array.from({ length: 64 }, () => ({ x: Math.random(), y: Math.random(), s: .4 + Math.random() * 1.3, v: .0004 + Math.random() * .0011, p: Math.random() * 6 }));
+      const cv = el.querySelector('canvas'), g = cv.getContext('2d'); let raf = 0, W = 0, H = 0; const COL = ['#e8b23a', '#d8584a', '#4fa36a', '#4a8fd0', '#f4e3b2', '#c9783a', '#9a6ac8'], mk = (top) => ({ x: Math.random(), y: top ? -.05 - Math.random() * .2 : Math.random(), w: 7 + Math.random() * 8, h: 4 + Math.random() * 6, vy: .06 + Math.random() * .1, vx: (Math.random() - .5) * .03, r: Math.random() * 6.28, vr: (Math.random() - .5) * .006, f: Math.random() * 6.28, col: COL[(Math.random() * COL.length) | 0], sw: .015 + Math.random() * .03 });
+      const P = Array.from({ length: 80 }, () => mk(false));   /* v98.1100 · VA style: coloured paper confetti falling (the old sparkles / sun-rays are gone) */
       const fit = () => { W = cv.width = innerWidth; H = cv.height = innerHeight }; fit(); addEventListener('resize', fit);
-      const frame = t => { g.clearRect(0, 0, W, H); for (const q of P) { q.y -= q.v * 16; if (q.y < -.05) { q.y = 1.05; q.x = Math.random() } const a = .3 + .45 * Math.sin(t / 500 + q.p); g.fillStyle = `rgba(255,${200 + ((q.p * 20) | 0)},110,${Math.max(0, a)})`; g.beginPath(); g.arc(q.x * W + Math.sin(t / 900 + q.p) * 14, q.y * H, q.s * 2.1, 0, 7); g.fill() } raf = requestAnimationFrame(frame) }; raf = requestAnimationFrame(frame);
+      let last = 0;
+      const frame = t => { const dt = Math.min(50, t - (last || t)); last = t; g.clearRect(0, 0, W, H); for (const q of P) { q.y += q.vy * dt / 1000; q.x += (q.vx + Math.sin(t / 700 + q.f) * q.sw) * dt / 1000; q.r += q.vr * dt; if (q.y > 1.06) Object.assign(q, mk(true)); g.save(); g.translate(q.x * W, q.y * H); g.rotate(q.r); g.scale(1, Math.cos(t / 400 + q.f)); g.fillStyle = q.col; g.globalAlpha = .92; g.fillRect(-q.w / 2, -q.h / 2, q.w, q.h); g.restore() } raf = requestAnimationFrame(frame) }; raf = requestAnimationFrame(frame);
 
       /* EXP bars (with level-ups when the host knows the levels) */
       const timers = []; let skipped = false, closed = false, ready = false, page = 'fr';
