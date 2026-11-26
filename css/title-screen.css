@@ -277,3 +277,34 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #gameLoading .gl-tip{font-size:15px;line-height:1.6;color:#c4e4ff}
 #gameLoading .gl-lore{font-size:15px;line-height:1.6;color:#fbeab8}
 #gameLoading.gl-gate .gl-lore{display:none}
+
+
+/* ===== v98.1117 · VA (Vibe Agrenor) name window: paper panel in the stitched-leather frame, the title on the red ribbon, leather buttons (assets/ui/va-frame · va-ribbon · va-btn) ===== */
+#titleScreen .ts-name{width:min(780px,calc(100vw - 24px));max-height:none;overflow:visible;padding:34px 22px 12px;border:50px solid transparent;border-image:url(../assets/ui/va-frame.webp) 128 fill/50px stretch;border-radius:0;background:none;box-shadow:none;filter:drop-shadow(0 24px 40px #000c);color:#4a2e12}
+#titleScreen .ts-name .ts-c{display:none}
+#titleScreen .ts-name h2{position:relative;z-index:2;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:min(600px,92%);aspect-ratio:6.2/1;margin:-104px auto 12px;padding:0 90px 4px;background:url(../assets/ui/va-ribbon.webp) center/100% 100% no-repeat;font:800 clamp(20px,3.4vw,32px)/1.1 AgThai,Georgia,serif;color:#fff1c8;text-shadow:0 2px 0 #5a1010,0 0 14px #ff9a4a66;filter:drop-shadow(0 6px 8px #0007)}
+#titleScreen .ts-name .ts-orn{display:none}
+#titleScreen .ts-name .ts-sub{color:#6a4a24;margin:0 0 12px}
+#titleScreen .ts-name .ts-g{background:radial-gradient(ellipse 70% 55% at 50% 80%,#fff3c488,#0000 70%),linear-gradient(180deg,#f6e6bd 0,#ecd6a0 55%,#dfc287 100%);border:3px solid #b5733c;box-shadow:inset 0 0 0 1px #fff4d466,inset 0 -34px 40px #b58a4533,0 6px 14px #5a3a1855;color:#4a2e12}
+#titleScreen .ts-name .ts-g::before{background:radial-gradient(closest-side,#fff6c8f2 0,#ffd75ecc 30%,#ffb02e66 62%,#ffb02e00 100%)}
+#titleScreen .ts-name .ts-g b{color:#5a3416;text-shadow:0 1px 0 #fff3cf}
+#titleScreen .ts-name .ts-g small{color:#7a5a30;text-shadow:none}
+#titleScreen .ts-name .ts-g .ts-tag{background:#7a3a22;color:#ffeab8;border:1px solid #c98a4a;text-shadow:none}
+#titleScreen .ts-name .ts-g:hover{border-color:#d99a4a;box-shadow:inset 0 0 0 1px #fff4d699,0 10px 20px #5a3a1877,0 0 18px #ffd97855}
+#titleScreen .ts-name .ts-g.on{border-color:#e6a23a;box-shadow:inset 0 0 0 2px #ffe08a,0 0 0 3px #ffd97899,0 0 30px 6px #ffc24a99,0 12px 24px #5a3a1888;background:radial-gradient(ellipse 75% 60% at 50% 78%,#fff0b0cc,#0000 72%),linear-gradient(180deg,#fbeec9 0,#f2dca8 55%,#e8cb8c 100%)}
+#titleScreen .ts-name .ts-g.on .ts-tag{background:linear-gradient(#ffd56a,#d99a2a);color:#4a2a05;border-color:#8a5a14}
+#titleScreen .ts-name .ts-g.on small{color:#7a4a14}
+#titleScreen .ts-name .ts-g.off{filter:saturate(.55) brightness(.9) sepia(.15)}
+#titleScreen .ts-name .ts-g.off:hover{filter:saturate(.9) brightness(1)}
+#titleScreen .ts-name .ts-nm{color:#5a3a18}
+#titleScreen .ts-name .ts-inw input{background:#fff6dc;border:2px solid #b5733c;color:#3a2412;box-shadow:inset 0 2px 5px #b58a4533}
+#titleScreen .ts-name .ts-edit{background:#e8c98a;border-color:#b5733c;color:#5a3416}#titleScreen .ts-name .ts-edit:hover{background:#ffe3a0}
+#titleScreen .ts-name .ts-need{color:#b04a1c}#titleScreen .ts-name.ts-ready .ts-need{color:#2c6a3c}
+#titleScreen .ts-name .ts-go{width:min(380px,92%);min-height:60px;padding:2px 24px 6px;border:14px solid transparent;border-image:url(../assets/ui/va-btn.webp) 40 70 fill/14px 26px stretch;border-radius:0;background:none;color:#fff1c8;font:800 19px AgThai,system-ui,sans-serif;text-shadow:0 2px 0 #5a1010;box-shadow:none;filter:drop-shadow(0 5px 6px #0006)}
+#titleScreen .ts-name .ts-go:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.12) drop-shadow(0 7px 8px #0007)}
+#titleScreen .ts-name .ts-go:not(:disabled):active{transform:translateY(2px);box-shadow:none}
+#titleScreen .ts-name.ts-ready .ts-go{animation:ts-go-glow 1.6s ease-in-out infinite}
+@keyframes ts-go-glow{0%,100%{filter:drop-shadow(0 5px 6px #0006)}50%{filter:drop-shadow(0 5px 6px #0006) drop-shadow(0 0 12px #ffc24acc)}}
+#titleScreen .ts-name .ts-go:disabled{cursor:not-allowed;background:none;border-color:transparent;color:#d8c8a8;filter:grayscale(.85) brightness(.75) drop-shadow(0 4px 5px #0005);box-shadow:none;text-shadow:none}
+@media(max-height:780px){#titleScreen .ts-name{transform:translate(-50%,-50%) scale(.84)}}
+@media(max-width:520px){#titleScreen .ts-name{border-width:36px;padding:22px 8px 8px}#titleScreen .ts-name h2{margin-top:-78px;padding:0 60px 4px}}
