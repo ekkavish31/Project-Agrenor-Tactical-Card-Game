@@ -1462,6 +1462,8 @@ cv.addEventListener('pointermove', e => {
  if (cv.dataset.agc !== k) cv.dataset.agc = k
 });
 cv.addEventListener('pointerleave', () => { if (cv.dataset.agc) cv.dataset.agc = '' });
+/* v98.1139 · the quest's 📍 auto-walk button, pressed INSIDE a place for something outside: walk to this place's EXIT (the gate) like a click on it — it used to jump straight out to the village map */
+window.PlaceGuide = { toExit() { try { window.PlacePeople?.cancel?.(); drag = null; target = { exit: true }; path = route(hero, exitSpot()); $('status').textContent = 'กำลังเดินไปทางออก…'; if (!path.length) arrive(); return true } catch (e) { return false } } };
 /* v98.1083 · Shift + click = walk only (js/shift-walk.js): no villager / station / exit reacts */
 window.ShiftWalk?.set({ canvas: cv, ok: () => !editing, walk: e => {
  const p = world(e), q = inv(p.x, p.y);

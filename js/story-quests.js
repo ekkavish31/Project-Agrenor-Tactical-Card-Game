@@ -56,6 +56,8 @@ function guide(){const step=cur();if(!step)return;if(onWorld()){toast('อยู
  if(t.npc?.length){const pl=npcPlace(t.npc[0]),sc=scene();if(pl&&(sc==='place:'+pl||sc==='place:in:'+pl)){toast(npcName(t.npc[0])+' อยู่ในนี้ · คลิกที่ตัว (◆ สีทอง) เพื่อคุย');return}}
  if(t.place?.length&&t.place.includes(V()?.location)&&/^place:/.test(scene())&&!t.npc?.length){toast('อยู่ที่นี่แล้ว · เดินไปที่จุดบริการในฉาก');return}
  const go=()=>{const w=townWin();if(!w?.TownQuest?.guide?.())toast('ทำตาม ◆ สีทองบนแผนที่หมู่บ้าน')};
+ /* v98.1139 · inside a place (the market …) and the quest wants something OUTSIDE: walk to the place's gate first — never jump out to the village map */
+ if(/^place:/.test(scene())){try{const w=root.VillageTown?.marketFrame?.contentWindow;if(w?.PlaceGuide?.toExit()){toast('เดินไปทางออกก่อน · พอออกจากที่นี่แล้วค่อยเลือกว่าจะเดินหาเองหรือกดเดินอัตโนมัติอีกครั้ง');return}}catch(e){}}
  if(scene()!=='town'){root.VillageTown?.open?.();setTimeout(go,350)}else go()}
 const guideBtn={label:'เดินอัตโนมัติ',icon:'guide',alt:'map',tip:'นำทาง · เดินไปยังจุดที่เควสต้องการตามถนน',primary:true,hide:()=>onWorld(),run:guide};
 const HINT_WALK='◆ สีทองบนแผนที่บอกทาง · คลิกถนนหรืออาคารเพื่อเดิน · คลิกคนเพื่อคุย';
@@ -425,7 +427,8 @@ async function homeHooks(){const st=story();if(homeBusy||!st||st.mode!=='active'
 let goatBusy=false;
 async function goatsHook(){const st=story();if(goatBusy||!st||st.mode!=='active'||!root.Cutscene)return;const step=STEPS[st.i];if(!step||step.id!=='goats')return;const d=dataOf(step);if(d.lookSeen||scene()!=='town')return;
  if(root.Cutscene.isPlaying()||document.getElementById('storyBattle')||tacticsOpen())return;
- goatBusy=true;try{d.lookSeen=true;doSave();try{root.VillageTown?.frame?.contentWindow?.TownUX?.stop?.()}catch(e){}await root.Cutscene.play(D().SCENES.goatsLook)}finally{goatBusy=false}}
+ const halt=()=>{try{const w=root.VillageTown?.frame?.contentWindow;w?.TownUX?.stop?.();w?.TownQuest?.cancel?.();w?.TownNPC?.cancel?.()}catch(e){}};   /* v98.1139 · nothing may keep walking / chasing: after the talk the hero STOPS and the player decides (walk by hand or press auto-walk) */
+ goatBusy=true;try{d.lookSeen=true;doSave();halt();await root.Cutscene.play(D().SCENES.goatsLook);halt()}finally{goatBusy=false}}
 /* v98.600 · the first time the hero is OUTSIDE the house (village map, not inside a place) the sister stops them (scene bookExit) and the card-book is opened FOR them — its lesson (bookFirst) then plays at once.
    Only before the book has been seen and before the guild step; never while another scene / fight / panel is up. */
 let bookBusy=false;
