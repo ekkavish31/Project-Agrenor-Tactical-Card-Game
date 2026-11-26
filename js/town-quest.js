@@ -248,7 +248,7 @@
   }
   /* v98.1074 · GOAT ART IS READY BEFORE THE FIRST GOAT: the pictures (8 poses × 4 faces) used to start downloading only when the first goat was drawn — right when the player walked out of the market, so the goat showed as a shadow only for a while.
      They are now requested as soon as this map is up (a few seconds after it loads), and a goat whose picture is not ready yet is not drawn at all (no lonely shadow / ring). */
-  const GOAT_POSES = ['idle', 'walk', 'run', 'pant', 'graze', 'bleat', 'sleep', 'happy'];
+  const GOAT_POSES = ['idle', 'walk', 'run', 'pant', 'graze'];   /* v98.1133 · only the poses the village really draws (bleat / sleep / happy have no caller) */
   const goatPreload = () => { const MA = root.MonsterArt; if (!MA || goatPreload.done) return; try { MA.preload(['goat'], GOAT_POSES); goatPreload.done = 1 } catch (e) { } };
   setTimeout(goatPreload, 1500); setTimeout(goatPreload, 5000);
   function goatFace(o) { return o.dir ? (o.dir.du + o.dir.dv < 0 ? (o.dir.du - o.dir.dv > 0 ? 'NE' : 'NW') : (o.dir.du - o.dir.dv > 0 ? 'SE' : 'SW')) : (o.artFace || 'SE') }
@@ -265,13 +265,13 @@
     const pose = o.mode === 'run' ? 'run' : o.mode === 'rest' ? 'pant' : 'graze';
     /* v98.999 · each goat pose is its own picture file, loaded the first time it is used — until then frame() is null and the CODE goat below flashed (e.g. the moment a chase starts).
        Now: all goat poses are preloaded once; while one is still loading we keep the last picture (or the standing one) and only draw the code goat when the goat has no clip at all. */
-    const MA = root.MonsterArt; if (MA && !goat.pre) { goat.pre = 1; try { MA.preload(['goat'], ['idle', 'walk', 'run', 'pant', 'graze', 'bleat', 'sleep', 'happy']) } catch (e) { } }
+    const MA = root.MonsterArt; if (MA && !goat.pre) { goat.pre = 1; try { MA.preload(['goat'], ['idle', 'walk', 'run', 'pant', 'graze']) } catch (e) { } }
     const id = 'quest-goat-' + o.key + '-' + o.i, face = o.artFace || 'SE';
     let art = MA?.frame('goat', face, { pose }, 1, t, id);
     if (art) o.lastArt = art; else if (MA?.resolveClip('goat', face, pose)) art = o.lastArt || MA.frame('goat', face, { pose: 'idle' }, 1, t, id + '-idle') || MA.frame('goat', face, { pose: 'graze' }, 1, t, id + '-graze');
     if (!art && MA?.resolveClip('goat', face, pose)) return;   /* picture exists but is still loading: draw nothing for a moment rather than the code goat */
     if (art) {
-      const h = 52, w = h * art.sw / art.sh, pv = art.pivot || [.5, .95];
+      const h = 52 * (root.CharScaleAdjust?.poseFactor?.('enemy:goat', pose, null, face) || 1), w = h * art.sw / art.sh, pv = art.pivot || [.5, .95];   /* v98.1133 · the size set in 📐 เรียงท่า (run → walk, pant / graze → idle when the pose has no value of its own) */
       gx.save(); if (art.flip) gx.scale(-1, 1);
       gx.drawImage(art.image, art.sx, art.sy, art.sw, art.sh, -w * pv[0], -h * pv[1], w, h); gx.restore(); return;
     }
