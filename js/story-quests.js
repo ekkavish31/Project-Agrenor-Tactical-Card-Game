@@ -113,16 +113,14 @@ const LESSON={
  expedition:['การเดินทางไกล',['ศัตรูซุ่มโจมตีได้ระหว่างทาง · ชนะแล้วได้ EXP เงิน และของ','แรงหมดในสนาม ใช้ ♻ ทิ้งไพ่แลกแรง · การ์ดปีน/กระโจนใช้ความสูงให้เป็นประโยชน์']],
  rest:['การผจญภัยของเจ้าเริ่มแล้ว',['จบบทนำแล้วเล่นได้อิสระ: บอร์ดเควส ร้านการ์ด ครูฝึก เมืองบนแผนที่โลก และบอสในตำนาน','เพื่อนเก่งขึ้นตามเลเวล · ไพ่ใหม่ได้จากเลเวล บอส ร้าน และครู']]
 };
-function lessonCard(id){const L=LESSON[id];if(!L)return Promise.resolve();
- if(!document.getElementById('stkLessonCss')){const c=document.createElement('style');c.id='stkLessonCss';c.textContent=`#stkLesson{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;background:#05080daa;animation:stkL .3s ease both;font-family:VillageThai,"Noto Sans Thai",system-ui,sans-serif}
-  #stkLesson .card{width:min(520px,92vw);padding:20px 22px;border-radius:14px;background:linear-gradient(#f3e6c6,#e2cfa2);color:#3a2a14;box-shadow:0 20px 50px #000b;border:2px solid #b08a4a}
-  #stkLesson small{letter-spacing:.2em;color:#8a6a3a;font-size:11px}#stkLesson h3{margin:4px 0 10px;font:800 22px AgThai,Georgia,"Noto Sans Thai",serif;color:#5a3a10}
-  #stkLesson ul{margin:0 0 14px;padding-left:20px;line-height:1.7;font-size:15px}#stkLesson button{width:100%;padding:10px;border-radius:10px;border:1px solid #7a4b06;background:linear-gradient(#f0c560,#c9902e);color:#2a1a06;font:700 15px inherit;font-family:inherit;cursor:pointer}
-  @keyframes stkL{from{opacity:0}}`;document.head.append(c)}
- const st=V().story;(st.lessons||=[]).includes(id)||st.lessons.push(id);doSave();
- return new Promise(res=>{const d=document.createElement('div');d.id='stkLesson';d.innerHTML=`<div class="card"><small>📘 บทเรียน</small><h3>${esc(L[0])}</h3><ul>${L[1].map(x=>'<li>'+esc(x)+'</li>').join('')}</ul><button type="button">เข้าใจแล้ว ▸</button></div>`;
-  const close=()=>{removeEventListener('keydown',key,true);d.remove();res()},key=e=>{if(e.key==='Enter'||e.key===' '||e.key==='Escape'){e.preventDefault();e.stopPropagation();close()}};
-  d.querySelector('button').onclick=close;addEventListener('keydown',key,true);document.body.append(d);d.querySelector('button').focus()})}
+function rememberLesson(id){const st=V().story;(st.lessons||=[]).includes(id)||st.lessons.push(id);doSave()}
+function lessonCard(id){const L=LESSON[id];if(!L)return Promise.resolve();const step=STEPS.find(x=>x.id===id);
+ return root.QuestAnnouncement.show({title:step?.title||L[0],lesson:{title:L[0],lines:L[1]}}).then(()=>rememberLesson(id))}
+async function questBriefing(step,d){
+ const L=!d.lessonSeen&&LESSON[step.id];
+ await root.QuestAnnouncement.show({title:step.title,details:[step.goal,...(!L&&step.hint?[step.hint]:[])].filter(Boolean),lesson:L?{title:L[0],lines:L[1]}:null});
+ d.briefingPending=false;if(L){d.lessonSeen=true;rememberLesson(step.id)}doSave();
+}
 /* world map only when the prologue sends you out (or you are already out on a step) */
 const WORLD_STEPS=['cave','caveBack','expedition','return'];
 function lock(){const st=story();if(!st||st.mode!=='active')return '';const step=STEPS[st.i];if(!step||WORLD_STEPS.includes(step.id))return '';return 'ธุระตรงหน้ายังไม่เสร็จ — '+step.title+': '+step.goal+' · ยังไม่ใช่เวลาออกจากหมู่บ้าน'}
@@ -357,7 +355,7 @@ function lastScene(){const st=story();for(let j=st.i;j>=0;j--){const s1=STEPS[j]
 
 /* ---------- loop ---------- */
 let busy=false;
-async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){draw();return}init();const st=story();
+async function tick(){if(busy||root.QuestAnnouncement?.busy()||!G()||!V())return;if(root.TitleScreen?.active){draw();return}init();const st=story();
  const sale=detectSale();if(!st||st.mode!=='active'){draw();return}
  const step=STEPS[st.i];if(!step){st.mode='done';doSave();draw(true);return}const d=dataOf(step);
  if(step.skip?.(d)){st.i++;doSave();try{root.RunSlots?.tm?.mark()}catch(e){}draw(true);return}
@@ -369,12 +367,12 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  goatsHook().catch(()=>{});   /* v98.1074 · the pause scene right after leaving the market */
  homeHooks().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
  busy=true;try{
-  if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
+  if(!d.begun){d.begun=true;d.briefingPending=true;step.begin?.(d);doSave()}
   const introId=typeof step.intro==='function'?step.intro():step.intro;
   if(introId&&!d.introSeen){d.introSeen=true;if(introId==='opening'){V().story.bookSeen=true;V().story.bookIntro=true}doSave();draw();await root.Cutscene.play(sceneAt(introId));if(introId==='opening')await bookTour()}
-  if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();if(step.id==='wake'&&root.GuidedTour&&!V().story.walkTour)await walkTour();else await lessonCard(step.id)}
+  if(d.briefingPending||LESSON[step.id]&&!d.lessonSeen){if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();if(step.id==='wake'&&root.GuidedTour&&!V().story.walkTour)await walkTour();await questBriefing(step,d)}
   if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();try{root.RunSlots?.tm?.mark()}catch(e){}   /* v98.1080 · time machine checkpoint at every new step */
-   const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
+   const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;/* The next step presents its ribbon and lesson together after its intro. */tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 
 /* v98.1019 · a save that is ALREADY past the Light / Heavy unlock point (before this version) gets the signature cards once, with a note in the reveal */
@@ -405,7 +403,7 @@ async function guildFirst(){const v=V();if(!v||!root.Cutscene)return false;v.sto
 /* v98.586 · DAY 1 PACING: pumpkins used to end at dusk, leaving the planks / stall quests in the dark. Until the "จบวันแรก" step is done the clock runs slower through the day and
    stops near 18:30 (golden hour), so every day-1 task (goats → Hilda → pumpkins → Tom → planks → stall) fits before the evening; the player sleeps when ready. Started at 08:00 (WorldState). */
 const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall','homeWelcome','chestLesson','deckLesson','sleep1']);
-function timeScale(){try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
+function timeScale(){if(root.QuestAnnouncement?.busy())return 0;try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
 /* v98.589 · the card-book lesson plays once, the first time the player opens the book during the prologue (old saves past the prologue never see it) */
 /* v98.607 · the world map asks where the current step sends the player (beacon + edge arrow, js/world-map.js guideOf) */
 function worldGuide(){const st=story();if(!st||st.mode!=='active')return null;const step=STEPS[st.i];if(!step)return null;if(step.id==='cave')return {id:'mine',label:'เหมืองเก่า (ทางเหนือ)'};if(step.id==='caveBack')return {id:'home',label:'หมู่บ้านเฟิร์นเวล'};return null}
