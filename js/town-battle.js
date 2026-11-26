@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1141';
+  const V = '98.1143';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -796,7 +796,7 @@
   const TONE = { movement: '#6fc3ff', attack: '#ff7a5c', self: '#7fe08a', magic: '#c39bff' };
   /* the played card pops up full size beside the fight, stays while the action plays, then flies into the discard pile */
   function showPlay(group, id, text, fromEl) {
-    hidePreview(); try { window.Sfx?.play('card-place', { vol: .9 }) } catch (e) { }   /* v98.1142 · paper card laid down */
+    hidePreview(); try { window.Sfx?.play('card-place', { vol: .9 }) } catch (e) { }   /* v98.1143 · paper card laid down */
     const r = FB.cardRule(id), tone = group === 'movement' ? TONE.movement : r?.self ? TONE.self : r?.range > 1 ? TONE.magic : TONE.attack;
     const el = document.createElement('div'); el.className = 'fb-show play'; el.style.setProperty('--tone', tone);
     el.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b>${text ? '<br>' + esc(text) : ''}</div>`;

@@ -41,7 +41,7 @@
     const s = a.createBufferSource(), g = a.createGain(); s.buffer = b; s.playbackRate.value = (o.rate || 1) * (.96 + Math.random() * .08); g.gain.value = Math.min(1, v * gainOf(n) * (o.vol ?? 1)); s.connect(g); g.connect(a.destination); s.start(); return true;
   }
   /* the battle's own kinds: true = a recording played */
-  function battle(kind, strength = .6) { const L = BATTLE[kind]; if (!L || off) return false; const n = L[Math.floor(Math.random() * L.length)]; return play(n, { vol: .55 + strength * .6, rate: n.startsWith('hit-') ? .9 - Math.min(.15, strength * .1) : 1 }) }   /* v98.1142 · hits a bit lower = heavier */
+  function battle(kind, strength = .6) { const L = BATTLE[kind]; if (!L || off) return false; const n = L[Math.floor(Math.random() * L.length)]; return play(n, { vol: .55 + strength * .6, rate: n.startsWith('hit-') ? .9 - Math.min(.15, strength * .1) : 1 }) }   /* v98.1143 · hits a bit lower = heavier */
   let stepT = 0, stepI = 0;
   function walk(dt, moving, surface = 'grass', every = .36) { if (!moving) { stepT = every * .6; return } stepT += dt; if (stepT >= every) { stepT = 0; stepI++; play('step-' + surface, { vol: .8 + (stepI % 2) * .1 }) } }
   function preload(list) { for (const n of list) if (V[n]) for (let i = 1; i <= V[n]; i++) load(n, i) }
