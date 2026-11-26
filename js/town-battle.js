@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1134';
+  const V = '98.1141';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1827,6 +1827,14 @@
     g.save(); g.fillStyle = L.col || '#888'; g.strokeStyle = '#1a140c'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 8.5, 0, 7); g.fill(); g.stroke();
     g.fillStyle = '#fff8e8'; g.font = '700 11px AgThai,system-ui,"Segoe UI Symbol",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L.icon, x, y + .5); g.restore();
   }
+  /* v98.1131 · a weapon that is not in the hand is stowed on the BACK: facing the camera (SE / SW) it sits behind the body, peeking out beside the shoulder; facing away (NE / NW) the back is toward us, so it is drawn over the body.
+     The caller draws it BEFORE the body for SE / SW and AFTER it for NE / NW. (Used for the lead, the sibling and the class weapon of every ally.) */
+  function stowWeapon(g, u, A, wk, left, top, size) {
+    const W = wk && weaponDef(A, wk, u, true); if (!W) return; const away = ['NE', 'NW'].includes(u.dir), side = ['SE', 'NE'].includes(u.dir) ? -1 : 1, i2 = im(W.src); if (!i2) return;
+    const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];
+    const tipUp = ['spear', 'staff', 'bow'].includes(wk), flatBack = wk === 'tome';   // blades, hammers: point / edge down · spears (and staves): point up
+    g.save(); g.translate(left + size * (.5 + side * (['knife', 'tome', 'bow'].includes(wk) ? .2 : away ? .06 : .15)), top + size * (flatBack ? .62 : wk === 'knife' ? .52 : tipUp ? .56 : .38)); g.rotate(flatBack ? 0 : (side * (away ? 38 : -38) + (tipUp ? 0 : 180)) * Math.PI / 180); g.drawImage(i2, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore()
+  }
   function drawHero(g, u, t) {
     const A = sprites(), p = project(u.vu, u.vv), f = heroFrame(u, t); if (!A || !f) return;
     const size = UNIT * CharSize.DRAW.hero * MAPK * (window.CharScaleAdjust?.factor('battle', 'hero') || 1) * (window.CharScaleAdjust?.poseFactor('hero', u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose, null, u.dir) || 1), left = p.x - size * A.anchor[0], top = p.y - size * A.anchor[1];
@@ -1837,11 +1845,8 @@
     g.translate(p.x + pm.dx, p.y + pm.dy); g.rotate(pm.rot); g.scale(pm.sx, pm.sy); g.translate(-p.x, -p.y);
     const sword = () => { if (u.weapon && weaponDef(A, u.weapon, u)) weapon(g, weaponDef(A, u.weapon, u), f.right, left, top, size, (f.rotation || 0) + pm.wpn) };
     /* v97.01: standing ready or walking, the weapon is carried on the back (behind the body when facing the camera, over it when facing away); drawn in the hand only for actions */
-    const carried = u.hp > 0 && (u.walking || !u.pose || u.pose === 'idle'), W = u.weapon && weaponDef(A, u.weapon, u);
-    const onBack = () => { const W = u.weapon && weaponDef(A, u.weapon, u, true); if (!W) return; const away = ['NE', 'NW'].includes(u.dir), side = ['SE', 'NE'].includes(u.dir) ? -1 : 1, i2 = im(W.src); if (!i2) return;
-      const h = size * (W.scale || .63) * .9, w = h * W.size[0] / W.size[1];
-      const tipUp = ['spear', 'staff', 'bow'].includes(u.weapon), flatBack = u.weapon === 'tome';   // blades, hammers: point / edge down · spears (and staves): point up
-      g.save(); g.translate(left + size * (.5 + side * (['knife', 'tome', 'bow'].includes(u.weapon) ? .2 : .06)), top + size * (flatBack ? .62 : u.weapon === 'knife' ? .52 : tipUp ? .56 : .38)); g.rotate(flatBack ? 0 : (side * (away ? 38 : -38) + (tipUp ? 0 : 180)) * Math.PI / 180); g.drawImage(i2, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore() };
+    const carried = u.hp > 0 && (u.walking || !u.pose || u.pose === 'idle' || u._rdy), W = u.weapon && weaponDef(A, u.weapon, u);   /* v98.1131 · the ready stance (body in its windup pose) keeps the weapon stowed on the back: only a real attack takes it out */
+    const onBack = () => stowWeapon(g, u, A, u.weapon, left, top, size);
     const faceAway = ['NE', 'NW'].includes(u.dir), useFloat = !OLDPOSE && !carried && u.hp > 0 && !!W && FLOATPOSE.includes(actState(u, t).act);   /* v97.48: floating weapon instead of the hand anchor */
     jobAura(g, u, p, size, t, false);
     if (carried) { if (!['NE', 'NW'].includes(u.dir)) onBack() }
@@ -1885,11 +1890,14 @@
     shadow(g, p, UNIT * .24);
     if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1) * (window.CharScaleAdjust?.poseFactor(u.key, u.walking && u.hp > 0 ? 'walk' : pose, null, u.dir) || 1), pm = poseMotion(u, t);
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (useFlip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
+    const stowK = !OLDPOSE && u.hp > 0 && sprites() && ALLYW[u.key] && (u.walking || u._rdy || !FLOATPOSE.includes(actState(u, t).act)) ? ALLYW[u.key] : null, aAway = ['NE', 'NW'].includes(u.dir);   /* v98.1131 · the class weapon is stowed on the back unless the ally is really attacking */
+    if (stowK && !aAway) stowWeapon(g, u, sprites(), stowK, -size / 2, -size * .94, size);
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
+    if (stowK && aAway) stowWeapon(g, u, sprites(), stowK, -size / 2, -size * .94, size);
     g.restore();
     { const A = sprites(), wk = ALLYW[u.key];   /* v97.48: class weapon floating in front + swing trail */
-      if (!OLDPOSE && A && wk && u.hp > 0 && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56); g.restore() } }
+      if (!OLDPOSE && A && wk && u.hp > 0 && !u._rdy && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56); g.restore() } }
     if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
   function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px AgThai,system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
