@@ -20,7 +20,7 @@ figure[data-v]{cursor:pointer;border:2px solid transparent;border-radius:10px;pa
 p.note{margin:6px 16px;color:var(--muted);max-width:900px}
 </style></head><body>
 <header><h1>✨ VFX Preview</h1>
- <span class="sw">ในเกมใช้: <b id="sumUse"></b></span><button id="allNew">ใหม่ทั้งหมด</button><button id="allOld">เดิมทั้งหมด</button><button id="pushBtn" class="primary" title="ใส่ค่าที่เลือกลง Cart เพื่อ Push — ทุกเครื่องที่เปิดเกมจะใช้ตามนี้">⬆ ใส่ Cart (Push)</button><small id="pushMsg"></small>
+ <span class="sw">ในเกมใช้: <b id="sumUse"></b></span><button id="allNew">โค้ดล้วนทั้งหมด</button><button id="allOld">เดิมทั้งหมด</button><button id="pushBtn" class="primary" title="ใส่ค่าที่เลือกลง Cart เพื่อ Push — ทุกเครื่องที่เปิดเกมจะใช้ตามนี้">⬆ ใส่ Cart (Push)</button><small id="pushMsg"></small>
  <label>ความเร็ว <select id="speed"><option value="1">ปกติ</option><option value=".5">ช้า ½</option><option value=".25">ช้า ¼</option></select></label>
 </header>
 <p class="note">แต่ละท่าแสดงเฉพาะ <b>เอฟเฟกต์ที่เกมใช้อยู่</b> (ตัวสีเทา = ผู้โจมตี · ตัวสีน้ำตาล = เป้าหมาย) — <b>คลิกที่ท่า</b> เพื่อเปิดรายการเอฟเฟกต์ทั้งหมดของท่านั้นแล้วเลือกใหม่ (แบบที่เพิ่มภายหลังจะขึ้นต่อท้ายรายการเอง) — ค่าที่เลือกมีผลในเบราว์เซอร์นี้ทันที (เปิดสนามรบใหม่) · กด <b>⬆ ใส่ Cart (Push)</b> เพื่อให้มีผลกับเกมจริงทุกเครื่อง</p>
@@ -29,7 +29,7 @@ p.note{margin:6px 16px;color:var(--muted);max-width:900px}
 <h2>แรงกระแทกตอนโดนตี / ล้ม</h2><div class="grid" id="gHit"></div>
 <h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว)</h2><div class="grid" id="gStatus"></div>
 <div id="dlg" hidden><div class="box"><div class="top"><h3 id="dlgTitle"></h3><button id="dlgClose">ปิด ✕</button></div><div id="dlgGrid"></div></div></div>
-<script src="js/editor-store.js?v=v98.1082"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.1125"></script><script src="js/vfx-kit.js?v=v98.1134"></script><script src="js/status-fx.js?v=v98.1124"></script>
+<script src="js/editor-store.js?v=v98.1082"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.1144"></script><script src="js/vfx-kit.js?v=v98.1144"></script><script src="js/status-fx.js?v=v98.1144"></script>
 <script>
 const W = 300, H = 200, CW = 78, A = { x: 62, y: 158 }, P = { x: 222, y: 158 };
 const NAMES = { sword: 'ดาบ ฟัน', knife: 'มีด ฟันไขว้', blunt: 'ค้อน/กระบอง ทุบ', spear: 'หอก แทง', rapier: 'เรเปียร์ แทงเร็ว', arrow: 'ธนู', shield: 'โล่ ป้องกัน', parry: 'ปัดป้อง',

@@ -111,25 +111,31 @@
   const STATUS_ART = {
     burn: ['skill/fire', 'ember'], poison: ['particle/poison', 'poison'],
     freeze: ['skill/ice', 'snowflake'], shock: ['skill/lightning', 'sparkle'],
-    weak: ['particle/mote', 'mote'], bind: ['particle/leaf', 'leaf']
+    weak: ['particle/mote', 'mote'], bind: ['particle/leaf', 'leaf'],
+    sleep: [null, 'mote'], silence: [null, 'sparkle']
   };
   function paintedStatus(layer, g, kind, x, y, h, t, seed) {
     const stamp = root.BattleVFX?.stamp, spec = STATUS_ART[kind];
-    if (!spec || !stamp || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
+    if (!spec || !stamp) return false;
+    const still = root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const k = ((t + seed * 13) % 2100) / 2100;
     const pulse = .38 + .62 * Math.pow(Math.sin(k * Math.PI), 2);
     const anchored = kind === 'burn' || kind === 'freeze' || kind === 'bind';
-    const cy = y - h * (anchored ? .14 : .48);
-    if (layer === 'back') {
-      return stamp(g, spec[0], x, cy, h * (.64 + .16 * pulse), {
-        ay: anchored ? .8 : .55, alpha: .64 * pulse, blend: 'source-over', rot: kind === 'bind' ? .7 : 0
-      });
-    }
+    const cy = y - h * (anchored ? .02 : .48);
     const n = root.BattlePolish?.quality === 'low' ? 2 : 5;
-    const dusty = kind === 'bind';
-    const painted = stamp(g, spec[0], x, cy, h * (.42 + .17 * pulse), {
-      ay: anchored ? .8 : .55, alpha: .5 * pulse, blend: 'source-over', rot: dusty ? -.8 : 0
-    });
+    const dusty = kind === 'bind', back = layer === 'back';
+    const nearHead = kind === 'sleep' || kind === 'silence';
+    const artY = nearHead ? y - h * 1.03 : cy;
+    const artX = nearHead ? x + h * .28 : x;
+    const artSize = h * (nearHead ? .38 : back ? .82 : .57);
+    const alpha = still ? (back ? .35 : .61) : pulse * (back ? .61 : .74);
+    const frame = still ? 1 : Math.min(3, Math.floor(k * 4));
+    if (nearHead && back) return false;
+    const painted = root.VfxKit?.sequenceFrame(g, kind, frame, artX, artY, artSize, alpha, 0, anchored ? .74 : .5)
+      || (!still && spec[0] && stamp(g, spec[0], artX, artY, artSize, {
+        ay: anchored ? .8 : .55, alpha, blend: 'source-over', rot: dusty ? (back ? .7 : -.8) : 0
+      }));
+    if (back || still) return painted;
     if (!painted) return false;
     puffs(t, seed, n, 1350, (a, i, cycle) => {
       const dx = x + (H(seed + cycle, i) - .5) * h * .67 + Math.sin(a * 5 + i) * h * .08;
@@ -141,6 +147,6 @@
     return true;
   }
   function run(layer, g, u, x, y, h, t) { if (!u || u.hp <= 0) return; const { k, born } = track(u, t); if (!k.length) return; const s = seedOf(u);
-    for (const kind of k) { const f = FX[kind]; if (!f) continue; g.save(); try { if (!paintedStatus(layer, g, kind, x, y, h, t, s) || kind === 'bind') f[layer]?.(g, x, y, h, t, s); if (layer === 'front' && born[kind] != null) burst(g, kind, x, y, h, t - born[kind]) } finally { g.restore() } } }
-  root.StatusFX = { back: (g, u, x, y, h, t) => run('back', g, u, x, y, h, t), front: (g, u, x, y, h, t) => run('front', g, u, x, y, h, t), kinds: Object.keys(FX), draw(g, kind, x, y, h, t, seed = 1) { const f = FX[kind]; if (!f) return; g.save(); if (!paintedStatus('back', g, kind, x, y, h, t, seed) || kind === 'bind') f.back?.(g, x, y, h, t, seed); g.restore(); g.save(); if (!paintedStatus('front', g, kind, x, y, h, t, seed) || kind === 'bind') f.front?.(g, x, y, h, t, seed); g.restore() } };
+    for (const kind of k) { const f = FX[kind]; if (!f) continue; g.save(); try { if (!paintedStatus(layer, g, kind, x, y, h, t, s)) f[layer]?.(g, x, y, h, t, s); if (layer === 'front' && born[kind] != null) burst(g, kind, x, y, h, t - born[kind]) } finally { g.restore() } } }
+  root.StatusFX = { back: (g, u, x, y, h, t) => run('back', g, u, x, y, h, t), front: (g, u, x, y, h, t) => run('front', g, u, x, y, h, t), kinds: Object.keys(FX), draw(g, kind, x, y, h, t, seed = 1) { const f = FX[kind]; if (!f) return; g.save(); if (!paintedStatus('back', g, kind, x, y, h, t, seed)) f.back?.(g, x, y, h, t, seed); g.restore(); g.save(); if (!paintedStatus('front', g, kind, x, y, h, t, seed)) f.front?.(g, x, y, h, t, seed); g.restore() } };
 })(globalThis);

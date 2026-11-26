@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1141';
+  const V = '98.1144';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -796,7 +796,7 @@
   const TONE = { movement: '#6fc3ff', attack: '#ff7a5c', self: '#7fe08a', magic: '#c39bff' };
   /* the played card pops up full size beside the fight, stays while the action plays, then flies into the discard pile */
   function showPlay(group, id, text, fromEl) {
-    hidePreview();
+    hidePreview(); try { window.Sfx?.play('card-place', { vol: .9 }) } catch (e) { }   /* v98.1143 · paper card laid down */
     const r = FB.cardRule(id), tone = group === 'movement' ? TONE.movement : r?.self ? TONE.self : r?.range > 1 ? TONE.magic : TONE.attack;
     const el = document.createElement('div'); el.className = 'fb-show play'; el.style.setProperty('--tone', tone);
     el.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b>${text ? '<br>' + esc(text) : ''}</div>`;
@@ -819,6 +819,7 @@
   }
   /* new cards come off the draw pile into their slots, one after another, and glow as "ใหม่" */
   async function drawShow(uids) {
+    try { window.Sfx?.play('card-fan', { vol: .8 }) } catch (e) { }
     const pile = hand.querySelector('#fbDraw').getBoundingClientRect(), els = uids.map(u => hand.querySelector(`.fb-card[data-uid="${CSS.escape(u)}"]`)).filter(Boolean);
     els.forEach(e => { const r = e.getBoundingClientRect(); e.style.transition = 'none'; e.style.transform = `translate(${pile.left - r.left}px,${pile.top - r.top}px) scale(.6) rotateY(90deg)`; e.style.opacity = '0'; e.classList.add('new') });
     await wait(30);
@@ -1513,7 +1514,7 @@
     /* v98.332 · free CC0 light / slash sprites (Kenney Particle Pack, assets/fx/kenney) on top of the old effects: a sweep for melee, a flare + star + ring for elements */
     if (to && !o.noK) { const base = effects[effects.length - 1], col = KFX_BURST[kind];
       const visual = window.VfxKit?.choiceOf(kind);
-      if (visual === 'atlas' || visual === 'painted8' || visual === 'drawnImpact' || visual === 'paintedLight' || SPECIAL_ART[kind]) return dur;
+      if (visual === 'atlas' || visual === 'painted8' || visual === 'drawnImpact' || visual === 'drawnSequence' || visual === 'paintedLight' || SPECIAL_ART[kind]) return dur;
       if (KFX_MELEE.has(kind)) effects.push({ ...base, kind: 'kslash', color: '#fff0c0', duration: 380 });
       else if (col) effects.push({ ...base, kind: 'kburst', color: col, duration: 560 }) }
     return dur;

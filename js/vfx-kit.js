@@ -173,7 +173,7 @@
   const EXTRA = {};
   const variants = k => { k = nameOf(k); return [['old', 'เดิม (ภาพวาดแปะ)'], ['new', 'ใหม่ (วาดด้วยโค้ด)'], ...Object.entries(EXTRA[k] || {}).map(([id, v]) => [id, v.label])] };
   const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
-  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.drawnImpact ? 'drawnImpact' : EXTRA[k]?.painted8 ? 'painted8' : EXTRA[k]?.atlas ? 'atlas' : EXTRA[k]?.paintedLight ? 'paintedLight' : 'old') };
+  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.drawnImpact ? 'drawnImpact' : EXTRA[k]?.drawnSequence ? 'drawnSequence' : EXTRA[k]?.painted8 ? 'painted8' : EXTRA[k]?.atlas ? 'atlas' : EXTRA[k]?.paintedLight ? 'paintedLight' : 'old') };
   const uses = k => { k = nameOf(k); if (!FX[k] && !EXTRA[k]) return false; return choiceOf(k) !== 'old' };
   const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = (v === 'new' || (v && v !== 'old')) ? String(v) : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
   const enabled = () => Object.keys(FX).some(uses);
@@ -293,7 +293,8 @@
 
   function paintedLight(kind, g, e, k, p, W, front) {
     if (k <= 0 || k >= 1) return;
-    const [color, art, motion, power] = LIGHT[kind];
+    const [baseColor, art, motion, power] = LIGHT[kind];
+    const color = kind === 'heal' && /^#[ef]/i.test(e.color || '') ? C.gold : baseColor;
     const low = root.BattlePolish?.quality === 'low';
     const rise = motion === 'rise', orbit = motion === 'orbit';
     const flash = seg(k, 0, .09) * Math.pow(1 - k, rise ? 1.1 : 2.8);
@@ -438,6 +439,89 @@
     im.src = SRC ? new URL('../' + path, SRC).href : path;
     addVariant(kind, 'drawnImpact', 'ภาพวาด 8 เฟรม + แสงปะทะ',
       (g, e, t, p, a, cw) => drawnImpact(kind, im, g, e, t, p, a, cw));
+  }
+
+  // Each atlas row is an independently illustrated four-pose sequence.
+  const SEQUENCE_GROUPS = {
+    blade: ['sword', 'knife', 'blunt', 'spear'],
+    weapon: ['rapier', 'arrow', 'parry', 'arcane'],
+    holy: ['holy', 'death', 'burn', 'poison'],
+    status: ['sleep', 'freeze', 'shock', 'weak'],
+    hit: ['light', 'heavy', 'critical', 'finisher'],
+    bind: ['silence', 'bind']
+  };
+  const sequences = {};
+  if (typeof Image !== 'undefined') for (const [group, kinds] of Object.entries(SEQUENCE_GROUPS)) {
+    const im = new Image();
+    im.decoding = 'async';
+    const path = 'assets/fx/anim/sequence-' + group + '.webp';
+    im.src = SRC ? new URL('../' + path, SRC).href : path;
+    kinds.forEach((kind, row) => { sequences[kind] = { im, row, rows: kinds.length }; });
+  }
+
+  function sequenceReady(kind) {
+    const im = sequences[kind]?.im;
+    return !!(im?.complete && im.naturalWidth && im.naturalHeight);
+  }
+
+  function sequenceFrame(g, kind, cell, x, y, size, alpha, angle = 0, anchor = .5) {
+    if (!sequenceReady(kind)) return false;
+    const { im, row, rows } = sequences[kind];
+    const w = im.naturalWidth / 4, h = im.naturalHeight / rows;
+    g.save();
+    g.translate(x, y);
+    if (angle) {
+      g.rotate(angle);
+      if (Math.cos(angle) < 0) g.scale(1, -1);
+    }
+    g.globalCompositeOperation = 'screen';
+    g.globalAlpha *= clamp(alpha);
+    g.drawImage(im, cell * w, row * h, w, h, -size * .5, -size * anchor, size, size);
+    g.restore();
+    return true;
+  }
+  root.VfxKit.sequenceFrame = sequenceFrame;
+
+  const ACTION_SEQUENCES = {
+    sword: 2.1, knife: 1.8, blunt: 2.3, spear: 1.9, rapier: 1.8,
+    arrow: 1.45, parry: 1.7, arcane: 1.95, holy: 2.45, death: 2.2, impact: 1.45
+  };
+  const IMPACT_SIZE = { light: .8, heavy: 1, critical: 1.12, finisher: 1.28 };
+
+  function actionSequence(kind, g, e, t, p, a, cw) {
+    const battle = root.BattleVFX;
+    const art = kind === 'impact' ? (IMPACT_SIZE[e.tier] ? e.tier : 'light') : kind;
+    const fallback = kind === 'impact' ? { ...e, kind: 'impactCore' } : e;
+    if (kind === 'impact' && !battle?.impactEnabled()) return false;
+    if (!sequenceReady(art)) return battle?.drawOld(fallback, t, p, a, g, { w: cw }) || false;
+    if (t >= 1) return true;
+    const W = cw * (e.scale || 1), size = W * ACTION_SEQUENCES[kind] * (IMPACT_SIZE[art] || 1);
+    const still = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const startY = a.y - cw * .75, targetY = chest(p, cw);
+    const direction = Math.atan2(targetY - startY, p.x - a.x);
+    const travel = !still && e.from && Math.hypot(p.x - a.x, p.y - a.y) > 4;
+    const split = travel ? ({ arrow: .72, arcane: .36 }[kind] || 0) : 0;
+    if (t < split) {
+      const k = t / split, x = lerp(a.x, p.x, k);
+      groundLight(g, x, lerp(a.y, p.y, k), W * .7, LIGHT[kind][0], .27);
+      return sequenceFrame(g, art, Math.min(1, Math.floor(k * 2)), x,
+        lerp(startY, targetY, k), size * .72, 1, direction);
+    }
+    const k = seg(t, split, 1);
+    const groundAnchor = { blunt: .64, holy: .76, death: .76 }[kind];
+    const aimed = ['sword', 'knife', 'spear', 'rapier', 'arrow'].includes(kind);
+    const frame = still ? 1 : split ? (k < .38 ? 2 : 3) : k < .13 ? 0 : k < .32 ? 1 : k < .58 ? 2 : 3;
+    const strength = still ? .65 * (1 - t) : 1 - seg(k, .7, 1);
+    const hit = seg(k, split ? 0 : .13, 1);
+    if (!still) paintedLight(kind, g, e, hit, p, W, false);
+    sequenceFrame(g, art, frame, p.x, groundAnchor ? p.y : targetY,
+      size, strength, aimed ? direction : 0, groundAnchor || .5);
+    if (!still) paintedLight(kind, g, e, hit, p, W, true);
+    return true;
+  }
+  for (const kind of Object.keys(ACTION_SEQUENCES)) {
+    addVariant(kind, 'drawnSequence', 'ภาพวาด 4 เฟรม + แสงและอนุภาค',
+      (g, e, t, p, a, cw) => actionSequence(kind, g, e, t, p, a, cw));
   }
 
   // Effects with a single illustrated stamp still move continuously through
