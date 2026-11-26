@@ -166333,6 +166333,156 @@
    },
    "usedIn": "Source atlas for 16 semantic menu icons",
    "prompt": "Warm painterly JRPG; ivory parchment and gold frame; unique semantic symbols; true transparent outside frame; no text. Subjects in row-major order: skills, items, materials, collection, forge, market, guild, inn, healer, temple, achievements, reputation, bounty, village-projects, help, back"
+  },
+  {
+   "id": "ui-battle-end-turn",
+   "file": "assets/ui/battle-actions/end-turn.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": true,
+   "subject": "จบเทิร์น",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-undo-move",
+   "file": "assets/ui/battle-actions/undo-move.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": true,
+   "subject": "ย้อนเดิน",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-auto-play",
+   "file": "assets/ui/battle-actions/auto-play.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": true,
+   "subject": "เล่นอัตโนมัติ",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-auto-stop",
+   "file": "assets/ui/battle-actions/auto-stop.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": true,
+   "subject": "หยุดอัตโนมัติ",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-crystal-absorb",
+   "file": "assets/ui/battle-actions/crystal-absorb.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": true,
+   "subject": "ดูดซับคริสตัล",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-crystal-redraw",
+   "file": "assets/ui/battle-actions/crystal-redraw.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": true,
+   "subject": "หลอมคริสตัลสลับไพ่",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-menu",
+   "file": "assets/ui/battle-actions/menu.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": true,
+   "subject": "เมนูสนามรบ",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-grid",
+   "file": "assets/ui/battle-actions/grid.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    256,
+    256
+   ],
+   "transparent": true,
+   "subject": "เปิด–ปิดกริด",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-draw-pile",
+   "file": "assets/ui/battle-actions/draw-pile.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    386,
+    464
+   ],
+   "transparent": true,
+   "subject": "กองจั่ว",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
+  },
+  {
+   "id": "ui-battle-discard-pile",
+   "file": "assets/ui/battle-actions/discard-pile.webp",
+   "category": "ui",
+   "status": "final",
+   "size": [
+    400,
+    321
+   ],
+   "transparent": true,
+   "subject": "กองทิ้ง",
+   "usedIn": "BattleHudArt · ปุ่มสนามรบและกองไพ่",
+   "artRevision": "v98.1080",
+   "prompt": "Painterly JRPG UI; ivory parchment and restrained aged gold, readable at small size, warm upper-left light; transparent isolated button face or card pile; no baked text or counters."
   }
  ],
  "studioReviews": {

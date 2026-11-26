@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1065';
+  const V = '98.1080';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -101,8 +101,8 @@
   function loadScript(src) { return new Promise(res => { const s = document.createElement('script'); s.src = src + '?v=' + V; s.async = false; s.onload = () => res(true); s.onerror = () => res(false); document.head.append(s) }) }
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
-    loadCss('css/card-studio.css');
-    const want = { 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing', 'js/head-arrow.js': 'HeadArrow' };
+    loadCss('css/card-studio.css'); loadCss('css/battle-hud-art.css');
+    const want = { 'js/battle-hud-art.js': 'BattleHudArt', 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing', 'js/head-arrow.js': 'HeadArrow' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
@@ -582,7 +582,7 @@
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
     d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 6px"></div><div id="fbUnitSlot"></div><div id="fbUnits"></div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbCrSt" title="ดูดซับคริสตัล 1 ก้อน → ฟื้นแรง +15"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ดูดซับคริสตัล · แรง +15</span></button><button id="fbCrDraw" title="หลอมคริสตัล 1 ก้อน → สลับไพ่ใหม่ทั้งมือ (1 ครั้ง/เทิร์น)"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>หลอมคริสตัล · สลับไพ่</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '' : ''}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbCrSt" title="ดูดซับคริสตัล 1 ก้อน → ฟื้นแรง +15"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ดูดซับคริสตัล · แรง +15</span></button><button id="fbCrDraw" title="หลอมคริสตัล 1 ก้อน → สลับไพ่ใหม่ทั้งมือ (1 ครั้ง/เทิร์น)"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>หลอมคริสตัล · สลับไพ่</span></button><button id="gridBtn" type="button" title="เปิด–ปิดกริด (G)" aria-label="เปิดหรือปิดกริด"><span>กริด</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '' : ''}</div>
       <div class="fb-sec" data-sec="log"><div class="sec-h"><b>📜 บันทึกการต่อสู้</b><button class="sec-x" aria-label="ปิด">✕</button></div><div id="fbLog" style="max-height:60vh;overflow:auto;font-size:13px;color:#d8caa0"></div></div>
       <div class="fb-sec help" data-sec="help"><div class="sec-h"><b>❓ วิธีเล่น</b><button class="sec-x" aria-label="ปิด">✕</button></div><div style="font-size:13px;line-height:1.6;color:#cbd6bd">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = ต้องเดินเข้าไปก่อน เกมไม่พาเดินให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div></div>`;
     document.body.append(d); hud = d;
@@ -597,8 +597,9 @@
     d.querySelector('#fbCrDraw').onclick = () => crystalAct('draw');
     d.querySelector('#fbUndo').onclick = () => undoWalk();
     d.querySelector('#fbMenu').onclick = () => pauseMenu();
+    d.querySelector('#gridBtn').onclick = () => gridSet(!GRID);
     /* v98.252 · the action buttons live in their own row above the cards; the info window can be folded */
-    { const row = d.querySelector('#fbEnd').parentElement, acts = document.createElement('div'); acts.id = 'fbActions'; while (row.firstChild) acts.append(row.firstChild); row.remove(); document.body.append(acts);
+    { const row = d.querySelector('#fbEnd').parentElement, acts = document.createElement('div'); acts.id = 'fbActions'; while (row.firstChild) acts.append(row.firstChild); row.remove(); document.body.append(acts); window.BattleHudArt?.mountControls(acts); gridSet(GRID);
       const min = d.querySelector('#fbMin'), apply = m => { d.classList.toggle('min', m); try { localStorage.setItem('projectA.fbHudMin', m ? '1' : '0') } catch (e) { } };
       let was = false; try { was = localStorage.getItem('projectA.fbHudMin') === '1' } catch (e) { } apply(was); min.onclick = () => apply(!d.classList.contains('min')) }
   }
@@ -628,7 +629,7 @@
     hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<img class="gemi" src="assets/ui/gem-${i < left ? 'on' : 'off'}.webp" alt="" draggable="false">`).join('');
     document.getElementById('fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
     document.getElementById('fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || (st.attacks || 0) > 0 || !walks.length;
-    { const a = document.getElementById('fbAuto'); a.disabled = noAuto(); a.title = noAuto() ? 'ปิดไว้ในบทฝึกต่อสู้' : ''; a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto' }
+    { const a = document.getElementById('fbAuto'); a.disabled = noAuto(); a.title = noAuto() ? 'ปิดไว้ในบทฝึกต่อสู้' : ''; a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto'; window.BattleHudArt?.skinButton(a, auto ? 'stop' : 'auto', auto ? 'หยุด Auto' : 'Auto'); a.setAttribute('aria-pressed', String(auto)) }
     queueSync(); itemSync();
     { const off = busy || !!st.outcome || st.turn !== 'hero' || !left; document.getElementById('fbCrSt').disabled = off || FB.hero(st).stamina >= (FB.hero(st).stMax || 100); document.getElementById('fbCrDraw').disabled = off || !!st.redrawn }
     hud.querySelector('#fbLog').innerHTML = st.log.slice(-6).reverse().map(x => '<div>' + esc(x) + '</div>').join('');
@@ -671,7 +672,7 @@
     const n = st?.itemHand?.length || 0;
     if (!st || !Object.keys(st.bag || {}).length) { btn?.remove(); tray?.remove(); return }
     if (!btn) { btn = document.createElement('button'); btn.id = 'fbItemBtn'; btn.title = 'การ์ดไอเทม — ของใช้ในสมุดผนึกเป็นการ์ด ใช้ได้เทิร์นละ 1 ใบ'; btn.onclick = () => { itemOpen = !itemOpen; itemSync() }; document.getElementById('fbActions')?.append(btn); window.Tips?.once?.('b_bagcards', 'การ์ดไอเทม', ['ของที่เจ้าเก็บไว้ในสมุดผนึกแสดงเป็นการ์ด — เวทแปลงของเป็นการ์ดที่สมาคมนักผจญภัยใส่ไว้ในสมุดตอนลงทะเบียนแรงก์ F ใครลงทะเบียนก็มีเหมือนกัน', 'กดปุ่ม 📖 ไอเทม แล้วเลือกการ์ด · ใช้ได้เทิร์นละ 1 ใบ และกินคริสตัล 1 ดวง', 'ใช้แล้วการ์ดหมดไปจากสมุดจริง (กลับมาได้ถ้าซื้อ/เก็บเพิ่ม)']) }
-    btn.innerHTML = '<span>📖 ไอเทม</span><b class="n">' + n + '</b>'; btn.disabled = !n && !itemOpen;
+    btn.innerHTML = '<span>📖 ไอเทม</span><b class="n">' + n + '</b>'; delete btn.dataset.hudArt; window.BattleHudArt?.skinButton(btn, 'items', 'ไอเทม', n + ' ใบ'); btn.disabled = !n && !itemOpen;
     if (!tray) { tray = document.createElement('div'); tray.id = 'fbItems'; document.body.append(tray) }
     tray.hidden = !itemOpen || !n;
     tray.innerHTML = '<span class="lbl">การ์ดไอเทม · ใช้ได้เทิร์นละ 1</span>' + (st.itemHand || []).map((k, i) => { const why = st.turn === 'hero' ? FB.itemBlock(st, i) : 'ไม่ใช่ตาคุณ', html = window.CardStudio?.renderCard('c-' + k, { mini: true, fallbackArt: 'assets/cards/item/' + k + '.webp' }) || '<div class="fb-fallback"><b>' + esc(FB.ITEM_NAME[k] || k) + '</b></div>';
@@ -734,8 +735,8 @@
   /* ---------- hand ---------- */
   function handMake() {
     const d = document.createElement('div'); d.id = 'fbHand';
-    d.innerHTML = `<div class="fb-pile draw" id="fbDraw"></div><div class="row" id="fbMove" style="position:relative"><span class="lbl">ไพ่เดิน</span></div><div class="sep"></div><div class="row" id="fbCombat" style="position:relative"><span class="lbl">ไพ่ต่อสู้</span></div><div class="fb-pile discard" id="fbDiscard"></div>`;
-    document.body.append(d); hand = d;
+    d.innerHTML = `<div class="fb-pile draw" id="fbDraw">${window.BattleHudArt?.pileHTML('draw') || ''}</div><div class="row" id="fbMove" style="position:relative"><span class="lbl">ไพ่เดิน</span></div><div class="sep"></div><div class="row" id="fbCombat" style="position:relative"><span class="lbl">ไพ่ต่อสู้</span></div><div class="fb-pile discard" id="fbDiscard">${window.BattleHudArt?.pileHTML('discard') || ''}</div>`;
+    document.body.append(d); hand = d; window.BattleHudArt?.reserveHand(d);
     /* v94.02 touch: the first tap shows the card (range, element tip), a second tap on the same card plays it */
     let armed = null; const touchy = () => window.Touch?.lastPointer?.() === 'touch';
     d.addEventListener('click', e => { const b = e.target.closest('.fb-card'); if (!b) return; if (touchy() && armed !== b.dataset.uid) { armed = b.dataset.uid; preview(b); return } armed = null; cardClick(b) });
@@ -759,8 +760,8 @@
     if (!hand || !st) return;
     const d = st.deck, row = (id, group) => { const r = hand.querySelector(id), lbl = r.querySelector('.lbl'); r.innerHTML = ''; r.append(lbl); r.insertAdjacentHTML('beforeend', d[group].hand.map((c, i) => cardEl(group, c, i)).join('')) };
     row('#fbMove', 'movement'); row('#fbCombat', 'combat');
-    hand.querySelector('#fbDraw').innerHTML = `${d.movement.draw.length + d.combat.draw.length}<small>กองจั่ว</small>`;
-    hand.querySelector('#fbDiscard').innerHTML = `${d.movement.discard.length + d.combat.discard.length}<small>กองทิ้ง</small>`;
+    window.BattleHudArt?.syncPile(hand.querySelector('#fbDraw'), d.movement.draw.length + d.combat.draw.length);
+    window.BattleHudArt?.syncPile(hand.querySelector('#fbDiscard'), d.movement.discard.length + d.combat.discard.length);
   }
 
   /* ---------- full card beside the action (never over the hero or the monster) ---------- */
@@ -1556,9 +1557,8 @@
   /* v94: a cell outline sits on its own raised top (battle-field heights); the village has none */
   /* v98.312 · grid on/off (key G, remembered) + which cells are hidden behind taller ground in front of them */
   let GRID = (() => { try { return localStorage.getItem('project-a-field-grid') !== '0' } catch (e) { return true } })();
-  function gridSet(on) { GRID = on; try { localStorage.setItem('project-a-field-grid', on ? '1' : '0') } catch (_) { } const b = document.getElementById('gridBtn'); if (b) { b.classList.toggle('on', on); b.title = on ? 'ซ่อนลายกริด (G)' : 'แสดงลายกริด (G)' } }
-  if (ON) { const sx = document.createElement('style'); sx.textContent = '#gridBtn{position:fixed;right:228px;bottom:30px;z-index:60;width:44px;height:44px;border-radius:50%;border:2px solid #b89654;background:#1d2a22e6;color:#f3e7cf;font:22px/1 system-ui;cursor:pointer;box-shadow:0 3px 10px #0008;opacity:.75}#gridBtn.on{opacity:1;background:#3a5a3ae6;border-color:#e0c070}#gridBtn:hover{opacity:1}@media(max-width:700px){#gridBtn{right:12px;bottom:150px}}'; document.head.append(sx);
-    const gb = document.createElement('button'); gb.id = 'gridBtn'; gb.type = 'button'; gb.textContent = '▦'; gb.onclick = () => gridSet(!GRID); document.body.append(gb); gridSet(GRID) }
+  function gridSet(on) { GRID = on; try { localStorage.setItem('project-a-field-grid', on ? '1' : '0') } catch (_) { } const b = document.getElementById('gridBtn'); if (b) { b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); b.title = on ? 'ซ่อนลายกริด (G)' : 'แสดงลายกริด (G)' } }
+  // Grid toggle is a normal action-row button, never a fixed overlay over cards.
   addEventListener('keydown', e => { if (e.key.toLowerCase() !== 'g' || e.repeat || e.ctrlKey || e.metaKey || e.target.closest?.('input,textarea,select')) return; gridSet(!GRID) });
   function gridHidden(cells) {
     const out = new Set(), FH = window.FieldHeight, DEP = window.FieldDepth; if (!FH?.lift || !DEP) return out;
