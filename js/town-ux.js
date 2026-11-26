@@ -37,7 +37,7 @@ document.querySelector('.toolbar').prepend(menuToggle);document.body.appendChild
 /* v97.37 · town map (top-right 🧭 or M): the whole village fitted to the screen once, frozen into a picture, with a marker per place —
    click a marker to walk there. The camera zoom itself stays limited, so the normal view never gets tiny. */
 async function townMap(){if(EDIT_PAGE)return;const old=document.getElementById('townMap');if(old){old.remove();return}
- const d=document.createElement('div');d.id='townMap';d.innerHTML='<div class="tm-box"><div class="tm-head"><b>🧭 แผนที่ เฟิร์นเวล</b><small>ล้อเมาส์/ถ่างนิ้ว = ซูม · ลาก = เลื่อน · ดับเบิลคลิก = ซูมตรงนั้น · คลิกสถานที่ = เดินไป · Esc/M ปิด</small><button class="tm-x">✕</button></div><div class="tm-pic"><div class="tm-inner"><canvas></canvas></div></div></div>';
+ const d=document.createElement('div');d.id='townMap';d.innerHTML='<div class="tm-box"><div class="tm-head"><b>แผนที่ เฟิร์นเวล</b><small>ล้อเมาส์/ถ่างนิ้ว = ซูม · ลาก = เลื่อน · ดับเบิลคลิก = ซูมตรงนั้น · คลิกสถานที่ = เดินไป · Esc/M ปิด</small><button class="tm-x">✕</button></div><div class="tm-pic"><div class="tm-inner"><canvas></canvas></div></div></div>';
  if(!document.getElementById('townMapCss')){const c=document.createElement('style');c.id='townMapCss';c.textContent=`#townMap{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#06090cd9;backdrop-filter:blur(4px);font-family:VillageThai,system-ui,sans-serif}
   #townMap .tm-box{width:min(1700px,96vw);padding:12px 14px 14px;border-radius:16px;background:linear-gradient(#efe0bc,#d9c495);box-shadow:0 24px 60px #000c;color:#3a2810}
   #townMap .tm-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}#townMap .tm-head b{font:800 20px AgThai,Georgia,"Noto Sans Thai",serif}#townMap .tm-head small{color:#6a5030;flex:1}
@@ -57,7 +57,7 @@ async function townMap(){if(EDIT_PAGE)return;const old=document.getElementById('
  const sharpen=(async()=>{zoom=z2;for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){if(!d.isConnected)break;const wx=Math.min(WORLD_W-tw/2,(i+.5)*tw),wy=Math.min(WORLD_H-th/2,(j+.5)*th);pan.x=-(wx-WORLD_W/2)*scale*z2;pan.y=-(wy-WORLD_H/2)*scale*z2;
   await frames(2);if(d.isConnected){const sw=src.width*FX,sh=src.height*FY;out.drawImage(src,(src.width-sw)/2,(src.height-sh)/2,sw,sh,(wx-tw/2)*k,(wy-th/2)*k,sw,sh)}}zoom=save.zoom;pan.x=save.px;pan.y=save.py;follow=save.follow;window.MAP_SHOT=false})();
  const toPct=p=>({x:p.x/WORLD_W*100,y:p.y/WORLD_H*100});
- const inner=d.querySelector('.tm-inner');pic.style.width='min(100%,'+Math.round((innerHeight-110)*cvs.width/cvs.height)+'px)';pic.style.margin='0 auto';
+ const inner=d.querySelector('.tm-inner');pic.style.width='min(100%,'+Math.round((innerHeight-(innerWidth<760?180:160))*cvs.width/cvs.height)+'px)';pic.style.margin='0 auto';
  for(const o of locations){if(!o.name)continue;const q=toPct(project(door(o).u,door(o).v)),b=document.createElement('span');b.className='tm-pin';b.textContent=o.name;b.style.left=q.x+'%';b.style.top=q.y+'%';b.onclick=e=>{if(moved)return;close();travel(o)};inner.appendChild(b)}
  {const q=toPct(project(hero.u,hero.v)),b=document.createElement('span');b.className='tm-pin me';b.textContent='● คุณอยู่ที่นี่';b.style.left=q.x+'%';b.style.top=q.y+'%';inner.appendChild(b)}
  /* zoom with the wheel / pinch (1× = whole village … 3×), drag to move */

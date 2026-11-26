@@ -55,7 +55,7 @@
   const beats = e => Object.keys(STRONG[norm(e)] || {}), weakTo = e => WHEEL.filter(o => strong(o, e));
   /* ---------- the chart ---------- */
   function chartHTML() {
-    const cell = id => { const E = KAELAM[id]; return `<span class="ew-el" style="--c:${E.col}">${E.icon} <b>${E.k}</b> <small>${E.th}</small></span>` };
+    const cell = id => { const E = KAELAM[id]; return `<span class="ew-el" style="--c:${E.col}"><img class="ew-glyph" src="assets/cards/elements/${id}.webp" alt="" aria-hidden="true"> <b>${E.k}</b> <small>${E.th}</small></span>` };
     const rows = WHEEL.map(id => `<tr><td>${cell(id)}</td><td>${beats(id).map(o => `${cell(o)}<i>${esc(STRONG[id][o])}</i>`).join('')}</td><td>${weakTo(id).map(cell).join('')}</td></tr>`).join('');
     const sec = Object.entries(SECRET).map(([id, E]) => `<tr><td><span class="ew-el" style="--c:${E.col}">${E.icon} <b>${seen[id] ? E.th : '???'}</b> <small>${seen[id] ? E.sub : 'ธาตุลับ'}</small></span></td><td colspan="2">${seen[id] ? 'ธาตุดั้งเดิมที่ทุกธาตุแยกออกมา · แรงขึ้น ×1.1 กับทุกธาตุ และรับความเสียหายจากทุกธาตุ ×0.9' : 'ยังไม่มีใครรู้จักธาตุนี้'}</td></tr>`).join('');
     return `<h2>ตารางธาตุ Kaelam</h2><p class="ew-sub">โจมตีด้วยธาตุที่ <b>ชนะทาง</b> แรงขึ้น ×1.3 · ตีธาตุที่ <b>แพ้ทาง</b> เหลือ ×0.7 · ธาตุของการ์ดดูได้ตอนเลือกการ์ด · ธาตุของศัตรูอยู่ข้างชื่อ</p>
@@ -72,9 +72,9 @@
   }
   function showChart(doc = document) {
     css(doc); doc.querySelector('.ew-bg')?.remove();
-    const bg = doc.createElement('div'); bg.className = 'ew-bg'; bg.innerHTML = `<div class="ew-box">${chartHTML()}<button class="ew-close" type="button">ปิด</button></div>`;
-    bg.onclick = e => { if (e.target === bg || e.target.classList.contains('ew-close')) bg.remove() };
-    doc.body.append(bg);
+    const bg = doc.createElement('div'); bg.className = 'ew-bg'; bg.innerHTML = `<div class="ew-box" role="dialog" aria-modal="true" aria-label="ตารางธาตุ Kaelam"><button class="ew-close" type="button">ปิด</button>${chartHTML()}</div>`;
+    bg.onclick = e => { if (e.target === bg || e.target.closest?.('.ew-close')) bg.remove() };
+    doc.body.append(bg);doc.defaultView?.SealUI?.decorate(bg);
   }
   const api = { WHEEL, KAELAM, SECRET, STRONG, BEAT, LOSE, mult, percent, info, name, note, tip, beats, weakTo, reveal, chartHTML, showChart, isSecret: id => !!SECRET[norm(id)], norm };
   root.ElementWheel = api;
