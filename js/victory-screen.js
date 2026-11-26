@@ -151,7 +151,7 @@
           <div class="sub">${esc(String(d.title || (d.defeat ? 'พ่ายแพ้' : 'ชนะการต่อสู้')).replace(/\s*·\s*$/, ''))}</div>${d.goal ? `<div class="goal">${ic('pack/crown')}เป้าหมาย: ${esc(d.goal)}${d.defeat ? '<i class="ex"></i>' : '<i class="chk"></i>'}</div>` : ''}
           <div class="chips">${chips.map(([i0, x], i) => `<span style="animation-delay:${1.05 + i * .1}s">${i0}${esc(x)}</span>`).join('')}</div>
           <div class="cards">${members.map(card).join('')}</div>${job}
-          <div class="btns" style="--d:${btnD}s">${S ? '<button class="b2" data-a="more" type="button">ดูรายละเอียดการต่อสู้</button>' : ''}<button class="b1" data-a="go" type="button" disabled>Continue</button></div></section>
+          <div class="btns" style="--d:${btnD}s">${S ? '<button class="b2" data-a="more" type="button">ดูรายละเอียดการต่อสู้</button>' : ''}<button class="b1" data-a="go" type="button" disabled>จบการต่อสู้</button></div></section>
         <section class="pg rp" hidden>${S ? report(d, members, S) : ''}</section></div>`;
       document.body.append(el);
       try { root.Sfx?.play?.(d.defeat ? 'lose' : 'victory') } catch (e) { } if (!d.defeat) try { root.GameBGM?.force?.('victory') } catch (e) { }
@@ -233,7 +233,7 @@
       <div class="lbl">แยกตามคน<span class="lg d"></span>ดาเมจที่ทำ  <span class="lg t"></span>ดาเมจที่รับ</div>
       <div class="rows">${ids.map(i => `<div class="row"><div class="n">${esc(nameOf(i))}</div><div class="b"><div class="d"><em>${num(dealt[i] || 0)}</em><i data-w="${Math.round((dealt[i] || 0) / mx * 100)}"></i></div><div class="t"><em>${num(taken[i] || 0)}</em><i data-w="${Math.round((taken[i] || 0) / mx * 100)}"></i></div>${kills[i] || healed[i] ? `<div class="k">${kills[i] ? ic('pack/skull') + 'ล้มศัตรู ' + kills[i] + ' ตัว' : ''}${kills[i] && healed[i] ? ' · ' : ''}${healed[i] ? ic('pack/heal') + 'ฟื้นให้ ' + num(healed[i]) : ''}</div>` : ''}</div></div>`).join('')}</div>
       ${(S.cards || []).length ? `<div class="lbl">การ์ดที่ใช้บ่อย</div><div class="cardsUsed">${S.cards.slice(0, 5).map(([n, c]) => `<span>${esc(n)} <b>×${c}</b></span>`).join('')}</div>` : ''}
-      <div class="btns" style="--d:.2s"><button class="b2" data-a="back" type="button">กลับ</button><button class="b1" data-a="go" type="button">Continue</button></div>`;
+      <div class="btns" style="--d:.2s"><button class="b2" data-a="back" type="button">กลับ</button><button class="b1" data-a="go" type="button">จบการต่อสู้</button></div>`;
   }
 
   /* ---- helpers for the hosts: snapshot the levels before the EXP is paid, read them after ---- */

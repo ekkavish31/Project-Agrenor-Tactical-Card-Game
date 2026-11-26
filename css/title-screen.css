@@ -315,3 +315,8 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #titleScreen .ts-name .ts-edit::after{content:"";position:absolute;inset:7px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 21l1.2-5.2L16.6 3.4a2 2 0 012.8 0l1.2 1.2a2 2 0 010 2.8L8.2 19.8 3 21z' fill='%23fff1c8' stroke='%235a1810' stroke-width='1.2' stroke-linejoin='round'/%3E%3Cpath d='M14.5 5.5l4 4' stroke='%23a02a24' stroke-width='1.6'/%3E%3Cpath d='M4.2 16.2l3.6 3.6' stroke='%235a1810' stroke-width='1' opacity='.6'/%3E%3C/svg%3E") center/contain no-repeat;pointer-events:none;filter:drop-shadow(0 1px 0 #3a0a08)}
 #titleScreen .ts-name .ts-edit:hover{background:radial-gradient(circle at 35% 30%,#ec5a4c 0,#b8342c 55%,#8a2220 100%);filter:brightness(1.1);transform:translateY(-50%) scale(1.08)}
 #titleScreen .ts-name .ts-edit:active{transform:translateY(-50%) scale(.95)}
+
+/* v98.1127 · VA buttons = the game's own battle button pictures (9-slice) + code (as in the Victory report) — the start button now uses the gold one */
+#titleScreen .ts-name .ts-go{min-height:50px;padding:0 28px;border:8px solid transparent;border-image:url(../assets/ui/battle-btn-hot.webp) 14 fill/8px stretch;color:#2a1a05;font:800 18px AgThai,system-ui,sans-serif;letter-spacing:.03em;text-shadow:none;filter:drop-shadow(0 4px 5px #0006)}
+#titleScreen .ts-name .ts-go:not(:disabled):hover{filter:brightness(1.12) drop-shadow(0 6px 7px #0007)}
+#titleScreen .ts-name .ts-go:disabled{border-image-source:url(../assets/ui/battle-btn.webp);color:#cbbd9a;filter:grayscale(.6) brightness(.8) drop-shadow(0 3px 4px #0005)}
