@@ -28,7 +28,7 @@
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const MIP = '<div class="mip-track" aria-hidden="true"><div class="mip-go"><div class="mip-flip"><div class="mip-run"><i></i></div><div class="mip-idle"><i></i></div></div></div></div>';
   function css() {   /* pages that did not link the stylesheets get them here */
-    for (const h of ['css/mip-loader.css?v=v98.1035', 'css/game-loader.css?v=v98.1110']) { const name = h.split('/')[1].split('?')[0]; if ([...document.styleSheets].some(s => (s.href || '').includes(name)) || document.querySelector('link[href*="' + name + '"]')) continue; const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; (document.head || document.documentElement).appendChild(l) }
+    for (const h of ['css/mip-loader.css?v=v98.1035', 'css/game-loader.css?v=v98.1117']) { const name = h.split('/')[1].split('?')[0]; if ([...document.styleSheets].some(s => (s.href || '').includes(name)) || document.querySelector('link[href*="' + name + '"]')) continue; const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; (document.head || document.documentElement).appendChild(l) }
   }
   function make(o = {}) {
     css(); const el = document.createElement('div'); el.className = 'gl-std' + (o.absolute ? ' gl-abs' : ''); if (o.id) el.id = o.id; el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite');
