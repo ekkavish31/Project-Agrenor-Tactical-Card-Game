@@ -11,9 +11,18 @@ const clamp=v=>Math.max(0,Math.min(1,v)),pop=(t,k)=>clamp(t/k),fade=(t,s)=>t<s?1
 function stamp(g,n,x,y,size,o={}){const im=I(n);if(!im||size<=0)return false;const a=(o.alpha??1);if(a<=0)return true;g.save();g.globalAlpha*=a;g.globalCompositeOperation=o.blend||'lighter';g.translate(x,y);if(o.rot)g.rotate(o.rot);g.scale((o.flip?-1:1)*(o.sx||1),o.sy||1);g.drawImage(im,-size*(o.ax??.5),-size*(o.ay??.5),size,size);g.restore();return true}
 const R=(e,i)=>{let h=Math.imul((e.seed||1)*2654435761^i*40503,2246822519)>>>0;return (h%10000)/10000};
 function burst(g,e,n,x,y,spread,size,t,name='hit'){for(let i=0;i<n;i++){const an=R(e,i)*Math.PI*2,d=spread*(.35+.65*R(e,i+50))*t;stamp(g,'particle/'+name,x+Math.cos(an)*d,y+Math.sin(an)*d*.7,size*(1-t*.6),{alpha:1-t,rot:an})}}
-// projectile travel (glow mote along an arc) shared by spells; returns the impact progress 0..1 or -1 while still flying
-function travel(g,e,t,a,p,cw,split,name,size,lift=.45){if(!e.from||(Math.abs(a.x-p.x)+Math.abs(a.y-p.y))<4)return clamp(t);if(t>=split)return (t-split)/(1-split);const k=t/split,ay=a.y-cw*.75,py=p.y-cw*.6;
- for(let i=5;i>=0;i--){const kk=Math.max(0,k-i*.035),x=a.x+(p.x-a.x)*kk,y=ay+(py-ay)*kk-Math.sin(kk*Math.PI)*cw*lift;stamp(g,'particle/'+(i?'glow':name),x,y,size*(i?1-i*.13:1),{alpha:i?.55-i*.08:1,rot:k*8})}return -1}
+// A directed streak from caster to target. Return -1 until the impact phase.
+function travel(g,e,t,a,p,cw,split,name,size){
+ if(!e.from||Math.abs(a.x-p.x)+Math.abs(a.y-p.y)<4)return clamp(t);
+ if(t>=split)return (t-split)/(1-split);
+ const k=t/split,ay=a.y-cw*.75,py=chest(p,cw),dx=p.x-a.x,dy=py-ay,angle=Math.atan2(dy,dx);
+ for(let i=5;i>=0;i--){
+  const progress=Math.max(0,k-i*.035);
+  stamp(g,'particle/'+(i?'glow':name),a.x+dx*progress,ay+dy*progress,size*(i?1-i*.13:1),
+   {alpha:i?.55-i*.08:1,rot:angle,sx:i?1.6:1.35,sy:.65});
+ }
+ return -1
+}
 const chest=(p,cw)=>p.y-cw*.65;
 // One painted atlas, four centered cells. Animation uses the battle clock, not timers.
 const IMPACT={light:{cell:0,size:1.3,duration:300},heavy:{cell:1,size:1.45,duration:380},critical:{cell:2,size:1.6,duration:420},finisher:{cell:3,size:1.85,duration:500}};
@@ -48,12 +57,13 @@ const KIND={
   if(!stamp(g,'skill/spear',x,y,W*1.9,{rot:an,ax:.86,alpha:fade(t,.55)}))return false;if(t>.42)burst(g,e,8,p.x,py,W*1.1,W*.32,(t-.42)/.58,'star');return true},
  rapier(g,e,t,p,a,cw){const W=cw*(e.scale||1),ay=chest(a,cw)-cw*.05,py=chest(p,cw)-cw*.05,an=Math.atan2(py-ay,p.x-a.x),tt=clamp(t*3);
   if(!stamp(g,'skill/thrust',p.x,py,W*1.9,{rot:an,ax:.9,sx:.4+.6*tt,alpha:fade(t,.4)}))return false;if(t>.28){const k=(t-.28)/.72;stamp(g,'particle/star',p.x,py,W*1.2*Math.sin(k*Math.PI),{rot:k})}return true},
- arrow(g,e,t,p,a,cw){const W=cw*(e.scale||1),ay=a.y-cw*.75,py=chest(p,cw),arc=cw*.35,x=a.x+(p.x-a.x)*t,y=ay+(py-ay)*t-Math.sin(t*Math.PI)*arc,an=Math.atan2((py-ay)-Math.cos(t*Math.PI)*arc*Math.PI,p.x-a.x);
-  if(!stamp(g,'skill/arrow',x,y,W*1.5,{rot:an,ax:.85}))return false;if(t>.9)stamp(g,'particle/hit',p.x,py,W*.9,{alpha:(1-t)*10});return true},
+ arrow(g,e,t,p,a,cw){const W=cw*(e.scale||1),ay=a.y-cw*.75,py=chest(p,cw),k=pop(t,.88),x=a.x+(p.x-a.x)*k,y=ay+(py-ay)*k,an=Math.atan2(py-ay,p.x-a.x);
+  if(t<.88)return stamp(g,'skill/arrow',x,y,W*1.5,{rot:an,ax:.85});
+  return stamp(g,'particle/hit',p.x,py,W*.9,{alpha:fade(t,.88)})},
  shield(g,e,t,p,a,cw){const W=cw*(e.scale||1),an=Math.atan2(a.y-p.y,a.x-p.x),s=back(pop(t,.25));return stamp(g,'skill/shield',p.x+Math.cos(an)*cw*.22,chest(p,cw),W*1.7*(.75+.25*s),{alpha:.85*fade(t,.45),rot:Math.sin(t*3)*.05})},
  parry(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!stamp(g,'skill/parry',p.x,chest(p,cw)-cw*.1,W*1.7*(.55+.45*back(pop(t,.18))),{rot:R(e,1)*.8-.4+t*.3,alpha:fade(t,.38)}))return false;burst(g,e,10,p.x,chest(p,cw),W*1.2,W*.3,t,'star');return true},
- fire(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.55,'ember',W*.7,.5);if(k<0)return !!I('particle/ember');return stamp(g,'skill/fire',p.x,p.y+cw*.1,W*2.3*(.55+.55*back(pop(k,.45))),{ay:.8,alpha:fade(k,.35)})},
- ice(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.5,'mote',W*.6,.3);if(k<0)return !!I('particle/mote');if(!stamp(g,'skill/ice',p.x,p.y+cw*.12,W*2*back(pop(k,.3)),{ay:.85,sy:pop(k,.3),alpha:fade(k,.55)}))return false;if(k>.25)burst(g,e,7,p.x,chest(p,cw),W,W*.28,(k-.25)/.75,'snowflake');return true},
+ fire(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.55,'ember',W*.7);if(k<0)return !!I('particle/ember');return stamp(g,'skill/fire',p.x,p.y+cw*.1,W*2.3*(.55+.55*back(pop(k,.45))),{ay:.8,alpha:fade(k,.35)})},
+ ice(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.5,'mote',W*.6);if(k<0)return !!I('particle/mote');if(!stamp(g,'skill/ice',p.x,p.y+cw*.12,W*2*back(pop(k,.3)),{ay:.85,sy:pop(k,.3),alpha:fade(k,.55)}))return false;if(k>.25)burst(g,e,7,p.x,chest(p,cw),W,W*.28,(k-.25)/.75,'snowflake');return true},
  lightning(g,e,t,p,a,cw){const W=cw*(e.scale||1),fl=t<.15?1:clamp(1-(t-.15)*1.4)*(Math.floor(t*30)%2?.55:1);if(!stamp(g,'skill/lightning',p.x,p.y+cw*.1,W*3,{ay:.92,sx:.75,alpha:fl}))return false;
   if(t<.3){g.save();g.globalAlpha=.22*(1-t/.3);g.fillStyle='#fff';g.fillRect(0,0,g.canvas.width,g.canvas.height);g.restore()}burst(g,e,8,p.x,p.y-cw*.1,W*.9,W*.3,clamp(t*2),'sparkle');return true},
  heal(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!I('particle/heal'))return false;const gold=/^#f|^#e/i.test(e.color||'');stamp(g,gold?'skill/holy':'particle/glow',p.x,p.y+cw*.1,W*(gold?1.8:1.6),{ay:gold?.85:.5,alpha:.55*fade(t,.4)});
@@ -72,12 +82,12 @@ const KIND={
   }
   return true
  },
- arcane(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.62,'mote',W*.55,.45);if(k<0)return !!I('particle/mote');if(!stamp(g,'particle/sparkle',p.x,chest(p,cw),W*1.6*(.5+k),{alpha:1-k,rot:k}))return false;stamp(g,'particle/star',p.x,chest(p,cw),W*1.2*(1-k*.5),{alpha:1-k});return true},
- wind(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.4,'leaf',W*.45,.3);if(k<0)return !!I('particle/leaf');if(!stamp(g,'skill/wind',p.x,chest(p,cw),W*2*(.7+.3*pop(k,.3)),{rot:-k*1.4,alpha:fade(k,.5)}))return false;for(let i=0;i<5;i++){const an=R(e,i)*6+k*5;stamp(g,'particle/leaf',p.x+Math.cos(an)*W*.8*k,chest(p,cw)+Math.sin(an)*W*.4*k,W*.3,{blend:'source-over',rot:an,alpha:1-k})}return true},
- water(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.45,'mote',W*.55,.4);if(k<0)return !!I('particle/mote');if(!stamp(g,'skill/water',p.x,p.y+cw*.1,W*2*back(pop(k,.3)),{ay:.85,alpha:fade(k,.45)}))return false;stamp(g,'particle/splash',p.x,p.y,W*(1+k),{sy:.55,alpha:1-k});return true},
+ arcane(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.62,'mote',W*.55);if(k<0)return !!I('particle/mote');if(!stamp(g,'particle/sparkle',p.x,chest(p,cw),W*1.6*(.5+k),{alpha:1-k,rot:k}))return false;stamp(g,'particle/star',p.x,chest(p,cw),W*1.2*(1-k*.5),{alpha:1-k});return true},
+ wind(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.4,'leaf',W*.45);if(k<0)return !!I('particle/leaf');if(!stamp(g,'skill/wind',p.x,chest(p,cw),W*2*(.7+.3*pop(k,.3)),{rot:-k*1.4,alpha:fade(k,.5)}))return false;for(let i=0;i<5;i++){const an=R(e,i)*6+k*5;stamp(g,'particle/leaf',p.x+Math.cos(an)*W*.8*k,chest(p,cw)+Math.sin(an)*W*.4*k,W*.3,{blend:'source-over',rot:an,alpha:1-k})}return true},
+ water(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.45,'mote',W*.55);if(k<0)return !!I('particle/mote');if(!stamp(g,'skill/water',p.x,p.y+cw*.1,W*2*back(pop(k,.3)),{ay:.85,alpha:fade(k,.45)}))return false;stamp(g,'particle/splash',p.x,p.y,W*(1+k),{sy:.55,alpha:1-k});return true},
  earth(g,e,t,p,a,cw){const W=cw*(e.scale||1),s=back(pop(t,.3));if(!stamp(g,'skill/earth',p.x,p.y+cw*.15,W*2.1,{ay:.88,sy:s,alpha:fade(t,.6),blend:'source-over'}))return false;stamp(g,'skill/shockwave',p.x,p.y,W*(1+t),{sy:.45,alpha:.6*(1-t)});return true},
  holy(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!stamp(g,'skill/holy',p.x,p.y+cw*.15,W*2.2,{ay:.88,sx:.6+.4*pop(t,.25),alpha:fade(t,.5)}))return false;burst(g,e,8,p.x,chest(p,cw),W,W*.3,t,'sparkle');return true},
- dark(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.45,'mote',W*.5,.4);if(k<0)return !!I('particle/mote');return stamp(g,'skill/dark',p.x,chest(p,cw),W*1.9*(.6+.4*back(pop(k,.35))),{rot:k*2,alpha:fade(k,.5),blend:'source-over'})}};
+ dark(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.45,'mote',W*.5);if(k<0)return !!I('particle/mote');return stamp(g,'skill/dark',p.x,chest(p,cw),W*1.9*(.6+.4*back(pop(k,.35))),{rot:k*2,alpha:fade(k,.5),blend:'source-over'})}};
 /* v98.405 · the code-drawn VFX Kit (js/vfx-kit.js) takes a kind over when it is switched on (off by default — see vfx-kit-preview.html); drawOld = always the painted stamps */
 function draw(e,t,p,a,g,camera){const K=root.VfxKit;if(K&&K.uses(e.kind)){const ok=K.draw(e,t,p,a,g,camera);if(ok)return true}return drawOld(e,t,p,a,g,camera)}
 function drawOld(e,t,p,a,g,camera){if(e.kind==='impactCore'){try{return drawImpact(g,e,t,p,a||p,camera.w)}catch(_){return false}}const f=KIND[e.kind];if(!f)return false;try{return !!f(g,e,t,p,a||p,camera.w)}catch(err){return false}}
