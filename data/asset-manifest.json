@@ -167031,6 +167031,22 @@
    "usedIn": "StoryToast quest · css/story.css",
    "artRevision": "v98.1119",
    "prompt": "Wide blank crimson cloth quest ribbon, folded swallowtail ends, restrained antique gold stitched trim, uniform empty rectangular middle for horizontal 9-slice stretching, painterly fantasy JRPG UI; transparent background, no text/icons/scenery."
+  },
+  {
+   "id": "ui-quest-gift-unroll",
+   "category": "ui",
+   "name": "เควสใหม่ · กล่องของขวัญคลี่ริบบิ้น 16 เฟรม",
+   "file": "assets/ui/quest-gift-unroll.webp",
+   "status": "final",
+   "transparent": true,
+   "size": 880340,
+   "frames": 16,
+   "cols": 4,
+   "rows": 4,
+   "frameMs": 90,
+   "usedIn": [
+    "js/quest-announcement.js"
+   ]
   }
  ],
  "studioReviews": {

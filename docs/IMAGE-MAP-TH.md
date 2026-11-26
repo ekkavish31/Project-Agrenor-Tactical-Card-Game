@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6792 ไฟล์ (539.2 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6793 ไฟล์ (540.1 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -23,7 +23,7 @@
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 672 | 31.4 MB | `assets/tactics` 664 · `assets/objects` 7 · `assets/generated-village` 1 | 639 | 33 |
 | 🃏 การ์ด | 171 | 44.5 MB | `assets/cards` 169 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 158 | 16 |
-| 🎛 UI · ไอคอน · เมนู | 327 | 15.3 MB | `assets/icons` 141 · `assets/ui` 141 · `assets/cursor` 37 · `assets/cursor-fantasy-active.png` 1 | 168 | 11 |
+| 🎛 UI · ไอคอน · เมนู | 328 | 16.2 MB | `assets/ui` 142 · `assets/icons` 141 · `assets/cursor` 37 · `assets/cursor-fantasy-active.png` 1 | 169 | 11 |
 | 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 172 | 22.8 MB | `assets/village-town` 157 · `assets/objects` 15 | 40 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 113 | 9.0 MB | `assets/terrain` 77 · `assets/world` 32 · `assets/v03` 4 | 9 | 2 |
@@ -87,8 +87,8 @@
 - การ์ด src — 1
 
 ### 🎛 UI · ไอคอน · เมนู
+- UI — 142
 - ไอคอน — 141
-- UI — 141
 - เคอร์เซอร์เกม — 37
 - UI / เคอร์เซอร์ — 8
 
