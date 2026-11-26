@@ -52,23 +52,7 @@ const TIPS=root.StdLoader?.TIPS||['โจมตีจากด้านหลั
 /* v98.1065 · LORE lines for the loading screen. [spoiler level, text]. Level = MainStory stage's `spoiler` (docs/lore/MAIN-STORY-CANON.md S0…S3): a line shows only when the player's story has reached it.
    Every line is CONFIRMED canon only (docs/lore/CURRENT-ERA-CANON.md Part A · GAME-ERA.md "ข้อตกลงที่ใช้ในเกม") and is worded the way ordinary villagers would know it — no ancient names (Glaelanar, Wyridean…), no gods in person, nothing about the mine / infection / Mip's secret.
    S2 and S3 are left EMPTY on purpose: add a line there only after the matching story beat exists in the game. */
-const LORE=[
- [0,'เฟิร์นเวลอยู่ในที่ราบลุ่มแม่น้ำ ผู้คนแถบนี้ผูกพันกับธาตุดินและน้ำมาหลายชั่วอายุคน'],
- [0,'ทางเหนือคือดินแดนหิมะหนาว ทางใต้คือแดนไฟและภูเขาไฟ ส่วนทางตะวันตกไกลคือหมู่เกาะกลางทะเล'],
- [0,'ชาวบ้านเรียกแสงสีทองบนฟ้าว่า "ดวงทอง" มันลอยค้างอยู่ที่หนึ่งนาน ๆ แล้วค่อยย้ายไปที่อื่น ไม่ใช่ลางร้าย'],
- [0,'ป่าใหญ่ทางตะวันออกดูไม่มีที่สิ้นสุด แผนที่วาดไว้แค่ชายขอบ นักผจญภัยน้อยคนนักจะกลับออกมา'],
- [0,'คนส่วนใหญ่เกิดมาพร้อมแก่นธาตุดิน น้ำ หรือลม ธาตุอื่นมีอยู่จริงแต่พบได้ยาก'],
- [0,'ลูกไม่จำเป็นต้องได้ธาตุเดียวกับพ่อแม่ ธาตุของแต่ละคนเป็นของเขาเอง'],
- [0,'เผ่าพันธุ์อื่นมีอยู่จริง แต่คนส่วนใหญ่ไม่เคยพบ จะเจอก็ตามเมืองท่า เมืองชายแดน และเส้นทางค้าขาย'],
- [0,'การ์ดเวทคือแผ่นผนึกที่จารวงจรเวทไว้ ผู้ถือส่งพลังของตนเข้าไป วงจรจะจัดรูปพลังให้กลายเป็นเวท'],
- [0,'การ์ดไม่ใช่บ่อพลังไร้ขีดจำกัด ใครอัดพลังเกินที่วงจรรับไหว วงจรจะไหม้จนใช้ไม่ได้อีก'],
- [0,'การ์ดชั่วคราวใช้ได้ครั้งเดียวแล้วสลายไป จึงแรงกว่าการ์ดทั่วไป แต่ก็มีขีดจำกัดเหมือนกัน'],
- [0,'ใช้การ์ดต่างธาตุได้ โดยไม่ทำให้แก่นธาตุของตัวเองเปลี่ยน แต่จะได้แค่ผลพื้นฐานของการ์ดนั้น'],
- [0,'ตามที่สอนกันในอาณาจักรมนุษย์ จอมเวทผู้ยิ่งใหญ่คนหนึ่งเป็นผู้คิดค้นการ์ดเวทขึ้นมา'],
- [0,'อาณาจักรใหญ่ ๆ รับซื้อฝีมือเวทจากผู้ใช้เวท แล้วถอดแบบไปทำเป็นการ์ดจำหน่ายเป็นรายได้'],
- [1,'ข่าวจากด่านหินทางเหนือบอกว่าสงครามยืดเยื้อ และฝั่งเราเป็นฝ่ายเสียเปรียบ'],
- [1,'มีข่าวลือว่าราชสำนักเร่งขุดแร่พลังงานชนิดหนึ่งเพื่อใช้ในสงคราม']
-];
+const LORE=root.StdLoader?.LORE||[];   /* v98.1114 · the lore lines live in js/game-loader.js (shared with every loading screen) */
 function loreLevel(){try{const g=typeof s!=='undefined'&&s?s:root.WorldState?.game?.();const m=root.MainStory?.stage?.(g);return Number.isFinite(m?.spoiler)?m.spoiler:0}catch{return 0}}
 function pickLore(level){const ok=LORE.filter(x=>x[0]<=level);return ok.length?ok[Math.floor(Math.random()*ok.length)][1]:''}
 
@@ -129,7 +113,7 @@ function areaKinds(area){const e=root.ADVENTURE_DATA?.AREAS?.[area]?.enemies;ret
 let screen=null;
 function loadingScreen(){if(screen)return screen;const el=document.createElement('div');el.id='gameLoading';el.className='gl';el.hidden=true;el.setAttribute('role','progressbar');el.setAttribute('aria-valuemin','0');el.setAttribute('aria-valuemax','100');
  el.innerHTML='<div class="gl-bg"></div><div class="gl-box"><span class="gl-kicker">LOADING</span><h2 class="gl-title"></h2>'+(root.MipLoader?root.MipLoader.html({width:'min(560px,calc(100vw - 40px))',size:'clamp(114px,16.5vh,162px)'}):'')+'<div class="gl-bar"><i></i></div><div class="gl-meta"><span class="gl-step"></span><b class="gl-pct">0%</b></div><p class="gl-tip"><img class="gl-note-icon" src="assets/icons/menu/v2-help.webp" width="40" height="40" alt="เคล็ดลับ" title="เคล็ดลับ"><span class="gl-note-text"></span></p><p class="gl-lore"><img class="gl-note-icon" src="assets/icons/menu/v2-journal.webp" width="40" height="40" alt="เรื่องเล่าจากโลก" title="เรื่องเล่าจากโลก"><span class="gl-note-text"></span></p><button type="button" class="gl-skip" tabindex="-1" aria-hidden="true">เข้าเกมเลย · โหลดส่วนที่เหลือเบื้องหลัง</button></div>';
- document.body.appendChild(el);return screen=el}
+ document.body.appendChild(el);try{root.StdLoader?.rotate(el,{level:loreLevel})}catch(e){}return screen=el}   /* v98.1114 · tips and lore change while it waits */
 function setProgress(el,f,step){const pct=Math.round(f*100);el.querySelector('.gl-bar i').style.width=pct+'%';el.querySelector('.gl-pct').textContent=pct+'%';el.setAttribute('aria-valuenow',pct);if(step!=null)el.querySelector('.gl-step').textContent=step}
 /* run(title, groups[, {bg, minMs, quiet}]) — groups: [{label, items:[url|promise|fn]}]. quiet = only show if it takes >150ms */
 let chain=Promise.resolve();
