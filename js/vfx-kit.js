@@ -172,12 +172,40 @@
   const animImg = {};
   function animSheet(n) { const d = ANIM[n]; let im = animImg[n]; if (!im) { im = animImg[n] = new Image(); im.decoding = 'async'; im.src = SRC ? new URL('../assets/fx/anim/' + d.file + '.webp', SRC).href : 'assets/fx/anim/' + d.file + '.webp' } return im.complete && im.naturalWidth ? im : null }
   animSheet('ball'); animSheet('hit');
+  /* Interpolate premultiplied RGBA on one reusable cell-sized surface. Drawing
+     weighted frames source-over directly would darken the midpoint / pop at cuts.
+     Source sheets and fixed anchors stay unchanged. No frame-sized cache grows. */
+  let blendSurface = null, blendContext = null;
+  function blendedCell(g, im, cols, rows, phase, w, h, ax, ay, alpha = 1, loop = false) {
+    const count = cols * rows, u = loop ? ((phase % 1) + 1) % 1 * count : clamp(phase) * (count - 1);
+    const i = Math.floor(u), mix = u - i, j = loop ? (i + 1) % count : Math.min(count - 1, i + 1);
+    const fw = im.naturalWidth / cols, fh = im.naturalHeight / rows;
+    const crop = (q, frame, dw, dh) => q.drawImage(im, frame % cols * fw, Math.floor(frame / cols) * fh, fw, fh, 0, 0, dw, dh);
+    g.save();
+    try {
+      g.globalAlpha *= alpha;
+      if (mix < .0001 || i === j) {
+        g.drawImage(im, i % cols * fw, Math.floor(i / cols) * fh, fw, fh, -w * ax, -h * ay, w, h);return true;
+      }
+      if (!blendSurface) { blendSurface = root.document?.createElement?.('canvas'); blendContext = blendSurface?.getContext?.('2d') }
+      if (!blendContext) { g.drawImage(im, i % cols * fw, Math.floor(i / cols) * fh, fw, fh, -w * ax, -h * ay, w, h);return true }
+      const limit = root.BattlePolish?.quality === 'low' ? 192 : 384;
+      const bw = Math.max(1, Math.min(limit, Math.ceil(fw))), bh = Math.max(1, Math.round(bw * fh / fw));
+      if (blendSurface.width !== bw || blendSurface.height !== bh) { blendSurface.width = bw;blendSurface.height = bh }
+      const q = blendContext;q.clearRect(0, 0, bw, bh);q.globalCompositeOperation = 'source-over';q.globalAlpha = 1 - mix;crop(q, i, bw, bh);
+      q.globalCompositeOperation = 'lighter';q.globalAlpha = mix;crop(q, j, bw, bh);
+      q.globalAlpha = 1;q.globalCompositeOperation = 'source-over';
+      g.drawImage(blendSurface, -w * ax, -h * ay, w, h);return true;
+    } finally { g.restore() }
+  }
   /* draw one frame (0..15) centred on its anchor point (0,0) of the current transform, w = drawn width */
   function animFrame(g, n, f, w, alpha) { const d = ANIM[n], im = animSheet(n); if (!im || alpha <= 0) return false; f = Math.max(0, Math.min(15, f | 0)); const h = w * d.ch / d.cw;
     g.save(); g.globalAlpha *= alpha; g.drawImage(im, (f % 4) * d.cw, Math.floor(f / 4) * d.ch, d.cw, d.ch, -w * d.ax, -h * d.ay, w, h); g.restore(); return true }
   /* cross-fade between neighbouring frames: u = 0..1 over the whole sheet */
-  function animPlay(g, n, u, w, alpha = 1, loop = false) { let x = u * 16; if (loop) x = ((x % 16) + 16) % 16; else x = clamp(x, 0, 15.999); const i = Math.floor(x), f = x - i, j = loop ? (i + 1) % 16 : Math.min(15, i + 1);
-    const ok = animFrame(g, n, i, w, alpha); if (ok && j !== i) animFrame(g, n, j, w, alpha * f); return ok }
+  function animPlay(g, n, u, w, alpha = 1, loop = false) {
+    const im = animSheet(n), d = ANIM[n];if (!im || alpha <= 0) return false;
+    return blendedCell(g, im, 4, 4, u, w, w * d.ch / d.cw, d.ax, d.ay, alpha, loop);
+  }
   /* single painted pieces: the fire-streak (spark) and the smoke wisp */
   const PIECE = { spark: 'fire-spark', smoke: 'fire-smoke' }, pieceImg = {};
   function piece(n) { let im = pieceImg[n]; if (!im) { im = pieceImg[n] = new Image(); im.decoding = 'async'; im.src = SRC ? new URL('../assets/fx/anim/' + PIECE[n] + '.webp', SRC).href : 'assets/fx/anim/' + PIECE[n] + '.webp' } return im.complete && im.naturalWidth ? im : null }
@@ -194,6 +222,8 @@
   function fireAtlas(g, e, t, p, a, cw) {
     const W = cw * (e.scale || 1), split = .46, far = a && (Math.abs(a.x - p.x) + Math.abs(a.y - p.y)) >= 4;
     if (!animSheet('ball') || !animSheet('hit')) return false;
+    const low = root.BattlePolish?.quality === 'low';
+    if (e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { g.save();g.translate(p.x,p.y+cw*.12);animFrame(g,'hit',5,W*2.5,.65*(1-t));g.restore();return true }
     if (far && t < split) {   /* flight: the fireball runs along an arc from the caster's chest to the target, turned to face where it goes */
       const k = t / split, ay = a.y - cw * .75, py = chest(p, cw), at = kk => [a.x + (p.x - a.x) * kk, ay + (py - ay) * kk], pos = k => k * k * .35 + k * .65;
       const kk = pos(k), [x, y] = at(kk), [x2, y2] = at(Math.min(1, kk + .02)), an = Math.atan2(y2 - y, x2 - x) || 0, grow = .55 + .45 * eo(seg(k, 0, .25)), back_ = an + Math.PI;
@@ -205,16 +235,16 @@
     /* behind the flames: the smoke that is left (three wisps, rising and spreading, born as the fire dies) */
     /* smoke as in the reference: one thin, pale wisp hanging at the head of the target after the fire dies — small, low and slow */
     { const ks = seg(k, .38, 1); if (ks > 0) smoke(g, p.x + Math.sin(ks * 2.4) * W * .06, p.y - W * (.95 + .5 * eo(ks)), W * (.38 + .22 * ks), .4 * bell(ks), ks * .4) }
-    add(g, () => { glow(g, p.x, p.y - W * .35, W * 1.6 * bell(seg(k, 0, .5)), C.fire, .42 * (1 - seg(k, .4, .8))); glow(g, p.x, p.y - W * .25, W * .9 * bell(seg(k, 0, .22)), C.white, .6); motes(g, e, 10, p.x, p.y - W * .1, W * 1.2, W * 1.9, W * .09, seg(k, 0, .9), 70) });
+    add(g, () => { glow(g, p.x, p.y - W * .35, W * 1.6 * bell(seg(k, 0, .5)), C.fire, .42 * (1 - seg(k, .4, .8))); glow(g, p.x, p.y - W * .25, W * .9 * bell(seg(k, 0, .22)), C.white, .6); motes(g, e, low ? 3 : 10, p.x, p.y - W * .1, W * 1.2, W * 1.9, W * .09, seg(k, 0, .9), 70) });
     g.save(); g.translate(p.x, p.y + cw * .12); animPlay(g, 'hit', k, W * 2.5, 1, false); g.restore();
     /* v98.626 · HIT flash: a small, quick orange pop at the moment the fireball lands — ring flash, a cross glint and a few short sparks */
     { const kh = seg(k, 0, .14); if (kh > 0 && kh < 1) { const hx = p.x, hy = p.y - W * .4, fade_ = 1 - kh;
       add(g, () => { glow(g, hx, hy, W * (.12 + .18 * eo(kh)), C.fire, .45 * fade_); star4(g, hx, hy, W * (.1 + .16 * eo(kh)), C.fire, .6 * fade_, kh * .6);
         for (let i = 0; i < 6; i++) { const an = (i / 6) * Math.PI * 2 + R(e, i + 90) * .5, d = W * (.08 + .26 * eo(kh)) * (.7 + .5 * R(e, i + 95)); spark(g, hx + Math.cos(an) * d, hy + Math.sin(an) * d * .8, an, W * .13 * (1 - kh * .6), fade_ * .8) } }) } }
     /* in front of the flames: fire sparks thrown out of the burst, flying up and out, then falling; a few lights glint on top */
-    add(g, () => { const ks = seg(k, 0, .75); for (let i = 0; i < 11; i++) { const an = -Math.PI * (.08 + .84 * R(e, i + 50)), v = W * (.9 + 1.1 * R(e, i + 60)), kk = seg(k, R(e, i + 70) * .12, .85); if (kk <= 0 || kk >= 1) continue;
+    add(g, () => { const ks = seg(k, 0, .75); for (let i = 0; i < (low ? 4 : 11); i++) { const an = -Math.PI * (.08 + .84 * R(e, i + 50)), v = W * (.9 + 1.1 * R(e, i + 60)), kk = seg(k, R(e, i + 70) * .12, .85); if (kk <= 0 || kk >= 1) continue;
         const vx = Math.cos(an) * v, vy = Math.sin(an) * v, x = p.x + vx * eo(kk) * .9, y = p.y - W * .2 + vy * eo(kk) * .9 + W * 1.1 * kk * kk, dir = Math.atan2(vy * (1 - kk) * .9 + W * 2.2 * kk, vx * (1 - kk) * .9 + 1e-3); spark(g, x, y, dir, W * (.45 + .3 * R(e, i + 80)) * (1 - kk * .5), 1 - kk * kk) }
-      motes(g, e, 7, p.x, p.y - W * .4, W * 1.7, W * 1.2, W * .075, ks, 120, C.white) });
+      motes(g, e, low ? 2 : 7, p.x, p.y - W * .4, W * 1.7, W * 1.2, W * .075, ks, 120, C.white) });
     return true }
   if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'atlas', 'ภาพวาดเคลื่อนไหว (อะนิเมชันไฟ)', fireAtlas);
 
@@ -235,6 +265,30 @@
     }
     const im = spellImages[kind]; return im && im.complete && im.naturalWidth > 0 && im.naturalHeight > 0 ? im : null;
   }
+  /* Per-effect deterministic particles: birth, drift and decay use the same
+     normalized battle clock, including hit stop and battle-speed changes. */
+  const SPELL_COLOR = { ice:C.ice, lightning:C.bolt, water:C.water, wind:C.wind, earth:C.earth, dark:C.dark, heal:C.heal, shield:C.gold };
+  function spellParticles(kind, g, e, k, p, W) {
+    if (k <= 0 || k >= 1) return;
+    const low = root.BattlePolish?.quality === 'low', n = low ? 5 : 16, col = SPELL_COLOR[kind];
+    add(g, () => {
+      for (let i = 0; i < n; i++) {
+        const birth = .04 + R(e, i+170) * .21, age = (k-birth) / (1-birth);
+        if (age <= 0 || age >= 1) continue;
+        const an = R(e,i+210)*TAU, speed = .35+R(e,i+240)*.65, al = Math.sin(age*Math.PI)*(1-age)*.8;
+        let x = p.x+Math.cos(an)*W*speed*eo(age), y = p.y-W*.35+Math.sin(an)*W*.35*eo(age);
+        if (kind==='heal'||kind==='shield'||kind==='dark') { x=p.x+(R(e,i+260)-.5)*W*.9+Math.sin(age*5+i)*W*.08;y=p.y-W*(.1+age*(.8+speed)); }
+        else if (kind==='wind') { x=p.x+Math.cos(an+age*4)*W*age;y=p.y-W*.5+Math.sin(an+age*4)*W*.35*age; }
+        else y += W*(kind==='earth'?.7:.45)*age*age-W*.55*Math.sin(age*Math.PI);
+        const size = W*(.015+R(e,i+290)*.025)*(1-age*.5);
+        if (kind==='ice'||kind==='lightning'||kind==='shield') star4(g,x,y,size*2,col,al,an+age*2);
+        else if(kind==='water') { g.fillStyle=`rgba(${col},${al})`;g.beginPath();g.ellipse(x,y,size*.65,size*1.3,an,0,TAU);g.fill(); }
+        else if(kind==='earth'||kind==='wind') { g.save();g.translate(x,y);g.rotate(an+age*3);g.fillStyle=`rgba(${col},${al})`;g.fillRect(-size,-size*.5,size*2,size);g.restore(); }
+        else glow(g,x,y,size*2.2,col,al);
+      }
+      if (!low && kind==='water') ring(g,p.x,p.y,W*eo(k),W*.32*eo(k),W*.018,col,bell(k)*.25);
+    });
+  }
   function spellAtlas(kind, g, e, t, p, a, cw) {
     const im = spellImage(kind), spec = SPELLS[kind]; if (!im) return false;
     const rm = !!(e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
@@ -249,21 +303,21 @@
         drawSize *= .35; y += drawSize * .32; k = 0;
       } else k = (t - split) / (1 - split);
     }
-    const frame = rm ? 3 : Math.min(7, Math.floor(clamp(k) * 8));
     const fw = im.naturalWidth / 4, fh = im.naturalHeight / 2;
-    const alpha = rm ? .65 * (1 - t) : Math.min(1, Math.max(0, (1 - k) * 8));
+    const alpha = rm ? .65 * (1 - t) : 1 - seg(k, .82, 1);
     if (alpha <= 0) return true;
     g.save();
     try {
-      g.globalCompositeOperation = 'source-over'; g.globalAlpha *= alpha;
-      g.drawImage(im, frame % 4 * fw, Math.floor(frame / 4) * fh, fw, fh,
-        x - drawSize * .5, y - drawSize * .82, drawSize, drawSize);
+      g.globalCompositeOperation = 'source-over';
+      g.translate(x,y);
+      blendedCell(g, im, 4, 2, rm ? 3/7 : k, drawSize, drawSize, .5, .82, alpha);
     } finally { g.restore(); }
+    if (!rm && (!far || t >= .28)) spellParticles(kind,g,e,k,p,W);
     return true;
   }
   for (const kind of Object.keys(SPELLS)) {
     spellImage(kind);
-    root.VfxKit.addVariant(kind, 'painted8', 'ภาพวาดเคลื่อนไหว (8 เฟรม)', (g, e, t, p, a, cw) => spellAtlas(kind, g, e, t, p, a, cw));
+    root.VfxKit.addVariant(kind, 'painted8', 'ภาพวาดเคลื่อนไหว (เฟรมคั่นลื่นไหล + ละออง)', (g, e, t, p, a, cw) => spellAtlas(kind, g, e, t, p, a, cw));
   }
 
 })(globalThis);
