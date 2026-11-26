@@ -173,7 +173,7 @@
   const EXTRA = {};
   const variants = k => { k = nameOf(k); return [['old', 'เดิม (ภาพวาดแปะ)'], ['new', 'ใหม่ (วาดด้วยโค้ด)'], ...Object.entries(EXTRA[k] || {}).map(([id, v]) => [id, v.label])] };
   const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
-  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.painted8 ? 'painted8' : EXTRA[k]?.atlas ? 'atlas' : EXTRA[k]?.paintedLight ? 'paintedLight' : 'old') };
+  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.drawnImpact ? 'drawnImpact' : EXTRA[k]?.painted8 ? 'painted8' : EXTRA[k]?.atlas ? 'atlas' : EXTRA[k]?.paintedLight ? 'paintedLight' : 'old') };
   const uses = k => { k = nameOf(k); if (!FX[k] && !EXTRA[k]) return false; return choiceOf(k) !== 'old' };
   const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = (v === 'new' || (v && v !== 'old')) ? String(v) : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
   const enabled = () => Object.keys(FX).some(uses);
@@ -377,6 +377,67 @@
   for (const kind of Object.keys(SPELLS)) {
     spellImage(kind);
     root.VfxKit.addVariant(kind, 'painted8', 'ภาพวาด 2D + แสงและอนุภาค', (g, e, t, p, a, cw) => spellAtlas(kind, g, e, t, p, a, cw));
+  }
+
+  const DRAWN = {
+    lightning: { size: 3.7, anchor: .941, cuts: [0, .08, .16, .24, .33, .45, .58, .72, .88], contact: .24 },
+    ice: { size: 2.85, anchor: .815, cuts: [0, .09, .18, .29, .44, .58, .72, .86, 1], contact: .29 }
+  };
+
+  function drawnImpact(kind, im, g, e, t, p, a, cw) {
+    if (!im.complete || !im.naturalWidth || !im.naturalHeight) return spellAtlas(kind, g, e, t, p, a, cw);
+    const spec = DRAWN[kind], W = cw * (e.scale || 1), size = W * spec.size;
+    const still = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const low = root.BattlePolish?.quality === 'low';
+    const color = LIGHT[kind][0], thunder = kind === 'lightning';
+    const distant = !thunder && !still && e.from && Math.hypot(a.x - p.x, a.y - p.y) > 4;
+    const k = distant ? fly(g, e, t, a, p, cw, .24, color, C.iceHi, W * .24) : t;
+    if (k < 0) return true;
+    const hit = seg(k, spec.contact, 1);
+    if (!still && hit > 0) {
+      paintedLight(kind, g, e, hit, p, W, false);
+      add(g, () => {
+        const count = low ? 1 : 3;
+        for (let i = 0; i < count; i++) {
+          const wave = seg(hit, i * .055, .68 + i * .1);
+          const radius = W * (.24 + (1.28 + i * .24) * eo(wave));
+          ring(g, p.x, p.y, radius, radius * .38, W * .018, color,
+            seg(wave, 0, .08) * (1 - wave) ** 2 * (.76 - i * .14));
+        }
+      });
+    }
+    const cell = still ? 4 : spec.cuts.findIndex(end => k < end) - 1;
+    if (cell >= 0 && k < 1) {
+      const w = im.naturalWidth / 4, h = im.naturalHeight / 2;
+      g.save();
+      g.globalCompositeOperation = 'screen';
+      g.globalAlpha *= still ? .65 * (1 - t) : 1 - seg(k, spec.cuts[7], spec.cuts[8]);
+      g.drawImage(im, (cell % 4) * w, Math.floor(cell / 4) * h, w, h,
+        p.x - size * .5, p.y - size * spec.anchor, size, size);
+      g.restore();
+    }
+    if (!still && thunder && k >= .18 && k < .58) {
+      const strength = bell(seg(k, .18, .58)) * .57, top = p.y - size * .86;
+      add(g, () => {
+        const points = bolt(g, e, p.x - size * .13, top, p.x, p.y, W * .35, 470, W * .026, color, strength);
+        if (low || !points.length) return;
+        for (const i of [3, 5]) {
+          const [x, y] = points[i], dir = i === 3 ? -1 : 1;
+          bolt(g, e, x, y, x + W * .32 * dir, y + W * .38, W * .12, 480 + i, W * .012, color, strength * .52);
+        }
+      });
+    }
+    if (!still && hit > 0) paintedLight(kind, g, e, hit, p, W, true);
+    return true;
+  }
+
+  if (typeof Image !== 'undefined') for (const kind of Object.keys(DRAWN)) {
+    const im = new Image();
+    im.decoding = 'async';
+    const path = 'assets/fx/anim/' + kind + '-drawn.webp';
+    im.src = SRC ? new URL('../' + path, SRC).href : path;
+    addVariant(kind, 'drawnImpact', 'ภาพวาด 8 เฟรม + แสงปะทะ',
+      (g, e, t, p, a, cw) => drawnImpact(kind, im, g, e, t, p, a, cw));
   }
 
   // Effects with a single illustrated stamp still move continuously through
