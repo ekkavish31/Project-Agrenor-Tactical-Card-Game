@@ -150,7 +150,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
    try{await root.StarterKit?.unlock?.([{group:'combat',id:'thunder',n:1}],{kicker:'ของขวัญจากฮิลดา',title:'อัสนีบาต',text:'ฮิลดาให้ไพ่ใบนี้เป็นของขอบคุณ — ยังไม่ได้ใส่ในสำรับ ไว้ตอนเย็นจัดสำรับที่บ้านนะ'})}catch(e){}
    try{const dk=V().tacticDecks;if(dk?.combat?.thunder){dk.combat.thunder-=1;if(dk.combat.thunder<=0)delete dk.combat.thunder;doSave()}}catch(e){}
    try{if(typeof addItem==='function'){addItem('smallPumpkin',1);doSave();doRender();toast('🎃 ฮิลดาให้ ฟักทองลูกเล็ก ×1 (ฟื้น HP +30 · แรง +30) — ดูในสมุดผนึก');await root.ItemGet?.show([{key:'smallPumpkin',n:1}],{kicker:'ของขวัญจากฮิลดา',text:'ฮิลดาให้เป็นของขอบคุณที่ช่วยดูแลฟักทอง'})}}catch(e){}},
-  onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:6,biome:'grass',poi:'patch',bg:'pumpkin-patch'});
+  onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:4,biome:'grass',poi:'patch',bg:'pumpkin-patch'});
    if(r==='win'){d.got=3;doSave();return {msg:'🎃 เก็บฟักทองสุกครบ 3 ลูกแล้ว!',consume:true}}return {msg:r==='busy'?'':'ฟักทองยังรอเก็บอยู่ · กลับไปเก็บต่อได้เลย',consume:false}}},
  talkStep({id:'tom',outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
  {id:'planks',tag:'real',title:'แผ่นไม้ของเคน',goal:'เก็บแผ่นไม้ 2 แผ่นที่กองไว้หน้าบ้านเคน',hint:'เดินไปแตะกองไม้ 🪵 · ได้ไม้เข้าสมุดผนึก (หมวดวัตถุดิบ)',

@@ -40,6 +40,7 @@
     const lp = root.TownUX?.labelPoint?.(o); const x = lp ? lp.x : o.x * MX, y = (lp ? lp.y : o.y * MY);
     return { x, y: y - 70 };
   }
+  const NPC_MARK_DY = 88;   /* v98.1143 · the gold crystal over the villager the quest wants: ONE head-height above the head (was 125 px above the feet = far above it) */
   function exitTarget() {
     const ds = typeof exitDoors === 'function' ? exitDoors() : []; let best = -1, bd = 1e9;
     ds.forEach((d, i) => { if (d.off) return; const k = dist(hero, d); if (k < bd) { bd = k; best = i } });
@@ -172,7 +173,7 @@
     for (const id of T.place || []) { const o = loc(id); if (o) { const p = placePoint(o); out.push({ ...p, label: T.label || o.name, o }) } }
     for (const id of T.npc || []) {
       const n = root.TownNPC?.list?.()?.find(x => x.id === id), name = life()?.P?.[id]?.name || id;
-      if (n && !n.inside && !n.hidden) { const p = project(n.u, n.v); out.push({ x: p.x, y: p.y - 125, label: name, npc: n }); continue }
+      if (n && !n.inside && !n.hidden) { const p = project(n.u, n.v); out.push({ x: p.x, y: p.y - NPC_MARK_DY, label: name, npc: n }); continue }
       const pl = npcPlace(id), o = pl && loc(pl);
       if (o) { const p = placePoint(o); out.push({ ...p, label: name + ' · ใน' + o.name, o }) }
     }
