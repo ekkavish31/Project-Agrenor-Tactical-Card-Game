@@ -7,6 +7,22 @@
   };
   const src = key => key === 'items' ? 'assets/icons/menu/v2-items.webp' : BASE + ICONS[key] + '.webp';
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const TIPS = { absorb: ['ดูดซับคริสตัล', 'ใช้คริสตัล 1 ก้อน → ฟื้นแรง +15'], redraw: ['หลอมคริสตัล', 'ใช้คริสตัล 1 ก้อน → สลับไพ่ใหม่ทั้งมือ (ทำได้ 1 ครั้งต่อเทิร์น)'] };
+  /* one floating tip card for every [data-fbtip="หัวข้อ|คำอธิบาย"] — found by the pointer position (a disabled button gets no pointer events) */
+  (function tipCard() {
+    const doc = root.document; if (!doc || tipCard.on) return; tipCard.on = true; let el = null, cur = null;
+    const css = '#fbTip{position:fixed;z-index:70;max-width:260px;padding:9px 13px;border-radius:10px;background:#14231ff8;border:1px solid #d2ac65;box-shadow:0 8px 22px #000b;color:#f5e6c4;font:13px/1.45 AgThai,system-ui,sans-serif;pointer-events:none;transform:translateX(-50%)}#fbTip b{display:block;color:#ffe2a8;font-size:14px;margin-bottom:2px}';
+    const hide = () => { cur = null; if (el) el.style.display = 'none' };
+    doc.addEventListener('pointermove', e => {
+      let hit = null; for (const b of doc.querySelectorAll('[data-fbtip]')) { const r = b.getBoundingClientRect(); if (r.width && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) { hit = b; break } }
+      if (!hit) { hide(); return }
+      if (!el) { const st = doc.createElement('style'); st.textContent = css; doc.head.append(st); el = doc.createElement('div'); el.id = 'fbTip'; doc.body.append(el) }
+      if (cur !== hit) { cur = hit; const [h, t] = hit.dataset.fbtip.split('|'); el.innerHTML = `<b>${esc(h)}</b>${esc(t || '')}` }
+      el.style.display = 'block'; const r = hit.getBoundingClientRect(), w = el.offsetWidth;
+      el.style.left = Math.max(w / 2 + 6, Math.min(root.innerWidth - w / 2 - 6, (r.left + r.right) / 2)) + 'px'; el.style.top = Math.max(6, r.top - el.offsetHeight - 10) + 'px';
+    }, true);
+    doc.addEventListener('pointerleave', hide); root.addEventListener('blur', hide);
+  })();
   function skinButton(button, key, label, detail = '') {
     if (!button) return;
     button.classList.add('fb-art-button');
@@ -15,7 +31,9 @@
       button.dataset.hudArt = key;
     }
     const caption = button.querySelector('.fb-control-label');
-    const text = esc(label) + (detail ? `<small>${esc(detail)}</small>` : '');
+    const tip = TIPS[key];   /* v98.1100 · the small second line (แรง +15 / สลับไพ่) moved into a floating tip card shown while the pointer is on the button */
+    if (tip) { button.dataset.fbtip = tip.join('|'); button.removeAttribute('title') }
+    const text = esc(label) + (detail && !tip ? `<small>${esc(detail)}</small>` : '');
     if (caption.innerHTML !== text) caption.innerHTML = text;
     button.classList.toggle('fb-wide-control', key === 'absorb' || key === 'redraw');
   }

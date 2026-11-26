@@ -18,3 +18,15 @@ html body #fbHand .fb-pile{flex-shrink:0;background:none;border:0;border-image:n
 #fbHand .fb-pile.empty .fb-pile-art{opacity:.4;filter:grayscale(.55)}
 @media(max-width:820px){html body #fbActions.fb-art-controls{gap:5px;padding:4px 6px}html body #fbActions.fb-art-controls button.fb-art-button{width:60px}html body #fbActions.fb-art-controls button.fb-wide-control{width:104px}#fbActions.fb-art-controls .fb-control-art{width:44px;height:44px}#fbActions.fb-art-controls .fb-control-label{font-size:11px}#fbActions.fb-art-controls .fb-control-label small{font-size:10px}#fbHand .fb-pile-count{font-size:12px;min-width:20px}}
 @media(prefers-reduced-motion:reduce){#fbActions.fb-art-controls .fb-control-art{transition:none}}
+
+/* v98.1100 · battle controls re-arranged:
+   • the End-turn button sits in the MIDDLE of the row and is 30 % bigger than the others · 🔲 Grid + 📖 Menu leave the row and stack at the bottom-left of the screen
+   • the number of a card pile no longer covers its picture: picture on top, the number under it, the name last */
+html body #fbActions.fb-art-controls{transform:none!important;left:0!important;right:0!important;margin-left:auto;margin-right:auto}   /* no transform: the two corner buttons below are position:fixed against the screen */
+html body #fbActions.fb-art-controls #fbUndo{order:1}html body #fbActions.fb-art-controls #fbAuto{order:2}html body #fbActions.fb-art-controls #fbEnd{order:3;zoom:1.3}html body #fbActions.fb-art-controls #fbCrSt{order:4}html body #fbActions.fb-art-controls #fbCrDraw{order:5}html body #fbActions.fb-art-controls #fbItemBtn{order:6}
+html body #fbActions.fb-art-controls #gridBtn,html body #fbActions.fb-art-controls #fbMenu{position:fixed;left:14px;z-index:42}
+html body #fbActions.fb-art-controls #fbMenu{bottom:12px}html body #fbActions.fb-art-controls #gridBtn{bottom:96px}
+#fbHand .fb-pile-art{inset:0 0 40px;height:calc(100% - 40px)}
+#fbHand .fb-pile-count{top:auto;bottom:16px;transform:translateX(-50%);min-width:30px}
+/* the two portrait cards: stacked, the attacker on top */
+@media (min-width:861px) and (min-height:561px){#fbDuel:not(.min){flex-direction:column!important;align-items:center;gap:0}#fbDuel:not(.min) .cl{margin:-14px 0!important}}

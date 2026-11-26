@@ -28,6 +28,8 @@ function rotUV(u, v, t = ROT) { for (let k = 0; k < t; k++) { const a = 1 - v; v
 function unrotUV(u, v, t = ROT) { for (let k = 0; k < t; k++) { const a = v; v = 1 - u; u = a } return { u, v } }
 /* v98.316 · while the view turns, TURN = { th, pu, pv }: every position is rotated by the angle th about the pivot (old-view coords) before it is projected, so sprites orbit upright while the ground (a flat picture) is turned with the matching matrix */
 let TURN = null;
+/* v98.1100 · ART ROTATION follows the camera: when the turn animation passes 45° (the middle of the 90° turn) every view-dependent picture (unit facing, market stall variants) switches to the NEW view right then, while the ground goes on turning — it used to switch only after the animation ended, which looked like a late pop */
+const effRot = () => (TURN && Math.abs(TURN.th) >= Math.PI / 4 ? ROT + TURN.d + 4 : ROT) & 3;
 function rv(u, v) { const r = rotUV(u, v); if (!TURN) return r; const c = Math.cos(TURN.th), s = Math.sin(TURN.th), du = r.u - TURN.pu, dv = r.v - TURN.pv; return { u: TURN.pu + du * c - dv * s, v: TURN.pv + du * s + dv * c } }
 function projectFlat(u, v) { const r = rv(u, v); return { x: OXc + (r.u - r.v) * HWc, y: OYc + (r.u + r.v) * HHc } }
 function invFlat(x, y) { const a = (x - OXc) / HWc, b = (y - OYc) / HHc; return unrotUV((a + b) / 2, (b - a) / 2) }
@@ -284,7 +286,7 @@ function propImg(f) {
 function propSpec(kind, s) { const set = PROP_ART[kind]; if (!set) return null; const list = set[FIELD.biome] || set._, sp = list[Math.floor(s * 997) % list.length] || null; if (!sp) return null; const r = window.AssetSize?.get(PA + sp[0] + '.webp'); return r ? [sp[0], Math.round(r * AssetSize.heroPx('battle')), sp[2]] : sp }   /* v98.576 · a picture's own size next to the hero (js/asset-size.js) wins over the table */
 /* v98.1090 · stable world-facing stalls: SW/NE art; SE/NW are horizontal mirrors.
    rotUV maps SW → NW → NE → SE. Preserve each seed's original facing at ROT=0. */
-function marketStallView(kind, seed, rotation = ROT) {
+function marketStallView(kind, seed, rotation = effRot()) {
   if (kind !== 'stallR' && kind !== 'stallB') return null;
   const mirrored = seed * 1000 % 2 < 1, direction = (((rotation % 4) + 4) % 4 + (mirrored ? 3 : 0)) % 4;
   const rear = direction === 1 || direction === 2;
@@ -488,7 +490,7 @@ function turnNow(d) {
 }
 /* units face by their walk direction in the field (SE = +u …); on screen that direction turns with the camera */
 const DIRS4 = ['SE', 'SW', 'NW', 'NE'];
-window.viewDir = d => { const i = DIRS4.indexOf(d); return i < 0 ? d : DIRS4[(i + ROT) & 3] };
+window.viewDir = d => { const i = DIRS4.indexOf(d); return i < 0 ? d : DIRS4[(i + effRot()) & 3] };
 const ui = document.createElement('div'); ui.id = 'fieldUi'; ui.innerHTML = `<style>
 #fieldUi{position:fixed;right:12px;top:12px;z-index:39;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:8px;font:13px VillageThai,system-ui,sans-serif;color:#f3e9c9;pointer-events:none}
 #fieldUi .turn{display:flex;gap:6px;pointer-events:auto}#fieldUi button{width:38px;height:38px;border-radius:50%;border:1px solid #b9c48a88;background:#1b302ae6;color:#f3e9c9;font:18px AgThai,system-ui;cursor:pointer}
@@ -506,7 +508,7 @@ const ui = document.createElement('div'); ui.id = 'fieldUi'; ui.innerHTML = `<st
 if (window.FieldHeight) document.body.append(ui);
 /* v98.252 · camera turn control, bottom right, all pictures (v98.279: the user's HUD object set — assets/ui/hud/*, css/hud-art.css; was battle-controls-v34 + battle-compass-frame|rose.webp and its rose turns with the view (N E S W) */
 const compass = document.createElement('div'); compass.id = 'fieldCompass';
-compass.innerHTML = `<style>#fieldCompass{position:fixed;right:14px;bottom:14px;z-index:39;display:flex;align-items:center;gap:2px;user-select:none;transform:scale(.8);transform-origin:100% 100%}
+compass.innerHTML = `<style>#fieldCompass{position:fixed;right:14px;bottom:14px;z-index:58;display:flex;align-items:center;gap:2px;user-select:none;transform:scale(.8);transform-origin:100% 100%}
 #fieldCompass .hudb{--s:60px}
 #fieldCompass .cmp{position:relative;width:112px;height:112px;filter:drop-shadow(0 4px 8px #000a)}#fieldCompass .cmp img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #fieldCompass .cmp .ro,#fieldCompass .cmp .nn,#fieldCompass .cmp .nn span{transition:transform .55s cubic-bezier(.3,1.4,.5,1)}
@@ -540,8 +542,9 @@ function panel(now) {
     if (!k || occ) ci.style.display = 'none'; else { const L = FieldHeight.level(hoverCell.u, hoverCell.v), KN = { normal: 'พื้นปกติ', slow: 'เดินช้า (2 แต้ม)', cover: 'กำบัง · โดนตี −30%', blocked: 'เดินผ่านไม่ได้' };
       ci.style.display = 'block'; ci.textContent = `ช่อง ▲${Number.isInteger(L) ? L : L.toFixed(1)} · ${KN[k] || k}` } }
   if (!u) { box.style.display = 'none'; return }
+  if (u.id === 'hero') { box.style.display = 'none'; return }   /* v98.1100 · the lead's own numbers are the HP / stamina bars right under (no second copy) */
   box.style.display = 'flex'; box.classList.toggle('foe', u.side === 'monster');
-  const L = FieldHeight.level(u.u, u.v), stats = [u.atk > 0 && 'ATK ' + Math.round(u.atk), u.move != null && 'เดิน ' + u.move, u.range != null && 'ระยะ ' + u.range, 'สูง ' + (Number.isInteger(L) ? L : L.toFixed(1)), u.guard && 'โล่ ' + u.guard, u.stun && 'แข็ง', u.fly && 'บิน'].filter(Boolean);
+  const L = FieldHeight.level(u.u, u.v), stats = [u.atk > 0 && 'ATK ' + Math.round(u.atk), u.move != null && 'เดิน ' + u.move, u.range != null && 'ระยะ ' + u.range, u.guard && 'โล่ ' + u.guard, u.stun && 'แข็ง', u.fly && 'บิน'].filter(Boolean);
   box.querySelector('b').textContent = u.name || u.id; box.querySelector('.side').textContent = u.side === 'monster' ? (u.boss ? 'บอส' : 'ศัตรู') : u.id === 'hero' ? 'ตัวเอก' : 'เพื่อน';
   box.querySelector('.hp i').style.width = Math.max(0, Math.min(100, u.hp / (u.maxHp || u.hp) * 100)) + '%'; box.querySelector('.stats').textContent = `HP ${Math.ceil(u.hp)}/${u.maxHp} · ` + stats.join(' · ');
   /* live portrait: the unit cut out of the battle view itself */

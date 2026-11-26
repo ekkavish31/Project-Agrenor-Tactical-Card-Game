@@ -582,7 +582,7 @@
   const turnGoal = () => st.obj?.turns ? '/' + st.obj.turns : '';
   function hudMake() {
     const d = document.createElement('div'); d.id = 'fbHud';
-    d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b><button id="fbMin" title="ย่อ / ขยายหน้าต่างข้อมูลสนาม" aria-label="ย่อหรือขยาย"></button></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 6px"></div><div id="fbUnitSlot"></div><div id="fbUnits"></div>
+    d.innerHTML = `<div class="hd"><img class="bi" src="assets/icons/pack/atk.webp" alt="" draggable="false"><b style="color:#f6d79b">สนามรบ · ไพ่</b></div><div id="fbGoal" style="margin:4px 0 0;color:#ffd98a;font-size:12px"></div><div id="fbTurn" style="margin:2px 0 6px;color:#bba57f"></div><div id="fbGems" style="margin:0 0 6px"></div><div id="fbUnitSlot"></div><div id="fbUnits"></div>
       <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="fbEnd" title="Space"><img class="bi" src="assets/icons/pack/time.webp" alt="" draggable="false"><span>จบเทิร์น</span></button><button id="fbUndo" title="ย้อนการเดินก่อนโจมตี (Z)"><img class="bi" src="assets/icons/pack/time-back.webp" alt="" draggable="false"><span>ย้อนเดิน</span></button><button id="fbAuto" title="ให้ AI เล่นแทนฮีโร่ (A · กดอีกครั้งเพื่อหยุด)"><img class="bi" src="assets/icons/pack/speed.webp" alt="" draggable="false"><span>Auto</span></button><button id="fbCrSt" title="ดูดซับคริสตัล 1 ก้อน → ฟื้นแรง +15"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>ดูดซับคริสตัล · แรง +15</span></button><button id="fbCrDraw" title="หลอมคริสตัล 1 ก้อน → สลับไพ่ใหม่ทั้งมือ (1 ครั้ง/เทิร์น)"><img class="bi" src="assets/icons/pack/refresh.webp" alt="" draggable="false"><span>หลอมคริสตัล · สลับไพ่</span></button><button id="gridBtn" type="button" title="เปิด–ปิดกริด (G)" aria-label="เปิดหรือปิดกริด"><span>กริด</span></button><button id="fbMenu" title="เมนู (Esc)" class="ico" aria-label="เมนู"></button>${EMBED ? '' : ''}</div>
       <div class="fb-sec" data-sec="log"><div class="sec-h"><b>📜 บันทึกการต่อสู้</b><button class="sec-x" aria-label="ปิด">✕</button></div><div id="fbLog" style="max-height:60vh;overflow:auto;font-size:13px;color:#d8caa0"></div></div>
       <div class="fb-sec help" data-sec="help"><div class="sec-h"><b>❓ วิธีเล่น</b><button class="sec-x" aria-label="ปิด">✕</button></div><div style="font-size:13px;line-height:1.6;color:#cbd6bd">คลิกศัตรูในระยะ = เลือกไพ่โจมตีจากแถวไพ่ข้างตัว (ไกลเกิน = ต้องเดินเข้าไปก่อน เกมไม่พาเดินให้)<br>คลิกช่องฟ้า/เหลือง = เลือกไพ่เดินจากแถวไพ่ · Z ย้อนเดิน<br>จบเทิร์นแล้วเลือกทิศหันหน้า · ด้านหลังโดน ×1.2</div></div>`;
@@ -601,8 +601,7 @@
     d.querySelector('#gridBtn').onclick = () => gridSet(!GRID);
     /* v98.252 · the action buttons live in their own row above the cards; the info window can be folded */
     { const row = d.querySelector('#fbEnd').parentElement, acts = document.createElement('div'); acts.id = 'fbActions'; while (row.firstChild) acts.append(row.firstChild); row.remove(); document.body.append(acts); window.BattleHudArt?.mountControls(acts); gridSet(GRID);
-      const min = d.querySelector('#fbMin'), apply = m => { d.classList.toggle('min', m); try { localStorage.setItem('projectA.fbHudMin', m ? '1' : '0') } catch (e) { } };
-      let was = false; try { was = localStorage.getItem('projectA.fbHudMin') === '1' } catch (e) { } apply(was); min.onclick = () => apply(!d.classList.contains('min')) }
+      d.classList.remove('min'); try { localStorage.removeItem('projectA.fbHudMin') } catch (e) { } }   /* v98.1100 · no fold button: the HUD is compact already */
   }
   function hudSync() {
     if (!hud || !st) return;
@@ -616,8 +615,8 @@
     const mini = (u, col) => `<div class="mini ${u.hp <= 0 ? 'down' : ''} ${st.target === u.id ? 'tgt' : ''}" data-id="${u.id}" title="${u.side === 'monster' ? esc(IQN[u.iq | 0]) : ''}"><span>${esc(u.name)}${elb(u)}${lvb(u)}</span><b>${u.hp > 0 ? u.shown + '/' + u.maxHp : 'ล้ม'}</b><i style="width:${Math.max(0, u.shown / u.maxHp * 100)}%;background:${col}"></i></div>`;
     hud.querySelector('#fbUnits').innerHTML =
       `<div>${esc(h.name)}${Object.keys(h.sts || {}).map(k => ' ' + stiHtml(k, esc(FB.STATUS[k].name) + ' ' + h.sts[k] + ' เทิร์น')).join('')} <span style="float:right">${h.shown}/${h.maxHp}${h.guard ? ' <small style="color:#9cc8ff"><img class="sti" src="assets/ui/status/guard.webp" alt="" draggable="false"> ' + h.guard + '</small>' : ''}</span></div>${bar(h.shown, h.maxHp, '#6fd18a')}` +
-      `<div><small style="color:#bba57f">แรง (stamina)</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
-      `<div class="chips"><button data-sec-open="team">👥 ทีม ${FB.allies(st).filter(u => u.hp > 0).length + 1}</button><button data-sec-open="foes">☠ ศัตรู ${FB.monsters(st).filter(u => u.hp > 0).length}</button><button data-sec-open="log">📜</button><button data-sec-open="help">❓</button></div>` +
+      `<div><small style="color:#bba57f">แรง</small> <span style="float:right">${h.stamina}/100</span></div>${bar(h.stamina, 100, '#e8c34a')}` +
+      `<div class="chips"><button data-sec-open="team">👥 ทีม ${FB.allies(st).filter(u => u.hp > 0).length + 1}</button><button data-sec-open="foes">☠ ศัตรู ${FB.monsters(st).filter(u => u.hp > 0).length}</button></div>` +
       '<div class="fb-sec" data-sec="team"><div class="sec-h"><b>👥 ทีม</b><small>สั่งการ · ท่าพิเศษใช้ 1 คริสตัล</small><button class="sec-x" aria-label="ปิด">✕</button></div>' + (FB.allies(st).length ? FB.allies(st).map(u => allyRow(u)).join('') : '<small>ยังไม่มีเพื่อนร่วมทีม</small>') + '</div>' +
       '<div class="fb-sec" data-sec="foes"><div class="sec-h"><b>☠ ศัตรู</b><small>คลิกเพื่อเล็งเป้า</small><button class="sec-x" aria-label="ปิด">✕</button></div>' + FB.monsters(st).map(u => mini(u, '#e2705f')).join('') + '</div>';
     hud.querySelectorAll('#fbUnits [data-order]').forEach(e => e.onclick = () => { if (busy) return; FB.setOrder(st, e.dataset.ally, e.dataset.order); floatText(st.units.find(u => u.id === e.dataset.ally), { charge: 'CHARGE!', follow: 'FOLLOW', guard: 'HOLD' }[e.dataset.order], '#bfe8ff', true); hudSync() });
@@ -627,7 +626,7 @@
     hud.querySelector('#fbTurn').textContent = st.outcome ? (st.outcome === 'win' ? 'ชนะ!' : 'แพ้…') : st.turn === 'hero' ? `เทิร์น ${st.turns}${turnGoal()} · ตาคุณ · แต้มเดิน ${st.mp}` : st.turn === 'ally' && st.cur ? `เทิร์น ${st.turns}${turnGoal()} · ตาของ ${st.cur.name} · เดิน ${st.mp}` : `เทิร์น ${st.turns}${turnGoal()} · ตาศัตรู…`;
     hud.querySelector('#fbTurn').title = goalLine(); hud.querySelector('#fbGoal').innerHTML = '<img class="bi" src="assets/icons/pack/target.webp" alt="" draggable="false">' + esc(FB.objText(st));
     const left = FB.crystals(st), max = st.crystalMax;
-    hud.querySelector('#fbGems').innerHTML = '<small style="color:#bba57f;margin-right:6px">คริสตัล</small>' + Array.from({ length: max }, (_, i) => `<img class="gemi" src="assets/ui/gem-${i < left ? 'on' : 'off'}.webp" alt="" draggable="false">`).join('');
+    hud.querySelector('#fbGems').innerHTML = '' + Array.from({ length: max }, (_, i) => `<img class="gemi" src="assets/ui/gem-${i < left ? 'on' : 'off'}.webp" alt="" draggable="false">`).join('');
     document.getElementById('fbEnd').disabled = busy || !!st.outcome || st.turn !== 'hero' || auto;
     document.getElementById('fbUndo').disabled = busy || !!st.outcome || st.turn !== 'hero' || st.acted || (st.attacks || 0) > 0 || !walks.length;
     { const a = document.getElementById('fbAuto'); a.disabled = noAuto(); a.title = noAuto() ? 'ปิดไว้ในบทฝึกต่อสู้' : ''; a.classList.toggle('on', auto); a.querySelector('span').textContent = auto ? 'หยุด Auto' : 'Auto'; window.BattleHudArt?.skinButton(a, auto ? 'stop' : 'auto', auto ? 'หยุด Auto' : 'Auto'); a.setAttribute('aria-pressed', String(auto)) }
@@ -1340,14 +1339,14 @@
     const d = document.createElement('div'); d.id = 'fbPause'; pauseEl = d;
     const canAct = !busy && st.turn === 'hero' && !st.outcome;
     d.innerHTML = `<div class="box"><b>หยุดเกม</b><small>${esc(goalLine())}</small>
-      <button data-a="resume">▶ เล่นต่อ</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button><button data-a="opt">⚙ เสียงและภาพ</button>
+      <button data-a="resume">▶ เล่นต่อ</button><button data-a="log">📜 บันทึกการต่อสู้</button><button data-a="help">❓ วิธีเล่น</button><button data-a="el">◈ ตารางธาตุ</button><button data-a="keys">⌨ ปุ่มควบคุม</button><button data-a="opt">⚙ เสียงและภาพ</button>
       ${EMBED ? (st.flee ? '<p style="margin:6px 0;font-size:13px;color:#bfe8ff">🏃 หนีได้ที่ช่องสีฟ้า "ทางหนี" บนสนามเท่านั้น — พาตัวเอกเดินไปถึงช่องนั้น</p>' : '') : `<button data-a="new" class="warn">⟲ เริ่มการต่อสู้ใหม่</button>`}
       <div class="keys" hidden>คลิกศัตรู · Tab = เลือกเป้าและดูการ์ดที่ดีที่สุด<br>คลิกซ้ำ · Enter = โจมตีตามที่แสดง<br>คลิกช่อง = เดิน (ใช้ไพ่เดินให้เอง)<br>1–9 = ใช้ไพ่ต่อสู้ใบนั้น · Z / Backspace = ย้อนเดิน<br>Space = จบเทิร์น แล้วเลือกทิศด้วยลูกศร · A = Auto<br>Q / E = หมุนกล้อง · Esc = เมนูนี้</div>
       <div class="opt" hidden>${(() => { const P = window.BattlePolish || {}; return `<label>🔊 เสียงเอฟเฟกต์ <input type="range" min="0" max="1" step=".05" data-o="volume" value="${P.volume ?? .65}"></label><label>🎵 เพลง <input type="range" min="0" max="1" step=".05" data-o="musicVolume" value="${P.musicVolume ?? .3}"></label><label><input type="checkbox" data-o="shake" ${P.shake === false ? '' : 'checked'}> จอสั่นตอนโดนตี</label>` })()}</div></div>`;
     document.body.append(d);
     d.querySelectorAll('[data-o]').forEach(x => x.oninput = x.onchange = () => { window.BattlePolish?.set(x.dataset.o, x.type === 'checkbox' ? x.checked : +x.value); if (x.dataset.o === 'volume') sfx('sword', .5) });   /* v97.31 · B13 */
     d.onclick = e => { const a = e.target.closest('[data-a]')?.dataset.a; if (e.target === d) a || pauseMenu(); if (!a) return;
-      if (a === 'resume') pauseMenu(); else if (a === 'el') { pauseMenu(); window.ElementWheel?.showChart() } else if (a === 'keys') d.querySelector('.keys').hidden = !d.querySelector('.keys').hidden;
+      if (a === 'resume') pauseMenu(); else if (a === 'log' || a === 'help') { pauseMenu(); if (hud) hud.dataset.open = a } else if (a === 'el') { pauseMenu(); window.ElementWheel?.showChart() } else if (a === 'keys') d.querySelector('.keys').hidden = !d.querySelector('.keys').hidden;
       else if (a === 'opt') d.querySelector('.opt').hidden = !d.querySelector('.opt').hidden;
       else if (a === 'flee') { const b = e.target.closest('button'); if (b.dataset.sure) { pauseMenu(); if (!busy && st.turn === 'hero' && !st.outcome) report('flee') } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อหนี' } }
       else if (a === 'new') { const b = e.target.closest('button'); if (b.dataset.sure) { pauseMenu(); document.querySelectorAll('.fb-show,.fb-fly,#fbBar').forEach(x => x.remove()); build(); userCam = false; cam.set = false; startTurnShow(true) } else { b.dataset.sure = 1; b.textContent = 'กดอีกครั้งเพื่อเริ่มใหม่' } } };
@@ -1430,11 +1429,12 @@
     if (!p.reason && p.moveCard == null && !p.emergency) { await heroMove(to); return }   /* the walking points already in hand reach it */
     const o = FB.walkPlan ? FB.walkPlan(st, to) : null;   /* v98.1078 · the cheapest one- or two-step way (green / yellow layer) */
     if (!o) { flash(p.reason || 'เดินไม่ถึง'); return }
-    if (!(await playSteps(o))) return;
+    if (!(await playWalkSteps(o))) return;
     await heroMove(to);
   }
   /* plays the walking steps of a plan in order: move cards (they fly up from the hand) and/or the emergency step → false when one fails */
-  async function playSteps(o) {
+  /* v98.1100 · renamed (was a second `playSteps`, which silently REPLACED the enemy/ally turn animator above: ending the turn threw `o.steps is not iterable` and left the battle stuck with every button greyed) */
+  async function playWalkSteps(o) {
     for (const s of o.steps) {
       if (s.emergency) { const e = FB.playEmergency(st); if (!e.ok) { flash(e.reason); return false } floatText(FB.hero(st), 'เดินฉุกเฉิน +1', '#ffd25a', true); hint('เดินฉุกเฉิน: ไม่มีไพ่เดินที่ใช้ได้ — เดินฟรี 1 ช่อง (ไม่เสียคริสตัล)'); hudSync(); continue }
       const b = handBtn('movement', s.uid); if (!b) return false; const before = st.mp; await cardClick(b); if (st.mp <= before) return false;
