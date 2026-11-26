@@ -128,7 +128,7 @@
     }).catch(() => { o.busy = false; o.cool = 3 });
   }
   /* v98.617 · frozen while the victory ceremony (#qbVic in the game page) or a guided tour is up */
-  const frozen = () => { try { return !!(root.parent !== root && root.parent.document.getElementById('qbVic')) } catch (e) { return false } };
+  const frozen = () => { try { return !!(root.parent !== root && (root.parent.document.getElementById('qbVic') || root.parent.document.getElementById('storyBattle'))) } catch (e) { return false } };   /* v98.1131 · also frozen while a quest fight is on top (the hero kept chasing the goats underneath = footsteps from an invisible walker) */
   function update(dt, now) {
     if (frozen()) { pending = null; chaseTo = null; return }
     poll(now);
