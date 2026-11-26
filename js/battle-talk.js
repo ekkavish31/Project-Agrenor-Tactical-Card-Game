@@ -65,7 +65,9 @@
 #btTalk .bt-pic.in.L{animation:btL .3s cubic-bezier(.2,.9,.3,1.1)}#btTalk .bt-pic.in.R{animation:btR .3s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes btL{from{transform:translateX(-60px);opacity:0}}@keyframes btR{from{transform:translateX(60px);opacity:0}}
 #btTalk .bt-pic img,#btTalk .bt-pic .bt-sprite{max-width:100%;max-height:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 2px #0009) drop-shadow(0 18px 28px #0008)}
-#btTalk .bt-pic .bt-sprite{width:70%;aspect-ratio:1/1;background:url(assets/ui/mip-sheet.webp?v=2) 27.2727% 50%/1200% 100% no-repeat}
+/* v98.1141 · a full-body SPRITE speaker (Mip) stands ON the text box instead of sinking behind it: lifted by the box height (--bt-box-h, measured in JS) and no bigger than 34 % of the screen height */
+#btTalk .bt-pic:has(.bt-sprite){bottom:calc(var(--bt-box-h,150px) + .9vw - 4vh);height:min(40vh,380px)}
+#btTalk .bt-pic .bt-sprite{width:min(70%,34vh);aspect-ratio:1/1;background:url(assets/ui/mip-sheet.webp?v=2) 27.2727% 50%/1200% 100% no-repeat}
 #btTalk .bt-pic .bt-icon{font-size:min(18vh,150px);filter:drop-shadow(0 6px 10px #000c);margin-bottom:10%}
 #btTalk .bt-pic.dim{filter:brightness(.45) saturate(.7);transform:scale(.94)}
 #btTalk .bt-pic.R.shake img,#btTalk .bt-pic.L.shake img{animation:btShake .3s}@keyframes btShake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
@@ -95,6 +97,7 @@
       el.innerHTML = '<button type="button" class="bt-skip" title="ข้ามบทสนทนา (Esc)"><img src="assets/ui/story-controls/skip-scene.webp" alt="" draggable="false"><span>ข้ามฉาก</span></button><div class="bt-row"></div><div class="bt-box"><div class="bt-name"></div><div class="bt-text"></div><div class="bt-next">▼</div></div>';
       document.body.append(el);
       const row = el.querySelector('.bt-row'), box = el.querySelector('.bt-box'), nm = el.querySelector('.bt-name'), tx = el.querySelector('.bt-text');
+      const measure = () => { try { el.style.setProperty('--bt-box-h', box.offsetHeight + 'px') } catch (e) { } }; measure(); try { new ResizeObserver(measure).observe(box) } catch (e) { }   /* v98.1141 · the sprite speaker stands on the box */
       const slots = {}; let i = -1, done = false, typing = false;
       const pics = new Map();   /* who → element */
       const sideOf = (l, w) => l.side || (w === 'hero' ? 'L' : 'R');
