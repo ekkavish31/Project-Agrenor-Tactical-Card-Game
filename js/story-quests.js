@@ -475,13 +475,19 @@ function walkTips(){const v=V();if(!v||(v.story||{}).walkTipSeen)return;v.story.
 async function walkTour(){if(tourBusy||!root.GuidedTour)return false;tourBusy=true;const v=V();
  try{v.story=v.story||{};try{const st=story();if(st&&st.mode==='active'){st.closed=false;draw(true)}}catch(e){}   /* the quest window must be up: step 3 points at its auto-walk button */
   const fine=!!(root.matchMedia&&matchMedia('(pointer:fine)').matches);let key=false;const onKey=e=>{if(/^(w|a|s|d|arrowup|arrowdown|arrowleft|arrowright)$/i.test(e.key))key=true};const keyWins=[root];try{const f=walkFrame();if(f&&f!==root)keyWins.push(f)}catch(e){}for(const w of keyWins)try{w.addEventListener('keydown',onKey,true)}catch(e){}   /* the village map is an iframe: the keys go to ITS window */
+  /* steps 1-2 force WALKING ONLY: no menu, no places, no NPC, no quest auto-walk — the sibling refuses (the "lost?" step lifts it) */
+  const NO='ยังก่อนนะ! ตอนนี้ลองเดินให้คล่องก่อน — ปุ่มอื่นเอาไว้ทีหลัง';let lockOn=false,lastWarn=0;const warnSib=()=>{if(Date.now()-lastWarn<2500)return;lastWarn=Date.now();try{root.GuidedTour?.interject?.(NO)}catch(e){}};
+  const denyTop=e=>{if(!lockOn)return;const t=e.target;if(t&&(t.tagName==='IFRAME'||t.closest?.('#gtour')))return;e.preventDefault();e.stopImmediatePropagation();if(e.type==='pointerdown')warnSib()};
+  const denyKeyTop=e=>{if(!lockOn||e.target?.closest?.('input,textarea')||/^(w|a|s|d|arrowup|arrowdown|arrowleft|arrowright|shift|escape)$/i.test(e.key))return;e.preventDefault();e.stopImmediatePropagation();warnSib()};
+  const lock=on=>{lockOn=on;for(const n of ['pointerdown','pointerup','click']){removeEventListener(n,denyTop,true);if(on)addEventListener(n,denyTop,true)}removeEventListener('keydown',denyKeyTop,true);if(on)addEventListener('keydown',denyKeyTop,true);for(const w of keyWins)try{w.ShiftWalk?.lock(on,warnSib)}catch(e){}};
+  lock(true);
   const mover=(need)=>{let p0=null,t0=0;return ()=>{const p=heroXY();if(!p){t0||=Date.now();return Date.now()-t0>4000}if(!p0){p0={u:p.u,v:p.v};return false}return Math.hypot(p.u-p0.u,p.v-p0.v)>=need}};
   const steps=[
    {who:'sib',free:true,text:'ต่อไปลองเดินดูกัน — คลิกที่พื้นถนนตรงไหนก็ได้ ตัวละครจะเดินไปตรงนั้นให้',wait:mover(1.6)},
    ...(fine?[{who:'sib',free:true,text:'เดินด้วยคีย์บอร์ดก็ได้นะ ลองกด W A S D หรือปุ่มลูกศรดูสิ',wait:(()=>{const m=mover(1.4);return ()=>m()&&key})()}]:[]),
-   {who:'sib',text:'ผู้ใหญ่โอเรนอยู่ที่ตลาดนะ ถ้าหลงทางกดปุ่ม เดินอัตโนมัติ ในกรอบเควสตรงนี้ ตัวละครจะเดินไปเอง',target:'#storyTracker [data-act="0"]',wait:'next',showTracker:true}];
+   {who:'sib',text:'ผู้ใหญ่โอเรนอยู่ที่ตลาดนะ ถ้าหลงทาง ให้กดปุ่มธง เดินอัตโนมัติ ตรงที่ลูกศรชี้ ตัวละครจะเดินไปเอง ลองกดดูสิ',target:'#storyTracker [data-act="0"]',showTracker:true,prep:()=>lock(false)}];   /* the player must press the flag (the arrow points at it, like the book lesson) */
   const ok=await root.GuidedTour.run(steps,{bright:true});
-  for(const w of keyWins)try{w.removeEventListener('keydown',onKey,true)}catch(e){}v.story.walkTour=true;doSave();if(ok)setTimeout(walkTips,600);return ok}
+  lock(false);for(const w of keyWins)try{w.removeEventListener('keydown',onKey,true)}catch(e){}v.story.walkTour=true;doSave();if(ok)setTimeout(walkTips,600);return ok}
  finally{tourBusy=false}}
 async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{v.story=v.story||{};if(!v.story.bookGift){v.story.bookGift=true;const b=v.bag||(v.bag={});b.potion=(b.potion||0)+1;b.momWater=(b.momWater||0)+1;b.mayBread=(b.mayBread||0)+4;doSave();await root.ItemGet?.show([{key:'potion',n:1},{key:'momWater',n:1},{key:'mayBread',n:4}],{kicker:'ของจากแม่',text:'แม่ห่อของใส่สมุดผนึกของทั้งสองคนไว้ให้ก่อนออกจากบ้าน'})}   /* v98.668 · the ของใช้ page is not empty: 1 potion (+HP) and 1 water from mother (+stamina) · v98.1022 · + the 4 loaves of Aunt May's bread that mother counted ("แม่นับขนมปังไว้แล้ว สี่ก้อน") */
   const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}

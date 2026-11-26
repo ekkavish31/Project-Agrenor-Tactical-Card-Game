@@ -5,10 +5,14 @@
 (function (root) {
   'use strict';
   if (root.ShiftWalk || typeof document === 'undefined') return;
-  let cfg = null, held = false, down = null;
-  const active = e => !!(cfg && cfg.canvas && e.target === cfg.canvas && e.shiftKey && (e.pointerType === undefined || e.pointerType === 'mouse' || e.pointerType === 'pen') && (!cfg.ok || cfg.ok()));
+  let cfg = null, held = false, down = null, locked = null;   /* locked = { deny } while a lesson forces walking only (v98.1115): every click on the map walks; everything else is refused */
+  const active = e => !!(cfg && cfg.canvas && e.target === cfg.canvas && (e.shiftKey || locked) && (e.pointerType === undefined || e.pointerType === 'mouse' || e.pointerType === 'pen') && (!cfg.ok || cfg.ok()));
   const paint = on => { try { if (!cfg || !cfg.canvas) return; if (on) cfg.canvas.dataset.agc = 'walk'; else if (cfg.canvas.dataset.agc === 'walk') cfg.canvas.dataset.agc = ''; root.GameCursor?.refresh?.() } catch (e) { } };
   const quiet = () => { try { root.Interactables?.setHover?.(null); root.Interactables?.showTip?.(null) } catch (e) { } };
+  const deny = () => { try { locked && locked.deny && locked.deny() } catch (e) { } };
+  /* locked: only W A S D / arrows (and Shift) work · every other key and every click outside the map canvas is refused */
+  addEventListener('keydown', e => { if (!locked || e.target?.closest?.('input,textarea')) return; if (/^(w|a|s|d|arrowup|arrowdown|arrowleft|arrowright|shift)$/i.test(e.key)) return; e.preventDefault(); e.stopImmediatePropagation(); deny() }, true);
+  for (const t of ['pointerdown', 'pointerup', 'click', 'dblclick', 'contextmenu']) addEventListener(t, e => { if (!locked || !cfg || e.target === cfg.canvas || e.target === document.documentElement) return; e.preventDefault(); e.stopImmediatePropagation(); if (t === 'pointerdown') deny() }, true);
   addEventListener('keydown', e => { if (e.key === 'Shift' && !held) { held = true; if (!cfg?.ok || cfg.ok()) { paint(true); quiet() } } }, true);
   addEventListener('keyup', e => { if (e.key === 'Shift') { held = false; down = null; paint(false) } }, true);
   addEventListener('blur', () => { held = false; down = null; paint(false) });
@@ -21,5 +25,5 @@
     try { cfg.walk(e) } catch (x) { console.warn('[shift-walk]', x) }
   }, true);
   addEventListener('click', e => { if (active(e)) e.stopImmediatePropagation() }, true);
-  root.ShiftWalk = { set(c) { cfg = c; if (held) paint(true) }, held: () => held };
+  root.ShiftWalk = { set(c) { cfg = c; if (held || locked) paint(true) }, held: () => held, lock(on, denyFn) { locked = on ? { deny: denyFn } : null; paint(!!on || held); if (on) quiet() }, locked: () => !!locked };
 })(globalThis);
