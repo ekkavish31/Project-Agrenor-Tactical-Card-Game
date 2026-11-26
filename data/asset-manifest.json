@@ -166571,6 +166571,20 @@
    "usedIn": "FieldHost · stallR/stallB rotated battle scenery",
    "artRevision": "v98.1090",
    "prompt": "Rear NE view of existing striped market stall; same elevated 2:1 isometric base angle, timber, canopy and wares. Transparent sprite. NE normalized by horizontal mirror and fitted to original alpha footprint; opposite views runtime mirrored."
+  },
+  {
+   "id": "ui-quest-ribbon-red",
+   "file": "assets/ui/quest-ribbon-red.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1024,
+    162
+   ],
+   "usedIn": "StoryToast quest · css/story.css",
+   "artRevision": "v98.1119",
+   "prompt": "Wide blank crimson cloth quest ribbon, folded swallowtail ends, restrained antique gold stitched trim, uniform empty rectangular middle for horizontal 9-slice stretching, painterly fantasy JRPG UI; transparent background, no text/icons/scenery."
   }
  ],
  "studioReviews": {
