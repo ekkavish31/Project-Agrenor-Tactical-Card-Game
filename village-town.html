@@ -626,7 +626,12 @@ function warmTour(){if(EDIT_PAGE||window.MAP_SHOT||/[?&](edit|battle)=1/.test(lo
 function focusHero(){const p=project(hero.u,hero.v);pan={x:-(p.x-WORLD_W/2)*scale*zoom,y:H*.15-(p.y-WORLD_H/2)*scale*zoom}}
 /* v98.13 · re-size only the backing store (no re-centre, no zoom reset): used by js/perf-scale.js when it changes the render resolution */
 function applyRenderScale(){cv.width=Math.round(W*devicePixelRatio);cv.height=Math.round(H*devicePixelRatio)}
-function fit(){const r=stage.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.round(W*devicePixelRatio);cv.height=Math.round(H*devicePixelRatio);scale=Math.min(W/1800,H/950)*1.55;zoom=EDIT_PAGE?1:CharSize.TOWN_ZOOM;focusHero()}
+function fit(){const r=stage.getBoundingClientRect();
+ /* v98.1104 · the village frame is hidden (display:none → 0×0) while a place is open: fit() then set the canvas to 0×0 and, on the way back, to full size again —
+    that CLEARED the picture (the village showed plain green until it was repainted), reset the camera and made every cached layer (day light, tilt-shift, bloom) reallocate its buffers = the stutter after leaving a house.
+    A hidden frame is ignored; a size that did not change is not applied again. */
+ if(!(r.width>=2&&r.height>=2))return;if(r.width===W&&r.height===H&&cv.width===Math.round(W*devicePixelRatio)&&cv.height===Math.round(H*devicePixelRatio))return;
+ W=r.width;H=r.height;cv.width=Math.round(W*devicePixelRatio);cv.height=Math.round(H*devicePixelRatio);scale=Math.min(W/1800,H/950)*1.55;zoom=EDIT_PAGE?1:CharSize.TOWN_ZOOM;focusHero()}
 /* v98.894 · cursor hint for js/game-cursor.js: data-agc on the map canvas = 'talk' over a villager · 'walk' over ground a click can walk to — same blockedFree test as the click (v98.894; was the road-only blocked(), so grass / dirt showed the arrow) (nothing while editing / in a fight / over buildings) */
 addEventListener('pointermove',e=>{if(e.target!==cv)return;let k='';try{if(!editing&&!/[?&]battle=1(&|$)/.test(location.search)&&!window.TownBattle?.active?.()){if(window.TownNPC?.hoverAt?.(e))k='talk';else{const w=world(e),q=inv(w.x,w.y);if(!drag&&auraPlace(w))k='door';else if(!drag&&!blockedFree(q.u,q.v))k='walk'}}}catch(x){}if(cv.dataset.agc!==k)cv.dataset.agc=k},true);
 function world(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left-W/2-pan.x)/(scale*zoom)+WORLD_W/2,y:(e.clientY-r.top-H/2-pan.y)/(scale*zoom)+WORLD_H/2}}
