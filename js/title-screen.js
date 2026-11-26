@@ -208,7 +208,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
  <section class="ts-story" hidden aria-live="polite"><div class="ts-story-bg"></div><canvas class="ts-story-art"></canvas><div class="ts-story-veil"></div><div class="ts-story-text"></div><div class="ts-story-hint">คลิก หรือกด Enter เพื่อไปต่อ</div><button class="ts-skip" data-act="skip">ข้าม ▸▸</button>
   <form class="ts-name" hidden novalidate>
    <i class="ts-c ts-c1"></i><i class="ts-c ts-c2"></i><i class="ts-c ts-c3"></i><i class="ts-c ts-c4"></i>
-   <span class="ts-kicker">ตัวเอกของเรื่อง · สองพี่น้อง</span><h2>เจ้าสองพี่น้องชื่ออะไร?</h2>
+   <h2>เจ้าสองพี่น้องชื่ออะไร?</h2>
    <div class="ts-orn"><i></i><b>✦</b><i></i></div>
    <p class="ts-sub">แตะการ์ดเพื่อเลือกตัวเอกนำ · อีกคนเป็นผู้ติดตามในทีมเสมอ</p>
    <div class="ts-cols">
