@@ -1,0 +1,62 @@
+{
+  "version": "v98.1089",
+  "approvedScope": "36 dialogue portraits only; no map sprites or SD assets",
+  "mode": "built-in image_gen",
+  "prompt": "Style-transfer: reference character identity and clothing; match the original Arz/Liz warm hand-painted 2D JRPG look with fine brown contours, softly painted skin and layered hair, painted cloth/leather/metal texture. Preserve age, identity, clothing, scars, ears, masks, direction. Four expressions in a 2x2 transparent sheet: neutral, happy, angry, worry. All face 3/4 left, same camera and character dimensions. No FFT hybrid, flat cel shading, 3D, background, haze, text or panels.",
+  "portraits": [
+    {
+      "id": "story/helga",
+      "sourceLibraryFile": "libfile_f838694a5224819180137805e59f41e6",
+      "sourceFilename": "Four-expression Agrenor portrait sheet.png",
+      "sourceSha256": "e70c99172a8122841271e8197b11cc6bcf6a3106b789804168415aebf5b5ee7f"
+    },
+    {
+      "id": "story/mierris",
+      "sourceLibraryFile": "libfile_2712622a62048191902a5f9ae26f4e11",
+      "sourceFilename": "Agrenor character four-expression portrait sheet.png",
+      "sourceSha256": "bff4c0d22f781dfd68c168d7030f198f72b1361bf4ecd123617c6d88c3fb6c48"
+    },
+    {
+      "id": "story/lorrik",
+      "sourceLibraryFile": "libfile_335618ffe91881918fcef2c313835909",
+      "sourceFilename": "Painted four-expression character portrait sheet.png",
+      "sourceSha256": "207e836a2a6c47936024652399d785ddf1061c192483528a9606e3e817f04510"
+    },
+    {
+      "id": "story/corvin",
+      "sourceLibraryFile": "libfile_d708a09bd74081919b3bfdebe16ba45e",
+      "sourceFilename": "Four-expression painterly character portrait sheet.png",
+      "sourceSha256": "88eb906f002c1abe810a261fbe7c8de1be8dfcd51ac33ac321de44135e7959a5"
+    },
+    {
+      "id": "story/irene",
+      "sourceLibraryFile": "libfile_c43c2291c800819183e4b57a24220779",
+      "sourceFilename": "Painterly four-expression character portrait sheet(1).png",
+      "sourceSha256": "7b1b7920a9911461a505d7fd73f1d48d45d61f0cacdc0f9cb994fea06871f8b7"
+    },
+    {
+      "id": "story/serrien",
+      "sourceLibraryFile": "libfile_f039d1bdea848191a3af912b4e1bba33",
+      "sourceFilename": "Agrenor character expression portrait sheet.png",
+      "sourceSha256": "1385c35fd2f2894b5ef58b7d4ba71fcc02ee7ffafc47afbe9c462c9ece4d7cd0"
+    },
+    {
+      "id": "story/vik",
+      "sourceLibraryFile": "libfile_065a1219e5708191956e5b69296b1808",
+      "sourceFilename": "Painterly four-expression character portrait sheet.png",
+      "sourceSha256": "cf4c6799922363e31557eeb8a0439efc112f3662d0b1be930fd700cf69c36d46"
+    },
+    {
+      "id": "story/darren",
+      "sourceLibraryFile": "libfile_658f1f3a3e8c8191b35cedc409e96365",
+      "sourceFilename": "Four-expression hand-painted character portrait sheet.png",
+      "sourceSha256": "ed6462ff06b0b4047352a1a9c943fd2989e3a9b6cf968356ea6fc97142797ee2"
+    },
+    {
+      "id": "hilda",
+      "sourceLibraryFile": "libfile_cc9c4c4928288191819cafa62bc78cc4",
+      "sourceFilename": "Masked adventurer's four expressions.png",
+      "sourceSha256": "d6ac82e7cf4761526760a0e4d97d3a55c82134ee3105761236aad3a8521886d0"
+    }
+  ]
+}

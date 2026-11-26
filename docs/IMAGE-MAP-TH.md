@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6785 ไฟล์ (538.5 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6785 ไฟล์ (538.8 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -16,14 +16,14 @@
 ## จำนวนต่อหมวดหมู่
 | หมวดหมู่ | ไฟล์ | ขนาด | โฟลเดอร์หลัก | ลงทะเบียน slot | ไฟล์ซ้ำ (เนื้อหาเหมือนกัน) |
 |---|---|---|---|---|---|
-| 🗣 ภาพสนทนา (portrait) | 267 | 62.1 MB | `assets/portraits` 252 · `assets/generated-village` 15 | 131 | 4 |
+| 🗣 ภาพสนทนา (portrait) | 267 | 62.4 MB | `assets/portraits` 252 · `assets/generated-village` 15 | 131 | 4 |
 | 🧑‍🎤 ตัวเอก | 2917 | 104.9 MB | `assets/tactics` 2890 · `assets/characters` 22 · `assets/adventurer-sword-idle.webp` 1 · `assets/adventurer-unarmed-idle.webp` 1 | 2833 | 519 |
 | 👥 ชาวบ้าน / NPC | 547 | 17.4 MB | `assets/village-town` 546 · `assets/generated-village` 1 | 435 | 23 |
 | 🤝 เพื่อนร่วมทีม | 360 | 13.0 MB | `assets/tactics` 196 · `assets/village-town` 160 · `assets/allies` 4 | 360 | 16 |
 | 👹 มอนสเตอร์ | 546 | 76.7 MB | `assets/enemies` 546 | 507 | 14 |
 | ⚔ ท่าต่อสู้ในสนาม (tactics) | 672 | 31.4 MB | `assets/tactics` 664 · `assets/objects` 7 · `assets/generated-village` 1 | 639 | 33 |
 | 🃏 การ์ด | 171 | 44.5 MB | `assets/cards` 169 · `assets/camp.webp` 1 · `assets/forge.webp` 1 | 158 | 16 |
-| 🎛 UI · ไอคอน · เมนู | 322 | 15.0 MB | `assets/icons` 141 · `assets/ui` 136 · `assets/cursor` 37 · `assets/cursor-fantasy-active.png` 1 | 163 | 11 |
+| 🎛 UI · ไอคอน · เมนู | 322 | 15.0 MB | `assets/icons` 141 · `assets/ui` 136 · `assets/cursor` 37 · `assets/cursor-fantasy-active.png` 1 | 167 | 11 |
 | 🏘 หมู่บ้าน · อาคาร · ของตกแต่ง | 170 | 22.6 MB | `assets/village-town` 155 · `assets/objects` 15 | 38 | 8 |
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 113 | 9.0 MB | `assets/terrain` 77 · `assets/world` 32 · `assets/v03` 4 | 9 | 2 |
