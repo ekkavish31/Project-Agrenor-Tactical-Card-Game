@@ -263,7 +263,7 @@ body.fb-open #storyTracker{display:none!important}
 .cs-next{right:1.3vw;bottom:.7vw;font-size:max(11px,.9vw)}
 .cs-ib{height:max(28px,2.05vw);padding:0 max(10px,.8vw) 0 max(8px,.6vw);border-radius:2vw;gap:max(4px,.35vw);font-size:max(11px,.72vw)}
 .cs-ib svg{width:max(14px,.95vw);height:max(14px,.95vw)}
-.cs-log-btn{top:calc(9vh + .8vw);left:.8vw}
-.cut-tools{top:calc(9vh + .8vw);right:.8vw;gap:.5vw}
-.cs-skip{right:.8vw;bottom:calc(9vh + .8vw)}
-@media (max-width:640px){.cs-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;bottom:calc(6vh + 12px)}.cs-name{font-size:17px}.cs-text{font-size:15px}.cs-log-btn,.cut-tools{top:calc(6vh + 8px);left:8px}.cut-tools{left:auto;right:8px}.cs-skip{right:8px;bottom:calc(6vh + 8px)}.cs-ib{height:32px;font-size:12px}}
+.cs-log-btn{top:max(2px,calc((9vh - max(28px,2.05vw))/2));left:.8vw}   /* v98.1065 · the scene buttons sit INSIDE the black letterbox bars, vertically centred, in the screen corners */
+.cut-tools{top:max(2px,calc((9vh - max(28px,2.05vw))/2));right:.8vw;gap:.5vw}
+.cs-skip{right:.8vw;bottom:max(2px,calc((9vh - max(28px,2.05vw))/2))}
+@media (max-width:640px){.cs-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;bottom:calc(6vh + 12px)}.cs-name{font-size:17px}.cs-text{font-size:15px}.cs-log-btn,.cut-tools{top:max(2px,calc((6vh - 34px)/2));left:8px}.cut-tools{left:auto;right:8px}.cs-skip{right:8px;bottom:max(2px,calc((6vh - 34px)/2))}.cs-ib{height:32px;font-size:12px}}
