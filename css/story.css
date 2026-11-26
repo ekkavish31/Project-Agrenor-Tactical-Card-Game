@@ -294,3 +294,9 @@ body.quest-announcement-open #storyTracker{visibility:hidden}
 #storyToasts:has(.st-toast--quest){top:50%;transform:translate(-50%,-50%);max-width:min(96vw,1400px)}
 #storyToasts .st-toast.st-toast--quest{zoom:2;max-width:calc(min(96vw,1400px)/2 - 8px)}
 @media(max-width:700px){#storyToasts .st-toast.st-toast--quest{zoom:1.4;max-width:calc(96vw/1.4 - 8px)}}
+
+
+/* v98.1137 · scene buttons (Log · Auto · เร่ง · ข้ามฉาก): the "on" state and the pointer-over state are a WHITE OUTLINE round the button + a light AURA round the label — no background colour change (the global .on rule filled Auto with cream) */
+.cs-ib.on,.cs-ib:hover{background:transparent!important;box-shadow:none!important;color:#fff;border-radius:10px;outline:2px solid #fff;outline-offset:2px;text-shadow:0 0 6px #fff,0 0 12px #ffe3a0,0 0 22px #ffc96acc}
+.cs-ib.on img,.cs-ib:hover img{filter:brightness(1.12) drop-shadow(0 0 6px #ffffffaa)}
+.cs-ib:focus-visible{outline:2px solid #fff;outline-offset:2px}
