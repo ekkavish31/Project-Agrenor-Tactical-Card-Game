@@ -360,7 +360,7 @@ let busy=false;
 async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){draw();return}init();const st=story();
  const sale=detectSale();if(!st||st.mode!=='active'){draw();return}
  const step=STEPS[st.i];if(!step){st.mode='done';doSave();draw(true);return}const d=dataOf(step);
- if(step.skip?.(d)){st.i++;doSave();draw(true);return}
+ if(step.skip?.(d)){st.i++;doSave();try{root.RunSlots?.tm?.mark()}catch(e){}draw(true);return}
  if(sale){d.sales=(d.sales||0)+1}
  if(step.id==='raid'&&d.fighting&&!document.getElementById('storyBattle')){d.fighting=false;doSave()}
  step.tick?.(d);
@@ -373,7 +373,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
   const introId=typeof step.intro==='function'?step.intro():step.intro;
   if(introId&&!d.introSeen){d.introSeen=true;if(introId==='opening'){V().story.bookSeen=true;V().story.bookIntro=true}doSave();draw();await root.Cutscene.play(sceneAt(introId));if(introId==='opening')await bookTour()}
   if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();await lessonCard(step.id)}
-  if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();
+  if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();try{root.RunSlots?.tm?.mark()}catch(e){}   /* v98.1080 · time machine checkpoint at every new step */
    const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;toast('✦ เควสใหม่: '+esc(nx.title),'quest');tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 

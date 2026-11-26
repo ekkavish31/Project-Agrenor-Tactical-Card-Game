@@ -177,7 +177,7 @@
   const DEVICE_PRE = ['project-a-layout-backup-', 'pd-', 'proc-motion-walk-reset-'];
   const SAVE = ['three-card-forge-v4', 'three-card-forge-v2', 'three-card-forge-before-v8', 'three-card-forge-before-newgame', 'three-card-config-v1', 'agrenor-leads-v1', 'project-a-started-v1', 'project-a-newgame', 'agrenor-mind-v1', 'agrenor-secret-elements',
     'agrenor-world-v1', 'agrenor-clock-v1', 'agrenor-standalone-v1', 'projectA.resume', 'projectA.heroVariant'];
-  const SAVE_PRE = ['projectA.slot.', 'projectA.run'], OWN_PRE = ['bgAsset:', 'bgAssets:', 'projectA.scaleAdjustDraft', 'pose-sheet.scaleDraft'], MANIFEST = ['asset-animation-reviews-v1'];
+  const SAVE_PRE = ['projectA.slot.', 'projectA.run', 'projectA.tm'], OWN_PRE = ['bgAsset:', 'bgAssets:', 'projectA.scaleAdjustDraft', 'pose-sheet.scaleDraft'], MANIFEST = ['asset-animation-reviews-v1'];
   function classify(k) {
     k = String(k);
     if (internal(k) || k.startsWith('es-')) return 'internal';

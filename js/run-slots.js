@@ -16,6 +16,25 @@
   const json = k => { try { return JSON.parse(ls.get(k) || 'null') } catch (e) { return null } };
   const runKey = n => 'projectA.run.' + n, manKey = (n, i) => 'projectA.run.' + n + '.m.' + i;
   let warning = '';
+  /* ---------- v98.1080 · TIME MACHINE (dev) — an automatic checkpoint at every story step, rewind to any of them ----------
+     'projectA.tm' = [{id, run, t, step, title, text, old?}] · 'projectA.tm.<id>' = {data:{…progress keys…}} · at most TM_MAX per run (oldest dropped).
+     A rewind first keeps the CURRENT line as a checkpoint (old:true "สายเดิม") so nothing is lost, then loads the chosen one and starts at home. */
+  const TM_KEY = 'projectA.tm', TM_PRE = 'projectA.tm.', TM_PENDING = 'projectA.pendingTm', TM_MAX = 20;
+  const tmList = () => { const l = json(TM_KEY); return Array.isArray(l) ? l : [] };
+  const tmPut = l => ls.set(TM_KEY, JSON.stringify(l));
+  const tmDev = () => { try { return localStorage.getItem('projectA.dev') === '1' || !!JSON.parse(localStorage.getItem('projectA.github') || '{}').token } catch (e) { return false } };
+  function tmSnap(extra) {
+    const g = json(FORGE); if (!hasProgress(g)) return null;
+    const run = reg().active || 0; let list = tmList(); const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    if (extra.step && !extra.old) { for (const e of list.filter(x => x.run === run && !x.old && x.step === extra.step)) { ls.del(TM_PRE + e.id) } list = list.filter(x => !(x.run === run && !x.old && x.step === extra.step)) }   /* the same step again: keep only the latest */
+    const entry = { id, run, t: Date.now(), text: summary(g), ...extra };
+    let ok = ls.set(TM_PRE + id, JSON.stringify({ data: copyOut(MANUAL_KEYS) })), guard = 0;
+    while (!ok && list.length && guard++ < 6) { const o = list.shift(); ls.del(TM_PRE + o.id); ok = ls.set(TM_PRE + id, JSON.stringify({ data: copyOut(MANUAL_KEYS) })) }   /* browser storage full: drop the oldest and retry */
+    if (!ok) return null;
+    list.push(entry);
+    const mine = list.filter(x => x.run === run); while (mine.length > TM_MAX) { const o = mine.shift(); ls.del(TM_PRE + o.id); list = list.filter(x => x.id !== o.id) }
+    tmPut(list); return entry;
+  }
 
   function summary(g) { if (!g) return 'ว่าง'; const v = g.village || {}, h = Math.floor((g.minutes || 480) / 60), m = (g.minutes || 480) % 60; return `${v.heroName || 'นักผจญภัย'} · Lv.${v.character?.level || 1} · วันที่ ${g.day || 1} · ${h}:${String(m).padStart(2, '0')}` }
   const hasProgress = g => !!g && !!(ls.get('project-a-started-v1') || g.village?.heroName || g.day > 1 || g.inventory?.length || g.wins);
@@ -47,6 +66,10 @@
         try { sessionStorage.removeItem('project-a-newgame') } catch (e) { }
       }
     }
+    /* v98.1080 · TIME MACHINE: a pending rewind (set by RunSlots.tm.rewind) copies that checkpoint over the working keys and starts at home, like loading a manual save */
+    let q = null; try { q = sessionStorage.getItem(TM_PENDING); sessionStorage.removeItem(TM_PENDING) } catch (e) { }
+    if (q) { const e = tmList().find(x => x.id === q), o = e && json(TM_PRE + q);
+      if (o?.data) { copyIn(o.data, MANUAL_KEYS); ls.del(RESUME); try { sessionStorage.setItem(HOME, '1'); sessionStorage.removeItem('project-a-newgame') } catch (er) { } if (e.run) { r.active = e.run; if (!r.runs[e.run]) r.runs[e.run] = { created: Date.now() }; changed = true } } }
     if (changed) putReg(r);
   }
 
@@ -113,6 +136,28 @@
     };
     d.addEventListener('keydown', e => { if (e.key === 'Escape') d.remove() });
     d.querySelector('button')?.focus();
+  };
+  api.tm = {
+    dev: tmDev,
+    /* called by js/story-quests.js each time the story moves to a new step */
+    mark() { try { const S = root.Story, st = S?.state?.(); if (!st || st.mode === 'off' || st.mode === 'offer') return null; const x = S.steps?.[st.i]; return tmSnap({ step: st.mode === 'done' ? 'end' : (x?.id || 'step' + st.i), title: st.mode === 'done' ? 'จบเรื่องหลักช่วงนี้' : (x?.title || '') }) } catch (e) { return null } },
+    list: () => { const act = reg().active || 0; return tmList().filter(x => x.run === act || !x.run).sort((a, b) => b.t - a.t) },   /* run 0 = taken before any Run slot existed: shown for whatever run is active */
+    rewind(id) { const e = tmList().find(x => x.id === id); if (!e || !json(TM_PRE + id)?.data) return false; mirror(true); tmSnap({ old: true, step: e.step, title: 'สายเดิม · ก่อนย้อนไป "' + (e.title || e.step) + '"' });
+      try { sessionStorage.setItem(TM_PENDING, id) } catch (er) { return false } try { top.location.reload() } catch (er) { location.reload() } return true },
+    remove(id) { ls.del(TM_PRE + id); tmPut(tmList().filter(x => x.id !== id)) },
+    ui() {
+      document.getElementById('runSlotsTm')?.remove();
+      const d = document.createElement('div'); d.id = 'runSlotsTm'; d.style.cssText = 'position:fixed;inset:0;z-index:2100;display:flex;align-items:center;justify-content:center;background:#000a;font:15px/1.5 AgThai,system-ui,Tahoma,sans-serif';
+      const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'เมื่อกี้' : m < 60 ? m + ' นาทีก่อน' : m < 1440 ? Math.round(m / 60) + ' ชม.ก่อน' : Math.round(m / 1440) + ' วันก่อน' };
+      const css = 'display:block;width:100%;text-align:left;margin:4px 0;padding:8px 12px;border-radius:9px;border:1px solid #b9c48a77;background:#1d2f29;color:#f5e6c4;font:inherit;cursor:pointer';
+      const rows = api.tm.list().map(e => `<button style="${css}${e.old ? ';border-style:dashed' : ''}" data-id="${e.id}"><b>${e.old ? '↩ ' : '⏪ '}${esc(e.old ? e.title : 'ก่อน: ' + (e.title || e.step))}</b><br><small data-hint style="color:#cdbb92">${esc(e.text)} · ${ago(e.t)}</small></button>`).join('');
+      d.innerHTML = `<div style="width:min(540px,calc(100vw - 24px));max-height:calc(100dvh - 40px);overflow:auto;padding:18px;border-radius:14px;background:#14231ff7;border:1px solid #b9c48a77;color:#f5e6c4"><h2 style="margin:0 0 4px">⏪ ย้อนโปรเกรส (dev)</h2><p style="margin:0 0 8px;color:#cdbb92;font-size:13px">เช็กพอยต์อัตโนมัติทุกครั้งที่เควสขยับไปขั้นใหม่ (เก็บ ${TM_MAX} ล่าสุดต่อ Run) · ย้อนแล้วสายที่เล่นอยู่ถูกเก็บเป็น "↩ สายเดิม" ย้อนกลับมาได้ · เริ่มที่บ้านหลังโหลด</p>${rows || '<p>ยังไม่มีเช็กพอยต์ — เล่นต่อจนเควสขยับขั้นแล้วจะมาเอง</p>'}<button style="${css};text-align:center" data-x="1">ปิด</button></div>`;
+      document.body.append(d);
+      d.onclick = e => { const b = e.target.closest('button'); if (e.target === d || b?.dataset.x) { d.remove(); return } if (!b?.dataset.id) return;
+        if (!b.dataset.sure) { b.dataset.sure = 1; b.querySelector('[data-hint]').textContent = 'กดอีกครั้งเพื่อยืนยัน · เกมจะโหลดใหม่ที่จุดนี้'; return } d.remove(); api.tm.rewind(b.dataset.id) };
+      d.addEventListener('keydown', e => { if (e.key === 'Escape') d.remove() }); d.querySelector('button')?.focus();
+    }
   };
   root.RunSlots = api;
 

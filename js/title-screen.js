@@ -197,6 +197,7 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
   <button data-act="new"><span>New Game</span><small>เริ่มเกมใหม่</small></button>
   <button data-act="continue" ${hasSave?'':'disabled hidden'}><span>Continue</span><small>${hasSave?saveSummary():'ยังไม่มีเซฟ'}</small></button>
   ${(()=>{if(root.RunSlots)return root.RunSlots.anyRun()?`<button data-act="load"><span>Load</span><small>เลือก Run · เซฟอัตโนมัติ / เซฟมือ</small></button>`:'';const n=[1,2,3].filter(i=>{try{return !!localStorage.getItem('projectA.slot.'+i)}catch(e){return false}}).length;return n?`<button data-act="load"><span>Load</span><small>โหลดจากช่องเซฟ (${n} ช่อง)</small></button>`:''})()}
+  ${(()=>{try{return DEV&&root.RunSlots?.tm?.list().length?`<button data-act="tm"><span>⏪ ย้อนโปรเกรส</span><small>เช็กพอยต์เควส (dev) · ${root.RunSlots.tm.list().length} จุด</small></button>`:''}catch(e){return ''}})()}
   <button data-act="options"><span>Options</span><small>ตั้งค่าเกม</small></button>
   <button data-act="extra"><span>Extra</span><small>วิธีเล่น · คลังภาพ · เครดิต</small></button>
   <div class="ts-tools" ${DEV?'':'hidden'}><a href="editor.html" target="_blank" rel="noopener" title="แก้ภาพ/แอนิเมชัน การ์ด แผนที่ สนามต่อสู้ (เปิดแท็บใหม่)"><img src="assets/icons/menu/v2-editor.webp" alt="" draggable="false">Editor</a></div>
@@ -250,6 +251,7 @@ async function act(a){if(busyTitle)return;
   go(0);return}
  if(a==='continue'&&hasSave){enter(false);return}
  if(a==='load'){if(root.RunSlots)root.RunSlots.ui('load');else root.ConsoleUI?.slotMenu('load');return}
+ if(a==='tm'){root.RunSlots?.tm?.ui();return}
  if(a==='options'){if(typeof root.openSettings==='function')root.openSettings();return}
  if(a==='extra'){title.querySelector('.ts-extra').hidden=false;tab('howto');return}
  if(a==='close-extra'){title.querySelector('.ts-extra').hidden=true;title.querySelector('[data-act="extra"]').focus();return}
