@@ -18,12 +18,14 @@
 #gtour .pic{position:fixed;bottom:0;height:min(58vh,520px);display:flex;align-items:flex-end;pointer-events:none;transition:filter .25s,opacity .25s,transform .25s}
 #gtour .pic img{max-height:100%;max-width:26vw;object-fit:contain;filter:drop-shadow(0 8px 16px #000c)}
 #gtour .pic.L{left:1vw}#gtour .pic.R{right:1vw}#gtour .pic.dim{filter:brightness(.55) saturate(.7);transform:translateY(8px)}
-#gtour .box{position:fixed;left:50%;bottom:2.6vh;transform:translateX(-50%);width:min(1380px,calc(100vw - 32px));min-height:150px;padding:24px 33px 27px;background:linear-gradient(#2a2016f2,#15100af2);border:1.5px solid #d8b46a;border-radius:21px;box-shadow:0 12px 36px #000c;color:#fff1d2;pointer-events:auto}
+#gtour .box{position:fixed;left:50%;bottom:1.4vw;transform:translateX(-50%);width:min(72vw,1500px);padding:1.15vw 1.6vw 1.3vw;background:linear-gradient(#2a2016f2,#15100af2);border:1.5px solid #d8b46a;border-radius:1vw;box-shadow:0 12px 36px #000c;color:#fff1d2;pointer-events:auto}
 #gtour.adv .blk,#gtour.adv .box{cursor:pointer}
-#gtour .box b{display:block;color:#ffd98a;font-size:clamp(24px,2.3vw,33px);margin-bottom:9px}
-#gtour .box p{margin:0;font-size:clamp(21px,2.55vw,28.5px);line-height:1.5;min-height:3em}
-#gtour .box small{position:absolute;right:14px;bottom:8px;color:#d8b46acc;font-size:clamp(14px,1.4vw,18px)}
-#gtour .skip{position:fixed;right:16px;bottom:16px;z-index:5;background:#14100af0;border:1px solid #d8b46a;color:#f0dfb4;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;pointer-events:auto;box-shadow:0 4px 14px #0008}#gtour .skip:hover{background:#2a2016}
+/* v98.1070 · the teaching box is sized like the dialogue box (story.css .cs-box: 72 % of the screen width, type scales with the width) */
+@media(max-width:640px){#gtour .box{width:calc(100vw - 20px);padding:12px 14px 16px;border-radius:12px;bottom:10px}#gtour .box b{font-size:17px}#gtour .box p{font-size:15px}}
+#gtour .box b{display:block;color:#ffd98a;font-size:max(15px,1.75vw);margin-bottom:.3vw}
+#gtour .box p{margin:0;font-size:max(13px,1.55vw);line-height:1.5;min-height:2.2em}
+#gtour .box small{position:absolute;right:1.3vw;bottom:.7vw;color:#d8b46acc;font-size:max(11px,.9vw)}
+#gtour .skip{position:fixed;right:.8vw;bottom:.8vw;z-index:5;background:#14100af0;border:1px solid #d8b46a;color:#f0dfb4;border-radius:999px;padding:max(5px,.45vw) max(12px,1.1vw);font-size:max(11px,.72vw);font-weight:700;cursor:pointer;pointer-events:auto;box-shadow:0 4px 14px #0008}#gtour .skip:hover{background:#2a2016}
 body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility:hidden!important}
 /* v98.665 · bright tour (the book lesson): no dark veil, no dark ring shadow — the book stays fully lit the whole time; only the gold ring + arrow point */
 #gtour.bright .veil{display:none}#gtour.bright .ring{box-shadow:0 0 22px #ffd77a,inset 0 0 14px #ffd77a55;animation-name:gtPulseB}
