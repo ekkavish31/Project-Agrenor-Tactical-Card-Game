@@ -1,4 +1,4 @@
-/* v98.1119 · the sub-map (village-place.html) uses the SAME top HUD as the village map: the status pill + the icon row (แผนที่ · วันนี้ · สมุดผนึก · ตัวเรา · ออกเดินทาง · เมนู).
+/* v98.1120 · the sub-map (village-place.html) uses the SAME top HUD as the village map: the status pill + the icon row (แผนที่ · วันนี้ · สมุดผนึก · ตัวเรา · ออกเดินทาง · เมนู).
    It is built by js/town-hud.js; this file only supplies what that script expects from the page: the row (#townGameMenu) with the hidden buttons it clicks, and the pill (#townGameHud).
    Load it BEFORE js/town-hud.js.  Extra here: a "กลับหมู่บ้าน" icon (a sub-map has to be left). Hidden in ?edit=1 (the editor keeps its own tools). */
 (function (root) {
