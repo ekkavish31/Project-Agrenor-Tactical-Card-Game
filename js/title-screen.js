@@ -311,7 +311,7 @@ function storyEnd(){if(prologueDone)return;prologueDone=true;TS?.stop();TS=null;
  let look=null;const go=f.querySelector('.ts-go'),need=f.querySelector('.ts-need');
  const gbtn=[...f.querySelectorAll('.ts-g')];
  const refresh=()=>{const nm=g=>inputs[g].value.trim();const miss=[];if(!look)miss.push('เลือกตัวเอกนำ');if(!nm('female'))miss.push('ตั้งชื่อน้องสาว');if(!nm('male'))miss.push('ตั้งชื่อพี่ชาย');go.disabled=miss.length>0;f.classList.toggle('ts-ready',!miss.length);need.textContent=miss.length?'ยังต้อง: '+miss.join(' · '):'พร้อมแล้ว · กดเริ่มการผจญภัยได้เลย'};
- const pick=g=>{look=g;f.classList.add('ts-picked');gbtn.forEach(b=>{const on=b.dataset.g===g;b.classList.toggle('on',on);b.classList.toggle('off',!on);b.setAttribute('aria-checked',on?'true':'false');b.querySelector('.ts-tag').textContent=on?'✦ ตัวเอกนำ':'ผู้ติดตาม';b.querySelector('small').textContent=on?'ผู้เล่นควบคุมคนนี้':'ติดตามตัวเอกนำเสมอ'});refresh()};
+ const pick=g=>{look=g;f.classList.add('ts-picked');gbtn.forEach(b=>{const on=b.dataset.g===g;b.classList.toggle('on',on);b.classList.toggle('off',!on);b.setAttribute('aria-checked',on?'true':'false');b.querySelector('.ts-tag').textContent=on?'✦ Lead Character':'Follower';b.querySelector('small').textContent=on?'ผู้เล่นควบคุมคนนี้':'ติดตามตัวเอกนำเสมอ'});refresh()};
  refresh();setTimeout(()=>gbtn[0]?.focus({preventScroll:true}),30);
  gbtn.forEach(b=>b.addEventListener('click',()=>{pick(b.dataset.g);if(!inputs[b.dataset.g].value.trim())inputs[b.dataset.g].focus()}));
  f.querySelectorAll('.ts-edit').forEach(b=>b.addEventListener('click',()=>{const i=b.previousElementSibling;i.focus();i.select()}));   /* v98.335 · the pencil: this name can be changed */
