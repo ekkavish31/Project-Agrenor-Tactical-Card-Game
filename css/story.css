@@ -234,17 +234,16 @@ body.cs-open #smithWip{display:none}
 body.fb-open #storyTracker{display:none!important}
 #storyTracker .stk-head .stk-x{all:unset;box-sizing:border-box;flex:0 0 auto;width:22px;height:22px;cursor:pointer;background:url(../assets/ui/close-x.webp) center/contain no-repeat;opacity:.85;transition:opacity .12s,transform .12s}#storyTracker .stk-head .stk-x:hover{opacity:1;transform:scale(1.1)}
 
-/* v98.621 · scene buttons redesigned: icon + short label, round glass buttons with a thin gold edge.
-   top-left = Log · top-right = Auto + เร่ง · bottom-right = ข้ามฉาก */
-.cs-ib{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px 0 11px;border-radius:19px;border:1px solid rgba(232,201,138,.55);background:linear-gradient(#2c2218cc,#120d08cc);color:#f6e6c2;font:600 13.5px/1 VillageThai,AgThai,system-ui,sans-serif;letter-spacing:.02em;cursor:pointer;touch-action:none;user-select:none;box-shadow:0 3px 12px #0007,inset 0 1px 0 #ffffff1f;backdrop-filter:none;transition:transform .12s,border-color .15s,background .15s,color .15s}
-.cs-ib svg{width:18px;height:18px;flex:none;filter:drop-shadow(0 1px 1px #0008)}
-.cs-ib:hover{border-color:#ffe2a8;color:#fff;transform:translateY(-1px)}.cs-ib:active{transform:translateY(1px)}
-.cs-ib.on{background:linear-gradient(#e0a24acc,#9a6420d9);border-color:#ffe9b8;color:#2a1704;box-shadow:0 0 14px #ffc96a88,0 3px 12px #0007}
+/* v98.1096 · painted transport icons in the gold UI family. */
+.cs-ib{--cs-icon:clamp(28px,6.5vh,52px);display:inline-flex;align-items:center;gap:6px;height:var(--cs-icon);padding:0;border:0;border-radius:5px;background:transparent;color:#f6e6c2;font:600 clamp(11px,.85vw,16px)/1 VillageThai,AgThai,system-ui,sans-serif;cursor:pointer;touch-action:none;user-select:none;text-shadow:0 1px 3px #000;transition:transform .12s,color .15s}
+.cs-ib img{width:var(--cs-icon);height:var(--cs-icon);object-fit:contain;flex:none;pointer-events:none;transition:filter .15s}
+.cs-ib:hover{color:#fff;transform:translateY(-1px)}.cs-ib:hover img{filter:brightness(1.15)}.cs-ib:active{transform:translateY(1px)}
+.cs-ib:focus-visible{outline:2px solid #ffe2a8;outline-offset:3px}
+.cs-ib.on{color:#ffe09b}.cs-ib.on img{filter:brightness(1.15) drop-shadow(0 0 4px #ffc96aaa)}
 .cs-ib .i-pause{display:none}.cs-ib.on .i-play{display:none}.cs-ib.on .i-pause{display:block}
-.cs-log-btn{position:absolute;top:calc(9vh + 12px);left:16px;z-index:5}
-.cut-tools{position:absolute;top:calc(9vh + 12px);right:16px;z-index:5;display:flex;gap:8px}
-.cs-skip{position:absolute;right:16px;bottom:calc(9vh + 14px);z-index:5}
-@media (max-width:640px){.cs-log-btn,.cut-tools{top:calc(6vh + 8px)}.cs-skip{bottom:calc(6vh + 8px)}.cs-ib{height:34px;padding:0 11px 0 8px;font-size:12px}.cs-ib svg{width:16px;height:16px}}
+.cs-log-btn{position:absolute;top:max(2px,calc((9vh - clamp(28px,6.5vh,52px))/2));left:.8vw;z-index:5}
+.cut-tools{position:absolute;top:max(2px,calc((9vh - clamp(28px,6.5vh,52px))/2));right:.8vw;z-index:5;display:flex;gap:14px}
+.cs-skip{position:absolute;right:.8vw;bottom:max(2px,calc((9vh - clamp(28px,6.5vh,52px))/2));z-index:5}
 
 /* v98.999 · story dialogue window +50 %: the frame (width · padding · corner · gap) and the type (name · text · ▼) are all ×1.5 */
 .cs-box{width:min(1380px,calc(100% - 32px));padding:24px 33px 27px;border-radius:21px;gap:24px}
@@ -261,9 +260,4 @@ body.fb-open #storyTracker{display:none!important}
 .cs-name{font-size:max(15px,1.75vw);margin-bottom:.3vw}
 .cs-text{font-size:max(13px,1.55vw);min-height:3.3em}
 .cs-next{right:1.3vw;bottom:.7vw;font-size:max(11px,.9vw)}
-.cs-ib{height:max(28px,2.05vw);padding:0 max(10px,.8vw) 0 max(8px,.6vw);border-radius:2vw;gap:max(4px,.35vw);font-size:max(11px,.72vw)}
-.cs-ib svg{width:max(14px,.95vw);height:max(14px,.95vw)}
-.cs-log-btn{top:max(2px,calc((9vh - max(28px,2.05vw))/2));left:.8vw}   /* v98.1065 · the scene buttons sit INSIDE the black letterbox bars, vertically centred, in the screen corners */
-.cut-tools{top:max(2px,calc((9vh - max(28px,2.05vw))/2));right:.8vw;gap:.5vw}
-.cs-skip{right:.8vw;bottom:max(2px,calc((9vh - max(28px,2.05vw))/2))}
-@media (max-width:640px){.cs-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;bottom:calc(6vh + 12px)}.cs-name{font-size:17px}.cs-text{font-size:15px}.cs-log-btn,.cut-tools{top:max(2px,calc((6vh - 34px)/2));left:8px}.cut-tools{left:auto;right:8px}.cs-skip{right:8px;bottom:max(2px,calc((6vh - 34px)/2))}.cs-ib{height:32px;font-size:12px}}
+@media (max-width:640px){.cs-box{width:calc(100% - 20px);padding:12px 14px 16px;border-radius:12px;bottom:calc(6vh + 12px)}.cs-name{font-size:17px}.cs-text{font-size:15px}.cs-log-btn,.cut-tools{top:max(2px,calc((6vh - 28px)/2));left:8px}.cut-tools{left:auto;right:8px}.cs-skip{right:8px;bottom:max(2px,calc((6vh - 28px)/2))}.cs-ib{--cs-icon:28px;font-size:12px}.cut-tools{gap:10px}}
