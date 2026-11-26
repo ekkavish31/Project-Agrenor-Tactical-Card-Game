@@ -621,6 +621,12 @@
       if (cell.u <= 0 && Math.abs(cell.v - DOOR.v) <= 1 || (cell.u < 0 && cell.v >= DOOR.v - 1 && cell.v <= DOOR.v + 1)) k = 'door'; else if (free(cell.u, cell.v)) k = 'walk' } catch (x) { } }
     if (modalOpen) k = ''; if (cv.dataset.agc !== k) cv.dataset.agc = k });
   cv.addEventListener('pointerleave', () => { if (cv.dataset.agc) cv.dataset.agc = '' });   /* v98.1021 · speech-bubble cursor over a villager (js/game-cursor.js) */
+  /* v98.1083 · Shift + click = walk only (js/shift-walk.js): nobody is talked to, no door / field / bin reacts */
+  window.ShiftWalk?.set({ canvas: cv, ok: () => !modalOpen, walk: e => {
+    const c = toCell(e.clientX, e.clientY), cell = { u: Math.floor(c.u), v: Math.floor(c.v) }; let goal = null;
+    for (let r = 0; r <= 4 && !goal; r++) for (let du = -r; du <= r && !goal; du++) for (let dv = -r; dv <= r && !goal; dv++) if (Math.max(Math.abs(du), Math.abs(dv)) === r && free(cell.u + du, cell.v + dv)) goal = { u: cell.u + du, v: cell.v + dv };
+    if (goal) walkTo(goal)
+  } });
   cv.addEventListener('pointerup', e => {
     if (modalOpen) return;
     const a = personAt(e.clientX, e.clientY);

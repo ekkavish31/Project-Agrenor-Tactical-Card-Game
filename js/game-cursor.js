@@ -117,5 +117,5 @@ html.agc-sys body{cursor:auto!important}html.agc-sys button,html.agc-sys [role=b
   const gone = () => { seen = false; if (seq) animEnd(); edgeUpdate() };
   document.addEventListener('mouseleave', gone); addEventListener('blur', gone);
   document.addEventListener('mouseenter', () => { seen = true });
-  root.GameCursor = { enable(v) { on = !!v; try { localStorage.setItem('projectA.cursor', on ? '1' : '0') } catch (e) { } if (!on) { apply(''); kind = '' } }, kind: () => kind, debug: () => ({ kind, seq, raf, on, held }) };
+  root.GameCursor = { refresh: () => { try { sched() } catch (e) { } }, enable(v) { on = !!v; try { localStorage.setItem('projectA.cursor', on ? '1' : '0') } catch (e) { } if (!on) { apply(''); kind = '' } }, kind: () => kind, debug: () => ({ kind, seq, raf, on, held }) };
 })(globalThis);

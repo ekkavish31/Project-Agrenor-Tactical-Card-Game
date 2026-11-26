@@ -33,6 +33,7 @@ const PROLOGUE=root.NewGamePrologueKit?.pages||LEGACY_PROLOGUE;
 /* v98.201 · the bridge page keeps the hero's house picture of the last prologue page (same key = no new layer, no effect) and the game fades in after it */
 const BRIDGE={bg:(root.NewGamePrologueKit?.base||'assets/new-game-prologue/images/')+'hero-house.webp',fx:'same',prologueId:'W13a',art:null,text:'{hero} กับ {sib}…\nเช้าวันแรกก่อนงานเทศกาลเก็บเกี่ยว'};
 const HOWTO=[
+ ['เดินอย่างเดียว (Shift)','กด Shift ค้างไว้ → เคอร์เซอร์เป็นรอยเท้า คลิกพื้นตรงไหนก็เดินไปตรงนั้นอย่างเดียว ไม่คุยกับ NPC ไม่เข้าสถานที่ ไม่หยิบของเควส · ปล่อย Shift กลับเป็นปกติ · ใช้ได้ทุกแมพที่เดินเองได้ (เมาส์เท่านั้น)'],
  ['หมู่บ้าน','คลิกถนนหรือสถานที่เพื่อเดิน · บ้านใช้พัก นอน จัดสำรับ · โรงตีเหล็กใช้คราฟต์อุปกรณ์และฝึกต่อสู้ · ตลาดใช้ซื้อวัตถุดิบ ขายของ รับออร์เดอร์'],
  ['ออกผจญภัย','เดินไปทางออกขอบหมู่บ้าน เลือกพื้นที่ แล้วเลือกเส้นทางบนแผนที่ — ต่อสู้ เก็บของ เจอเหตุการณ์ และบอสท้ายพื้นที่'],
  ['การต่อสู้','ตัวที่ค่า CT เต็มก่อนได้เล่นก่อน · สั่งเดิน/โจมตี/ไอเทมจากไอคอนบนหัวตัวละคร · โจมตีจากด้านหลังและจากที่สูงแรงกว่า · ธาตุชนะทางกันตามวงล้อ'],

@@ -203,5 +203,5 @@ let downOn=null;
 root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.id!=='world'||V()?.isEditing?.()||(root.TownBattle?.active?.()||/[?&]battle=1(&|$)/.test(root.location?.search||"")))return;downOn=at(e);if(downOn)e.stopPropagation();else approach=null},true);
 root.addEventListener('pointerup',e=>{if(!downOn)return;const n=at(e)===downOn?downOn:null;downOn=null;e.stopPropagation();if(n)goTalk(n)},true);
 root.addEventListener('pointermove',e=>{if(e.target.id!=='world'||(root.TownBattle?.active?.()||/[?&]battle=1(&|$)/.test(root.location?.search||"")))return;const n=at(e);if(n!==hover){hover=n;if(n)e.target.style.cursor='pointer'}},true);
-root.TownNPC={drawTop,hoverAt:e=>{try{return at(e)}catch(x){return null}},objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)goTalk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0,inside:n.inside,hidden:!!n.hidden,goal:n.goal})),roster:ROSTER,getRoutes,setRoutes,routeKey:ROUTE_KEY};
+root.TownNPC={cancel:()=>{approach=null},drawTop,hoverAt:e=>{try{return at(e)}catch(x){return null}},objects,talk:id=>{const n=npcs?.find(n=>n.id===id);if(n)goTalk(n)},list:()=>npcs?.map(n=>({id:n.id,u:n.u,v:n.v,walking:n.path.length>0,inside:n.inside,hidden:!!n.hidden,goal:n.goal})),roster:ROSTER,getRoutes,setRoutes,routeKey:ROUTE_KEY};
 })(globalThis);
