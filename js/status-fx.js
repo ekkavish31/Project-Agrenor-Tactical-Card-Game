@@ -108,7 +108,39 @@
   /* one ring when a status lands */
   function burst(g, kind, x, y, h, e) { if (e < 0 || e > 620) return; const k = e / 620, c = COL[kind] || '255,255,255'; g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(${c},${1 - k})`; g.lineWidth = h * .05 * (1 - k) + 1; g.beginPath(); g.ellipse(x, y - h * .45, h * (.15 + .5 * k), h * (.2 + .6 * k), 0, 0, TAU); g.stroke();
     for (let i = 0; i < 8; i++) { const a = i / 8 * TAU, d = h * (.2 + .6 * k); g.fillStyle = `rgba(${c},${1 - k})`; g.beginPath(); g.arc(x + Math.cos(a) * d, y - h * .45 + Math.sin(a) * d * .9, h * .022 * (1 - k * .6), 0, TAU); g.fill() } g.restore() }
+  const STATUS_ART = {
+    burn: ['skill/fire', 'ember'], poison: ['particle/poison', 'poison'],
+    freeze: ['skill/ice', 'snowflake'], shock: ['skill/lightning', 'sparkle'],
+    weak: ['particle/mote', 'mote'], bind: ['particle/leaf', 'leaf']
+  };
+  function paintedStatus(layer, g, kind, x, y, h, t, seed) {
+    const stamp = root.BattleVFX?.stamp, spec = STATUS_ART[kind];
+    if (!spec || !stamp || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
+    const k = ((t + seed * 13) % 2100) / 2100;
+    const pulse = .38 + .62 * Math.pow(Math.sin(k * Math.PI), 2);
+    const anchored = kind === 'burn' || kind === 'freeze' || kind === 'bind';
+    const cy = y - h * (anchored ? .14 : .48);
+    if (layer === 'back') {
+      return stamp(g, spec[0], x, cy, h * (.64 + .16 * pulse), {
+        ay: anchored ? .8 : .55, alpha: .64 * pulse, blend: 'source-over', rot: kind === 'bind' ? .7 : 0
+      });
+    }
+    const n = root.BattlePolish?.quality === 'low' ? 2 : 5;
+    const dusty = kind === 'bind';
+    const painted = stamp(g, spec[0], x, cy, h * (.42 + .17 * pulse), {
+      ay: anchored ? .8 : .55, alpha: .5 * pulse, blend: 'source-over', rot: dusty ? -.8 : 0
+    });
+    if (!painted) return false;
+    puffs(t, seed, n, 1350, (a, i, cycle) => {
+      const dx = x + (H(seed + cycle, i) - .5) * h * .67 + Math.sin(a * 5 + i) * h * .08;
+      const dy = y - h * (.18 + a * .94);
+      stamp(g, 'particle/' + spec[1], dx, dy, h * (.12 - a * .05), {
+        alpha: Math.sin(a * Math.PI) * pulse, rot: (i - 2) * a, blend: dusty ? 'source-over' : 'lighter'
+      });
+    });
+    return true;
+  }
   function run(layer, g, u, x, y, h, t) { if (!u || u.hp <= 0) return; const { k, born } = track(u, t); if (!k.length) return; const s = seedOf(u);
-    for (const kind of k) { const f = FX[kind]; if (!f) continue; g.save(); try { f[layer]?.(g, x, y, h, t, s); if (layer === 'front' && born[kind] != null) burst(g, kind, x, y, h, t - born[kind]) } finally { g.restore() } } }
-  root.StatusFX = { back: (g, u, x, y, h, t) => run('back', g, u, x, y, h, t), front: (g, u, x, y, h, t) => run('front', g, u, x, y, h, t), kinds: Object.keys(FX), draw(g, kind, x, y, h, t, seed = 1) { const f = FX[kind]; if (!f) return; g.save(); f.back?.(g, x, y, h, t, seed); g.restore(); g.save(); f.front?.(g, x, y, h, t, seed); g.restore() } };
+    for (const kind of k) { const f = FX[kind]; if (!f) continue; g.save(); try { if (!paintedStatus(layer, g, kind, x, y, h, t, s) || kind === 'bind') f[layer]?.(g, x, y, h, t, s); if (layer === 'front' && born[kind] != null) burst(g, kind, x, y, h, t - born[kind]) } finally { g.restore() } } }
+  root.StatusFX = { back: (g, u, x, y, h, t) => run('back', g, u, x, y, h, t), front: (g, u, x, y, h, t) => run('front', g, u, x, y, h, t), kinds: Object.keys(FX), draw(g, kind, x, y, h, t, seed = 1) { const f = FX[kind]; if (!f) return; g.save(); if (!paintedStatus('back', g, kind, x, y, h, t, seed) || kind === 'bind') f.back?.(g, x, y, h, t, seed); g.restore(); g.save(); if (!paintedStatus('front', g, kind, x, y, h, t, seed) || kind === 'bind') f.front?.(g, x, y, h, t, seed); g.restore() } };
 })(globalThis);

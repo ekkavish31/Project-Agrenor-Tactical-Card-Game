@@ -51,13 +51,27 @@ const KIND={
  arrow(g,e,t,p,a,cw){const W=cw*(e.scale||1),ay=a.y-cw*.75,py=chest(p,cw),arc=cw*.35,x=a.x+(p.x-a.x)*t,y=ay+(py-ay)*t-Math.sin(t*Math.PI)*arc,an=Math.atan2((py-ay)-Math.cos(t*Math.PI)*arc*Math.PI,p.x-a.x);
   if(!stamp(g,'skill/arrow',x,y,W*1.5,{rot:an,ax:.85}))return false;if(t>.9)stamp(g,'particle/hit',p.x,py,W*.9,{alpha:(1-t)*10});return true},
  shield(g,e,t,p,a,cw){const W=cw*(e.scale||1),an=Math.atan2(a.y-p.y,a.x-p.x),s=back(pop(t,.25));return stamp(g,'skill/shield',p.x+Math.cos(an)*cw*.22,chest(p,cw),W*1.7*(.75+.25*s),{alpha:.85*fade(t,.45),rot:Math.sin(t*3)*.05})},
- parry(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!stamp(g,'skill/parry',p.x,chest(p,cw)-cw*.1,W*1.7*back(pop(t,.18)),{rot:R(e,1)*.8-.4+t*.3,alpha:fade(t,.38)}))return false;burst(g,e,10,p.x,chest(p,cw),W*1.2,W*.3,t,'star');return true},
+ parry(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!stamp(g,'skill/parry',p.x,chest(p,cw)-cw*.1,W*1.7*(.55+.45*back(pop(t,.18))),{rot:R(e,1)*.8-.4+t*.3,alpha:fade(t,.38)}))return false;burst(g,e,10,p.x,chest(p,cw),W*1.2,W*.3,t,'star');return true},
  fire(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.55,'ember',W*.7,.5);if(k<0)return !!I('particle/ember');return stamp(g,'skill/fire',p.x,p.y+cw*.1,W*2.3*(.55+.55*back(pop(k,.45))),{ay:.8,alpha:fade(k,.35)})},
  ice(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.5,'mote',W*.6,.3);if(k<0)return !!I('particle/mote');if(!stamp(g,'skill/ice',p.x,p.y+cw*.12,W*2*back(pop(k,.3)),{ay:.85,sy:pop(k,.3),alpha:fade(k,.55)}))return false;if(k>.25)burst(g,e,7,p.x,chest(p,cw),W,W*.28,(k-.25)/.75,'snowflake');return true},
  lightning(g,e,t,p,a,cw){const W=cw*(e.scale||1),fl=t<.15?1:clamp(1-(t-.15)*1.4)*(Math.floor(t*30)%2?.55:1);if(!stamp(g,'skill/lightning',p.x,p.y+cw*.1,W*3,{ay:.92,sx:.75,alpha:fl}))return false;
   if(t<.3){g.save();g.globalAlpha=.22*(1-t/.3);g.fillStyle='#fff';g.fillRect(0,0,g.canvas.width,g.canvas.height);g.restore()}burst(g,e,8,p.x,p.y-cw*.1,W*.9,W*.3,clamp(t*2),'sparkle');return true},
  heal(g,e,t,p,a,cw){const W=cw*(e.scale||1);if(!I('particle/heal'))return false;const gold=/^#f|^#e/i.test(e.color||'');stamp(g,gold?'skill/holy':'particle/glow',p.x,p.y+cw*.1,W*(gold?1.8:1.6),{ay:gold?.85:.5,alpha:.55*fade(t,.4)});
   for(let i=0;i<6;i++){const k=clamp(t*1.2-i*.07),x=p.x+(R(e,i)-.5)*W*.9,y=p.y-cw*(.15+k*1.25);stamp(g,'particle/'+(gold?'sparkle':'heal'),x,y,W*(.32+.12*R(e,i+9)),{alpha:Math.sin(k*Math.PI)})}return true},
+ death(g,e,t,p,a,cw){
+  const W=cw*(e.scale||1), still=reduced()||e.reducedMotion;
+  if(!I('particle/smoke')||!I('particle/mote'))return false;
+  for(let i=0;i<(still?1:5);i++){
+    const k=clamp((t-i*.085)/.73),x=p.x+Math.sin(k*4+i)*W*.33,y=p.y-W*(.42+k*1.55);
+    stamp(g,'particle/smoke',still?p.x:x,still?p.y-W*.55:y,W*(.54+k*.55),{alpha:Math.sin(k*Math.PI)*.56,rot:k*.6,blend:'source-over'});
+  }
+  if(!still){
+    const k=clamp((t-.07)/.78),x=p.x+Math.sin(k*5)*W*.24,y=p.y-W*(.55+k*2.45),alpha=Math.sin(k*Math.PI);
+    stamp(g,'particle/glow',x,y,W*.86,{alpha:alpha*.42});
+    stamp(g,'particle/mote',x,y,W*.46,{alpha});
+  }
+  return true
+ },
  arcane(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.62,'mote',W*.55,.45);if(k<0)return !!I('particle/mote');if(!stamp(g,'particle/sparkle',p.x,chest(p,cw),W*1.6*(.5+k),{alpha:1-k,rot:k}))return false;stamp(g,'particle/star',p.x,chest(p,cw),W*1.2*(1-k*.5),{alpha:1-k});return true},
  wind(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.4,'leaf',W*.45,.3);if(k<0)return !!I('particle/leaf');if(!stamp(g,'skill/wind',p.x,chest(p,cw),W*2*(.7+.3*pop(k,.3)),{rot:-k*1.4,alpha:fade(k,.5)}))return false;for(let i=0;i<5;i++){const an=R(e,i)*6+k*5;stamp(g,'particle/leaf',p.x+Math.cos(an)*W*.8*k,chest(p,cw)+Math.sin(an)*W*.4*k,W*.3,{blend:'source-over',rot:an,alpha:1-k})}return true},
  water(g,e,t,p,a,cw){const W=cw*(e.scale||1),k=travel(g,e,t,a,p,cw,.45,'mote',W*.55,.4);if(k<0)return !!I('particle/mote');if(!stamp(g,'skill/water',p.x,p.y+cw*.1,W*2*back(pop(k,.3)),{ay:.85,alpha:fade(k,.45)}))return false;stamp(g,'particle/splash',p.x,p.y,W*(1+k),{sy:.55,alpha:1-k});return true},

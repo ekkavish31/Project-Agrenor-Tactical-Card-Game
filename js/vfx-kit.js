@@ -1,7 +1,7 @@
 /* v98.405 VFX Kit — battle effects drawn entirely in code (soft glowing fantasy): layered additive light, particles, shapes that move every frame.
    Same call as BattleVFX.draw(e, t, p, a, g, camera):  e = { kind, seed, scale, color, tier }, t = 0..1, p = target feet, a = attacker feet, camera.w = one cell.
    Kinds: sword knife blunt spear rapier arrow shield parry · fire ice lightning wind water earth holy dark arcane heal · impact (tier light/heavy/critical/finisher) · death
-   OFF by default in the game: js/battle-vfx.js hands a kind over only when VfxKit.uses(kind) — chosen per effect in the editor (✨ VFX tab), see the end of this file.
+   Painted variants are the default. The editor can still select the original stamps or the code-only variants.
    Preview of everything, old next to new: vfx-kit-preview.html */
 (function (root) {
   'use strict';
@@ -156,7 +156,7 @@
   const EXTRA = {};
   const variants = k => { k = nameOf(k); return [['old', 'เดิม (ภาพวาดแปะ)'], ['new', 'ใหม่ (วาดด้วยโค้ด)'], ...Object.entries(EXTRA[k] || {}).map(([id, v]) => [id, v.label])] };
   const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
-  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.painted8 ? 'painted8' : 'old') };
+  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.painted8 ? 'painted8' : EXTRA[k]?.atlas ? 'atlas' : EXTRA[k]?.paintedLight ? 'paintedLight' : 'old') };
   const uses = k => { k = nameOf(k); if (!FX[k] && !EXTRA[k]) return false; return choiceOf(k) !== 'old' };
   const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = (v === 'new' || (v && v !== 'old')) ? String(v) : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
   const enabled = () => Object.keys(FX).some(uses);
@@ -207,44 +207,27 @@
     return blendedCell(g, im, 4, 4, u, w, w * d.ch / d.cw, d.ax, d.ay, alpha, loop);
   }
   /* single painted pieces: the fire-streak (spark) and the smoke wisp */
-  const PIECE = { spark: 'fire-spark', smoke: 'fire-smoke' }, pieceImg = {};
-  function piece(n) { let im = pieceImg[n]; if (!im) { im = pieceImg[n] = new Image(); im.decoding = 'async'; im.src = SRC ? new URL('../assets/fx/anim/' + PIECE[n] + '.webp', SRC).href : 'assets/fx/anim/' + PIECE[n] + '.webp' } return im.complete && im.naturalWidth ? im : null }
-  piece('spark'); piece('smoke');
-  /* a spark: the picture's long axis runs from bottom-left to top-right, so turn it to `an`; len = tip-to-tip length */
-  function spark(g, x, y, an, len, al, add_ = true) { const im = piece('spark'); if (!im || al <= 0 || len <= 0) return; const s = len / Math.hypot(im.naturalWidth, im.naturalHeight);
-    g.save(); g.globalAlpha *= clamp(al); g.globalCompositeOperation = add_ ? 'lighter' : 'source-over'; g.translate(x, y); g.rotate(an + Math.PI / 4); g.drawImage(im, -im.naturalWidth * s / 2, -im.naturalHeight * s / 2, im.naturalWidth * s, im.naturalHeight * s); g.restore() }
-  function smoke(g, x, y, size, al, rot) { const im = piece('smoke'); if (!im || al <= 0 || size <= 0) return; const h = size * im.naturalHeight / im.naturalWidth;
-    g.save(); g.globalAlpha *= clamp(al); g.translate(x, y); g.rotate(rot || 0); g.drawImage(im, -size / 2, -h / 2, size, h); g.restore() }
-  /* light motes: soft glowing dots with a tiny cross-glint, drifting up — they add depth in front of and behind the flames */
-  function motes(g, e, n, x, y, spread, rise, size, k, seed = 0, c1 = C.fireHi) { for (let i = 0; i < n; i++) { const kk = seg(k, R(e, i + seed) * .4, 1); if (kk <= 0 || kk >= 1) continue;
-      const px = x + (R(e, i + 11 + seed) - .5) * spread + Math.sin(kk * 6 + i * 1.7) * spread * .08, py = y - rise * eo(kk) * (.45 + .55 * R(e, i + 21 + seed)), tw = .65 + .35 * Math.sin(kk * 18 + i * 2.1), r = size * (.5 + .9 * R(e, i + 31 + seed)) * (1 - kk * .55);
-      glow(g, px, py, r * 2.6, i % 3 ? C.fire : c1, bell(kk) * .55 * tw); glow(g, px, py, r * .8, C.white, bell(kk) * .9 * tw); if (i % 4 === 0) star4(g, px, py, r * 1.9, C.white, bell(kk) * .8, kk * 3 + i) } }
   function fireAtlas(g, e, t, p, a, cw) {
     const W = cw * (e.scale || 1), split = .46, far = a && (Math.abs(a.x - p.x) + Math.abs(a.y - p.y)) >= 4;
     if (!animSheet('ball') || !animSheet('hit')) return false;
-    const low = root.BattlePolish?.quality === 'low';
     if (e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { g.save();g.translate(p.x,p.y+cw*.12);animFrame(g,'hit',5,W*2.5,.65*(1-t));g.restore();return true }
     if (far && t < split) {   /* flight: the fireball runs along an arc from the caster's chest to the target, turned to face where it goes */
-      const k = t / split, ay = a.y - cw * .75, py = chest(p, cw), at = kk => [a.x + (p.x - a.x) * kk, ay + (py - ay) * kk], pos = k => k * k * .35 + k * .65;
-      const kk = pos(k), [x, y] = at(kk), [x2, y2] = at(Math.min(1, kk + .02)), an = Math.atan2(y2 - y, x2 - x) || 0, grow = .55 + .45 * eo(seg(k, 0, .25)), back_ = an + Math.PI;
-      /* v98.623 · like the reference clip: a compact fireball with a short tail — only a small warm glow, no trail of motes or sparks */
-      add(g, () => glow(g, x, y, W * .34 * grow, C.fire, .3));
+      const k = t / split, ay = a.y - cw * .75, py = chest(p, cw);
+      const x = lerp(a.x, p.x, k), y = lerp(ay, py, k) - Math.sin(k * Math.PI) * W * .44;
+      const an = Math.atan2(py - ay - Math.cos(k * Math.PI) * Math.PI * W * .44, p.x - a.x);
+      const grow = .5 + .5 * eo(seg(k, 0, .25));
+      groundLight(g, x, lerp(a.y, p.y, k), W * 1.28, C.fire, grow * .56);
+      add(g, () => glow(g, x, y, W * .42, C.fire, grow * .45));
       g.save(); g.translate(x, y); g.rotate(an); if (Math.cos(an) < 0) g.scale(1, -1); animPlay(g, 'ball', k * 1.6, W * .95 * grow, 1, true); g.restore();
       return true }
     const k = far ? (t - split) / (1 - split) : t;   /* impact: 16 frames — flames rise, burn, turn to smoke */
-    /* behind the flames: the smoke that is left (three wisps, rising and spreading, born as the fire dies) */
-    /* smoke as in the reference: one thin, pale wisp hanging at the head of the target after the fire dies — small, low and slow */
-    { const ks = seg(k, .38, 1); if (ks > 0) smoke(g, p.x + Math.sin(ks * 2.4) * W * .06, p.y - W * (.95 + .5 * eo(ks)), W * (.38 + .22 * ks), .4 * bell(ks), ks * .4) }
-    add(g, () => { glow(g, p.x, p.y - W * .35, W * 1.6 * bell(seg(k, 0, .5)), C.fire, .42 * (1 - seg(k, .4, .8))); glow(g, p.x, p.y - W * .25, W * .9 * bell(seg(k, 0, .22)), C.white, .6); motes(g, e, low ? 3 : 10, p.x, p.y - W * .1, W * 1.2, W * 1.9, W * .09, seg(k, 0, .9), 70) });
-    g.save(); g.translate(p.x, p.y + cw * .12); animPlay(g, 'hit', k, W * 2.5, 1, false); g.restore();
-    /* v98.626 · HIT flash: a small, quick orange pop at the moment the fireball lands — ring flash, a cross glint and a few short sparks */
-    { const kh = seg(k, 0, .14); if (kh > 0 && kh < 1) { const hx = p.x, hy = p.y - W * .4, fade_ = 1 - kh;
-      add(g, () => { glow(g, hx, hy, W * (.12 + .18 * eo(kh)), C.fire, .45 * fade_); star4(g, hx, hy, W * (.1 + .16 * eo(kh)), C.fire, .6 * fade_, kh * .6);
-        for (let i = 0; i < 6; i++) { const an = (i / 6) * Math.PI * 2 + R(e, i + 90) * .5, d = W * (.08 + .26 * eo(kh)) * (.7 + .5 * R(e, i + 95)); spark(g, hx + Math.cos(an) * d, hy + Math.sin(an) * d * .8, an, W * .13 * (1 - kh * .6), fade_ * .8) } }) } }
-    /* in front of the flames: fire sparks thrown out of the burst, flying up and out, then falling; a few lights glint on top */
-    add(g, () => { const ks = seg(k, 0, .75); for (let i = 0; i < (low ? 4 : 11); i++) { const an = -Math.PI * (.08 + .84 * R(e, i + 50)), v = W * (.9 + 1.1 * R(e, i + 60)), kk = seg(k, R(e, i + 70) * .12, .85); if (kk <= 0 || kk >= 1) continue;
-        const vx = Math.cos(an) * v, vy = Math.sin(an) * v, x = p.x + vx * eo(kk) * .9, y = p.y - W * .2 + vy * eo(kk) * .9 + W * 1.1 * kk * kk, dir = Math.atan2(vy * (1 - kk) * .9 + W * 2.2 * kk, vx * (1 - kk) * .9 + 1e-3); spark(g, x, y, dir, W * (.45 + .3 * R(e, i + 80)) * (1 - kk * .5), 1 - kk * kk) }
-      motes(g, e, low ? 2 : 7, p.x, p.y - W * .4, W * 1.7, W * 1.2, W * .075, ks, 120, C.white) });
+    paintedLight('fire', g, e, k, p, W, false);
+    const phase = k < .38 ? lerp(0, 7 / 15, k / .38) : lerp(7 / 15, 1, (k - .38) / .62);
+    g.save();
+    g.translate(p.x, p.y + cw * .12);
+    animPlay(g, 'hit', phase, W * lerp(2.28, 2.58, eo(k)), 1 - seg(k, .88, 1));
+    g.restore();
+    paintedLight('fire', g, e, k, p, W, true);
     return true }
   if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'atlas', 'ภาพวาดเคลื่อนไหว (อะนิเมชันไฟ)', fireAtlas);
 
@@ -267,28 +250,79 @@
   }
   /* Per-effect deterministic particles: birth, drift and decay use the same
      normalized battle clock, including hit stop and battle-speed changes. */
-  const SPELL_COLOR = { ice:C.ice, lightning:C.bolt, water:C.water, wind:C.wind, earth:C.earth, dark:C.dark, heal:C.heal, shield:C.gold };
-  function spellParticles(kind, g, e, k, p, W) {
-    if (k <= 0 || k >= 1) return;
-    const low = root.BattlePolish?.quality === 'low', n = low ? 5 : 16, col = SPELL_COLOR[kind];
-    add(g, () => {
-      for (let i = 0; i < n; i++) {
-        const birth = .04 + R(e, i+170) * .21, age = (k-birth) / (1-birth);
-        if (age <= 0 || age >= 1) continue;
-        const an = R(e,i+210)*TAU, speed = .35+R(e,i+240)*.65, al = Math.sin(age*Math.PI)*(1-age)*.8;
-        let x = p.x+Math.cos(an)*W*speed*eo(age), y = p.y-W*.35+Math.sin(an)*W*.35*eo(age);
-        if (kind==='heal'||kind==='shield'||kind==='dark') { x=p.x+(R(e,i+260)-.5)*W*.9+Math.sin(age*5+i)*W*.08;y=p.y-W*(.1+age*(.8+speed)); }
-        else if (kind==='wind') { x=p.x+Math.cos(an+age*4)*W*age;y=p.y-W*.5+Math.sin(an+age*4)*W*.35*age; }
-        else y += W*(kind==='earth'?.7:.45)*age*age-W*.55*Math.sin(age*Math.PI);
-        const size = W*(.015+R(e,i+290)*.025)*(1-age*.5);
-        if (kind==='ice'||kind==='lightning'||kind==='shield') star4(g,x,y,size*2,col,al,an+age*2);
-        else if(kind==='water') { g.fillStyle=`rgba(${col},${al})`;g.beginPath();g.ellipse(x,y,size*.65,size*1.3,an,0,TAU);g.fill(); }
-        else if(kind==='earth'||kind==='wind') { g.save();g.translate(x,y);g.rotate(an+age*3);g.fillStyle=`rgba(${col},${al})`;g.fillRect(-size,-size*.5,size*2,size);g.restore(); }
-        else glow(g,x,y,size*2.2,col,al);
-      }
-      if (!low && kind==='water') ring(g,p.x,p.y,W*eo(k),W*.32*eo(k),W*.018,col,bell(k)*.25);
-    });
+  // All motion is sampled from the battle clock. Each particle keeps its own
+  // birth, lifetime and trajectory across hit stop, replay and camera changes.
+  const LIGHT = {
+    fire:[C.fire,'ember','burst',1], ice:[C.ice,'snowflake','burst',.72],
+    lightning:[C.bolt,'sparkle','burst',1], wind:[C.wind,'leaf','orbit',.45],
+    water:[C.water,'splash','burst',.62], earth:[C.earth,'dust','burst',.36],
+    dark:[C.dark,'mote','orbit',.61], heal:[C.heal,'heal','rise',.65],
+    shield:[C.gold,'sparkle','rise',.66], holy:[C.holy,'sparkle','rise',.78],
+    arcane:[C.arcane,'mote','orbit',.69], sword:[C.steel,'sparkle','burst',.48],
+    knife:[C.steel,'sparkle','burst',.4], blunt:[C.earth,'dust','burst',.38],
+    spear:[C.steel,'sparkle','burst',.42], rapier:[C.steel,'sparkle','burst',.4],
+    arrow:[C.steel,'sparkle','burst',.32], parry:[C.gold,'sparkle','burst',.72],
+    impact:[C.gold,'sparkle','burst',.68], death:[C.steel,'mote','rise',.37]
+  };
+
+  function groundLight(g, x, y, radius, color, alpha) {
+    g.save();
+    g.globalCompositeOperation = 'screen';
+    g.translate(x, y);
+    g.scale(1, .36);
+    glow(g, 0, 0, radius, color, alpha);
+    g.restore();
   }
+
+  function paintedLight(kind, g, e, k, p, W, front) {
+    if (k <= 0 || k >= 1) return;
+    const [color, art, motion, power] = LIGHT[kind];
+    const low = root.BattlePolish?.quality === 'low';
+    const rise = motion === 'rise', orbit = motion === 'orbit';
+    const flash = seg(k, 0, .09) * Math.pow(1 - k, rise ? 1.1 : 2.8);
+    if (!front) {
+      groundLight(g, p.x, p.y, W * (1.1 + k * .75), color, flash * power * .82);
+      add(g, () => glow(g, p.x, p.y - W * .44, W * (.65 + k * .42), color, flash * power * .4));
+    }
+    const count = low ? 3 : kind === 'fire' ? 17 : 10;
+    const dusty = art === 'dust' || art === 'leaf';
+    g.save();
+    g.lineCap = 'round';
+    for (let i = 0; i < count; i++) {
+      const n = front ? i + 101 : i;
+      const birth = R(e, n + 170) * (rise ? .47 : .2);
+      const life = .35 + R(e, n + 240) * .52;
+      const age = (k - birth) / life;
+      if (age <= 0 || age >= 1) continue;
+      const angle = R(e, n + 210) * Math.PI + (front ? 0 : Math.PI);
+      const speed = .6 + R(e, n + 260) * 1.15;
+      const lift = .55 + R(e, n + 285) * 1.15;
+      const at = age => {
+        const direction = angle + (orbit ? age * 3.2 : 0);
+        const travel = W * speed * (rise ? .23 + age * .22 : .11 + age);
+        return [
+          p.x + Math.cos(direction) * travel,
+          p.y + Math.sin(direction) * travel * .32 - W *
+            (rise ? .07 + lift * age : .27 + lift * age - (orbit ? .15 : 1.1) * age * age)
+        ];
+      };
+      const [x, y] = at(age), [px, py] = at(Math.max(0, age - .075));
+      const alpha = seg(age, 0, .12) * (1 - age) * (1 - seg(k, .84, 1)) * (front ? .94 : .54);
+      const size = W * (.06 + R(e, n + 310) * .1) * (1 - age * .44);
+      if (!dusty) add(g, () => {
+        if (!low) glow(g, x, y, size * .85, color, alpha * .78);
+        if (rise) return;
+        g.strokeStyle = `rgba(${color},${alpha * .85})`;
+        g.lineWidth = Math.max(.65, size * .15);
+        g.beginPath(); g.moveTo(px, py); g.lineTo(x, y); g.stroke();
+      });
+      root.BattleVFX?.stamp(g, 'particle/' + art, x, y, dusty ? size * 2.2 : size, {
+        alpha, rot: Math.atan2(y - py, x - px), blend: dusty ? 'source-over' : 'lighter'
+      });
+    }
+    g.restore();
+  }
+
   function spellAtlas(kind, g, e, t, p, a, cw) {
     const im = spellImage(kind), spec = SPELLS[kind]; if (!im) return false;
     const rm = !!(e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
@@ -303,7 +337,11 @@
         drawSize *= .35; y += drawSize * .32; k = 0;
       } else k = (t - split) / (1 - split);
     }
-    const fw = im.naturalWidth / 4, fh = im.naturalHeight / 2;
+    const flying = far && t < .28;
+    if (!rm && flying) {
+      groundLight(g, x, lerp(a.y, p.y, t / .28), W * .83, LIGHT[kind][0], .27);
+      add(g, () => glow(g, x, y - drawSize * .3, W * .39, LIGHT[kind][0], .3));
+    } else if (!rm) paintedLight(kind, g, e, k, p, W, false);
     const alpha = rm ? .65 * (1 - t) : 1 - seg(k, .82, 1);
     if (alpha <= 0) return true;
     g.save();
@@ -312,12 +350,38 @@
       g.translate(x,y);
       blendedCell(g, im, 4, 2, rm ? 3/7 : k, drawSize, drawSize, .5, .82, alpha);
     } finally { g.restore(); }
-    if (!rm && (!far || t >= .28)) spellParticles(kind,g,e,k,p,W);
+    if (!rm && !flying) paintedLight(kind, g, e, k, p, W, true);
     return true;
   }
   for (const kind of Object.keys(SPELLS)) {
     spellImage(kind);
-    root.VfxKit.addVariant(kind, 'painted8', 'ภาพวาดเคลื่อนไหว (เฟรมคั่นลื่นไหล + ละออง)', (g, e, t, p, a, cw) => spellAtlas(kind, g, e, t, p, a, cw));
+    root.VfxKit.addVariant(kind, 'painted8', 'ภาพวาด 2D + แสงและอนุภาค', (g, e, t, p, a, cw) => spellAtlas(kind, g, e, t, p, a, cw));
+  }
+
+  // Effects with a single illustrated stamp still move continuously through
+  // BattleVFX's existing transform curves. The same light is used in preview.
+  const STAMP_TIMING = { arrow: .88, spear: .42, rapier: .24, arcane: .62 };
+  for (const kind of Object.keys(LIGHT)) {
+    if (EXTRA[kind]?.atlas || EXTRA[kind]?.painted8) continue;
+    addVariant(kind, 'paintedLight', 'ภาพวาด 2D + แสงและอนุภาค', (g, e, t, p, a, cw) => {
+      const battle = root.BattleVFX;
+      if (!battle || (kind === 'impact' && !battle.impactEnabled())) return false;
+      const still = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const W = cw * (e.scale || 1);
+      const distant = e.from && Math.hypot(p.x - a.x, p.y - a.y) >= 4;
+      const delay = distant ? STAMP_TIMING[kind] || 0 : 0;
+      const k = seg(t, delay, 1);
+      if (!still) {
+        if (delay && t < delay) {
+          const f = kind === 'arrow' ? t : t / delay;
+          groundLight(g, lerp(a.x, p.x, f), lerp(a.y, p.y, f), W * .65, LIGHT[kind][0], .21 * bell(f));
+        } else paintedLight(kind, g, e, k, p, W, false);
+      }
+      const effect = kind === 'impact' ? { ...e, kind: 'impactCore' } : e;
+      const ok = battle.drawOld(effect, t, p, a, g, { w: cw });
+      if (ok && !still) paintedLight(kind, g, e, k, p, W, true);
+      return ok;
+    });
   }
 
 })(globalThis);

@@ -29,7 +29,7 @@ p.note{margin:6px 16px;color:var(--muted);max-width:900px}
 <h2>แรงกระแทกตอนโดนตี / ล้ม</h2><div class="grid" id="gHit"></div>
 <h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว)</h2><div class="grid" id="gStatus"></div>
 <div id="dlg" hidden><div class="box"><div class="top"><h3 id="dlgTitle"></h3><button id="dlgClose">ปิด ✕</button></div><div id="dlgGrid"></div></div></div>
-<script src="js/editor-store.js?v=v98.1082"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.636"></script><script src="js/vfx-kit.js?v=v98.1112"></script><script src="js/status-fx.js?v=v98.635"></script>
+<script src="js/editor-store.js?v=v98.1082"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.1124"></script><script src="js/vfx-kit.js?v=v98.1124"></script><script src="js/status-fx.js?v=v98.1124"></script>
 <script>
 const W = 300, H = 200, CW = 78, A = { x: 62, y: 158 }, P = { x: 222, y: 158 };
 const NAMES = { sword: 'ดาบ ฟัน', knife: 'มีด ฟันไขว้', blunt: 'ค้อน/กระบอง ทุบ', spear: 'หอก แทง', rapier: 'เรเปียร์ แทงเร็ว', arrow: 'ธนู', shield: 'โล่ ป้องกัน', parry: 'ปัดป้อง',
@@ -42,7 +42,7 @@ function scene(g, both = true) { const gr = g.createLinearGradient(0, 0, 0, H); 
 function mk(host, title, sub, draws) {   /* draws = [[caption, fn(g, t, now)], …] */
   const el = document.createElement('div'); el.className = 'card'; el.innerHTML = `<b>${title}</b> <small>${sub || ''}</small><div class="pair${draws.length < 2 ? ' one' : ''}">${draws.map(d => `<figure><canvas width="${W * 2}" height="${H * 2}"></canvas><figcaption>${d[0]}</figcaption></figure>`).join('')}</div>`;
   host.append(el); const cvs = [...el.querySelectorAll('canvas')]; cards.push({ el, cvs, draws }); return el }
-const fxCard = (host, kind, extra = {}, title) => { const dur = extra.dur || DUR[kind] || 700, e = { kind, seed: 7, color: '#ff8a5a', ...extra };
+const fxCard = (host, kind, extra = {}, title) => { const dur = extra.dur || DUR[kind] || 700, e = { kind, seed: 7, from: A, color: '#ff8a5a', ...extra };
   const run = fn => (g, now) => { const cyc = dur + 520, t = ((now % cyc) / dur); scene(g); if (t <= 1) fn({ ...e, seed: 7 + Math.floor(now / cyc) }, t, g) };
   const oldFn = run((ev, t, g) => { const ok = BattleVFX.drawOld(ev.kind === 'impact' ? { ...ev, kind: 'impactCore' } : ev, t, P, A, g, { w: CW, h: CW / 2 }); if (!ok) { g.fillStyle = '#9a937f'; g.font = '12px sans-serif'; g.fillText('(ภาพเดิมยังโหลดไม่เสร็จ/ไม่มี)', 60, 24) } });
   const list = extra.old === false ? [['new', 'ใหม่']] : VfxKit.variants(kind);   /* [id, label] — 'old', 'new' and any look added later (VfxKit.addVariant) */
@@ -68,7 +68,7 @@ for (const k of ['fire', 'ice', 'lightning', 'wind', 'water', 'earth', 'holy', '
 fxCard(gMagic, 'heal', { color: '#7fe0a0' });
 fxCard(gMagic, 'heal', { color: '#ffe08a', pick: false }, 'ฮีล (แสงทอง) — ใช้ค่าเดียวกับฮีล');
 for (const [tier, n] of [['light', 'โดนตีเบา'], ['heavy', 'โดนตีหนัก'], ['critical', 'คริติคอล'], ['finisher', 'ปิดฉาก']]) fxCard(gHit, 'impact', { tier, dur: 520, pick: tier === 'light' }, n + (tier === 'light' ? ' — เลือกที่นี่ มีผลทั้ง 4 ระดับ' : ''));
-fxCard(gHit, 'death', { dur: 1300, old: false, pick: false }, 'ล้ม · วิญญาณลอยขึ้น (ใหม่ ยังไม่ต่อเข้าเกม)');
+fxCard(gHit, 'death', { dur: 2300, pick: false }, 'ล้ม · วิญญาณลอยขึ้น');
 /* status: the same two layers the battle draws — behind the fighter, then in front */
 for (const k of StatusFX.kinds) { const u = { id: 'pv-' + k, hp: 1, sts: k === 'freeze' || k === 'shock' ? null : { [k]: 9 }, stun: k === 'freeze' ? 1 : 0, slowed: k === 'shock' ? 1 : 0 };
   mk(gStatus, NAMES[k] || k, k, [['ในเกม', (g, now) => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1b2330'); gr.addColorStop(.62, '#27342a'); gr.addColorStop(1, '#31412f'); g.fillStyle = gr; g.fillRect(0, 0, W, H); const x = W / 2, y = 164; StatusFX.back(g, u, x, y, 104, now + 5000); person(g, x, y, '#8a6a5a'); StatusFX.front(g, u, x, y, 104, now + 5000) }]]) }
