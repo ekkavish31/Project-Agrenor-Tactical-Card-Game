@@ -17,7 +17,7 @@
   const TOWNS = { fernvale: 'square', home: 'square', lakenhold: 'lakenhold', willowshore: 'willowshore', deepcairn: 'deepcairn', thornwatch: 'thornwatch', vinehollow: 'vinehollow', northgate: 'northgate', haven: 'haven', brookmere: 'brookmere' };
   const PLACES = { home: 'home', forge: 'forge', market: 'square', shop: 'square', square: 'square', inn: 'inn', guild: 'guild', healer: 'healer', temple: 'temple', farm: 'farm', hildaFarm: 'farm', east: 'village-gate', west: 'village-gate', gate: 'village-gate', training: 'forest' };
   const INTRO = {
-    opening: 'home', bookExit: 'house', bookFirst: 'house', elderMeet: 'square', goatsDone: 'square', homeWelcome: 'home',
+    opening: 'home', bookExit: 'house', bookFirst: 'house', elderMeet: 'square', goatsLook: 'square', goatsDone: 'square', homeWelcome: 'home',
     pumpkinDone: 'farm', seeds: 'farm', tomStall: 'square', stallDone: 'square', day2: 'home', guardTalk: 'village-gate',
     crystal: 'mine', gusLantern: 'forge', lanternsDone: 'workshop', craftDone: 'forge', hireDone: 'square', day3: 'square',
     soldOne: 'square', raid: 'square', awaken: 'square', plate: 'square', safTalk: 'healer', sibSwordIntro: 'forge',

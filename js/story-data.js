@@ -101,6 +101,14 @@ const SCENES={
   {face:'think',who:'B',text:'แพะงอนได้ด้วยเหรอ'},
   {face:'happy',who:'pip',text:'จอมพลงอนเก่งกว่าพี่ฮิลดาอีก! … อย่าบอกพี่ฮิลดานะ'},
   {text:'เป้าหมาย: ตามจับแพะ 2 ตัวที่หนีไปทั่วหมู่บ้าน\n◆ สีทองบนแผนที่บอกทาง · คลิกถนนหรือคลิกเป้าหมายเพื่อเดินไป'}]},
+ /* v98.1074 · a short pause right after the hero walks out of the market (step goats): the siblings wonder where the goats went — so the scene before it (elderMeet) never runs straight into a chase / a fight */
+ goatsLook:{bg:B.market,tint:'day',fx:['motes'],lines:[
+  {face:'think',who:'sib',text:'ออกมาแล้วนะ… แล้วแพะสองตัวนั่นมันไปอยู่ไหนกันนะ'},
+  {face:'think',who:'hero',text:'ผู้ใหญ่บอกว่าวิ่งไปทั่วหมู่บ้านแล้ว คงไม่ได้อยู่แถวนี้แน่'},
+  {face:'happy',who:'sib',text:'ฟังเสียงดูสิ… ถ้ามีเสียงเคี้ยวพวงมาลัยก็ใช่แล้ว'},
+  {who:'hero',text:'งั้นค่อย ๆ เดินดูทีละมุม — ลูกศรสีทองบนแผนที่จะบอกทางเอง'},
+  {face:'surprised',who:'sib',text:'แต่อย่าเดินเข้าไปเร็วนัก เดี๋ยวมันตกใจแล้ววิ่งหนีอีก'},
+  {text:'เป้าหมาย: ตามหาแพะของปิ๊บ 2 ตัว\n◆ ลูกศรสีทองบอกทิศทาง · คลิกถนนหรือคลิกที่แพะเพื่อเดินไป'}]},
  goatsDone:{bg:B.market,tint:'day',fx:['motes','leaves'],lines:[
   {who:'pip',burst:{x:.5,y:.5,hue:90,n:60,speed:4},text:'ครบสองตัวแล้ว! พี่ {hero} เก่งที่สุดเลย!'},
   {face:'happy',who:'S',text:'ตัวนึงกินพวงมาลัยไปแล้วครึ่งพวงนะ ข้าแย่งคืนมาได้แค่ดอกเดียว'},

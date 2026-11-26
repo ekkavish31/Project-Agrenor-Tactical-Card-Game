@@ -139,7 +139,7 @@ const STEPS=[
   hint:'ช่วงเช้าผู้ใหญ่บ้านอยู่ที่ตลาด · '+HINT_WALK}),
  {id:'goats',tag:'real',title:'แพะหนีออกจากคอก',goal:'ตามจับแพะของปิ๊บ 2 ตัวที่หนีไปทั่วหมู่บ้าน',hint:'คลิกที่แพะเพื่อวิ่งตาม · มันวิ่งหนีเมื่อเข้าใกล้ แต่วิ่งได้ไม่นานก็หอบ พอแตะตัวมัน จะเข้าสู่ฉากต่อสู้จับแพะ (ตัวเอกไม่ล้มในฉากนี้) · ลูกศรขอบจอชี้ไปทางแพะ',
   spot:SPOT.goats,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
-  onSpot:async d=>{const r=await questBattle(d,{title:'จับแพะของปิ๊บ ·',ms:'goat*1,goat*1',tut:'goat',seed:4101,r:6,biome:'grass',scene:'goatStreet'}   /* v98.570 · a fixed town-street scene (was: the village map around the fountain) */);
+  onSpot:async d=>{const r=await questBattle(d,{title:'จับแพะของปิ๊บ ·',ms:'goat*1,goat*1',tut:'goat',seed:4101,r:6,biome:'grass',scene:'goatStreet',keepBgm:true}   /* v98.570 · a fixed town-street scene (was: the village map around the fountain) */);
    if(r==='win'){d.got=2;try{root.Story?.mystery?.('seen')}catch(e){}return {msg:'🐐 จับแพะได้ครบ 2 ตัวแล้ว!',consume:true}}return {msg:r==='busy'?'':'แพะยังหนีอยู่ · กลับไปจับต่อได้เลย',consume:false}}},
  talkStep({id:'goatsBack',outro:'goatsDone',reward:()=>{addCoins(15);toast('รางวัล: +15 เหรียญ')},title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
 talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮิลดา',talk:'hilda',goal:'ไปหาฮิลดาชาวนา ถามว่าช่วยอะไรได้บ้าง',hint:'เช้าอยู่ที่ไร่ เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
@@ -276,7 +276,7 @@ function questBattle(d,o){return new Promise(resolve=>{
  d.fighting=true;doSave();const spot=heroSpot();
  const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
  const fr=document.createElement('iframe');fr.id='storyBattle';fr.title=o.title;fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
- fr.src=(o.page||'battle-field.html')+'?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&imm=1&noflee=1&r='+(o.r||6)+'&biome='+(o.biome||'grass')+'&seed='+(o.seed||4100)+(o.poi?'&poi='+o.poi:'')+(o.scene?'&scene='+o.scene:'')+(o.bg?'&bg='+o.bg:'')+'&ms='+encodeURIComponent(o.ms)+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent(o.title||'')+'&tut='+(o.tut||'');
+ fr.src=(o.page||'battle-field.html')+'?v='+(root.GAME_VERSION?.v||'')+'&battle=1&embed=1&imm=1&noflee=1&r='+(o.r||6)+'&biome='+(o.biome||'grass')+'&seed='+(o.seed||4100)+(o.poi?'&poi='+o.poi:'')+(o.scene?'&scene='+o.scene:'')+(o.keepBgm?'&bgm=parent':'')+(o.bg?'&bg='+o.bg:'')+'&ms='+encodeURIComponent(o.ms)+'&party='+encodeURIComponent(party)+'&hhp='+(g.hp||60)+'&hmax='+(g.maxHp||60)+(root.Progression?'&'+Progression.battleParam(g,Progression.recipes):'')+'&title='+encodeURIComponent(o.title||'')+'&tut='+(o.tut||'');
  if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
@@ -366,6 +366,7 @@ async function tick(){if(busy||!G()||!V())return;if(root.TitleScreen?.active){dr
  step.tick?.(d);
  warmBattle(WARM_FOR[step.id]);
  if(root.Cutscene?.isPlaying()||tacticsOpen()||document.getElementById('storyBattle')){draw();return}
+ goatsHook().catch(()=>{});   /* v98.1074 · the pause scene right after leaving the market */
  homeHooks().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
  busy=true;try{
   if(!d.begun){d.begun=true;step.begin?.(d);doSave()}
@@ -419,6 +420,12 @@ async function homeHooks(){const st=story();if(homeBusy||!st||st.mode!=='active'
  homeBusy=true;try{await root.Cutscene.play(D().SCENES.homeWelcome);d.welcomed=true;
   try{if(typeof heal==='function'){const r=heal(15,30);toast('🍲 ซุปอุ่น ๆ ของแม่ · HP +'+r[0]+' · แรง +'+r[1])}}catch(e){}
   doSave();doRender()}finally{homeBusy=false}}
+/* v98.1074 · step goats: the first time the hero is on the village map (out of the market, not inside a place) a short talk with the sibling plays — "where did the goats go?" — before anything can run / fight.
+   It waits until no scene / fight / panel is up and the hero is on the plain village map; auto-walk is cancelled when it starts. */
+let goatBusy=false;
+async function goatsHook(){const st=story();if(goatBusy||!st||st.mode!=='active'||!root.Cutscene)return;const step=STEPS[st.i];if(!step||step.id!=='goats')return;const d=dataOf(step);if(d.lookSeen||scene()!=='town')return;
+ if(root.Cutscene.isPlaying()||document.getElementById('storyBattle')||tacticsOpen())return;
+ goatBusy=true;try{d.lookSeen=true;doSave();try{root.VillageTown?.frame?.contentWindow?.TownUX?.stop?.()}catch(e){}await root.Cutscene.play(D().SCENES.goatsLook)}finally{goatBusy=false}}
 /* v98.600 · the first time the hero is OUTSIDE the house (village map, not inside a place) the sister stops them (scene bookExit) and the card-book is opened FOR them — its lesson (bookFirst) then plays at once.
    Only before the book has been seen and before the guild step; never while another scene / fight / panel is up. */
 let bookBusy=false;

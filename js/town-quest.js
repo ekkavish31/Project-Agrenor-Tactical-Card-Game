@@ -215,6 +215,7 @@
     gx.restore(); return true;
   }
   function drawObj(gx, o, t, k) {
+    if (o.kind === 'goat' && !o.mystery && goatLoading(o, t)) return;   /* v98.1074 · picture still loading: nothing yet (no bare shadow) */
     const p = project(o.u, o.v), hop = o.flee ? (o.mode === 'run' ? Math.abs(Math.sin(t * .026 + o.phase)) * 15 : o.mode === 'idle' ? Math.abs(Math.sin(t * .004 + o.phase)) * 2 : 0) : Math.sin(t * .003 + o.phase) * 2;
     gx.save();
     gx.fillStyle = 'rgba(20,30,20,.35)'; gx.beginPath(); gx.ellipse(p.x, p.y, 16, 7, 0, 0, 7); gx.fill();
@@ -244,6 +245,18 @@
     gx.save(); gx.rotate(wob); if (o.face) o.dir = { du: hero.u - o.u, dv: hero.v - o.v }; goat(gx, o, t); gx.restore();
     const pulse = .35 + Math.max(0, Math.sin(t * .004 + o.phase)) * .65;
     glint(gx, 13, -36, pulse * (.5 + o.stare * .5), 4); glint(gx, -17, -24, pulse * .6, 3);
+  }
+  /* v98.1074 · GOAT ART IS READY BEFORE THE FIRST GOAT: the pictures (8 poses × 4 faces) used to start downloading only when the first goat was drawn — right when the player walked out of the market, so the goat showed as a shadow only for a while.
+     They are now requested as soon as this map is up (a few seconds after it loads), and a goat whose picture is not ready yet is not drawn at all (no lonely shadow / ring). */
+  const GOAT_POSES = ['idle', 'walk', 'run', 'pant', 'graze', 'bleat', 'sleep', 'happy'];
+  const goatPreload = () => { const MA = root.MonsterArt; if (!MA || goatPreload.done) return; try { MA.preload(['goat'], GOAT_POSES); goatPreload.done = 1 } catch (e) { } };
+  setTimeout(goatPreload, 1500); setTimeout(goatPreload, 5000);
+  function goatFace(o) { return o.dir ? (o.dir.du + o.dir.dv < 0 ? (o.dir.du - o.dir.dv > 0 ? 'NE' : 'NW') : (o.dir.du - o.dir.dv > 0 ? 'SE' : 'SW')) : (o.artFace || 'SE') }
+  function goatLoading(o, t) {
+    const MA = root.MonsterArt; if (!MA) return false; goatPreload();
+    const pose = o.mode === 'run' ? 'run' : o.mode === 'rest' ? 'pant' : 'graze', face = goatFace(o);
+    if (o.lastArt) return false; if (!MA.resolveClip('goat', face, pose)) return false;   // no clip at all → the code goat is drawn
+    return !MA.frame('goat', face, { pose }, 1, t, 'quest-goat-probe-' + o.key + '-' + o.i) && !MA.frame('goat', face, { pose: 'idle' }, 1, t, 'quest-goat-probe2-' + o.key + '-' + o.i);
   }
   function goat(gx, o, t) {
     /* v98.444 · chase states use the existing authored goat extras. Remember
