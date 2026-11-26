@@ -493,9 +493,21 @@ async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V()
   const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
 async function bookFirst(){return false}   /* v98.613 · the book lesson now plays at the end of the opening scene */
 async function bookFirstOld(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
+/* v98.1118 · HUD MENUS DURING THE PROLOGUE: a menu the story has not taught yet is locked (greyed in the HUD, and the bridge refuses to open it): the sibling explains instead.
+   key = a HUD icon (map · today · bag · me · go · menu) or a menu id of the bridge (character · deck · upgrade · tdeck · job · journal · activities · adventure · training …) → '' when open, else the reason.
+   Taught = bag: from the first time the card-book is opened for the player (bookIntro) · me (character · deck · jobs · elements): from the deck lesson · map: after the first talk (step goats) · go: only on the steps that send the player out (lock()) ·
+   today (quest log) and menu (Esc: save · settings) stay open. Outside the prologue nothing is locked. */
+const MENU_KEY={bag:'bag',character:'me',deck:'me',upgrade:'me',tdeck:'me',job:'me',element:'me',training:'me',adventure:'go',map:'map'};
+function menuLock(k){const st=story();if(!st||st.mode!=='active')return '';const key=MENU_KEY[k]||k,step=STEPS[st.i];if(!step)return '';const v=V()||{},sv=v.story||{};
+ const why=(w)=>'ยังไม่ถึงเวลา'+w+' — เดี๋ยวค่อยสอนทีหลัง · ตอนนี้ให้ทำ "'+step.title+'" ก่อน';
+ if(key==='bag')return sv.bookIntro||sv.bookSeen?'':why('ใช้สมุดผนึก');
+ if(key==='me')return st.i>=byId('deckLesson')?'':why('ใช้เมนูตัวเรา');
+ if(key==='map')return st.i>=byId('goats')?'':why('ใช้แผนที่');
+ if(key==='go')return lock();
+ return ''}
 /* v98.1106 · a place / the world map the story keeps closed: the SIBLING cuts in with the reason (a talk line) instead of a system window */
 function sibBlock(why){const t='เดี๋ยวก่อนนะ! '+String(why||'').replace(/[<>&]/g,'');try{if(root.GuidedTour?.interject){root.GuidedTour.interject(t);return true}}catch(e){}return false}
-root.Story={sibBlock,bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={menuLock,sibBlock,bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

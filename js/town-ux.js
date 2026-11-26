@@ -36,7 +36,7 @@ document.querySelector('.toolbar').prepend(menuToggle);document.body.appendChild
 
 /* v97.37 · town map (top-right 🧭 or M): the whole village fitted to the screen once, frozen into a picture, with a marker per place —
    click a marker to walk there. The camera zoom itself stays limited, so the normal view never gets tiny. */
-async function townMap(){if(EDIT_PAGE)return;const old=document.getElementById('townMap');if(old){old.remove();return}
+async function townMap(){if(EDIT_PAGE)return;const old=document.getElementById('townMap');if(old){old.remove();return}{const why=(()=>{try{return parent!==window?parent.Story?.menuLock?.('map')||'':''}catch(e){return ''}})();if(why){try{parent.Story.sibBlock(why)}catch(e){}return}}   /* v98.1118 · prologue: the town map is not taught yet */
  const d=document.createElement('div');d.id='townMap';d.innerHTML='<div class="tm-box"><div class="tm-head"><b>แผนที่ เฟิร์นเวล</b><small>ล้อเมาส์/ถ่างนิ้ว = ซูม · ลาก = เลื่อน · ดับเบิลคลิก = ซูมตรงนั้น · คลิกสถานที่ = เดินไป · Esc/M ปิด</small><button class="tm-x">✕</button></div><div class="tm-pic"><div class="tm-inner"><canvas></canvas></div></div></div>';
  if(!document.getElementById('townMapCss')){const c=document.createElement('style');c.id='townMapCss';c.textContent=`#townMap{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#06090cd9;backdrop-filter:blur(4px);font-family:VillageThai,system-ui,sans-serif}
   #townMap .tm-box{width:min(1700px,96vw);padding:12px 14px 14px;border-radius:16px;background:linear-gradient(#efe0bc,#d9c495);box-shadow:0 24px 60px #000c;color:#3a2810}

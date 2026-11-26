@@ -77,10 +77,14 @@
     pop.style.top = (r.bottom + 8) + 'px'; pop.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
     pop.querySelector('button')?.focus();
   }
+  /* v98.1118 · prologue: menus the story has not taught yet are locked (greyed + a small lock); a click makes the sibling explain (Story.menuLock / Story.sibBlock live in the game page) */
+  const lockOf = k => { try { return parent.Story?.menuLock?.(k) || '' } catch (e) { return '' } };
+  const lockUI = () => { for (const b of row.querySelectorAll('.hud-ico')) { const w = lockOf(b.dataset.hud); b.classList.toggle('hud-locked', !!w); if (w) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled') } };
+  setInterval(lockUI, 700); setTimeout(lockUI, 50);
   for (const [key, label, title, act] of ICONS) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'hud-ico'; b.dataset.hud = key; b.title = title;
     b.innerHTML = `<span class="hud-medal${pick(key) ? ' has-img' : ''}">${pic(key)}</span><span class="hud-lbl">${label}</span>`;
-    if (typeof act === 'string') { b.setAttribute('aria-haspopup', 'true'); b.setAttribute('aria-expanded', 'false'); b.onclick = () => openPop(b, act) } else b.onclick = () => { closePop(); act() };
+    if (typeof act === 'string') { b.setAttribute('aria-haspopup', 'true'); b.setAttribute('aria-expanded', 'false'); b.onclick = () => { const w = lockOf(key); if (w) { closePop(); try { parent.Story.sibBlock(w) } catch (e) { } return } openPop(b, act) } } else b.onclick = () => { const w = lockOf(key); if (w) { closePop(); try { parent.Story.sibBlock(w) } catch (e) { } return } closePop(); act() };
     row.append(b);
   }
   { const b = document.createElement('button'); b.type = 'button'; b.className = 'hud-ico hud-small'; b.title = 'เมนู · บันทึก โหลด ตั้งค่า (Esc)'; b.innerHTML = `<span class="hud-medal${pick('menu') ? ' has-img' : ''}">${pic('menu')}</span><span class="hud-lbl">เมนู</span>`;
@@ -109,6 +113,6 @@
   .hud-pop button{display:flex;align-items:center;gap:10px;padding:8px 12px;border:0;border-radius:9px;background:none;color:#f6e7bf;font:600 14px VillageThai,system-ui,sans-serif;text-align:left;cursor:pointer}
   .hud-pop button:hover,.hud-pop button:focus-visible{background:#2f4a3e;outline:none}.hud-pop svg{width:24px;height:24px;flex:none;color:#e8c46a}.hud-pop img{width:30px;height:30px;flex:none;object-fit:contain}
   @media (max-width:900px){.town-icon-row{gap:6px!important;top:8px!important;right:8px!important}.town-icon-row>.hud-ico{width:58px}.hud-medal{width:46px;height:46px}.hud-medal.has-img{width:50px;height:50px}.hud-medal svg{width:28px;height:28px}.hud-lbl{font-size:10px;padding:1px 6px}.town-icon-row>.hud-small{width:44px}.hud-small .hud-medal{width:36px;height:36px;margin-top:5px}}`;
-  css.textContent += `.hud-badge{position:absolute;right:-4px;top:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#d8402e;border:2px solid #fff3d2;color:#fff;font:800 12px/16px VillageThai,system-ui,sans-serif;text-align:center;font-style:normal;box-sizing:border-box;z-index:2}.hud-badge.fresh{animation:hudPulse 1.1s ease-in-out infinite}@keyframes hudPulse{50%{transform:scale(1.25)}}`;
+  css.textContent += `.hud-ico.hud-locked{filter:grayscale(1) brightness(.62);cursor:not-allowed}.hud-ico.hud-locked .hud-medal::after{content:'🔒';position:absolute;right:-4px;bottom:-4px;font-size:18px;filter:none;text-shadow:0 1px 3px #000}.hud-badge{position:absolute;right:-4px;top:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#d8402e;border:2px solid #fff3d2;color:#fff;font:800 12px/16px VillageThai,system-ui,sans-serif;text-align:center;font-style:normal;box-sizing:border-box;z-index:2}.hud-badge.fresh{animation:hudPulse 1.1s ease-in-out infinite}@keyframes hudPulse{50%{transform:scale(1.25)}}`;
   document.head.append(css);
 })();
