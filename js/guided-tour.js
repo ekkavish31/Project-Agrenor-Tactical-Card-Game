@@ -68,11 +68,11 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     $('.skip').onclick = e => { e.stopPropagation(); skipped = true; stepDone?.() };
     const finishType = () => { clearInterval(typeTimer); typeTimer = 0; say.textContent = typed; shown = typed };
     /* v98.1106 · the sibling cuts in while a tour is running (e.g. the player clicks a building the story keeps closed): the box shows the sibling's line for a few seconds, then goes back to the step's own text */
-    let intj = 0;
-    cur = { interject: text => { const my = ++intj, prevTyped = typed, prevName = nm.textContent, sibWho = resolve(C, 'S'), sibName = C?.fill ? C.fill('{sib}') : 'น้องสาว', L = $('.pic.L').classList.contains('dim');
+    let intj = 0, stepSeq = 0, curArrow = null;
+    cur = { interject: text => { const my = ++intj, mySeq = stepSeq, prevTyped = typed, prevName = nm.textContent, sibWho = resolve(C, 'S'), sibName = C?.fill ? C.fill('{sib}') : 'น้องสาว', L = $('.pic.L').classList.contains('dim');
       finishType(); nm.textContent = sibName; typed = fill(text); say.textContent = ''; let k = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { k += 2; say.textContent = typed.slice(0, k); if (k >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 18);
       const sideR = sibWho === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('dim', sideR !== 'L'); $('.pic.R').classList.toggle('dim', sideR !== 'R'); box.classList.add('intj');
-      setTimeout(() => { if (my !== intj) return; clearInterval(typeTimer); typeTimer = 0; typed = prevTyped; nm.textContent = prevName; say.textContent = typed; box.classList.remove('intj'); $('.pic.L').classList.toggle('dim', L); $('.pic.R').classList.toggle('dim', !L) }, Math.max(3200, text.length * 55)) } };
+      setTimeout(() => { if (my !== intj) return; if (mySeq !== stepSeq) { box.classList.remove('intj'); return }   /* the step changed meanwhile: never bring the OLD step's text back */ clearInterval(typeTimer); typeTimer = 0; typed = prevTyped; nm.textContent = prevName; say.textContent = typed; box.classList.remove('intj'); $('.pic.L').classList.toggle('dim', L); $('.pic.R').classList.toggle('dim', !L) }, Math.max(3200, text.length * 55)) } };
     const advance = () => { if (typeTimer) { finishType(); return } if (curFree) return; if (!targetEl || curNext) stepDone?.() };
     /* v98.1000 · a "read" step goes on with a click ANYWHERE on the screen (the invisible blockers + the box all bubble to the overlay); an "action" step (a target that must be clicked) still ignores everything but that target */
     el.addEventListener('click', e => { if (e.target.closest('.skip')) return; advance() });
@@ -96,7 +96,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
       Object.assign(ring.style, { left: x0 + 'px', top: y0 + 'px', width: (x1 - x0) + 'px', height: (y1 - y0) + 'px' }); ring.classList.remove('hide');
       /* the arrow sits on the side with the most room and points at the target; it moves in and out along that line */
       const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, room = { up: y0, down: H - y1, left: x0, right: W - x1 };
-      const dir = Object.entries(room).sort((a, b) => b[1] - a[1])[0][0], A = 54, gap = 8;
+      const dir = curArrow || Object.entries(room).sort((a, b) => b[1] - a[1])[0][0], A = 54, gap = 8;   /* step.arrow forces the side (up = the arrow sits above the target) */
       const pos = { up: [cx - A / 2, y0 - A - gap, 180], down: [cx - A / 2, y1 + gap, 0], left: [x0 - A - gap, cy - A / 2, 90], right: [x1 + gap, cy - A / 2, 270] }[dir];
       // the picture points UP at rotation 0 → "arrow above the target" has to point DOWN (180°)
       arrow.style.left = Math.max(4, Math.min(W - A - 4, pos[0])) + 'px'; arrow.style.top = Math.max(4, Math.min(H - A - 4, pos[1])) + 'px';
@@ -111,7 +111,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
         const who = resolve(C, st.who || 'S'), side = who === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('dim', side !== 'L'); $('.pic.R').classList.toggle('dim', side !== 'R');
         { const fem = root.HeroVariant?.get?.() === 'female'; nm.textContent = who === 'hero' ? (C?.fill ? C.fill('{hero}') : (fem ? 'น้องสาว' : 'พี่ชาย')) : (C?.fill ? C.fill('{sib}') : (fem ? 'พี่ชาย' : 'น้องสาว')) }
         typed = fill(st.text); say.textContent = ''; let i = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { i += 2; say.textContent = typed.slice(0, i); if (i >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 22);
-        curFree = !!st.free; el.classList.toggle('free', curFree); document.body.classList.toggle('gt-on', !(st.free || st.showTracker));   /* a free step / a step that points at the quest window leaves the quest window visible */
+        stepSeq++; curArrow = st.arrow || null; curFree = !!st.free; el.classList.toggle('free', curFree); document.body.classList.toggle('gt-on', !(st.free || st.showTracker));   /* a free step / a step that points at the quest window leaves the quest window visible */
         curNext = st.wait === 'next'; el.classList.toggle('adv', (!st.target || curNext) && !curFree); box.querySelector('small').textContent = curFree ? 'ลองทำตามนี้ได้เลย · Esc = ข้ามบทสอน' : st.target && !curNext ? '👆 ทำตามที่บอก — กดตรงที่ลูกศรชี้' : 'คลิกที่ไหนก็ได้เพื่อไปต่อ';
         if (st.prep) { try { st.prep() } catch (e) { } await sleep(350) }   /* e.g. re-open the book if the previous click closed it */
         curSpec = st.target || null; targetEl = st.target ? await findTarget(st.target) : null;
