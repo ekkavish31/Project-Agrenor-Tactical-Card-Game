@@ -355,6 +355,8 @@
 
 ## 6. P2 · Brushup ที่เหลือ
 
+- [ ] FPS หมู่บ้าน (ต่อจาก v98.1074 ที่แก้การกระตุกแล้ว): ต้นทุนคงที่ต่อเฟรมที่เหลือ — `TiltShift.apply` (`js/tilt-shift.js` strip ~35–40% ของเฟรมใน headless), `drawImage`/`save`/`restore` จำนวนมากใน `drawSorted`, `mergeCells`/`footprint` ใน `js/piece-geometry.js` คำนวณซ้ำทุกเฟรม (~1 ms) · วิธีวัด: Playwright route เสิร์ฟไฟล์ + เดินบ้าน→ตลาด + CPU profile (ดู CHANGELOG v98.1074)
+
 - [x] ทางเดินและของประจำโรงตีเหล็ก ตลาด โรงแรม (v98.152)
 
 - [x] Combat Impact Core (v98.139): ภาพโปร่งใส Light / Heavy / Critical / Finisher ใช้ร่วมกับ VFX เดิม, fallback, reduced motion, หน้า `vfx-preview.html` เทียบ Original / Enhanced

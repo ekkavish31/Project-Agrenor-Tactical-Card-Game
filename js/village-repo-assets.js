@@ -14,7 +14,8 @@
   const CAT = window.PLACEABLE_ART || { groups: [], folders: [], items: [] }, known = new Set(CAT.items.map(i => i.src));
   const NEW_GROUP = 'ภาพใหม่ (ยังไม่ตั้งชื่อ)';
   const inFolders = p => (CAT.folders || []).some(f => p.startsWith('assets/' + f + '/') && !p.slice(('assets/' + f + '/').length).includes('/'));
-  const dirty = () => { try { terrainDirty = true } catch (e) { } };
+  /* v98.1073 · FPS: these pictures are drawn every frame (drawSorted), never into the cached ground — a picture that finished loading while walking used to repaint the WHOLE ground (0.3–1 s = the big jerk on the way to the market). Only the editor still asks for it. */
+  const dirty = () => { try { if ((typeof EDIT_PAGE !== 'undefined' && EDIT_PAGE) || (typeof editing !== 'undefined' && editing)) terrainDirty = true } catch (e) { } };
   const loaded = id => { thumbCache.delete(id); dirty(); document.dispatchEvent(new CustomEvent('village-kind-ready', { detail: id })) };
   /* a lazily loaded local picture: the first draw requests it */
   const pics = {};
