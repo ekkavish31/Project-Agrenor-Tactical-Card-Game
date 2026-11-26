@@ -618,7 +618,7 @@
   /* ---------- input ---------- */
   function personAt(sx, sy) { let best = null, bd = 1e9; for (const a of people.values()) { if (a.leaving) continue; const p = screen(a.vu, a.vv), dx = sx - p.x, dy = sy - (p.y - 40 * Z); if (Math.abs(dx) < 20 * Z && Math.abs(dy) < 48 * Z) { const d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = a } } } return best }
   cv.addEventListener('pointermove', e => { const a = personAt(e.clientX, e.clientY); hoverId = a ? a.id : null; cv.style.cursor = a ? 'pointer' : 'default'; let k = ''; if (a) k = 'talk'; else if (!modalOpen) { try { const c = toCell(e.clientX, e.clientY), cell = { u: Math.floor(c.u), v: Math.floor(c.v) };   /* v98.1068 · 'pointer' over the door, 'walk' over free floor (same tests as the click below) */
-      if (cell.u <= 0 && Math.abs(cell.v - DOOR.v) <= 1 || (cell.u < 0 && cell.v >= DOOR.v - 1 && cell.v <= DOOR.v + 1)) k = 'pointer'; else if (free(cell.u, cell.v)) k = 'walk' } catch (x) { } }
+      if (cell.u <= 0 && Math.abs(cell.v - DOOR.v) <= 1 || (cell.u < 0 && cell.v >= DOOR.v - 1 && cell.v <= DOOR.v + 1)) k = 'door'; else if (free(cell.u, cell.v)) k = 'walk' } catch (x) { } }
     if (modalOpen) k = ''; if (cv.dataset.agc !== k) cv.dataset.agc = k });
   cv.addEventListener('pointerleave', () => { if (cv.dataset.agc) cv.dataset.agc = '' });   /* v98.1021 · speech-bubble cursor over a villager (js/game-cursor.js) */
   cv.addEventListener('pointerup', e => {

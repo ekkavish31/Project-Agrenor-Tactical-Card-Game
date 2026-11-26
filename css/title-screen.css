@@ -262,3 +262,13 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 
 /* v98.1065 · loading screen −50% (zoom 1.5 → .75) + lore line under the tip */
 #gameLoading .gl-lore{margin:6px 0 0;font-size:15px;line-height:1.6;color:#e6d6ac;min-height:48px}#gameLoading .gl-lore[hidden]{display:none}
+
+/* v98.1084 · existing painted icons replace loading note prefixes; text stays live. */
+#gameLoading .gl-tip,#gameLoading .gl-lore{display:flex;align-items:flex-start;gap:12px;text-align:left;height:auto;min-height:64px}
+#gameLoading .gl-note-icon{display:block;flex:0 0 40px;width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 2px 4px #0008)}
+#gameLoading .gl-note-text{flex:1;min-width:0;align-self:center;overflow-wrap:anywhere}
+#gameLoading.gl-gate .gl-tip{justify-content:center;align-items:center;text-align:center}
+#gameLoading.gl-gate .gl-tip .gl-note-icon{display:none}
+#gameLoading.gl-gate .gl-tip .gl-note-text{flex:0 1 auto}
+@media(max-width:420px){#gameLoading .gl-tip,#gameLoading .gl-lore{gap:9px}#gameLoading .gl-note-icon{flex-basis:34px;width:34px;height:34px}}
+@media(prefers-reduced-motion:reduce){#gameLoading.gl-gate .gl-tip{animation:none}}
