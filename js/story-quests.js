@@ -487,7 +487,9 @@ async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V()
   const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
 async function bookFirst(){return false}   /* v98.613 · the book lesson now plays at the end of the opening scene */
 async function bookFirstOld(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.bookSeen)return false;const st=story();if(!st||st.mode!=='active'||st.i>=byId('hire'))return false;v.story.bookSeen=true;doSave();await root.Cutscene.play(D().SCENES.bookFirst);return true}
-root.Story={bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+/* v98.1106 · a place / the world map the story keeps closed: the SIBLING cuts in with the reason (a talk line) instead of a system window */
+function sibBlock(why){const t='เดี๋ยวก่อนนะ! '+String(why||'').replace(/[<>&]/g,'');try{if(root.GuidedTour?.interject){root.GuidedTour.interject(t);return true}}catch(e){}return false}
+root.Story={sibBlock,bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

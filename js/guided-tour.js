@@ -25,6 +25,7 @@
 #gtour .box b{display:block;color:#ffd98a;font-size:max(15px,1.75vw);margin-bottom:.3vw}
 #gtour .box p{margin:0;font-size:max(13px,1.55vw);line-height:1.5;min-height:2.2em}
 #gtour .box small{position:absolute;right:1.3vw;bottom:.7vw;color:#d8b46acc;font-size:max(11px,.9vw)}
+#gtour .box.intj{box-shadow:0 0 0 2px #ffd978aa,0 12px 36px #000c}
 #gtour .skip{position:fixed;right:.8vw;bottom:.8vw;z-index:5;background:#14100af0;border:1px solid #d8b46a;color:#f0dfb4;border-radius:999px;padding:max(5px,.45vw) max(12px,1.1vw);font-size:max(11px,.72vw);font-weight:700;cursor:pointer;pointer-events:auto;box-shadow:0 4px 14px #0008}#gtour .skip:hover{background:#2a2016}
 body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility:hidden!important}
 /* v98.1094 · FREE step (step.free): the player keeps playing — no blockers / veil / ring / portraits, clicks pass through to the game; only a compact talk box (the sibling) and the skip button stay */
@@ -45,6 +46,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
   const quiet = () => { for (const d of docs()) { d.getElementById('cuMenu')?.remove(); const h = d.getElementById('townHudPop'); void h } };
   const lookOf = who => { const female = (() => { try { return root.HeroVariant?.get?.() === 'female' } catch (e) { return false } })(), isLead = who === 'hero'; return isLead ? (female ? 'hero-female' : 'hero-male') : (female ? 'hero-male' : 'hero-female') };
   const resolve = (C, who) => C?.roleWho ? C.roleWho(who) : (who === 'S' ? 'sib' : 'hero');
+  let cur = null;   /* the running tour's handle (interject) */
   async function run(steps, opt = {}) {
     if (!steps?.length) return; if (document.getElementById('gtour')) return;
     if (!document.getElementById('gtourCss')) { const st = document.createElement('style'); st.id = 'gtourCss'; st.textContent = css; document.head.append(st) }
@@ -65,6 +67,12 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     el.append($('.skip'));   /* the box is transformed (fixed children would be placed against it): the skip button lives on the overlay root so it sits in the screen's bottom-right corner */
     $('.skip').onclick = e => { e.stopPropagation(); skipped = true; stepDone?.() };
     const finishType = () => { clearInterval(typeTimer); typeTimer = 0; say.textContent = typed; shown = typed };
+    /* v98.1106 · the sibling cuts in while a tour is running (e.g. the player clicks a building the story keeps closed): the box shows the sibling's line for a few seconds, then goes back to the step's own text */
+    let intj = 0;
+    cur = { interject: text => { const my = ++intj, prevTyped = typed, prevName = nm.textContent, sibWho = resolve(C, 'S'), sibName = C?.fill ? C.fill('{sib}') : 'น้องสาว', L = $('.pic.L').classList.contains('dim');
+      finishType(); nm.textContent = sibName; typed = fill(text); say.textContent = ''; let k = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { k += 2; say.textContent = typed.slice(0, k); if (k >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 18);
+      const sideR = sibWho === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('dim', sideR !== 'L'); $('.pic.R').classList.toggle('dim', sideR !== 'R'); box.classList.add('intj');
+      setTimeout(() => { if (my !== intj) return; clearInterval(typeTimer); typeTimer = 0; typed = prevTyped; nm.textContent = prevName; say.textContent = typed; box.classList.remove('intj'); $('.pic.L').classList.toggle('dim', L); $('.pic.R').classList.toggle('dim', !L) }, Math.max(3200, text.length * 55)) } };
     const advance = () => { if (typeTimer) { finishType(); return } if (curFree) return; if (!targetEl || curNext) stepDone?.() };
     /* v98.1000 · a "read" step goes on with a click ANYWHERE on the screen (the invisible blockers + the box all bubble to the overlay); an "action" step (a target that must be clicked) still ignores everything but that target */
     el.addEventListener('click', e => { if (e.target.closest('.skip')) return; advance() });
@@ -116,8 +124,10 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
         });
         targetEl = null; stepDone = null;
       }
-    } finally { document.body.classList.remove('gt-on'); cancelAnimationFrame(raf); clearInterval(typeTimer); removeEventListener('keydown', onKey, true); removeEventListener('click', onClick, true); el.remove() }
+    } finally { cur = null; document.body.classList.remove('gt-on'); cancelAnimationFrame(raf); clearInterval(typeTimer); removeEventListener('keydown', onKey, true); removeEventListener('click', onClick, true); el.remove() }
     return !skipped;
   }
-  root.GuidedTour = { run };
+  /* GuidedTour.interject(text) → the sibling says `text`: inside the running tour's box, or (no tour running) as a one-line talk that any click closes */
+  function interject(text) { if (cur) { cur.interject(text); return Promise.resolve(true) } return run([{ who: 'S', text, wait: 'next' }]) }
+  root.GuidedTour = { run, interject };
 })(globalThis);
