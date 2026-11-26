@@ -6,12 +6,12 @@
      Calinou/kenney-interface-sounds  (Kenney Interface Sounds)  → prefix if/
      Boyquotes/kenney-rpg-audio-for-godot  (Kenney RPG Audio)    → prefix rpg/
      Boyquotes/kenney-impact-sounds-for-godot (Kenney Impact Sounds) → prefix imp/
-     Boyquotes/kenney-sci-fi-sounds-for-godot (Kenney Sci-fi Sounds) → sf/ · kenney-digital-audio-for-godot → dg/ · kenney-music-jingles-for-godot → jg/
+     Boyquotes/kenney-sci-fi-sounds-for-godot (Kenney Sci-fi Sounds) → sf/ · (v98.1142) Kenney Casino Audio (CC0, mirror pigdevstudio/assets sandbox/audio/cassino_sfx) → cs/ · kenney-digital-audio-for-godot → dg/ · kenney-music-jingles-for-godot → jg/
    Each file is converted to a small mono mp3 (the game already ships mp3 — Safari plays no Ogg). The list below is the CURATED set the game uses (js/sfx.js catalog). """
 import subprocess, sys, os, glob
 ROOT = sys.argv[1] if len(sys.argv) > 1 else '/home/user'
 OUT = os.path.join(os.path.dirname(__file__), '..', 'assets', 'audio', 'sfx', 'kenney')
-PACK = {'ui': 'calinou/kenney-ui-audio', 'if': 'calinou/kenney-interface-sounds', 'rpg': 'boyquotes/kenney-rpg-audio-for-godot', 'imp': 'boyquotes/kenney-impact-sounds-for-godot', 'sf': 'boyquotes/kenney-sci-fi-sounds-for-godot', 'dg': 'boyquotes/kenney-digital-audio-for-godot', 'jg': 'boyquotes/kenney-music-jingles-for-godot'}
+PACK = {'ui': 'calinou/kenney-ui-audio', 'if': 'calinou/kenney-interface-sounds', 'rpg': 'boyquotes/kenney-rpg-audio-for-godot', 'imp': 'boyquotes/kenney-impact-sounds-for-godot', 'sf': 'boyquotes/kenney-sci-fi-sounds-for-godot', 'dg': 'boyquotes/kenney-digital-audio-for-godot', 'jg': 'boyquotes/kenney-music-jingles-for-godot', 'cs': 'pigdevstudio/assets/sandbox/audio/cassino_sfx'}
 def find(pack, name):
     for ext in ('ogg', 'wav'):
         hits = glob.glob(os.path.join(ROOT, PACK[pack], '**', name + '.' + ext), recursive=True)
@@ -48,6 +48,12 @@ add('door-close', 'rpg', 'door_close_1', 'door_close_2')
 add('book-open', 'rpg', 'book_open')
 add('book-close', 'rpg', 'book_close')
 add('book-flip', 'rpg', 'book_flip_1', 'book_flip_2')
+add('page', 'rpg', 'book_flip_1', 'book_flip_2', 'book_flip_3')
+add('card-slide', 'cs', 'cardSlide1', 'cardSlide2', 'cardSlide3', 'cardSlide4')
+add('card-place', 'cs', 'cardPlace1', 'cardPlace2', 'cardPlace3', 'cardPlace4')
+add('card-fan', 'cs', 'cardFan1', 'cardFan2')
+add('card-shuffle', 'cs', 'cardShuffle')
+add('card-shove', 'cs', 'cardShove1', 'cardShove2', 'cardShove3')
 add('cloth', 'rpg', 'cloth_1', 'cloth_3')
 add('latch', 'rpg', 'metal_latch', 'metal_click')
 add('creak', 'rpg', 'creak_1', 'creak_2')
@@ -69,13 +75,15 @@ add('hit-punch-heavy', 'imp', 'impact_punch_heavy_000', 'impact_punch_heavy_001'
 add('hit-wood', 'imp', 'impact_wood_medium_000', 'impact_wood_medium_001')
 add('hit-wood-heavy', 'imp', 'impact_wood_heavy_000', 'impact_wood_heavy_001')
 add('hit-plate', 'imp', 'impact_plate_light_000', 'impact_plate_medium_000')
-add('hit-plate-heavy', 'imp', 'impact_plate_heavy_000')
 add('hit-soft', 'imp', 'impact_soft_medium_000', 'impact_soft_heavy_000')
 add('hit-generic', 'imp', 'impact_generic_light_000', 'impact_generic_light_001')
 add('hit-glass', 'imp', 'impact_glass_light_000', 'impact_glass_medium_000')
 add('hit-bell', 'imp', 'impact_bell_heavy_000')
 add('hit-mining', 'imp', 'impact_mining_000', 'impact_mining_002')
 add('hit-tin', 'imp', 'impact_tin_medium_000')
+add('hit-blade', 'imp', 'impact_metal_heavy_002', 'impact_metal_heavy_003', 'impact_metal_heavy_004', 'impact_plate_medium_001')
+add('hit-plate-heavy', 'imp', 'impact_plate_heavy_000', 'impact_plate_heavy_001', 'impact_plate_heavy_002', 'impact_plate_heavy_003')
+add('hit-thud', 'imp', 'impact_punch_heavy_002', 'impact_punch_heavy_003', 'impact_wood_heavy_002')
 # ── magic, elements, buffs (digital + sci-fi packs: no recorded spell sounds exist in the free Kenney sets, these are the closest) ──
 add('mg-cast', 'dg', 'phaser_up_1', 'phaser_up_3', 'phase_jump_2')
 add('mg-magic', 'sf', 'force_field_001', 'force_field_003', 'force_field_000')

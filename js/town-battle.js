@@ -796,7 +796,7 @@
   const TONE = { movement: '#6fc3ff', attack: '#ff7a5c', self: '#7fe08a', magic: '#c39bff' };
   /* the played card pops up full size beside the fight, stays while the action plays, then flies into the discard pile */
   function showPlay(group, id, text, fromEl) {
-    hidePreview();
+    hidePreview(); try { window.Sfx?.play('card-place', { vol: .9 }) } catch (e) { }   /* v98.1142 · paper card laid down */
     const r = FB.cardRule(id), tone = group === 'movement' ? TONE.movement : r?.self ? TONE.self : r?.range > 1 ? TONE.magic : TONE.attack;
     const el = document.createElement('div'); el.className = 'fb-show play'; el.style.setProperty('--tone', tone);
     el.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b>${text ? '<br>' + esc(text) : ''}</div>`;
@@ -819,6 +819,7 @@
   }
   /* new cards come off the draw pile into their slots, one after another, and glow as "ใหม่" */
   async function drawShow(uids) {
+    try { window.Sfx?.play('card-fan', { vol: .8 }) } catch (e) { }
     const pile = hand.querySelector('#fbDraw').getBoundingClientRect(), els = uids.map(u => hand.querySelector(`.fb-card[data-uid="${CSS.escape(u)}"]`)).filter(Boolean);
     els.forEach(e => { const r = e.getBoundingClientRect(); e.style.transition = 'none'; e.style.transform = `translate(${pile.left - r.left}px,${pile.top - r.top}px) scale(.6) rotateY(90deg)`; e.style.opacity = '0'; e.classList.add('new') });
     await wait(30);
