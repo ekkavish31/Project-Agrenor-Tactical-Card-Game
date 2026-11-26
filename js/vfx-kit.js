@@ -30,10 +30,27 @@
     path(); g.strokeStyle = `rgba(${c},${al * .3})`; g.lineWidth = w * 4.5; g.stroke(); path(); g.strokeStyle = `rgba(${c},${al * .8})`; g.lineWidth = w * 1.8; g.stroke(); path(); g.strokeStyle = `rgba(255,255,255,${al})`; g.lineWidth = w * .7; g.stroke(); return pts }
   function flame(g, x, y, w, h, lean, c, a) { if (a <= 0 || h <= 0) return; g.fillStyle = `rgba(${c},${a})`; g.beginPath(); g.moveTo(x - w / 2, y); g.bezierCurveTo(x - w * .75, y - h * .45, x - w * .15 + lean, y - h * .6, x + lean * 1.6, y - h); g.bezierCurveTo(x + w * .2 + lean, y - h * .55, x + w * .78, y - h * .4, x + w / 2, y); g.closePath(); g.fill() }
   const puff = (g, x, y, r, c, a) => { if (a <= 0) return; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(${c},${a})`); gr.addColorStop(1, `rgba(${c},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill() };
-  /* a spell flying from the caster to the target: a bright head and a tail of fading light. Returns the impact progress 0..1, or -1 while it flies. */
-  function fly(g, e, t, a, p, cw, split, c, hi, size, lift = .45) { if (!a || Math.abs(a.x - p.x) + Math.abs(a.y - p.y) < 4) return clamp(t); if (t >= split) return (t - split) / (1 - split);
-    const k = t / split, ay = a.y - cw * .75, py = chest(p, cw), at = kk => [a.x + (p.x - a.x) * kk, ay + (py - ay) * kk - Math.sin(kk * Math.PI) * cw * lift];
-    add(g, () => { for (let i = 9; i >= 0; i--) { const kk = Math.max(0, eo(k) - i * .028), [x, y] = at(kk); glow(g, x, y, size * (1 - i * .08), i ? c : hi, i ? .5 - i * .045 : 1) } const [x, y] = at(eo(k)); star4(g, x, y, size * .9, C.white, .9, k * 9) }); return -1 }
+  /* A straight streak from the caster to the target. Returns the impact progress 0..1, or -1 while it flies. */
+  function fly(g, e, t, a, p, cw, split, c, hi, size) { if (!a || Math.abs(a.x - p.x) + Math.abs(a.y - p.y) < 4) return clamp(t); if (t >= split) return (t - split) / (1 - split);
+    const k = t / split, ay = a.y - cw * .75, py = chest(p, cw);
+    const tail = Math.max(0, k - .26);
+    const x = lerp(a.x, p.x, k), y = lerp(ay, py, k);
+    const tx = lerp(a.x, p.x, tail), ty = lerp(ay, py, tail);
+    add(g, () => {
+      if (k > 0) {
+        const trail = g.createLinearGradient(tx, ty, x, y);
+        trail.addColorStop(0, `rgba(${c},0)`);
+        trail.addColorStop(.65, `rgba(${c},.65)`);
+        trail.addColorStop(1, `rgba(${hi},.95)`);
+        g.strokeStyle = trail;
+        g.lineCap = 'round';
+        g.lineWidth = size * .72;
+        g.beginPath(); g.moveTo(tx, ty); g.lineTo(x, y); g.stroke();
+      }
+      glow(g, x, y, size, hi, .8);
+    });
+    return -1;
+  }
 
   /* ---------- the effects ---------- */
   const FX = {
@@ -50,7 +67,7 @@
         sparks(g, e, 9, p.x, p.y - W * .1, W * .9, W * .04, seg(t, .05, .9), '230,200,150', { a0: Math.PI, arc: Math.PI, grav: W * .5 }) }); return true },
     spear(g, e, t, p, a, cw) { return thrust(g, e, t, p, a, cw, 1.15, C.steel) },
     rapier(g, e, t, p, a, cw) { return thrust(g, e, t, p, a, cw, .8, C.gold) },
-    arrow(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), ay = a.y - cw * .75, py = chest(p, cw), arc = cw * .35, fl = seg(t, 0, .82), x = a.x + (p.x - a.x) * fl, y = ay + (py - ay) * fl - Math.sin(fl * Math.PI) * arc, an = Math.atan2((py - ay) - Math.cos(fl * Math.PI) * arc * Math.PI, p.x - a.x);
+    arrow(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), ay = a.y - cw * .75, py = chest(p, cw), fl = seg(t, 0, .82), x = a.x + (p.x - a.x) * fl, y = ay + (py - ay) * fl, an = Math.atan2(py - ay, p.x - a.x);
       if (fl < 1) { g.save(); g.translate(x, y); g.rotate(an); add(g, () => { const gr = g.createLinearGradient(-W * 1.1, 0, 0, 0); gr.addColorStop(0, 'rgba(255,240,200,0)'); gr.addColorStop(1, 'rgba(255,240,200,.75)'); g.strokeStyle = gr; g.lineWidth = W * .05; g.beginPath(); g.moveTo(-W * 1.1, 0); g.lineTo(0, 0); g.stroke() });
         g.strokeStyle = '#6b4a2a'; g.lineWidth = W * .035; g.beginPath(); g.moveTo(-W * .5, 0); g.lineTo(W * .1, 0); g.stroke(); g.fillStyle = '#e8eef5'; g.beginPath(); g.moveTo(W * .2, 0); g.lineTo(W * .06, -W * .05); g.lineTo(W * .06, W * .05); g.closePath(); g.fill(); g.fillStyle = '#c9553a'; g.beginPath(); g.moveTo(-W * .5, 0); g.lineTo(-W * .62, -W * .06); g.lineTo(-W * .42, 0); g.lineTo(-W * .62, W * .06); g.closePath(); g.fill(); g.restore() }
       const k = seg(t, .82, 1); if (k > 0) add(g, () => { glow(g, p.x, py, W * .6 * (1 - k), C.white, .8); sparks(g, e, 7, p.x, py, W * .55, W * .03, k, C.gold, { grav: W * .2 }); ring(g, p.x, py, W * .5 * k, W * .5 * k, W * .03, C.white, 1 - k) }); return true },
@@ -62,14 +79,14 @@
     parry(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), cy = chest(p, cw) - cw * .1, k = seg(t, .05, 1);
       add(g, () => { glow(g, p.x, cy, W * .9 * bell(seg(t, 0, .45)), C.white, .85); star4(g, p.x, cy, W * 1.05 * back(seg(t, 0, .2)) * (1 - seg(t, .3, .9)), C.white, 1 - seg(t, .3, .9), .78); star4(g, p.x, cy, W * .7 * (1 - seg(t, .2, .8)), C.gold, 1 - seg(t, .2, .8), 0);
         ring(g, p.x, cy, W * .9 * eo(t), W * .9 * eo(t), W * .05 * (1 - t), C.gold, 1 - t); sparks(g, e, 14, p.x, cy, W * 1.15, W * .035, k, C.gold, { grav: W * .35 }) }); return true },
-    fire(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .42, C.fire, C.fireHi, W * .34, .5); if (k < 0) return true; const up = back(seg(k, 0, .28)), al = 1 - seg(k, .62, 1), die = 1 - .55 * seg(k, .5, 1);
+    fire(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .42, C.fire, C.fireHi, W * .34); if (k < 0) return true; const up = back(seg(k, 0, .28)), al = 1 - seg(k, .62, 1), die = 1 - .55 * seg(k, .5, 1);
       for (let i = 0; i < 6; i++) { const kk = seg(k, .2 + i * .07, 1); puff(g, p.x + (R(e, i + 30) - .5) * W * .7 + Math.sin(kk * 3 + i) * W * .1, p.y - W * (1.1 + 1.2 * kk), W * (.3 + .5 * kk), '60,50,48', .42 * bell(kk)) }
       add(g, () => { glow(g, p.x, p.y - W * .35, W * 1.9 * up, C.fire, .55 * al); glow(g, p.x, p.y - W * .2, W * 1.0 * up, C.fireHi, .5 * al);
         const b = seg(k, 0, .45); ring(g, p.x, p.y, W * (.3 + 1.3 * eo(b)), W * (.11 + .47 * eo(b)), W * .1 * (1 - b), C.fireHi, 1 - b); glow(g, p.x, p.y - W * .4, W * 1.5 * bell(seg(k, 0, .3)), C.white, .7);
         /* three rows of tongues: deep red behind, orange, then the bright core — each one sways on its own */
         for (const [n, wd, ht, c, o, row] of [[9, .46, 1.75, '235,70,20', .5, 0], [7, .36, 1.45, C.fire, .62, 1], [5, .26, 1.1, C.fireHi, .8, 2], [3, .14, .7, C.white, .85, 3]]) for (let i = 0; i < n; i++) { const u = n > 1 ? i / (n - 1) - .5 : 0, fx = p.x + u * W * (1.25 - row * .2) + (R(e, i + row * 11) - .5) * W * .08, fall = 1 - Math.abs(u) * 1.1, h = W * ht * (.6 + .4 * R(e, i + row * 7 + 5)) * up * fall * die * (.86 + .14 * Math.sin(k * 26 + i * 2.3 + row)), lean = Math.sin(k * 17 + i * 1.9 + row * 1.3) * W * .09 + u * W * .25; flame(g, fx, p.y + W * .04, W * wd, h, lean, c, o * al) }
         for (let i = 0; i < 22; i++) { const kk = seg(k, R(e, i + 60) * .45, 1); if (!kk) continue; const x = p.x + (R(e, i + 70) - .5) * W * 1.3 + Math.sin(kk * 7 + i) * W * .08, y = p.y - W * (.2 + 2.3 * kk * (.6 + .4 * R(e, i + 80))); glow(g, x, y, W * .075 * (1 - kk * .5), i % 3 ? C.fireHi : C.white, 1 - kk) } }); return true },
-    ice(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .4, C.ice, C.iceHi, W * .3, .3); if (k < 0) return true; const al = 1 - seg(k, .7, 1);
+    ice(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .4, C.ice, C.iceHi, W * .3); if (k < 0) return true; const al = 1 - seg(k, .7, 1);
       add(g, () => { glow(g, p.x, p.y - W * .5, W * 1.7 * bell(seg(k, 0, .9)), C.ice, .4); const gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, W * 1.25); gr.addColorStop(0, `rgba(${C.iceHi},${.5 * al})`); gr.addColorStop(1, `rgba(${C.ice},0)`); g.save(); g.translate(p.x, p.y); g.scale(1, .36); g.translate(-p.x, -p.y); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, W * 1.25 * eo(seg(k, 0, .4)), 0, TAU); g.fill(); g.restore() });
       /* crystals shoot up one after another from the middle outwards: a dark back row, then the bright front row */
       g.save(); g.globalAlpha = al; for (const [n, ht, wd, dk, row] of [[9, 1.25, .13, 1, 0], [7, 1.75, .17, 0, 1]]) for (let i = 0; i < n; i++) { const u = i / (n - 1) - .5, up = back(seg(k, Math.abs(u) * .22, Math.abs(u) * .22 + .26)), off = u * W * (1.45 - row * .25), h = W * ht * (.55 + .45 * R(e, i + row * 13)) * up * (1 - Math.abs(u) * .75), w = W * wd, lean = off * .42, bx = p.x + off, by = p.y + W * .05 - row * W * .02; if (h <= 0) continue;
@@ -87,13 +104,13 @@
         for (let i = 0; i < 2; i++) { const b = seg(t, i * .3, i * .3 + .55); ring(g, p.x, p.y, W * (.25 + 1.35 * eo(b)), W * (.1 + .5 * eo(b)), W * .08 * (1 - b), i ? C.bolt : C.boltHi, (1 - b) * (b > 0 ? 1 : 0)) }
         const k = seg(t, .08, 1); for (let i = 0; i < 9; i++) { if ((tick + i) % 3) continue; const an = R(e, i + 60 + tick) * TAU, r0 = W * (.2 + .65 * R(e, i + 70 + tick)), x0 = p.x + Math.cos(an) * r0, y0 = cy + Math.sin(an) * r0 * .8; bolt(g, e, x0, y0, x0 + (R(e, i + tick) - .5) * W * .6, y0 + (R(e, i + tick + 9) - .5) * W * .6, W * .16, i * 5 + 100, W * .022, C.boltHi, (1 - k) * .95, tick) }
         sparks(g, e, 16, p.x, p.y - W * .1, W * 1.3, W * .035, k, C.boltHi, { a0: Math.PI, arc: Math.PI, grav: W * .4 }) }); return true },
-    wind(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .34, C.wind, C.white, W * .24, .3); if (k < 0) return true; const al = 1 - seg(k, .6, 1), grow = eo(seg(k, 0, .35));
+    wind(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .34, C.wind, C.white, W * .24); if (k < 0) return true; const al = 1 - seg(k, .6, 1), grow = eo(seg(k, 0, .35));
       /* a small whirlwind: rings stacked from the ground up, wider toward the top, each spinning at its own phase; back halves first, then the front */
       const N = 11, part = front => add(g, () => { g.lineCap = 'round'; for (let i = 0; i < N; i++) { const u = i / (N - 1), y = p.y - W * 1.75 * u * grow, r = W * (.2 + .62 * u) * grow, sway = Math.sin(k * 9 + u * 4) * W * .1 * u, a0 = k * 15 + i * .9, len = 1.9 + .8 * Math.sin(i * 1.7), s0 = front ? 0 : Math.PI;
           for (const [w, c, o] of [[W * .11, C.wind, .26], [W * .045, i % 2 ? C.white : C.wind, .8]]) { g.strokeStyle = `rgba(${c},${o * al * (front ? 1 : .5)})`; g.lineWidth = w * (1 - u * .35); g.beginPath(); g.ellipse(p.x + sway, y, r, r * .3, 0, s0 + (a0 % Math.PI), s0 + (a0 % Math.PI) + Math.min(len, Math.PI - (a0 % Math.PI))); g.stroke() } } });
       part(false); add(g, () => { glow(g, p.x, p.y - W * .8, W * 1.5 * grow, C.wind, .3 * al); const b = seg(k, 0, .5); ring(g, p.x, p.y, W * (.3 + 1.1 * eo(b)), W * (.11 + .4 * eo(b)), W * .06 * (1 - b), C.white, 1 - b) }); part(true);
       for (let i = 0; i < 12; i++) { const an = R(e, i) * TAU + k * 9, u = (R(e, i + 9) + k * .7) % 1, r = W * (.25 + .7 * u) * grow; g.save(); g.translate(p.x + Math.cos(an) * r, p.y - W * 1.75 * u * grow + Math.sin(an) * r * .3); g.rotate(an * 2); g.globalAlpha = al; g.fillStyle = i % 2 ? '#7fd06a' : '#c5ee9a'; g.beginPath(); g.ellipse(0, 0, W * .085, W * .035, 0, 0, TAU); g.fill(); g.restore() } return true },
-    water(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .42, C.water, C.waterHi, W * .28, .4); if (k < 0) return true; const up = bell(seg(k, 0, .75)), al = 1 - seg(k, .6, 1);
+    water(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .42, C.water, C.waterHi, W * .28); if (k < 0) return true; const up = bell(seg(k, 0, .75)), al = 1 - seg(k, .6, 1);
       add(g, () => { const h = W * 1.5 * up, gr = g.createLinearGradient(0, p.y, 0, p.y - h); gr.addColorStop(0, `rgba(${C.water},${.75 * al})`); gr.addColorStop(.7, `rgba(${C.waterHi},${.6 * al})`); gr.addColorStop(1, `rgba(${C.white},0)`); g.fillStyle = gr; g.beginPath(); g.moveTo(p.x - W * .34, p.y); g.quadraticCurveTo(p.x - W * .12, p.y - h * .55, p.x - W * .2, p.y - h); g.quadraticCurveTo(p.x, p.y - h * 1.12, p.x + W * .2, p.y - h); g.quadraticCurveTo(p.x + W * .12, p.y - h * .55, p.x + W * .34, p.y); g.closePath(); g.fill();
         for (let i = 0; i < 3; i++) { const kk = seg(k, i * .14, 1); ring(g, p.x, p.y, W * (.2 + 1.1 * eo(kk)), W * (.07 + .4 * eo(kk)), W * .04 * (1 - kk), i ? C.water : C.waterHi, (1 - kk) * .9) }
         for (let i = 0; i < 12; i++) { const an = -Math.PI * (.15 + .7 * R(e, i)), v = W * (1 + .8 * R(e, i + 20)), kk = seg(k, .08, 1), x = p.x + Math.cos(an) * v * kk * .9, y = p.y - W * .2 + Math.sin(an) * v * kk + W * 1.5 * kk * kk; glow(g, x, y, W * .07 * (1 - kk * .4), C.waterHi, 1 - kk) } }); return true },
@@ -112,13 +129,13 @@
         glow(g, p.x, p.y, W * 1.2, C.holy, .5 * al); for (let i = 0; i < 2; i++) { const kk = seg(t, .1 + i * .2, .8 + i * .2), y = p.y - W * 1.9 * (1 - eo(kk)); ring(g, p.x, y, W * .55, W * .18, W * .04, C.holy, bell(kk) * .9) }
         ring(g, p.x, p.y, W * (.3 + .9 * eo(t)), W * (.11 + .33 * eo(t)), W * .05 * (1 - t), C.white, 1 - t);
         for (let i = 0; i < 12; i++) { const kk = seg(t, R(e, i) * .4, 1); if (!kk) continue; star4(g, p.x + (R(e, i + 9) - .5) * W * 1.2, p.y - W * (.1 + 1.7 * kk), W * .13 * bell(kk), i % 3 ? C.holy : C.white, bell(kk), kk * 2 + i) } }); return true },
-    dark(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .42, C.dark, C.darkHi, W * .26, .4); if (k < 0) return true; const cy = chest(p, cw), s = back(seg(k, 0, .35)) * (1 - seg(k, .7, 1)), r = W * .62 * s;
+    dark(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .42, C.dark, C.darkHi, W * .26); if (k < 0) return true; const cy = chest(p, cw), s = back(seg(k, 0, .35)) * (1 - seg(k, .7, 1)), r = W * .62 * s;
       if (r > 0) { const gr = g.createRadialGradient(p.x, cy, 0, p.x, cy, r); gr.addColorStop(0, 'rgba(8,2,20,.95)'); gr.addColorStop(.7, 'rgba(40,10,80,.85)'); gr.addColorStop(1, 'rgba(90,40,160,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p.x, cy, r, 0, TAU); g.fill() }
       add(g, () => { ring(g, p.x, cy, r * .98, r * .98, W * .05, C.darkHi, .8 * (1 - seg(k, .6, 1))); glow(g, p.x, cy, r * 1.9, C.dark, .35 * (1 - seg(k, .6, 1)));
         g.lineCap = 'round'; for (let i = 0; i < 7; i++) { const an = i / 7 * TAU + k * 2.2, r1 = r * (1.9 - .7 * k); g.strokeStyle = `rgba(${C.dark},${.6 * (1 - seg(k, .55, 1))})`; g.lineWidth = W * .035; g.beginPath(); g.moveTo(p.x + Math.cos(an) * r * .9, cy + Math.sin(an) * r * .9); g.quadraticCurveTo(p.x + Math.cos(an + .9) * r1 * .8, cy + Math.sin(an + .9) * r1 * .8, p.x + Math.cos(an + 1.5) * r1, cy + Math.sin(an + 1.5) * r1); g.stroke() }
         for (let i = 0; i < 12; i++) { const kk = seg(k, R(e, i) * .35, .9), an = R(e, i + 9) * TAU, d = W * 1.2 * (1 - eo(kk)); if (kk > 0 && kk < 1) glow(g, p.x + Math.cos(an) * d, cy + Math.sin(an) * d * .8, W * .05, C.darkHi, bell(kk)) }
         const b = seg(k, .7, 1); if (b > 0) { ring(g, p.x, cy, W * 1.1 * eo(b), W * 1.1 * eo(b), W * .05 * (1 - b), C.darkHi, 1 - b); sparks(g, e, 10, p.x, cy, W, W * .03, b, C.darkHi) } }); return true },
-    arcane(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .5, C.arcane, C.white, W * .26, .45); if (k < 0) return true; const cy = chest(p, cw), s = back(seg(k, 0, .3)), al = 1 - seg(k, .6, 1), r = W * .72 * s;
+    arcane(g, e, t, p, a, cw) { const W = cw * (e.scale || 1), k = fly(g, e, t, a, p, cw, .5, C.arcane, C.white, W * .26); if (k < 0) return true; const cy = chest(p, cw), s = back(seg(k, 0, .3)), al = 1 - seg(k, .6, 1), r = W * .72 * s;
       add(g, () => { g.save(); g.translate(p.x, cy); g.scale(1, .92); g.rotate(k * 2.4); g.strokeStyle = `rgba(${C.arcane},${.9 * al})`; g.lineWidth = W * .028; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.stroke(); g.beginPath(); g.arc(0, 0, r * .78, 0, TAU); g.stroke();
         for (let i = 0; i < 12; i++) { const an = i / 12 * TAU; g.beginPath(); g.moveTo(Math.cos(an) * r * .8, Math.sin(an) * r * .8); g.lineTo(Math.cos(an) * r * .98, Math.sin(an) * r * .98); g.stroke() }
         g.rotate(-k * 5); g.strokeStyle = `rgba(${C.white},${.8 * al})`; g.lineWidth = W * .02; for (let j = 0; j < 2; j++) { g.beginPath(); for (let i = 0; i < 3; i++) { const an = i / 3 * TAU + j * Math.PI; g.lineTo(Math.cos(an) * r * .74, Math.sin(an) * r * .74) } g.closePath(); g.stroke() } g.restore();
@@ -211,14 +228,14 @@
     const W = cw * (e.scale || 1), split = .46, far = a && (Math.abs(a.x - p.x) + Math.abs(a.y - p.y)) >= 4;
     if (!animSheet('ball') || !animSheet('hit')) return false;
     if (e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { g.save();g.translate(p.x,p.y+cw*.12);animFrame(g,'hit',5,W*2.5,.65*(1-t));g.restore();return true }
-    if (far && t < split) {   /* flight: the fireball runs along an arc from the caster's chest to the target, turned to face where it goes */
+    if (far && t < split) {   /* The illustrated fire streak faces the target throughout travel. */
       const k = t / split, ay = a.y - cw * .75, py = chest(p, cw);
-      const x = lerp(a.x, p.x, k), y = lerp(ay, py, k) - Math.sin(k * Math.PI) * W * .44;
-      const an = Math.atan2(py - ay - Math.cos(k * Math.PI) * Math.PI * W * .44, p.x - a.x);
+      const x = lerp(a.x, p.x, k), y = lerp(ay, py, k);
+      const an = Math.atan2(py - ay, p.x - a.x);
       const grow = .5 + .5 * eo(seg(k, 0, .25));
       groundLight(g, x, lerp(a.y, p.y, k), W * 1.28, C.fire, grow * .56);
       add(g, () => glow(g, x, y, W * .42, C.fire, grow * .45));
-      g.save(); g.translate(x, y); g.rotate(an); if (Math.cos(an) < 0) g.scale(1, -1); animPlay(g, 'ball', k * 1.6, W * .95 * grow, 1, true); g.restore();
+      g.save(); g.translate(x, y); g.rotate(an); g.scale(1.22, Math.cos(an) < 0 ? -.76 : .76); animPlay(g, 'ball', k * 1.6, W * .95 * grow, 1, true); g.restore();
       return true }
     const k = far ? (t - split) / (1 - split) : t;   /* impact: 16 frames — flames rise, burn, turn to smoke */
     paintedLight('fire', g, e, k, p, W, false);
@@ -333,22 +350,26 @@
       const split = .28;
       if (t < split) {
         const f = t / split; x = lerp(a.x, p.x, f);
-        y = lerp(a.y - cw * .65, p.y - cw * .65, f) - Math.sin(f * Math.PI) * cw * .25;
-        drawSize *= .35; y += drawSize * .32; k = 0;
+        y = lerp(a.y - cw * .65, p.y - cw * .65, f);
+        drawSize *= .35; k = 0;
       } else k = (t - split) / (1 - split);
     }
     const flying = far && t < .28;
     if (!rm && flying) {
       groundLight(g, x, lerp(a.y, p.y, t / .28), W * .83, LIGHT[kind][0], .27);
-      add(g, () => glow(g, x, y - drawSize * .3, W * .39, LIGHT[kind][0], .3));
+      add(g, () => glow(g, x, y, W * .39, LIGHT[kind][0], .3));
     } else if (!rm) paintedLight(kind, g, e, k, p, W, false);
     const alpha = rm ? .65 * (1 - t) : 1 - seg(k, .82, 1);
     if (alpha <= 0) return true;
     g.save();
     try {
       g.globalCompositeOperation = 'source-over';
-      g.translate(x,y);
-      blendedCell(g, im, 4, 2, rm ? 3/7 : k, drawSize, drawSize, .5, .82, alpha);
+      g.translate(x, y);
+      if (!rm && flying) {
+        g.rotate(Math.atan2(p.y - a.y, p.x - a.x));
+        g.scale(1.45, .65);
+      }
+      blendedCell(g, im, 4, 2, rm ? 3/7 : k, drawSize, drawSize, .5, !rm && flying ? .5 : .82, alpha);
     } finally { g.restore(); }
     if (!rm && !flying) paintedLight(kind, g, e, k, p, W, true);
     return true;
@@ -373,7 +394,7 @@
       const k = seg(t, delay, 1);
       if (!still) {
         if (delay && t < delay) {
-          const f = kind === 'arrow' ? t : t / delay;
+          const f = t / delay;
           groundLight(g, lerp(a.x, p.x, f), lerp(a.y, p.y, f), W * .65, LIGHT[kind][0], .21 * bell(f));
         } else paintedLight(kind, g, e, k, p, W, false);
       }

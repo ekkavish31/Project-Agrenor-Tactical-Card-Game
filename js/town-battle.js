@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1124';
+  const V = '98.1125';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1524,7 +1524,7 @@
     climbUp(g, e, t, p) { g.strokeStyle = '#bfffd0'; g.lineWidth = 4; g.lineCap = 'round'; for (let i = 0; i < 3; i++) { const k = (t * 1.5 + i * .3) % 1, y = p.y - UNIT * (.3 + k * 1.6); g.globalAlpha = 1 - k; g.beginPath(); g.moveTo(p.x - 14, y + 8); g.lineTo(p.x, y - 4); g.lineTo(p.x + 14, y + 8); g.stroke() } },
     perchFlag(g, e, t, p) { g.globalAlpha = 1 - t; g.strokeStyle = '#ffd25a'; g.lineWidth = 3; g.beginPath(); g.ellipse(p.x, p.y, Math.max(0, UNIT * (.3 + t * .6)), Math.max(0, UNIT * (.14 + t * .28)), 0, 0, 7); g.stroke(); g.fillStyle = '#ffd25a'; g.fillRect(p.x + 18, p.y - UNIT * 1.6, 3, UNIT * 1.1); g.beginPath(); g.moveTo(p.x + 21, p.y - UNIT * 1.6); g.lineTo(p.x + 46, p.y - UNIT * 1.45 + Math.sin(t * 20) * 3); g.lineTo(p.x + 21, p.y - UNIT * 1.3); g.fill() },
     fallDust(g, e, t, p) { for (let i = 0; i < 10; i++) { const a = i / 10 * 6.28, r = UNIT * (.2 + t * .9); g.globalAlpha = (1 - t) * .8; g.fillStyle = '#b8a888'; g.beginPath(); g.arc(p.x + Math.cos(a) * r, p.y + Math.sin(a) * r * .45 - t * 10, 5 + t * 6, 0, 7); g.fill() } },
-    diveTrail(g, e, t, p, a) { g.globalAlpha = 1 - t; const gr = g.createLinearGradient(a.x, a.y - UNIT, p.x, p.y - UNIT * .5); gr.addColorStop(0, 'rgba(255,240,180,0)'); gr.addColorStop(1, 'rgba(255,220,120,.9)'); g.strokeStyle = gr; g.lineWidth = 10 * (1 - t) + 2; g.beginPath(); g.moveTo(a.x, a.y - UNIT * 1.4); g.quadraticCurveTo((a.x + p.x) / 2, Math.min(a.y, p.y) - UNIT * 2.4, p.x, p.y - UNIT * .5); g.stroke() }
+    diveTrail(g, e, t, p, a) { g.globalAlpha = 1 - t; const gr = g.createLinearGradient(a.x, a.y - UNIT, p.x, p.y - UNIT * .5); gr.addColorStop(0, 'rgba(255,240,180,0)'); gr.addColorStop(1, 'rgba(255,220,120,.9)'); g.strokeStyle = gr; g.lineWidth = 10 * (1 - t) + 2; g.beginPath(); g.moveTo(a.x, a.y - UNIT * 1.4); g.lineTo(p.x, p.y - UNIT * .5); g.stroke() }
   };
   /* v98.1019 · SIGNATURE card effects (code-drawn). Brother = rush-in cuts, white-gold · sister = special magic, blue-violet. `a` = the caster's screen point, `p` = the target's */
   const SIGR = e => n => ((e.seed * (n + 1) * 9301 + 49297) % 233280) / 233280;
@@ -1543,8 +1543,8 @@
       g.globalAlpha = (1 - u) * .85; g.strokeStyle = '#ffd27a'; g.lineWidth = 4 * (1 - u) + 1; g.beginPath(); g.ellipse(cx, cy, UNIT * (.3 + u * 1.9) * s, UNIT * (.3 + u * 1.9) * s * .45, 0, 0, 7); g.stroke();
       g.strokeStyle = '#fff0c0'; g.lineWidth = 2; for (let i = 0; i < 7; i++) { const an = R(i) * 6.28, d1 = UNIT * .25, d2 = UNIT * (.5 + u * 1.5) * (.7 + R(i + 4) * .5) * s; g.globalAlpha = (1 - u) * .8; g.beginPath(); g.moveTo(cx + Math.cos(an) * d1, cy + Math.sin(an) * d1 * .45); g.lineTo(cx + Math.cos(an) * d2, cy + Math.sin(an) * d2 * .45); g.stroke() } }
   };
-  HEIGHT_FX.sigLightF = (g, e, t, p, a) => {   // a glowing orb flies from the caster in an arc with a sparkle trail, then bursts into a ring and rays
-    const R = SIGR(e), b = a || { x: p.x - UNIT * 2, y: p.y }, k = Math.min(1, t / .5), y0 = b.y - UNIT * 1.0, y1 = p.y - UNIT * .7, at = kk => ({ x: b.x + (p.x - b.x) * kk, y: y0 + (y1 - y0) * kk - Math.sin(kk * Math.PI) * UNIT * .5 }); g.globalCompositeOperation = 'lighter';
+  HEIGHT_FX.sigLightF = (g, e, t, p, a) => {   // a glow streaks directly to the target with a sparkle trail, then bursts into a ring and rays
+    const R = SIGR(e), b = a || { x: p.x - UNIT * 2, y: p.y }, k = Math.min(1, t / .5), y0 = b.y - UNIT * 1.0, y1 = p.y - UNIT * .7, at = kk => ({ x: b.x + (p.x - b.x) * kk, y: y0 + (y1 - y0) * kk }); g.globalCompositeOperation = 'lighter';
     if (t < .55) { for (let i = 0; i < 9; i++) { const q = at(Math.max(0, k - i * .035)); g.globalAlpha = (1 - i / 9) * .7; g.fillStyle = i % 2 ? '#9fc4ff' : '#d4a8ff'; g.beginPath(); g.arc(q.x + (R(i) - .5) * 5, q.y + (R(i + 3) - .5) * 5, UNIT * .16 * (1 - i / 11), 0, 7); g.fill() }
       const o = at(k), gr = g.createRadialGradient(o.x, o.y, 0, o.x, o.y, UNIT * .4); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.4, 'rgba(160,190,255,.9)'); gr.addColorStop(1, 'rgba(160,120,255,0)'); g.globalAlpha = 1; g.fillStyle = gr; g.beginPath(); g.arc(o.x, o.y, UNIT * .4, 0, 7); g.fill() }
     if (t > .45) { const u = (t - .45) / .55, cx = p.x, cy = p.y - UNIT * .7; g.globalAlpha = 1 - u; g.strokeStyle = '#cfe0ff'; g.lineWidth = 3 * (1 - u) + 1; g.beginPath(); g.ellipse(cx, cy + UNIT * .5, UNIT * (.2 + u * 1.0), UNIT * (.2 + u * 1.0) * .45, 0, 0, 7); g.stroke();
