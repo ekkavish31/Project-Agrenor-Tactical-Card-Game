@@ -1,0 +1,18 @@
+/* v98.1119 · the HUD of the village map (status pill + icon row), shared with the sub-maps (village-place.html via js/place-hud.js). Copied from village-town.html / js/town-ux.js so both look the same. */
+#townGameHud{zoom:1.5;order:-1;align-self:flex-start;margin:8px 8px 0 0;display:flex;align-items:center;gap:4px;padding:3px 10px 3px 8px;border-radius:999px;background:linear-gradient(180deg,#f8edd0,#e3cf9f);border:1px solid #b08a45;box-shadow:0 0 0 2px #3a2a14,0 4px 10px #0009,inset 0 1px 0 #fff9;color:#4a3418;font:700 12px VillageThai,system-ui,sans-serif;white-space:nowrap;pointer-events:none}
+#townGameHud img{position:static!important;width:18px!important;height:18px!important;max-width:none!important;min-width:0!important;object-fit:contain;flex:none}
+#townGameHud .hb-name{padding-right:2px}#townGameHud .hb-name b{font-weight:800}
+#townGameHud .hb-chip{display:flex;align-items:center;gap:3px;padding:1px 6px 1px 3px;border-radius:999px;background:#fff6dc99;border:1px solid #b08a4555}
+#townGameHud .hg{display:inline-block;width:13px;height:17px;flex:none;background:url(../assets/v03/hud-glyphs-flat.webp) 0 0/400% 400% no-repeat;margin-left:-2px}#townGameHud .hn{display:inline-flex;align-items:center;padding-left:2px}
+#townGameHud .hn em{width:3px;height:3px;border-radius:50%;background:#4a3418;margin:0 1px;box-shadow:0 -5px #4a3418}
+#townGameHud .hb-sep{width:1px;height:16px;background:#b08a4580;margin:0 1px}
+@media (max-width:900px){#townGameHud{zoom:1.15;padding:2px 6px;gap:2px}#townGameHud img{width:15px!important;height:15px!important}#townGameHud .hg{width:11px;height:14px}#townGameHud .hb-sep{display:none}}<link rel="stylesheet" href="css/ivory-ui.css?v=v98.1110"><link rel="stylesheet" href="css/sealbook-ui.css?v=v98.1106"><script defer src="js/seal-ui.js?v=v98.1106"></script><style>@font-face{font-family:VillageThai;src:url(assets/village-town/noto-sans-thai-thai-400-normal.woff2) format('woff2');font-weight:100 900;}@font-face{font-family:VillageThai;src:url(assets/village-town/noto-sans-thai-latin-400-normal.woff2) format('woff2');font-weight:100 900;}
+.town-icon-row{position:fixed;top:14px;right:14px;z-index:12;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 28px)}
+ /* v97.37 · floating icons: no frame or background, twice the old size, a white outline traced around each icon */
+ .town-icon-row>button,.town-icon-row>a{width:96px;min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;padding:0;border:0;border-radius:0;background:none;color:#fff;font:700 12.5px VillageThai,system-ui,sans-serif;text-decoration:none;box-shadow:none;cursor:pointer;transition:transform .15s;text-shadow:0 0 3px #000,0 1px 2px #000,0 0 6px #000a}
+ .town-icon-row>button:hover,.town-icon-row>a:hover{transform:translateY(-4px) scale(1.06);background:none}
+ .town-icon-row>button:focus-visible,.town-icon-row>a:focus-visible{outline:2px dashed #fff;outline-offset:2px}
+ .town-icon-row img,.town-icon-row .ico-emoji{filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 4px 5px #000a)}
+ .town-icon-row img{width:80px!important;height:80px!important;margin:0!important}.town-icon-row .ico-emoji{font-size:60px;line-height:80px;height:80px}
+ .town-icon-row>a.town-go{background:none}
+@media (max-width:900px){.town-icon-row{gap:4px;top:8px;right:8px}.town-icon-row>button,.town-icon-row>a{width:62px;min-height:70px;font-size:10px}.town-icon-row img{width:50px!important;height:50px!important}.town-icon-row .ico-emoji{font-size:38px;line-height:50px;height:50px}}
