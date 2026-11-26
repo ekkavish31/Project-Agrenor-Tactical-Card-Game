@@ -1,0 +1,91 @@
+/* Shared seal-book materials. The parchment content area has no corner ornaments. */
+:root{--seal-frame:url('../assets/ui/sealbook/panel.webp');--seal-ink:#3f2917;--seal-muted:#725432;--seal-brass:#ab7933;--seal-green:#294b3d;--seal-ruby:#88382a}
+html body #panel:not(:has(.card-book)):not(.unified-editor),html body .ew-bg .ew-box,html body #gameDialog .gd-box,html body #townMap .tm-box{
+ box-sizing:border-box;background:transparent;border:32px solid transparent;border-image:var(--seal-frame) 15% fill / 32px / 0 stretch;border-radius:0;color:var(--seal-ink);box-shadow:none;filter:drop-shadow(0 14px 28px #1c110c80);text-shadow:none;padding:14px 22px 22px;scrollbar-width:thin;scrollbar-color:#9b723a #ebd5a9
+}
+html body #panel:not(:has(.card-book)):not(.unified-editor){width:min(1040px,94vw);max-width:96vw;max-height:88dvh;overflow:auto}
+html body #panel:not(:has(.card-book)) .panelhead{position:sticky;top:-14px;z-index:6;display:flex;align-items:center;gap:16px;margin:0 0 22px;padding:0 0 14px;background:#f5e1bceF;border-bottom:1px solid #a97d4380;color:var(--seal-ink)}
+html body #panel:not(:has(.card-book)) .panelhead h2{flex:1;display:flex;align-items:center;gap:12px;margin:0;padding:0;color:var(--seal-ink);font-size:clamp(19px,1.7vw,27px);font-weight:700;letter-spacing:0;line-height:1.4}
+html body #panel:not(:has(.card-book)) .panelhead h2::before{content:'';position:static;display:block;flex:0 0 44px;width:44px;height:44px;background:url('../assets/icons/menu/v2-journal.webp') center/contain no-repeat}
+html body #panel:has(.character-sheet) .panelhead h2::before{background-image:url('../assets/icons/menu/v2-character.webp')}
+html body #panel:has(.tdk-top) .panelhead h2::before{background-image:url('../assets/icons/menu/v2-deck.webp')}
+html body #panel:has(.shop-wrap) .panelhead h2::before{background-image:url('../assets/icons/menu/v2-market.webp')}
+html body #panel:not(:has(.card-book)) #panelContent{line-height:1.65;color:var(--seal-ink);min-width:0}
+html body #panel:not(:has(.card-book)) #panelContent :is(h3,.progress-label b,.stat-points b,.row b){color:#53331b;text-shadow:none}
+html body #panel:not(:has(.card-book)) #panelContent :is(.muted,.small,.tdk-collection,.upgrade-level){color:var(--seal-muted)}
+html body #panel:not(:has(.card-book)) #panelContent>p:first-child{background:#ffedc958;color:var(--seal-ink);border-left:3px solid #aa7937;padding:14px 18px}
+html body #panel:not(:has(.card-book)) .row{background:#fff0cc66;border:1px solid #b48b4f77;border-radius:8px;padding:12px 15px;margin-bottom:9px;box-shadow:inset 0 1px #fff8;align-items:center}
+html body #panel:not(:has(.card-book)) :is(select,input){background:#fff2d3;color:#49301c;border:1px solid #a57c42;border-radius:6px;min-height:42px;padding:7px 10px;font:inherit;max-width:100%}
+/* Painted icons keep their original buttons and click/disabled behaviour. */
+html body .seal-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;min-height:42px;padding:6px 13px;border:1px solid #a17837;border-radius:7px;color:#422a13;background:linear-gradient(#ffe8ac,#d4a456);box-shadow:inset 0 1px #fff7,0 2px 0 #76532c,0 3px 6px #4b2c1733;font:600 14px VillageThai,AgThai,system-ui,sans-serif;text-shadow:none;cursor:pointer}
+html body .seal-action .seal-button-icon{display:block;flex:none;width:32px;height:32px;object-fit:contain;pointer-events:none}
+html body .seal-action:hover:not(:disabled){filter:brightness(1.08)}html body .seal-action:active:not(:disabled){transform:translateY(1px)}html body .seal-action:disabled{opacity:.42;filter:grayscale(.8);cursor:default}
+html body .seal-action:focus-visible{outline:3px solid #276854;outline-offset:3px}
+html body .seal-action[data-seal-icon=close],html body .seal-action[data-seal-icon=step]{width:44px;height:44px;min-width:44px;min-height:44px;padding:2px;border:0;border-radius:5px;background:transparent;box-shadow:none}
+html body .seal-action[data-seal-icon=close] .seal-button-icon{width:38px;height:38px}html body .seal-action[data-seal-icon=step] .seal-button-icon{width:40px;height:40px}
+.seal-sr{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+/* Journal: four distinct illustrated sections, dark ink on quiet parchment. */
+html body #panel .vj{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+html body #panel .vj section{padding:16px 18px;border:1px solid #b28a5059;background:#ffefc85c;border-radius:7px;min-width:0}
+html body #panel .vj h3{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding-bottom:9px;border-bottom:1px solid #ae824652;font-size:18px;color:#4c301b}
+html body #panel .vj h3::before{content:'';width:36px;height:36px;flex:none;background:url('../assets/icons/menu/v2-quests.webp') center/contain no-repeat}
+html body #panel .vj section:nth-child(2) h3::before{background-image:url('../assets/icons/menu/v2-journal.webp')}
+html body #panel .vj section:nth-child(3) h3::before{background-image:url('../assets/icons/menu/v2-jobs.webp')}
+html body #panel .vj section:nth-child(4) h3::before{background-image:url('../assets/icons/menu/v2-reputation.webp')}
+html body #panel .vj-list li{border-bottom:1px solid #96713b33;padding:8px 0}html body #panel .vj-ok{color:#275e3f}
+/* Character sheet and deck-builder retain real card art and existing controls. */
+html body #panel .character-sheet{grid-template-columns:200px minmax(0,1fr);gap:25px}
+html body #panel .character-sheet>div:first-child{padding:12px;border:1px solid #ad804466;background:#ecd1a24d;border-radius:10px;align-self:start}
+html body #panel .character-sheet .entity-paper{max-width:100%;margin:auto}
+html body #panel .progress-label{color:#50351f;display:flex;justify-content:space-between;align-items:center;margin:8px 0;font-size:17px}
+html body #panel .progress-label small{color:#745632;font-size:12px}
+html body #panel .xp-track{height:10px;background:#c9af7c;border:1px solid #99743e;border-radius:8px;overflow:hidden;box-shadow:inset 0 2px 3px #57341930;margin-bottom:18px}
+html body #panel .xp-track i{display:block;height:100%;background:linear-gradient(#73a18a,#315944)}
+html body #panel .stat-points{display:flex;align-items:center;gap:12px;background:#e4c58d75;border:1px solid #ae834a;border-radius:7px;color:#4b2e17;margin-bottom:13px}
+html body #panel .stat-points b{font-size:26px;color:#315944}
+html body #panel .tdk-top{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:14px;background:#e9cfa064;border:1px solid #b78e52;border-radius:8px}
+html body #panel .tdk-top label{display:grid;gap:5px;font-size:13px;color:#624122}
+html body #panel .tdk-lock{background:linear-gradient(145deg,#c6ae84,#9c8868);border:1px solid #8f744b;box-shadow:inset 0 0 0 3px #dbc7a1;color:#fce7b4}
+/* Town map: same frame, maximum room for navigation; pins keep their hit areas. */
+html body #townMap{background:#20170fc4;backdrop-filter:blur(5px)}
+html body #townMap .tm-box{width:min(1700px,96vw);max-height:96dvh;padding:8px 12px 12px;border-width:25px;border-image-width:25px;overflow:auto}
+html body #townMap .tm-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #ae83495e}
+html body #townMap .tm-head b{display:flex;align-items:center;gap:9px;font-size:20px;white-space:nowrap}
+html body #townMap .tm-head b::before{content:'';width:38px;height:38px;background:url('../assets/icons/menu/v2-town-map.webp') center/contain no-repeat;flex:none}
+html body #townMap .tm-head small{font-size:12px;color:#725432;flex:1}
+html body #townMap .tm-pic{border:2px solid #9f7840;border-radius:5px;box-shadow:0 0 0 3px #51331c33}
+html body #townMap .tm-pin{background:#263f32f2;border-color:#d3b272;box-shadow:0 2px 4px #20160c88;color:#fff0c7;border-radius:5px}
+html body #townMap .tm-pin.me{background:#38705a;border-color:#fff0c0}
+/* Element table is a parchment codex with colored element badges. */
+html body .ew-bg{background:#20170fb8;backdrop-filter:blur(5px)}
+html body .ew-bg .ew-box{position:relative;width:min(940px,96vw);max-width:96vw;max-height:92dvh;font-size:14px}
+html body .ew-bg .ew-box h2{display:flex;align-items:center;gap:10px;color:#49301c;font-size:24px;margin:0 50px 10px 0}
+html body .ew-bg .ew-box h2::before{content:'';width:44px;height:44px;background:url('../assets/icons/menu/v2-elements.webp') center/contain no-repeat;flex:none}
+html body .ew-bg .ew-sub{color:#725432;font-size:13px;line-height:1.65;margin-bottom:16px}
+html body .ew-bg .ew-t th{color:#5e3a20;background:#d6b47d55;font-weight:700;padding:12px 8px;position:sticky;top:0}
+html body .ew-bg .ew-t td{padding:12px 8px;border-top:1px solid #ab81454d;color:#50351f}
+html body .ew-bg .ew-t tr:nth-child(even){background:#fff2d14d}
+html body .ew-bg .ew-el{background:color-mix(in srgb,var(--c) 17%,#fff0d1);color:#352419;border-radius:6px;box-shadow:inset 0 1px #fff8;font-size:13px}
+html body .ew-bg .ew-el small{color:#513c24;opacity:1}html body .ew-bg .ew-t i{color:#725432;font-size:12px;margin-top:4px}
+html body .ew-bg .ew-close{position:sticky;top:0;float:right;margin:0 0 5px 10px;z-index:3}
+/* HUD and scene information use slim leather / brass, not large window borders. */
+html body #townGameHud{background:#f1d9a7;border:3px solid #8e6133;border-radius:6px;color:#472b15;box-shadow:0 0 0 1px #d6b064,inset 0 0 0 1px #fce8b7,0 4px 10px #1b100b66}
+html body #storyTracker{--ivory-art:var(--seal-frame)}
+html body #storyTracker :is(.stk-head,.stk-goal,.stk-hint){color:#50351f!important}
+html body #gameDialog .gd-box{width:min(540px,94vw);max-height:90dvh;overflow:auto;font-size:15px}
+html body #gameDialog .gd-box header{color:#4c301b;background:none;border-bottom:1px solid #a77c4260;font-size:21px;padding-bottom:12px;margin-bottom:16px}
+html body #gameDialog .gd-box footer{display:flex;flex-wrap:wrap;gap:10px;background:none;border:0}
+@media(max-width:760px){
+ html body #panel:not(:has(.card-book)):not(.unified-editor),html body .ew-bg .ew-box,html body #gameDialog .gd-box{border-width:22px;border-image-width:22px;padding:10px 10px 14px;max-height:90dvh}
+ html body #panel .vj{grid-template-columns:1fr;gap:10px}html body #panel .vj section{padding:12px}
+ html body #panel .character-sheet{grid-template-columns:minmax(0,1fr)}
+ html body #panel .character-sheet>div:first-child{display:none}
+ html body #townMap .tm-box{border-width:18px;border-image-width:18px;padding:6px}
+ html body #townMap .tm-head{gap:6px;flex-wrap:wrap}html body #townMap .tm-head b{font-size:16px;flex:1}html body #townMap .tm-head small{order:3;flex-basis:100%;font-size:10px}
+ html body .ew-bg .ew-t td,html body .ew-bg .ew-t th{padding:7px 4px}html body .ew-bg .ew-el{white-space:normal;padding:3px 5px;font-size:11px}html body .ew-bg .ew-t i{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){html body .seal-action{transition:none;transform:none}}
+
+html body .ew-bg .ew-glyph{width:25px;height:25px;object-fit:contain;vertical-align:middle;margin-right:3px}
+html body .ew-bg .ew-t{table-layout:fixed}html body .ew-bg .ew-t th:first-child{width:24%}
+html body #panel .tdk-grid .seal-action[data-seal-icon=step]{width:36px;height:36px;min-width:36px;min-height:36px}html body #panel .tdk-grid .seal-button-icon{width:32px;height:32px}
