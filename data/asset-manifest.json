@@ -166543,6 +166543,34 @@
    "usedIn": "js/game-cursor.js",
    "artRevision": "v98.1084",
    "prompt": "Eight progressive opening poses of a single arched wooden door, fixed camera/frame, ivory stone with restrained antique gold trim, warm interior glow, painterly fantasy JRPG UI, transparent background, no text/grid/scenery."
+  },
+  {
+   "id": "market-stall-red-ne",
+   "file": "assets/village-town/decor/market-stall-red-ne.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    484,
+    531
+   ],
+   "usedIn": "FieldHost · stallR/stallB rotated battle scenery",
+   "artRevision": "v98.1090",
+   "prompt": "Rear NE view of existing striped market stall; same elevated 2:1 isometric base angle, timber, canopy and wares. Transparent sprite. NE normalized by horizontal mirror and fitted to original alpha footprint; opposite views runtime mirrored."
+  },
+  {
+   "id": "market-stall-blue-ne",
+   "file": "assets/village-town/decor/market-stall-blue-ne.webp",
+   "category": "village-map",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    526,
+    550
+   ],
+   "usedIn": "FieldHost · stallR/stallB rotated battle scenery",
+   "artRevision": "v98.1090",
+   "prompt": "Rear NE view of existing striped market stall; same elevated 2:1 isometric base angle, timber, canopy and wares. Transparent sprite. NE normalized by horizontal mirror and fitted to original alpha footprint; opposite views runtime mirrored."
   }
  ],
  "studioReviews": {

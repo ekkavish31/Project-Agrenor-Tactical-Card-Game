@@ -282,18 +282,28 @@ function propImg(f) {
     im.ok = true }; im.src = PA + f + '.webp'; return null;
 }
 function propSpec(kind, s) { const set = PROP_ART[kind]; if (!set) return null; const list = set[FIELD.biome] || set._, sp = list[Math.floor(s * 997) % list.length] || null; if (!sp) return null; const r = window.AssetSize?.get(PA + sp[0] + '.webp'); return r ? [sp[0], Math.round(r * AssetSize.heroPx('battle')), sp[2]] : sp }   /* v98.576 · a picture's own size next to the hero (js/asset-size.js) wins over the table */
+/* v98.1090 · stable world-facing stalls: SW/NE art; SE/NW are horizontal mirrors.
+   rotUV maps SW → NW → NE → SE. Preserve each seed's original facing at ROT=0. */
+function marketStallView(kind, seed, rotation = ROT) {
+  if (kind !== 'stallR' && kind !== 'stallB') return null;
+  const mirrored = seed * 1000 % 2 < 1, direction = (((rotation % 4) + 4) % 4 + (mirrored ? 3 : 0)) % 4;
+  const rear = direction === 1 || direction === 2;
+  return { file: 'village-town/decor/market-stall-' + (kind === 'stallR' ? 'red' : 'blue') + (rear ? '-ne' : ''), flip: direction === 1 || direction === 3, rear };
+}
+// Warm both views together; late rear downloads keep the existing front as a fallback.
+for (const color of ['red', 'blue']) for (const side of ['', '-ne']) propImg('village-town/decor/market-stall-' + color + side);
 /* drawn size of a prop (for depth and occlusion boxes) */
 function propBox(kind, s, big) { const b = propBox0(kind, s, big); return { w: b.w * FK, h: b.h * FK } }
 const CODE_BOX = { pumpkinPlant: { w: 58, h: 46 }, hay: { w: 58, h: 44 }, fence: { w: 60, h: 46 }, scarecrow: { w: 46, h: 96 } };   /* v98.332 · code-drawn garden props */
 function propBox0(kind, s, big) { const sp = propSpec(kind, s), im = sp && propImg(sp[0]); if (CODE_BOX[kind]) return CODE_BOX[kind]; if (!im) return big ? { w: 104, h: 190 } : { w: 52, h: 95 }; const ar = im.naturalWidth / im.naturalHeight; return sp[2] === 'h' ? { w: sp[1] * ar, h: sp[1] } : { w: sp[1], h: sp[1] / ar } }
 /* props are drawn every frame so they can sway; painter's order by view depth together with the units */
 function prop(ctx, kind, u, v, s, now, big) {
-  const sp = propSpec(kind, s), im = sp && propImg(sp[0]), c = big ? .5 : 0, p = project(u + .5 + c, v + .5 + c), sw = Math.sin(now * .0012 + s * 9) * 1.5;
+  const sp = propSpec(kind, s), facing = marketStallView(kind, s), front = sp && propImg(sp[0]), im = facing ? (propImg(facing.file) || front) : front, c = big ? .5 : 0, p = project(u + .5 + c, v + .5 + c), sw = Math.sin(now * .0012 + s * 9) * 1.5;
   if (im) {
-    const b = propBox(kind, s, big), tall = b.h > 90, flip = s * 1000 % 2 < 1, rx = big ? Math.min(78, b.w * .3) : Math.min(30, b.w * .42);
+    const b = propBox(kind, s, big), tall = !facing && b.h > 90, flip = facing ? facing.flip : s * 1000 % 2 < 1, rx = big ? Math.min(78, b.w * .3) : Math.min(30, b.w * .42);
     /* v98.325 · no ground shadow under props: it made trees, logs and barricades look like they float */
     ctx.save(); ctx.translate(p.x, p.y + 3); if (tall) ctx.transform(1, 0, sw * (big ? .003 : .006), 1, 0, 0); if (flip) ctx.scale(-1, 1);
-    ctx.drawImage(im, -b.w / 2, -b.h * im.base, b.w, b.h); ctx.restore(); return;
+    ctx.drawImage(im, -b.w / 2, -b.h * (front?.base || im.base), b.w, b.h); ctx.restore(); return;
   }
   if (big) { ctx.save(); ctx.translate(p.x, p.y); ctx.scale(2, 2); ctx.translate(-p.x, -p.y); propCode(ctx, kind, u, v, s, now, p, sw); ctx.restore(); return }
   propCode(ctx, kind, u, v, s, now, p, sw);
