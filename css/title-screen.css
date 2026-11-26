@@ -272,3 +272,8 @@ html.title-boot,html.title-boot body{background:#070b10!important}
 #gameLoading.gl-gate .gl-tip .gl-note-text{flex:0 1 auto}
 @media(max-width:420px){#gameLoading .gl-tip,#gameLoading .gl-lore{gap:9px}#gameLoading .gl-note-icon{flex-basis:34px;width:34px;height:34px}}
 @media(prefers-reduced-motion:reduce){#gameLoading.gl-gate .gl-tip{animation:none}}
+
+/* v98.1088 · loading screen notes: tip and story line share one size (15px), each in its own light colour (blue-white tip · cream story line); when loading is done (gl-gate) both go away and only "press any key" stays */
+#gameLoading .gl-tip{font-size:15px;line-height:1.6;color:#c4e4ff}
+#gameLoading .gl-lore{font-size:15px;line-height:1.6;color:#fbeab8}
+#gameLoading.gl-gate .gl-lore{display:none}
