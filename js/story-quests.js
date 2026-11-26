@@ -474,20 +474,27 @@ function walkTips(){const v=V();if(!v||(v.story||{}).walkTipSeen)return;v.story.
  d.querySelector('button').onclick=()=>{d.remove();walkTipEl=null};document.body.append(d);setTimeout(()=>{if(walkTipEl===d){d.remove();walkTipEl=null}},45000)}
 async function walkTour(){if(tourBusy||!root.GuidedTour)return false;tourBusy=true;const v=V();
  try{v.story=v.story||{};try{const st=story();if(st&&st.mode==='active'){st.closed=false;draw(true)}}catch(e){}   /* the quest window must be up: step 3 points at its auto-walk button */
-  const fine=!!(root.matchMedia&&matchMedia('(pointer:fine)').matches);let key=false;const onKey=e=>{if(/^(w|a|s|d|arrowup|arrowdown|arrowleft|arrowright)$/i.test(e.key))key=true};const keyWins=[root];try{const f=walkFrame();if(f&&f!==root)keyWins.push(f)}catch(e){}for(const w of keyWins)try{w.addEventListener('keydown',onKey,true)}catch(e){}   /* the village map is an iframe: the keys go to ITS window */
-  /* steps 1-2 force WALKING ONLY: no menu, no places, no NPC, no quest auto-walk — the sibling refuses (the "lost?" step lifts it) */
-  const NO='ยังก่อนนะ! ตอนนี้ลองเดินให้คล่องก่อน — ปุ่มอื่นเอาไว้ทีหลัง';let lockOn=false,lastWarn=0;const warnSib=()=>{if(Date.now()-lastWarn<2500)return;lastWarn=Date.now();try{root.GuidedTour?.interject?.(NO)}catch(e){}};
+  const fine=!!(root.matchMedia&&matchMedia('(pointer:fine)').matches);
+  /* keys held (W A S D / arrows) — counted for step 2; the village map is an iframe so the listeners go on ITS window too */
+  const heldKeys=new Set(),isMoveKey=k=>/^(w|a|s|d|arrowup|arrowdown|arrowleft|arrowright)$/i.test(k);
+  const onKey=e=>{if(isMoveKey(e.key))heldKeys.add(e.key.toLowerCase())},onKeyUp=e=>{heldKeys.delete(e.key.toLowerCase())},onBlur=()=>heldKeys.clear();
+  const keyWins=[root];try{const f=walkFrame();if(f&&f!==root)keyWins.push(f)}catch(e){}
+  for(const w of keyWins)try{w.addEventListener('keydown',onKey,true);w.addEventListener('keyup',onKeyUp,true);w.addEventListener('blur',onBlur)}catch(e){}
+  /* steps 1-2 force ONE thing each: step 1 = click the ground with the foot cursor (keys refused) · step 2 = hold W A S D (mouse refused) · the sibling refuses everything else (the "lost?" step lifts it) */
+  let lockOn=false,lockMode={click:true,keys:false},lastWarn=0,warnText='';const warnSib=()=>{if(Date.now()-lastWarn<2500)return;lastWarn=Date.now();try{root.GuidedTour?.interject?.(warnText)}catch(e){}};
   const denyTop=e=>{if(!lockOn)return;const t=e.target;if(t&&(t.tagName==='IFRAME'||t.closest?.('#gtour')))return;e.preventDefault();e.stopImmediatePropagation();if(e.type==='pointerdown')warnSib()};
-  const denyKeyTop=e=>{if(!lockOn||e.target?.closest?.('input,textarea')||/^(w|a|s|d|arrowup|arrowdown|arrowleft|arrowright|shift|escape)$/i.test(e.key))return;e.preventDefault();e.stopImmediatePropagation();warnSib()};
-  const lock=on=>{lockOn=on;for(const n of ['pointerdown','pointerup','click']){removeEventListener(n,denyTop,true);if(on)addEventListener(n,denyTop,true)}removeEventListener('keydown',denyKeyTop,true);if(on)addEventListener('keydown',denyKeyTop,true);for(const w of keyWins)try{w.ShiftWalk?.lock(on,warnSib)}catch(e){}};
-  lock(true);
-  const mover=(need)=>{let p0=null,t0=0;return ()=>{const p=heroXY();if(!p){t0||=Date.now();return Date.now()-t0>4000}if(!p0){p0={u:p.u,v:p.v};return false}return Math.hypot(p.u-p0.u,p.v-p0.v)>=need}};
+  const denyKeyTop=e=>{if(!lockOn||e.target?.closest?.('input,textarea')||e.key==='Escape'||(lockMode.keys&&(isMoveKey(e.key)||e.key==='Shift')))return;e.preventDefault();e.stopImmediatePropagation();warnSib()};
+  let clicked=false;
+  const lock=(on,mode,text)=>{lockOn=on;if(mode)lockMode=mode;if(text)warnText=text;for(const n of ['pointerdown','pointerup','click']){removeEventListener(n,denyTop,true);if(on)addEventListener(n,denyTop,true)}removeEventListener('keydown',denyKeyTop,true);if(on)addEventListener('keydown',denyKeyTop,true);for(const w of keyWins)try{w.ShiftWalk?.lock(on,warnSib,{click:lockMode.click,keys:lockMode.keys,onWalk:()=>{clicked=true}})}catch(e){}};
+  const W1='ยังก่อนนะ! ตอนนี้ให้คลิกที่พื้นถนนก่อน — อย่างอื่นเอาไว้ทีหลัง',W2='ยังก่อนนะ! ตอนนี้ให้กด W A S D ค้างไว้สักพัก — อย่างอื่นเอาไว้ทีหลัง';
+  lock(true,{click:true,keys:false},W1);
+  let held0=0,lastT=0;const heldWait=need=>()=>{const n=performance.now();if(!lastT)lastT=n;if(heldKeys.size)held0+=n-lastT;lastT=n;return held0>=need};
   const steps=[
-   {who:'sib',free:true,text:'ต่อไปลองเดินดูกัน — คลิกที่พื้นถนนตรงไหนก็ได้ ตัวละครจะเดินไปตรงนั้นให้',wait:mover(1.6)},
-   ...(fine?[{who:'sib',free:true,text:'เดินด้วยคีย์บอร์ดก็ได้นะ ลองกด W A S D หรือปุ่มลูกศรดูสิ',wait:(()=>{const m=mover(1.4);return ()=>m()&&key})()}]:[]),
-   {who:'sib',text:'ผู้ใหญ่โอเรนอยู่ที่ตลาดนะ ถ้าหลงทาง ให้กดปุ่มธง เดินอัตโนมัติ ตรงที่ลูกศรชี้ ตัวละครจะเดินไปเอง ลองกดดูสิ',target:'#storyTracker [data-act="0"]',showTracker:true,prep:()=>lock(false)}];   /* the player must press the flag (the arrow points at it, like the book lesson) */
+   {who:'sib',free:true,text:'ต่อไปลองเดินดูกัน — คลิกที่พื้นถนนตรงไหนก็ได้ (เคอร์เซอร์จะเป็นรอยเท้า) ตัวละครจะเดินไปตรงนั้นให้',wait:()=>clicked},
+   ...(fine?[{who:'sib',free:true,text:'เดินด้วยคีย์บอร์ดก็ได้นะ ลองกด W A S D หรือปุ่มลูกศร ค้างไว้สักพักดูสิ',prep:()=>{lock(true,{click:false,keys:true},W2);held0=0;lastT=0},wait:heldWait(3000)}]:[]),
+   {who:'sib',text:'ผู้ใหญ่โอเรนอยู่ที่ตลาดนะ ถ้าหลงทาง ให้กดปุ่ม "เดินอัตโนมัติ" (รูปธง) ที่ลูกศรชี้ ตัวละครจะเดินไปหาผู้ใหญ่ให้เอง — ลองกดเลย',target:'#storyTracker [data-act="0"]',arrow:'up',showTracker:true,prep:()=>lock(false)}];   /* the player must press the flag (the arrow sits ABOVE it, like the book lesson); nothing else can be clicked */
   const ok=await root.GuidedTour.run(steps,{bright:true});
-  lock(false);for(const w of keyWins)try{w.removeEventListener('keydown',onKey,true)}catch(e){}v.story.walkTour=true;doSave();if(ok)setTimeout(walkTips,600);return ok}
+  lock(false);for(const w of keyWins)try{w.removeEventListener('keydown',onKey,true);w.removeEventListener('keyup',onKeyUp,true);w.removeEventListener('blur',onBlur)}catch(e){}v.story.walkTour=true;doSave();if(ok)setTimeout(walkTips,600);return ok}
  finally{tourBusy=false}}
 async function bookTour(){if(tourBusy||!root.GuidedTour)return false;const v=V();if(!v)return false;tourBusy=true;try{v.story=v.story||{};if(!v.story.bookGift){v.story.bookGift=true;const b=v.bag||(v.bag={});b.potion=(b.potion||0)+1;b.momWater=(b.momWater||0)+1;b.mayBread=(b.mayBread||0)+4;doSave();await root.ItemGet?.show([{key:'potion',n:1},{key:'momWater',n:1},{key:'mayBread',n:4}],{kicker:'ของจากแม่',text:'แม่ห่อของใส่สมุดผนึกของทั้งสองคนไว้ให้ก่อนออกจากบ้าน'})}   /* v98.668 · the ของใช้ page is not empty: 1 potion (+HP) and 1 water from mother (+stamina) · v98.1022 · + the 4 loaves of Aunt May's bread that mother counted ("แม่นับขนมปังไว้แล้ว สี่ก้อน") */
   const ok=await root.GuidedTour.run(BOOK_TOUR,{bright:true});try{if($('panel')?.open)$('panel').close()}catch(e){}v.story=v.story||{};v.story.bookSeen=true;doSave();return ok}finally{tourBusy=false}}
