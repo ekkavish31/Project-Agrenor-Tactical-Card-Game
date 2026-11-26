@@ -208,12 +208,12 @@ function buildTitle(){const el=document.createElement('div');el.id='titleScreen'
    <i class="ts-c ts-c1"></i><i class="ts-c ts-c2"></i><i class="ts-c ts-c3"></i><i class="ts-c ts-c4"></i>
    <span class="ts-kicker">ตัวเอกของเรื่อง · สองพี่น้อง</span><h2>เจ้าสองพี่น้องชื่ออะไร?</h2>
    <div class="ts-orn"><i></i><b>✦</b><i></i></div>
-   <p class="ts-sub">แตะการ์ดเพื่อเลือกคนที่จะเล่น · อีกคนจะเดินตามในทีมเสมอ</p>
+   <p class="ts-sub">แตะการ์ดเพื่อเลือกตัวเอกนำ · อีกคนเป็นผู้ติดตามในทีมเสมอ</p>
    <div class="ts-cols">
-    <div class="ts-col" data-g="female"><button type="button" class="ts-g" data-g="female" role="radio" aria-checked="false" title="เล่นเป็นน้องสาว"><span class="ts-gframe"><img src="assets/portraits/hero-female-neutral.webp" alt="" draggable="false"></span><em class="ts-tag"></em><b>น้องสาว</b><small>แตะเพื่อเลือก</small></button>
-     <label class="ts-nm" data-g="female"><span>ชื่อน้องสาว</span><span class="ts-inw"><input name="heroF" maxlength="16" autocomplete="off" spellcheck="false" placeholder="ตั้งชื่อน้องสาว"><button type="button" class="ts-edit" title="แก้ชื่อได้" aria-label="แก้ชื่อ">✎</button></span></label></div>
-    <div class="ts-col" data-g="male"><button type="button" class="ts-g" data-g="male" role="radio" aria-checked="false" title="เล่นเป็นพี่ชาย"><span class="ts-gframe"><img src="assets/portraits/hero-male-neutral.webp" alt="" draggable="false"></span><em class="ts-tag"></em><b>พี่ชาย</b><small>แตะเพื่อเลือก</small></button>
-     <label class="ts-nm" data-g="male"><span>ชื่อพี่ชาย</span><span class="ts-inw"><input name="heroM" maxlength="16" autocomplete="off" spellcheck="false" placeholder="ตั้งชื่อพี่ชาย"><button type="button" class="ts-edit" title="แก้ชื่อได้" aria-label="แก้ชื่อ">✎</button></span></label></div>
+    <div class="ts-col" data-g="female"><button type="button" class="ts-g" data-g="female" role="radio" aria-checked="false"><span class="ts-gframe"><img src="assets/portraits/hero-female-neutral.webp" alt="" draggable="false"></span><em class="ts-tag"></em><b>น้องสาว</b><small>แตะเพื่อเลือก</small></button>
+     <label class="ts-nm" data-g="female"><span>ชื่อน้องสาว</span><span class="ts-inw"><input name="heroF" maxlength="16" autocomplete="off" spellcheck="false" placeholder="ตั้งชื่อน้องสาว"><button type="button" class="ts-edit" aria-label="แก้ชื่อ">✎</button></span></label></div>
+    <div class="ts-col" data-g="male"><button type="button" class="ts-g" data-g="male" role="radio" aria-checked="false"><span class="ts-gframe"><img src="assets/portraits/hero-male-neutral.webp" alt="" draggable="false"></span><em class="ts-tag"></em><b>พี่ชาย</b><small>แตะเพื่อเลือก</small></button>
+     <label class="ts-nm" data-g="male"><span>ชื่อพี่ชาย</span><span class="ts-inw"><input name="heroM" maxlength="16" autocomplete="off" spellcheck="false" placeholder="ตั้งชื่อพี่ชาย"><button type="button" class="ts-edit" aria-label="แก้ชื่อ">✎</button></span></label></div>
    </div>
    <p class="ts-need" role="status" aria-live="polite"></p>
    <button type="submit" class="ts-go" disabled>เริ่มการผจญภัย</button></form></section>`;
@@ -307,8 +307,8 @@ function storyEnd(){if(prologueDone)return;prologueDone=true;TS?.stop();TS=null;
  /* v98.230 · both heroes are named here: the picked one is the lead, the other is the younger sibling who follows */
  let look=null;const go=f.querySelector('.ts-go'),need=f.querySelector('.ts-need');
  const gbtn=[...f.querySelectorAll('.ts-g')];
- const refresh=()=>{const nm=g=>inputs[g].value.trim();const miss=[];if(!look)miss.push('เลือกคนที่จะเล่น');if(!nm('female'))miss.push('ตั้งชื่อน้องสาว');if(!nm('male'))miss.push('ตั้งชื่อพี่ชาย');go.disabled=miss.length>0;f.classList.toggle('ts-ready',!miss.length);need.textContent=miss.length?'ยังต้อง: '+miss.join(' · '):'พร้อมแล้ว · กดเริ่มการผจญภัยได้เลย'};
- const pick=g=>{look=g;f.classList.add('ts-picked');gbtn.forEach(b=>{const on=b.dataset.g===g;b.classList.toggle('on',on);b.classList.toggle('off',!on);b.setAttribute('aria-checked',on?'true':'false');b.querySelector('.ts-tag').textContent=on?'✦ คนที่เล่น':'เดินตามเรา';b.querySelector('small').textContent=on?'ตัวเอกของเรา':(b.dataset.g==='male'?'พี่ชายที่เดินตาม':'น้องสาวที่เดินตาม')});refresh()};
+ const refresh=()=>{const nm=g=>inputs[g].value.trim();const miss=[];if(!look)miss.push('เลือกตัวเอกนำ');if(!nm('female'))miss.push('ตั้งชื่อน้องสาว');if(!nm('male'))miss.push('ตั้งชื่อพี่ชาย');go.disabled=miss.length>0;f.classList.toggle('ts-ready',!miss.length);need.textContent=miss.length?'ยังต้อง: '+miss.join(' · '):'พร้อมแล้ว · กดเริ่มการผจญภัยได้เลย'};
+ const pick=g=>{look=g;f.classList.add('ts-picked');gbtn.forEach(b=>{const on=b.dataset.g===g;b.classList.toggle('on',on);b.classList.toggle('off',!on);b.setAttribute('aria-checked',on?'true':'false');b.querySelector('.ts-tag').textContent=on?'✦ ตัวเอกนำ':'ผู้ติดตาม';b.querySelector('small').textContent=on?'ผู้เล่นควบคุมคนนี้':'ติดตามตัวเอกนำเสมอ'});refresh()};
  refresh();setTimeout(()=>gbtn[0]?.focus({preventScroll:true}),30);
  gbtn.forEach(b=>b.addEventListener('click',()=>{pick(b.dataset.g);if(!inputs[b.dataset.g].value.trim())inputs[b.dataset.g].focus()}));
  f.querySelectorAll('.ts-edit').forEach(b=>b.addEventListener('click',()=>{const i=b.previousElementSibling;i.focus();i.select()}));   /* v98.335 · the pencil: this name can be changed */
