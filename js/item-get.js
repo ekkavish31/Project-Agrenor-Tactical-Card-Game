@@ -25,8 +25,7 @@
     s.textContent = `
 #itemGet{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 46%,#2a2012f2 0,#0b0a10f5 70%);opacity:0;transition:opacity .35s;font-family:AgThai,VillageThai,system-ui,sans-serif;color:#f6ead0;user-select:none;-webkit-user-select:none;cursor:pointer}
 #itemGet.on{opacity:1}#itemGet.off{opacity:0;transition:opacity .45s}
-#itemGet .ig-rays{position:absolute;left:50%;top:44%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(from 0deg,#ffd98a22 0 6deg,#0000 6deg 18deg);-webkit-mask:radial-gradient(circle,#000 0,#0000 46%);mask:radial-gradient(circle,#000 0,#0000 46%);animation:igSpin 38s linear infinite;pointer-events:none}
-@keyframes igSpin{to{transform:rotate(360deg)}}
+#itemGet .cfx-aura{top:44%}   /* v98.1100 · soft aura + falling paper confetti (js/confetti-fx.js) instead of the striped rays */
 #itemGet .ig-box{position:relative;display:flex;gap:min(4vw,44px);align-items:center;max-width:min(980px,94vw);max-height:92vh;padding:10px}
 #itemGet .ig-card{position:relative;flex:none;width:min(300px,38vw);perspective:900px;filter:drop-shadow(0 0 28px #ffcf6a88)}
 #itemGet .ig-card .ig-in{transform:translateY(120px) rotateY(180deg) scale(.7);opacity:0;transition:transform .9s cubic-bezier(.2,1.1,.3,1),opacity .5s}
@@ -55,7 +54,7 @@
 #itemGet.fly .ig-card{transition:transform .7s cubic-bezier(.5,0,.8,.4),opacity .7s;transform:translate(var(--fx,30vw),var(--fy,30vh)) scale(.12);opacity:0}
 #itemGet.fly .ig-info{opacity:0;transition:.25s}
 @media(max-width:760px){#itemGet .ig-box{flex-direction:column;overflow:auto;gap:14px}#itemGet .ig-card{width:min(210px,52vw)}#itemGet .ig-info{max-width:92vw;text-align:center}#itemGet .ig-bar{justify-content:center}}
-@media(prefers-reduced-motion:reduce){#itemGet .ig-rays,#itemGet .ig-spark{animation:none}#itemGet .ig-card .ig-in{transition:none}}`;
+@media(prefers-reduced-motion:reduce){#itemGet .ig-spark{animation:none}#itemGet .ig-card .ig-in{transition:none}}`;
     document.head.append(s);
   }
 
@@ -66,7 +65,7 @@
     return new Promise(resolve => {
       const el = document.createElement('div'); el.id = 'itemGet'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'ได้รับไอเทม');
       const sparks = Array.from({ length: 22 }, (_, i) => { const a = Math.random() * 6.283, r = 90 + Math.random() * 190; return `<i class="ig-spark" style="--x:${Math.round(Math.cos(a) * r)}px;--y:${Math.round(Math.sin(a) * r - 40)}px;--t:${(Math.random() * 1.6).toFixed(2)}s;--d:${(1.4 + Math.random() * 1.2).toFixed(2)}s"></i>` }).join('');
-      el.innerHTML = `<div class="ig-rays"></div>${sparks}<div class="ig-box"><div class="ig-card"><div class="ig-in"></div><div class="ig-shine"></div><b class="ig-cnt"></b></div><div class="ig-info"></div></div>`;
+      el.innerHTML = `<div class="cfx-aura"></div>${root.ConfettiFX ? root.ConfettiFX.html(46) : ''}${sparks}<div class="ig-box"><div class="ig-card"><div class="ig-in"></div><div class="ig-shine"></div><b class="ig-cnt"></b></div><div class="ig-info"></div></div>`;
       document.body.append(el);
       const box = el.querySelector('.ig-box'), cardEl = el.querySelector('.ig-in'), cnt = el.querySelector('.ig-cnt'), inf = el.querySelector('.ig-info');
       let i = 0, closing = false;

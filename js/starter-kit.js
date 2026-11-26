@@ -39,7 +39,7 @@ function unlock(list,opt={}){const v=V();if(!v)return Promise.resolve();const le
 function reveal(list,opt,legacy){return new Promise(done=>{const el=document.createElement('div');el.className='ck-reveal';
  const cards=list.map((x,i)=>{const id=(x.group==='movement'?'m-':'a-')+x.id,html=root.CardStudio?.renderCard(id,{mini:false})||'';const name=(x.group==='movement'?D.MOVE:D.COMBAT)[x.id]?.name||x.id;
   return `<figure class="ck-card" style="--i:${i}"><div class="ck-face">${html||`<div class="ck-plain">${esc(name)}</div>`}</div><figcaption>${esc(name)} <b>×${x.n}</b></figcaption></figure>`}).join('');
- el.innerHTML=`<div class="ck-rays"></div><div class="ck-box"><small>${esc(opt.kicker||'การ์ดใหม่')}</small><h2>${esc(opt.title||'ได้รับการ์ดใหม่')}</h2><div class="ck-row">${cards}</div><p>${esc(opt.text||(legacy?'':'เพิ่มเข้าคอลเลกชันและใส่ในสำรับต่อสู้แล้ว · ปรับได้ที่ "สำรับ"'))}</p><button type="button">รับการ์ด</button></div>`;
+ el.innerHTML=`<div class="cfx-aura"></div>${root.ConfettiFX?root.ConfettiFX.html(46):''}<div class="ck-box"><small>${esc(opt.kicker||'การ์ดใหม่')}</small><h2>${esc(opt.title||'ได้รับการ์ดใหม่')}</h2><div class="ck-row">${cards}</div><p>${esc(opt.text||(legacy?'':'เพิ่มเข้าคอลเลกชันและใส่ในสำรับต่อสู้แล้ว · ปรับได้ที่ "สำรับ"'))}</p><button type="button">รับการ์ด</button></div>`;
  document.body.appendChild(el);root.CardStudio?.fit?.(el);requestAnimationFrame(()=>el.classList.add('on'));
  const close=()=>{el.classList.remove('on');el.classList.add('off');setTimeout(()=>{el.remove();done()},380)};
  el.querySelector('button').onclick=close;el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='Escape')close()});setTimeout(()=>el.querySelector('button')?.focus(),400)})}

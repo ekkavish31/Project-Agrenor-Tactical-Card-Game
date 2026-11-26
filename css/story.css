@@ -134,8 +134,8 @@ body.cs-open #storyTracker,body.tactics-open #storyTracker{display:none}
 /* ---------------- v93.02 card unlock reveal ---------------- */
 .ck-reveal{position:fixed;inset:0;z-index:9550;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 45%,rgba(60,40,10,.75),rgba(0,0,0,.88));opacity:0;transition:opacity .35s;font-family:'VillageThai','Noto Sans Thai',system-ui,sans-serif;color:#fff3d6}
 .ck-reveal.on{opacity:1}.ck-reveal.off{opacity:0}
-.ck-rays{position:absolute;inset:-40%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,214,140,.10) 0 6deg,transparent 6deg 15deg);animation:ckSpin 40s linear infinite;pointer-events:none;-webkit-mask:radial-gradient(circle,#000 0,transparent 55%);mask:radial-gradient(circle,#000 0,transparent 55%)}
-@keyframes ckSpin{to{transform:rotate(360deg)}}
+/* v98.1100 · the card-pack celebration uses the shared soft aura + confetti (.cfx-aura / .cfx-wrap in js/confetti-fx.js) */.ck-reveal .cfx-aura{top:46%}
+.ck-reveal .cfx-wrap{z-index:0}.ck-reveal .ck-box{position:relative;z-index:1}
 .ck-box{position:relative;text-align:center;max-width:min(980px,calc(100vw - 32px));padding:0 16px}
 .ck-box small{color:#e8c98a;font-size:13px}.ck-box h2{margin:.2em 0 .7em;font-size:clamp(22px,3.4vw,36px);text-shadow:0 0 22px rgba(255,200,120,.6)}
 .ck-row{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
@@ -235,7 +235,7 @@ body.fb-open #storyTracker{display:none!important}
 #storyTracker .stk-head .stk-x{all:unset;box-sizing:border-box;flex:0 0 auto;width:22px;height:22px;cursor:pointer;background:url(../assets/ui/close-x.webp) center/contain no-repeat;opacity:.85;transition:opacity .12s,transform .12s}#storyTracker .stk-head .stk-x:hover{opacity:1;transform:scale(1.1)}
 
 /* v98.1096 · painted transport icons in the gold UI family. */
-.cs-ib{--cs-icon:clamp(28px,6.5vh,52px);display:inline-flex;align-items:center;gap:6px;height:var(--cs-icon);padding:0;border:0;border-radius:5px;background:transparent;color:#f6e6c2;font:600 clamp(11px,.85vw,16px)/1 VillageThai,AgThai,system-ui,sans-serif;cursor:pointer;touch-action:none;user-select:none;text-shadow:0 1px 3px #000;transition:transform .12s,color .15s}
+.cs-ib{--cs-icon:clamp(28px,6.5vh,52px);display:inline-flex;align-items:center;gap:6px;height:var(--cs-icon);padding:0 8px 0 0;border:0;border-radius:5px;background:transparent;box-shadow:none;outline:0;white-space:nowrap;   /* v98.1100 · the global button box-shadow drew a thin frame whose edge cut through the label; the painted icon is the button, the label sits beside it with room to spare */color:#f6e6c2;font:600 clamp(11px,.85vw,16px)/1 VillageThai,AgThai,system-ui,sans-serif;cursor:pointer;touch-action:none;user-select:none;text-shadow:0 1px 3px #000;transition:transform .12s,color .15s}
 .cs-ib img{width:var(--cs-icon);height:var(--cs-icon);object-fit:contain;flex:none;pointer-events:none;transition:filter .15s}
 .cs-ib:hover{color:#fff;transform:translateY(-1px)}.cs-ib:hover img{filter:brightness(1.15)}.cs-ib:active{transform:translateY(1px)}
 .cs-ib:focus-visible{outline:2px solid #ffe2a8;outline-offset:3px}
