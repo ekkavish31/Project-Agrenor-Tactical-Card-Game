@@ -90,7 +90,7 @@
 
   /* v98.1063 · the top HUD (status pill + icon row) is drawn in fixed pixels sized for a big screen: on a laptop at 100 % browser zoom it filled the picture.
      Scale it with the window width instead (full size from ~2700 px wide, down to 62 % at ~1700 px) · phones (≤ 900 px) keep their own rules */
-  { const st = document.createElement('style'); st.textContent = '@media (min-width:901px){#townGameHud,.town-icon-row{zoom:var(--hud-s,1)}}'; document.head.appendChild(st);
+  { const st = document.createElement('style'); st.textContent = '@media (min-width:901px){#townGameHud{zoom:calc(var(--hud-s,1)*2)}.town-icon-row{zoom:calc(var(--hud-s,1)*1.3)}}'   /* v98.1071 · status bar +100 %, icon buttons +30 % */; document.head.appendChild(st);
     const fit = () => document.documentElement.style.setProperty('--hud-s', String(Math.round(Math.max(.62, Math.min(1, innerWidth / 2700)) * 100) / 100)); fit(); addEventListener('resize', fit) }
   const css = document.createElement('style'); css.textContent = `
   .town-icon-row{gap:14px!important;top:12px!important;right:14px!important;align-items:flex-start}
@@ -102,7 +102,7 @@
   .hud-lbl{padding:2px 9px;border-radius:999px;background:#16251ee6;border:1px solid #d8b46a80;color:#fff3d2;font:700 12px VillageThai,system-ui,sans-serif;white-space:nowrap;box-shadow:0 2px 6px #0007}
   .town-icon-row>.hud-ico:hover{transform:translateY(-3px)}.town-icon-row>.hud-ico:hover .hud-medal,.town-icon-row>.hud-ico[aria-expanded=true] .hud-medal{box-shadow:0 0 0 3px #f3d48a,0 0 0 5px #3a2a14,0 0 18px #f3d48a99,0 6px 14px #000a,inset 0 2px 0 #ffffff26}
   .town-icon-row>.hud-ico:focus-visible{outline:2px dashed #fff3d2;outline-offset:4px;border-radius:12px}
-  .town-icon-row>.hud-small{width:56px}.hud-small .hud-medal{width:46px;height:46px;margin-top:9px}.hud-small .hud-medal svg{width:28px;height:28px}.hud-small .hud-medal.has-img{width:52px;height:52px;margin-top:6px}
+  .town-icon-row>.hud-small{width:84px}.hud-small .hud-medal{width:64px;height:64px;margin-top:0}.hud-small .hud-medal svg{width:38px;height:38px}.hud-small .hud-medal.has-img{width:70px;height:70px;margin-top:0}   /* v98.1071 · the menu button is the same size as the others */
   .hud-pop[hidden]{display:none!important}
   .hud-pop{position:fixed;z-index:30;display:flex;flex-direction:column;gap:4px;min-width:190px;padding:8px;border-radius:14px;background:#1b2b24f5;border:1px solid #d8b46a99;box-shadow:0 14px 34px #000a}
   .hud-pop button{display:flex;align-items:center;gap:10px;padding:8px 12px;border:0;border-radius:9px;background:none;color:#f6e7bf;font:600 14px VillageThai,system-ui,sans-serif;text-align:left;cursor:pointer}
