@@ -94,6 +94,7 @@
     const fit = () => document.documentElement.style.setProperty('--hud-s', String(Math.round(Math.max(.62, Math.min(1, innerWidth / 2700)) * 100) / 100)); fit(); addEventListener('resize', fit) }
   const css = document.createElement('style'); css.textContent = `
   .town-icon-row{gap:14px!important;top:12px!important;right:14px!important;align-items:flex-start}
+  header{top:8px!important;left:12px!important}   /* v98.1072 · the area name hugs the top-left corner */
   .town-icon-row>.hud-ico{width:84px;min-height:0;display:flex;flex-direction:column;align-items:center;gap:5px;padding:0;border:0;background:none;cursor:pointer;color:#f6e7bf;transition:transform .15s;text-shadow:none}
   .hud-medal{position:relative;display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#4a6b52,#24392e 62%,#16251e);box-shadow:0 0 0 3px #d8b46a,0 0 0 5px #3a2a14,0 6px 14px #000a,inset 0 2px 0 #ffffff26,inset 0 -6px 12px #0006}
   .hud-medal::after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid #f1dca059}

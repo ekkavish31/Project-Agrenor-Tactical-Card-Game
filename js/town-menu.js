@@ -14,12 +14,12 @@ const css=document.createElement('style');css.textContent=`
 #locationMenu .tm-map small{position:absolute;left:10px;bottom:8px;color:#f2e5be;font-size:11px;text-shadow:0 1px 3px #000;pointer-events:none}
 #locationMenu>h2,#locationMenu>#places,#locationMenu>.hint{grid-column:1}
 #locationMenu .tm-map{grid-column:2;grid-row:1 / span 3}
-#townPreview{left:calc(50% + 70px)!important;right:auto!important;top:50%!important;transform:translateY(-58%);width:560px!important;padding:20px!important}
+#townPreview{left:auto!important;right:18px!important;top:auto!important;bottom:18px!important;transform:none!important;width:560px!important;padding:20px!important;zoom:.7}   /* v98.1072 · the place card sits in the bottom-right corner and is 30 % smaller */
 #townPreview img{height:260px!important}
 #townPreview h3{font-size:22px!important}
 #townPreview p{font-size:15px!important}
 @media(max-width:1100px){#townPreview{width:min(420px,calc(50vw - 90px))!important}#townPreview img{height:180px!important}}
-@media(max-width:760px){#locationMenu.open{grid-template-columns:1fr}#locationMenu .tm-map{grid-column:1;grid-row:auto}#locationMenu .tm-map canvas{width:calc(100vw - 70px)}#townPreview{left:auto!important;right:12px!important;top:auto!important;bottom:70px;transform:none;width:min(320px,calc(100vw - 24px))!important}}`;
+@media(max-width:760px){#locationMenu.open{grid-template-columns:1fr}#locationMenu .tm-map{grid-column:1;grid-row:auto}#locationMenu .tm-map canvas{width:calc(100vw - 70px)}#townPreview{left:auto!important;right:12px!important;top:auto!important;bottom:12px!important;transform:none;width:min(320px,calc(100vw - 24px))!important;zoom:1}}`;
 document.head.appendChild(css);
 
 /* ---------- overview map ---------- */
