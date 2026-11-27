@@ -985,7 +985,9 @@ function resize() {
 /* v98.570 · the sub-map zoom is whatever draws the hero as big on screen as on the village map (CharSize.heroScreenPx) — needs the fit scale, so it is computed in fitView */
 const PLACE_ZOOM = 1.65;   /* fallback only */
 /* characters keep the same size relative to the floor grid as on the village map (that grid is 56 px wide per cell, this one 90) */
-let camHold = 0, offT = 0;
+/* v98.1166 · CAMERA = DERIVED, NOT STATE. pan = followPan (smoothly converges on the hero, always) + dragOff (the look-around offset). dragOff is non-zero ONLY while a drag is really held; every frame without a drag
+   it decays to 0, so no lost pointer event / blur / shop / reload can leave the camera away from the hero. DO NOT add 'hold' timers or flags that stop the follow (see docs/TODO.md · camera rule + tools/test-place-camera.cjs). */
+let followPan = { x: 0, y: 0 }, dragOff = { x: 0, y: 0 };
 function fitView() {
  const F = M.floor,
   spanX = (F.w * 2 + F.d * 2 + 2) * S,
@@ -997,6 +999,7 @@ function fitView() {
   x: 0,
   y: 60
  }
+ followPan = { ...pan }; dragOff = { x: 0, y: 0 }
  if (zoom !== 1 && typeof hero !== 'undefined' && typeof M !== 'undefined') focus()
 }
 
@@ -1005,7 +1008,8 @@ function focus() {
  pan = {
   x: -(p.x - 1100) * scale * zoom,
   y: H * .12 - (p.y - 700) * scale * zoom
- }
+ };
+ followPan = { ...pan }; dragOff = { x: 0, y: 0 }
 }
 let hits = [];
 
@@ -1119,16 +1123,17 @@ function draw(t) {
   }
  }
  window.joyPlaceWalk?.(dt);
- /* v98.1012 · THE CAMERA ALWAYS COMES BACK TO THE HERO. It follows unless you are really dragging the map (the pointer moved lately) or hold-after-drag (3.5 s) is running; a press that did not move no longer stops it,
-    a drag with no pointer movement for 1.2 s is dead (stale) and is dropped, and if the hero has been off the screen for 0.8 s the hold / drag are dropped and the view snaps back. */
+  /* v98.1166 · the hero is always centred: pan = followPan (eases onto the hero) + dragOff (look-around, only while a drag is held · springs back to 0 after release). */
  if (!editing) {
-  const now = performance.now(), hq0 = project(hero.u, hero.v), sx = W / 2 + pan.x + (hq0.x - 1100) * scale * zoom, sy = H / 2 + pan.y + (hq0.y - 700) * scale * zoom, off = sx < -30 || sx > W + 30 || sy < -30 || sy > H + 30;
-  if (drag && drag.moved && now - (drag.t || 0) > 1200) drag = null;
-  if (camHold > now + 3600) camHold = now + 3500;
-  if (off && !(drag && drag.moved)) { offT = offT || now; if (now - offT > 800) { camHold = 0; drag = null } } else offT = 0;
-  if (!isFinite(pan.x) || !isFinite(pan.y)) focus();
+  const now = performance.now(), hq = project(hero.u, hero.v), tx = -(hq.x - 1100) * scale * zoom, ty = H * .12 - (hq.y - 700) * scale * zoom;
+  if (drag && drag.moved && now - (drag.t || 0) > 15000) drag = null;   /* watchdog: a held drag with no pointer event for 15 s is a lost pointerup */
+  if (!isFinite(followPan.x) || !isFinite(followPan.y)) followPan = { x: tx, y: ty };
+  const kf = 1 - Math.exp(-dt * 11);
+  followPan = { x: followPan.x + (tx - followPan.x) * kf, y: followPan.y + (ty - followPan.y) * kf };
+  if (!(drag && drag.moved)) { const kd = Math.exp(-dt * 14); dragOff = { x: dragOff.x * kd, y: dragOff.y * kd }; if (Math.abs(dragOff.x) < .4 && Math.abs(dragOff.y) < .4) dragOff = { x: 0, y: 0 } }
+  if (!isFinite(dragOff.x) || !isFinite(dragOff.y)) dragOff = { x: 0, y: 0 };
+  pan = { x: followPan.x + dragOff.x, y: followPan.y + dragOff.y }
  }
- if (!editing && !(drag && drag.moved) && performance.now() > camHold) { const hq = project(hero.u, hero.v), tx = -(hq.x - 1100) * scale * zoom, ty = H * .12 - (hq.y - 700) * scale * zoom, kf = 1 - Math.exp(-dt * 11); pan = { x: pan.x + (tx - pan.x) * kf, y: pan.y + (ty - pan.y) * kf } }
  g.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
  g.fillStyle = '#2c3d2e';
  g.fillRect(0, 0, W, H);
@@ -1423,6 +1428,7 @@ cv.onpointerdown = e => {
   pan: {
    ...pan
   },
+  off: { ...dragOff },
   moved: false,
   t: performance.now()
  };
@@ -1437,11 +1443,7 @@ cv.onpointermove = e => {
  const dx = e.clientX - drag.x,
   dy = e.clientY - drag.y;
  if (Math.hypot(dx, dy) > 5) drag.moved = true;
- if (drag.moved) camHold = performance.now() + 3500;
- if (drag.moved) pan = {
-  x: drag.pan.x + dx,
-  y: drag.pan.y + dy
- }
+ if (drag.moved) { if (editing) pan = { x: drag.pan.x + dx, y: drag.pan.y + dy }; else dragOff = { x: drag.off.x + dx, y: drag.off.y + dy } }
 };
 /* v98.1068 · cursor hint for js/game-cursor.js (same as village-town.html): data-agc on the map canvas = 'talk' over a villager · 'pointer' over a
    place's entrance ring / the exit · 'walk' over ground a click can walk to (nothing while editing / dragging the camera / on touch) */
@@ -1498,6 +1500,7 @@ cv.onpointerup = e => {
 };
 cv.onpointercancel = () => drag = null;
 cv.onlostpointercapture = () => { if (drag) drag = null };   /* v98.1012 */
+addEventListener('pointerup', () => { if (drag?.moved) drag = null }, true); addEventListener('pointercancel', () => { drag = null }, true); addEventListener('mouseup', () => { if (drag?.moved) drag = null }, true);   /* v98.1166 · released anywhere (outside the canvas / iframe) = look-around ends */
 addEventListener('blur', () => { drag = null }); document.addEventListener('visibilitychange', () => { drag = null });
 cv.onwheel = e => {
  e.preventDefault();
@@ -1505,7 +1508,7 @@ cv.onwheel = e => {
  zoom = Math.max(editing ? .35 : .6, Math.min(editing ? 4 : 6, zoom * Math.exp(-e.deltaY * .001)));
  const x = e.clientX - cvLeft - W / 2,
   y = e.clientY - cvTop - H / 2;
- pan = {
+ if (editing) pan = {
   x: x - (x - pan.x) * zoom / old,
   y: y - (y - pan.y) * zoom / old
  }
@@ -1678,7 +1681,7 @@ window.addEventListener('message', e => {
  const m = e.data;
  if (m.type === 'visibility') {
   active = m.visible;
-  if (m.visible) { drag = null; camHold = 0; try { focus() } catch (x) { } }
+  if (m.visible) { drag = null; try { focus() } catch (x) { } }
   return
  }
  if (m.type === 'wip-fx') { addFx(m.kind, m.amt); return }
