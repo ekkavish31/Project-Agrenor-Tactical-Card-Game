@@ -6,6 +6,13 @@
 (function (root) {
   'use strict';
   const SRC = (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) || '';   /* v98.621 · where this script lives, to find assets/fx/anim */
+  function artURL(path) {
+    if (!SRC) return path;
+    const url = new URL('../' + path, SRC);
+    const version = new URL(SRC).searchParams.get('v');
+    if (version) url.searchParams.set('v', version);
+    return url.href;
+  }
   const TAU = Math.PI * 2, clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), lerp = (a, b, k) => a + (b - a) * k;
   const eo = t => 1 - Math.pow(1 - clamp(t), 3), seg = (t, a, b) => clamp((t - a) / (b - a)), bell = t => Math.sin(clamp(t) * Math.PI);
   const back = t => { t = clamp(t); return 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2) };
@@ -207,7 +214,7 @@
     hit: { file: 'fire-impact', cw: 282, ch: 270, ax: .5, ay: .98 }      /* anchored at the ground under the target */
   };
   const animImg = {};
-  function animSheet(n) { const d = ANIM[n]; let im = animImg[n]; if (!im) { im = animImg[n] = new Image(); im.decoding = 'async'; im.src = SRC ? new URL('../assets/fx/anim/' + d.file + '.webp', SRC).href : 'assets/fx/anim/' + d.file + '.webp' } return im.complete && im.naturalWidth ? im : null }
+  function animSheet(n) { const d = ANIM[n]; let im = animImg[n]; if (!im) { im = animImg[n] = new Image(); im.decoding = 'async'; im.src = artURL('assets/fx/anim/' + d.file + '.webp') } return im.complete && im.naturalWidth ? im : null }
   animSheet('ball'); animSheet('hit');
   /* Interpolate premultiplied RGBA on one reusable cell-sized surface. Drawing
      weighted frames source-over directly would darken the midpoint / pop at cuts.
@@ -280,7 +287,7 @@
   function spellImage(kind) {
     if (!spellImages[kind] && typeof Image !== 'undefined') {
       const im = new Image(); im.decoding = 'async';
-      im.src = SRC ? new URL('../assets/fx/anim/' + kind + '-cast.webp', SRC).href : 'assets/fx/anim/' + kind + '-cast.webp';
+      im.src = artURL('assets/fx/anim/' + kind + '-cast.webp');
       spellImages[kind] = im;
     }
     const im = spellImages[kind]; return im && im.complete && im.naturalWidth > 0 && im.naturalHeight > 0 ? im : null;
@@ -452,11 +459,13 @@
     return true;
   }
 
+  const drawnImages = {};
   if (typeof Image !== 'undefined') for (const kind of Object.keys(DRAWN)) {
     const im = new Image();
     im.decoding = 'async';
+    drawnImages[kind] = im;
     const path = 'assets/fx/anim/' + kind + '-drawn.webp';
-    im.src = SRC ? new URL('../' + path, SRC).href : path;
+    im.src = artURL(path);
     addVariant(kind, 'drawnImpact', 'ภาพวาด 8 เฟรม + แสงปะทะ',
       (g, e, t, p, a, cw) => drawnImpact(kind, im, g, e, t, p, a, cw));
   }
@@ -468,14 +477,17 @@
     holy: ['holy', 'death', 'burn', 'poison'],
     status: ['sleep', 'freeze', 'shock', 'weak'],
     hit: ['light', 'heavy', 'critical', 'finisher'],
-    bind: ['silence', 'bind']
+    bind: ['silence', 'bind'],
+    elements: ['wind', 'water', 'earth', 'dark'],
+    support: ['heal', 'healGold', 'shield', 'fire']
   };
   const sequences = {};
   if (typeof Image !== 'undefined') for (const [group, kinds] of Object.entries(SEQUENCE_GROUPS)) {
     const im = new Image();
     im.decoding = 'async';
-    const path = 'assets/fx/anim/sequence-' + group + '.webp';
-    im.src = SRC ? new URL('../' + path, SRC).href : path;
+    const extension = group === 'elements' || group === 'support' ? '.png' : '.webp';
+    const path = 'assets/fx/anim/sequence-' + group + extension;
+    im.src = artURL(path);
     kinds.forEach((kind, row) => { sequences[kind] = { im, row, rows: kinds.length }; });
   }
 
@@ -504,22 +516,59 @@
 
   const ACTION_SEQUENCES = {
     sword: 2.1, knife: 1.8, blunt: 2.3, spear: 1.9, rapier: 1.8,
-    arrow: 1.45, parry: 1.7, arcane: 1.95, holy: 2.45, death: 2.2, impact: 1.45
+    arrow: 1.45, parry: 1.7, arcane: 1.95, holy: 2.45, death: 2.2, impact: 1.45,
+    wind: 2.45, water: 2.65, earth: 2.55, dark: 2.45, heal: 2.5, shield: 2.5, fire: 2.65
   };
   const IMPACT_SIZE = { light: .8, heavy: 1, critical: 1.12, finisher: 1.28 };
 
+  const GROUND_ANCHOR = {
+    blunt: .64, holy: .76, death: .76, wind: .88, water: .88, earth: .88, dark: .87,
+    heal: .84, shield: .78, fire: .78
+  };
+  const SPELL_TRAVEL = { wind: .28, water: .28, dark: .28, fire: .42 };
+  const sequenceArt = (kind, e) => kind === 'impact' ? (IMPACT_SIZE[e.tier] ? e.tier : 'light')
+    : kind === 'heal' && /^#[ef]/i.test(e.color || '') ? 'healGold' : kind;
+  function paintedState(e, variant) {
+    const kind = nameOf(e.kind);
+    const im = variant === 'drawnSequence' ? sequences[sequenceArt(kind, e)]?.im
+      : variant === 'drawnImpact' ? drawnImages[kind] : null;
+    if (!im) return null;
+    if (!im.complete) return 'loading';
+    return im.naturalWidth && im.naturalHeight ? 'ready' : 'missing';
+  }
+  root.VfxKit.paintedState = paintedState;
+
   function actionSequence(kind, g, e, t, p, a, cw) {
     const battle = root.BattleVFX;
-    const art = kind === 'impact' ? (IMPACT_SIZE[e.tier] ? e.tier : 'light') : kind;
+    const art = sequenceArt(kind, e);
     const fallback = kind === 'impact' ? { ...e, kind: 'impactCore' } : e;
     if (kind === 'impact' && !battle?.impactEnabled()) return false;
-    if (!sequenceReady(art)) return battle?.drawOld(fallback, t, p, a, g, { w: cw }) || false;
+    if (!sequenceReady(art)) {
+      if (kind === 'fire' && fireAtlas(g, e, t, p, a, cw)) return true;
+      if (SPELLS[kind] && spellAtlas(kind, g, e, t, p, a, cw)) return true;
+      return battle?.drawOld(fallback, t, p, a, g, { w: cw }) || false;
+    }
     if (t >= 1) return true;
     const W = cw * (e.scale || 1), size = W * ACTION_SEQUENCES[kind] * (IMPACT_SIZE[art] || 1);
     const still = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const startY = a.y - cw * .75, targetY = chest(p, cw);
     const direction = Math.atan2(targetY - startY, p.x - a.x);
     const travel = !still && e.from && Math.hypot(p.x - a.x, p.y - a.y) > 4;
+    const flightSplit = travel ? SPELL_TRAVEL[kind] : 0;
+    if (flightSplit && t < flightSplit) {
+      const f = t / flightSplit, x = lerp(a.x, p.x, f), y = lerp(startY, targetY, f);
+      groundLight(g, x, lerp(a.y, p.y, f), W * .86, LIGHT[kind][0], .31);
+      if (kind === 'fire' && animSheet('ball')) {
+        g.save();
+        g.translate(x, y);
+        g.rotate(direction);
+        animPlay(g, 'ball', f * 1.6, W * .96, 1, true);
+        g.restore();
+      } else {
+        fly(g, e, t, a, p, cw, flightSplit, LIGHT[kind][0], C.white, W * .27);
+      }
+      return true;
+    }
     const split = travel ? ({ arrow: .72, arcane: .36 }[kind] || 0) : 0;
     if (t < split) {
       const k = t / split, x = lerp(a.x, p.x, k);
@@ -527,8 +576,8 @@
       return sequenceFrame(g, art, Math.min(1, Math.floor(k * 2)), x,
         lerp(startY, targetY, k), size * .72, 1, direction);
     }
-    const k = seg(t, split, 1);
-    const groundAnchor = { blunt: .64, holy: .76, death: .76 }[kind];
+    const k = seg(t, flightSplit || split, 1);
+    const groundAnchor = GROUND_ANCHOR[kind];
     const aimed = ['sword', 'knife', 'spear', 'rapier', 'arrow'].includes(kind);
     const frame = still ? 1 : split ? (k < .38 ? 2 : 3) : k < .13 ? 0 : k < .32 ? 1 : k < .58 ? 2 : 3;
     const strength = still ? .65 * (1 - t) : 1 - seg(k, .7, 1);
