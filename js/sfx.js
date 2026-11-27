@@ -9,7 +9,7 @@
   'use strict';
   const BASE = 'assets/audio/sfx/kenney/';
   /* name → number of variants */
-  const V = { 'ui-click': 3, 'ui-tick': 2, 'ui-back': 2, 'ui-close': 2, 'ui-open': 2, 'ui-toggle': 2, 'ui-select': 3, 'ui-confirm': 3, 'ui-error': 2, 'ui-scroll': 2, 'ui-drop': 2, 'ui-pluck': 2, 'ui-question': 1, 'ui-bong': 1, 'ui-maximize': 2, 'ui-minimize': 2, 'ui-hover': 2, 'ui-mouseclick': 1, 'ui-switch': 2,
+  const V = { 'ui-click': 3, 'ui-tick': 2, 'ui-back': 2, 'ui-close': 2, 'ui-open': 2, 'ui-toggle': 2, 'ui-select': 3, 'ui-confirm': 3, 'ui-error': 2, 'ui-scroll': 2, 'ui-drop': 2, 'ui-pluck': 2, 'ui-question': 1, 'ui-bong': 1, 'ui-maximize': 2, 'ui-minimize': 2, 'ui-hover': 1, 'ui-mouseclick': 1, 'ui-switch': 2,
     coins: 2, 'door-open': 2, 'door-close': 2, 'book-open': 1, 'book-close': 1, 'book-flip': 2, page: 3, 'card-slide': 4, 'card-place': 4, 'card-fan': 2, 'card-shuffle': 1, 'card-shove': 3, cloth: 2, latch: 2, creak: 2, pot: 2, leather: 2, chop: 1, knife: 2, 'draw-knife': 2, belt: 2,
     'step-grass': 4, 'step-wood': 4, 'step-stone': 4, 'step-snow': 4, 'step-carpet': 4,
     'hit-metal-light': 3, 'hit-metal': 2, 'hit-metal-heavy': 2, 'hit-punch': 3, 'hit-punch-heavy': 2, 'hit-wood': 2, 'hit-wood-heavy': 2, 'hit-plate': 2, 'hit-plate-heavy': 4, 'hit-blade': 4, 'hit-thud': 3, 'hit-soft': 2, 'hit-generic': 2, 'hit-glass': 2, 'hit-bell': 1, 'hit-mining': 2, 'hit-tin': 1,
