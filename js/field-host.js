@@ -562,7 +562,7 @@ function frame(t) {
   OCC.frame++;
   window.__feDirtyGround = () => { groundCanvas = null };   // BG Editor: repaint the ground (blocked-cell tint) after a prop moved
 requestAnimationFrame(frame);
-  /* v98.1167 · while a battle-talk (Hilda before the pumpkin fight…) is open the arena is a still backdrop: it repaints at ~20 fps instead of every frame (the full repaint — ground, tilt-shift, props, spotlight — cost ~25 ms/frame and made the typing and portraits stutter) */
+  /* v98.1168 · while a battle-talk (Hilda before the pumpkin fight…) is open the arena is a still backdrop: it repaints at ~20 fps instead of every frame (the full repaint — ground, tilt-shift, props, spotlight — cost ~25 ms/frame and made the typing and portraits stutter) */
   if (window.BattleTalk?.busy?.() && t - (frame.talkT || 0) < 48) return; frame.talkT = t;
   if (TURN) stepTurn(performance.now());
   if (!groundCanvas) paintGround();
