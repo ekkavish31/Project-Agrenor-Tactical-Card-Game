@@ -20,7 +20,8 @@
       freqs.forEach((f, i) => { const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime + i * .045; o.type = type; o.frequency.setValueAtTime(f, t0); o.frequency.exponentialRampToValueAtTime(f * 1.04, t0 + len);
         g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + .008); g.gain.exponentialRampToValueAtTime(.0001, t0 + len); o.connect(g).connect(ac.destination); o.start(t0); o.stop(t0 + len + .02) }) } catch (e) { }
   }
-  const SFX = { move: () => { const n = performance.now(); if (n - lastTick < 45) return; lastTick = n; tone([1320], .012, 'sine', .05) }, ok: () => tone([660, 990], .03, 'triangle', .1), back: () => tone([520, 390], .026, 'triangle', .1) };
+  /* v98.1146 · recorded Kenney sounds when js/sfx.js is on the page (hover tick here; press / close sounds come from sfx.js itself); the code-made bleeps remain only as a fallback */
+  const SFX = { move: () => { if (window.Sfx?.hover) return window.Sfx.hover(); const n = performance.now(); if (n - lastTick < 45) return; lastTick = n; tone([1320], .012, 'sine', .05) }, ok: () => { if (!window.Sfx) tone([660, 990], .03, 'triangle', .1) }, back: () => { if (!window.Sfx) tone([520, 390], .026, 'triangle', .1) } };
   const isBtn = el => el && el.closest?.('button:not(:disabled),[role=button],a[href],.fb-card,.ts-menu button');
   const isBack = el => /✕|ยกเลิก|ปิด|close|cancel|ไม่|ถอย|กลับ/i.test((el.textContent || el.title || '').slice(0, 24)) || el.classList?.contains('ghost') || el.classList?.contains('no');
   let hovered = null;

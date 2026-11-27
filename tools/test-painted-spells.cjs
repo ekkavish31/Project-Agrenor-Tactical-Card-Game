@@ -19,7 +19,7 @@ function setup({ loading = false, reduced = false, search = '', values = {} } = 
   await Promise.all(images.map(im => im.decode()));
   const canvas = createCanvas(300, 300), ctx = canvas.getContext('2d');
   for (const kind of kinds) {
-    assert.equal(kit.choiceOf(kind), ['ice', 'lightning'].includes(kind) ? 'drawnImpact' : 'painted8');
+    assert.equal(kit.choiceOf(kind), ['ice', 'lightning'].includes(kind) ? 'drawnImpact' : 'drawnSequence');
     kit.setChoice(kind, 'painted8'); assert.ok(kit.uses(kind));
     assert.ok(kit.variants(kind).some(v => v[0] === 'painted8'));
     const file = 'assets/fx/anim/' + kind + '-cast.webp';
@@ -58,12 +58,32 @@ function setup({ loading = false, reduced = false, search = '', values = {} } = 
     const probe = createCanvas(300, 350).getContext('2d');
     const paint = probe.drawImage.bind(probe);
     probe.drawImage = (...args) => {
-      if (args[0].src === 'assets/fx/anim/' + kind + '-drawn.webp') active.add(args.slice(1, 3).join(','));
+      if (args[0].src === 'assets/fx/anim/twelve-strike.webp') active.add(args.slice(1, 3).join(','));
       return paint(...args);
     };
     for (let f = 0; f <= 60; f++)
       assert.ok(hybrid.kit.draw({ kind, seed: 17 }, f / 60, { x: 150, y: 285 }, null, probe, { w: 60 }));
-    assert.equal(active.size, 8, kind + ' plays all eight distinct painted cells');
+    assert.equal(active.size, 12, kind + ' plays all twelve distinct painted cells');
+  }
+  const migrated = setup({ values: { 'vfx-kit-kinds': '{"sword":"old","lightning":"painted8"}', 'vfx-kit': '1' } }).kit;
+  assert.equal(migrated.choiceOf('sword'), 'drawnSequence');
+  assert.equal(migrated.choiceOf('lightning'), 'drawnImpact');
+  migrated.setChoice('sword', 'old');
+  assert.equal(migrated.choiceOf('sword'), 'old');
+  migrated.resetChoices();
+  assert.equal(migrated.choiceOf('sword'), 'drawnSequence');
+  for (const [kind, color] of [['fire'], ['wind'], ['water'], ['earth'], ['dark'], ['shield'], ['heal', '#7fe0a0'], ['heal', '#ffe08a']]) {
+    const offsets = new Set(), probe = createCanvas(300, 350).getContext('2d');
+    const paint = probe.drawImage.bind(probe);
+    probe.drawImage = (...args) => {
+      if (/twelve-(?:elements|support)\.webp$/.test(args[0].src)) offsets.add(args.slice(1, 3).join(','));
+      return paint(...args);
+    };
+    const e = { kind, color, seed: 17 };
+    assert.equal(hybrid.kit.paintedState(e, 'drawnSequence'), 'ready');
+    for (let f = 0; f < 60; f++)
+      assert.ok(hybrid.kit.draw(e, f / 60, { x: 150, y: 285 }, null, probe, { w: 60 }));
+    assert.equal(offsets.size, 12, kind + ' plays each new frame');
   }
   const pending = setup({ loading: true }).kit;
   assert.equal(pending.draw({ kind: 'ice' }, .4, { x: 10, y: 20 }, null, ctx, { w: 60 }), false, 'loading falls back');

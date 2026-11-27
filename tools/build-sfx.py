@@ -38,7 +38,7 @@ add('ui-question', 'if', 'question_001')
 add('ui-bong', 'if', 'bong_001')
 add('ui-maximize', 'if', 'maximize_001', 'maximize_004')
 add('ui-minimize', 'if', 'minimize_001', 'minimize_004')
-add('ui-hover', 'ui', 'rollover1', 'rollover3')
+add('ui-hover', 'ui', 'rollover3')   # v98.1149 · rollover1 holds two hits (tick + chk) = the doubled hover sound
 add('ui-mouseclick', 'ui', 'mouseclick1')
 add('ui-switch', 'ui', 'switch3', 'switch10')
 # ── world / items ──

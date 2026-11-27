@@ -1,7 +1,7 @@
 # แผนที่รูปภาพทั้งหมดของเกม (สร้างอัตโนมัติ)
 
 > ไฟล์นี้สร้างโดย `node tools/build-image-index.cjs` — อย่าแก้มือ · ดัชนีเต็ม: `data/image-index.js` · กฎหมวดหมู่: `js/image-catalog.js`
-> **ภาพทั้งหมด 6803 ไฟล์ (540.9 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
+> **ภาพทั้งหมด 6814 ไฟล์ (550.8 MB)** — อยู่ในที่เดิม (โค้ด/manifest/เซฟอ้างพาธเหล่านี้) แต่ **ดูและค้นได้ที่เดียว**: Asset Studio → Asset Manager → เลือกหมวดหมู่
 
 ## ที่มาของรูป (แหล่งต่าง ๆ) → หมวดเดียว
 | แหล่ง | อยู่ที่ | อะไรจัดการ |
@@ -28,7 +28,7 @@
 | 🏠 ภายในอาคาร | 185 | 6.3 MB | `assets/interior` 185 | 0 | 0 |
 | ⛰ ภูมิประเทศ · แผนที่โลก | 113 | 9.0 MB | `assets/terrain` 77 · `assets/world` 32 · `assets/v03` 4 | 9 | 2 |
 | 🌲 ฉากสนามรบ | 10 | 6.1 MB | `assets/scenes` 7 · `assets/home.webp` 1 · `assets/market.webp` 1 · `assets/workshop.webp` 1 | 10 | 0 |
-| ✨ เอฟเฟกต์ | 84 | 11.4 MB | `assets/fx` 84 | 8 | 0 |
+| ✨ เอฟเฟกต์ | 95 | 21.3 MB | `assets/fx` 95 | 8 | 0 |
 | 🎒 ไอเทม · อาวุธ · พืชผล | 62 | 5.7 MB | `assets/crops` 36 · `assets/weapons` 8 · `assets/action-chest.webp` 1 · `assets/action-deck.webp` 1 | 26 | 1 |
 | 📖 เปิดเรื่อง · อินโทร · ฉาก | 72 | 83.6 MB | `assets/scenes` 33 · `assets/new-game-prologue` 17 · `assets/generated-village` 12 · `assets/intro` 10 | 45 | 0 |
 | 🗺 แผนที่โลกในเอกสาร (lore) | 5 | 1.9 MB | `docs/lore` 5 | 0 | 0 |
@@ -113,7 +113,7 @@
 - ไอคอนสถานที่ / เบ็ดเตล็ด (ระดับบนสุดของ assets) — 3
 
 ### ✨ เอฟเฟกต์
-- เอฟเฟกต์ — 84
+- เอฟเฟกต์ — 95
 
 ### 🎒 ไอเทม · อาวุธ · พืชผล
 - พืชผล — 36

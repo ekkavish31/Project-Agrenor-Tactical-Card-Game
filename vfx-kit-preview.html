@@ -20,16 +20,16 @@ figure[data-v]{cursor:pointer;border:2px solid transparent;border-radius:10px;pa
 p.note{margin:6px 16px;color:var(--muted);max-width:900px}
 </style></head><body>
 <header><h1>✨ VFX Preview</h1>
- <span class="sw">ในเกมใช้: <b id="sumUse"></b></span><button id="allNew">โค้ดล้วนทั้งหมด</button><button id="allOld">เดิมทั้งหมด</button><button id="pushBtn" class="primary" title="ใส่ค่าที่เลือกลง Cart เพื่อ Push — ทุกเครื่องที่เปิดเกมจะใช้ตามนี้">⬆ ใส่ Cart (Push)</button><small id="pushMsg"></small>
+ <span class="sw">ในเกมใช้: <b id="sumUse"></b></span><button id="usePainted" class="primary">ใช้ชุดภาพวาดล่าสุด</button><button id="allNew">โค้ดล้วนทั้งหมด</button><button id="allOld">เดิมทั้งหมด</button><button id="pushBtn" class="primary" title="ใส่ค่าที่เลือกลง Cart เพื่อ Push — ทุกเครื่องที่เปิดเกมจะใช้ตามนี้">⬆ ใส่ Cart (Push)</button><small id="pushMsg"></small>
  <label>ความเร็ว <select id="speed"><option value="1">ปกติ</option><option value=".5">ช้า ½</option><option value=".25">ช้า ¼</option></select></label>
 </header>
-<p class="note">แต่ละท่าแสดงเฉพาะ <b>เอฟเฟกต์ที่เกมใช้อยู่</b> (ตัวสีเทา = ผู้โจมตี · ตัวสีน้ำตาล = เป้าหมาย) — <b>คลิกที่ท่า</b> เพื่อเปิดรายการเอฟเฟกต์ทั้งหมดของท่านั้นแล้วเลือกใหม่ (แบบที่เพิ่มภายหลังจะขึ้นต่อท้ายรายการเอง) — ค่าที่เลือกมีผลในเบราว์เซอร์นี้ทันที (เปิดสนามรบใหม่) · กด <b>⬆ ใส่ Cart (Push)</b> เพื่อให้มีผลกับเกมจริงทุกเครื่อง</p>
+<p class="note">พรีวิวตามตัวเลือกเดียวกับสนามต่อสู้ คลิกท่าเพื่อดูแบบอื่น หรือกด <b>ใช้ชุดภาพวาดล่าสุด</b> เพื่อคืนค่าทุกท่า</p>
 <h2>อาวุธ</h2><div class="grid" id="gWeapon"></div>
 <h2>ธาตุและเวท</h2><div class="grid" id="gMagic"></div>
 <h2>แรงกระแทกตอนโดนตี / ล้ม</h2><div class="grid" id="gHit"></div>
 <h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว)</h2><div class="grid" id="gStatus"></div>
 <div id="dlg" hidden><div class="box"><div class="top"><h3 id="dlgTitle"></h3><button id="dlgClose">ปิด ✕</button></div><div id="dlgGrid"></div></div></div>
-<script src="js/editor-store.js?v=v98.1082"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.1144"></script><script src="js/vfx-kit.js?v=v98.1144"></script><script src="js/status-fx.js?v=v98.1144"></script>
+<script src="js/editor-store.js?v=v98.1152"></script><script src="js/game-settings.js?v=v98.1148"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.1144"></script><script src="js/vfx-kit.js?v=v98.1153"></script><script src="js/status-fx.js?v=v98.1153"></script>
 <script>
 const W = 300, H = 200, CW = 78, A = { x: 62, y: 158 }, P = { x: 222, y: 158 };
 const NAMES = { sword: 'ดาบ ฟัน', knife: 'มีด ฟันไขว้', blunt: 'ค้อน/กระบอง ทุบ', spear: 'หอก แทง', rapier: 'เรเปียร์ แทงเร็ว', arrow: 'ธนู', shield: 'โล่ ป้องกัน', parry: 'ปัดป้อง',
@@ -51,8 +51,18 @@ const fxCard = (host, kind, extra = {}, title) => { const dur = extra.dur || DUR
   if (extra.old === false) { const c = mk(host, ttl, sub, d); c.dataset.old = '0'; return }
   /* the card shows ONLY the look the game uses now; click it to open the full list and change */
   const byId = Object.fromEntries(d.map(x => [x[2], x])), cur = () => byId[VfxKit.choiceOf(kind)] || byId.old;
-  const c = mk(host, ttl, sub, [['', (g, now) => cur()[1](g, now)]]); c.dataset.old = '1'; c.dataset.kind = kind; c.classList.add('shown');
-  const fig = c.querySelector('figure'), cap = fig.querySelector('figcaption'); c.refresh = () => { cap.innerHTML = 'ใช้อยู่: <b>' + cur()[0] + '</b>' + (extra.pick !== false && d.length > 1 ? ' · <u>กดเพื่อเปลี่ยน (' + d.length + ' แบบ)</u>' : '') };
+  const active = run((ev, t, g) => BattleVFX.draw(
+    ev.kind === 'impact' ? { ...ev, kind: 'impactCore' } : ev, t, P, A, g, { w: CW, h: CW / 2 }));
+  let lastState;
+  const c = mk(host, ttl, sub, [['', (g, now) => {
+    active(g, now);
+    const state = VfxKit.paintedState(e, VfxKit.choiceOf(kind));
+    if (state !== lastState) {
+      lastState = state;
+      c.refresh();
+    }
+  }]]); c.dataset.old = '1'; c.dataset.kind = kind; c.classList.add('shown');
+  const fig = c.querySelector('figure'), cap = fig.querySelector('figcaption'); c.refresh = () => { cap.innerHTML = 'ใช้อยู่: <b>' + cur()[0] + '</b>' + (lastState === 'loading' ? ' · กำลังโหลดภาพชุดนี้' : lastState === 'missing' ? ' · โหลดภาพชุดนี้ไม่สำเร็จ กำลังใช้ภาพสำรอง' : '') + (extra.pick !== false && d.length > 1 ? ' · <u>กดเพื่อเปลี่ยน (' + d.length + ' แบบ)</u>' : '') };
   if (extra.pick !== false) { c.classList.add('pickable'); fig.style.cursor = 'pointer'; fig.title = 'คลิกเพื่อเลือกเอฟเฟกต์อื่นของท่านี้'; fig.classList.add('chosen'); fig.insertAdjacentHTML('beforeend', '<div class="use">✓ ในเกมใช้</div>'); fig.onclick = () => openPicker(kind, ttl, d) }
   c.refresh() };
 /* picker: every look of one effect, animated; click one to use it in the game */
@@ -77,8 +87,18 @@ function frame(now) { clock += (now - last) * speed; last = now;
   for (const c of cards) { const r = c.el.getBoundingClientRect(); if (r.bottom < -50 || r.top > innerHeight + 50) continue; c.cvs.forEach((cv, i) => { if (cv.offsetParent === null) return; const g = cv.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0); try { c.draws[i][1](g, clock) } catch (e) { } }) }
   requestAnimationFrame(frame) }
 requestAnimationFrame(frame);
-const GAME_KINDS = () => [...new Set([...document.querySelectorAll('.pickable')].map(r => r.dataset.kind))];
-function syncPicks() { const ks = GAME_KINDS(), cnt = { old: 0, new: 0, other: 0 }; cards.forEach(c => c.refresh && c.refresh()); for (const k of ks) { const v = VfxKit.choiceOf(k); cnt[v === 'old' ? 'old' : v === 'new' ? 'new' : 'other']++ } document.getElementById('sumUse').textContent = `ใหม่ ${cnt.new} · เดิม ${cnt.old}` + (cnt.other ? ` · แบบอื่น ${cnt.other}` : '') }
+const GAME_KINDS = () => [...new Set([...document.querySelectorAll('.shown[data-kind]')].map(r => r.dataset.kind))];
+function syncPicks() {
+  const kinds = GAME_KINDS(), counts = { painted: 0, code: 0, old: 0 };
+  cards.forEach(c => c.refresh?.());
+  for (const kind of kinds) {
+    const id = VfxKit.choiceOf(kind);
+    counts[id === 'old' ? 'old' : id === 'new' ? 'code' : 'painted']++;
+  }
+  document.getElementById('sumUse').textContent = `ภาพวาด ${counts.painted} · โค้ดล้วน ${counts.code} · เดิม ${counts.old}`;
+}
+document.getElementById('usePainted').onclick = () => { VfxKit.resetChoices(); syncPicks(); };
+addEventListener('storage', e => { if (e.key === VfxKit.KEY || e.key === null) syncPicks(); });
 document.getElementById('allNew').onclick = () => { for (const k of GAME_KINDS()) VfxKit.setChoice(k, 'new'); syncPicks() };
 document.getElementById('allOld').onclick = () => { for (const k of GAME_KINDS()) VfxKit.setChoice(k, 'old'); syncPicks() };
 document.getElementById('pushBtn').onclick = async () => { const m = document.getElementById('pushMsg'), G = window.GitHubPush; if (!G) { m.textContent = 'ไม่พบระบบ Push'; return } if (!G.config().token) return G.openSettings();

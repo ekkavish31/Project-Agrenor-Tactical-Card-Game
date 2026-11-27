@@ -6,6 +6,13 @@
 (function (root) {
   'use strict';
   const SRC = (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) || '';   /* v98.621 · where this script lives, to find assets/fx/anim */
+  function artURL(path) {
+    if (!SRC) return path;
+    const url = new URL('../' + path, SRC);
+    const version = new URL(SRC).searchParams.get('v');
+    if (version) url.searchParams.set('v', version);
+    return url.href;
+  }
   const TAU = Math.PI * 2, clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), lerp = (a, b, k) => a + (b - a) * k;
   const eo = t => 1 - Math.pow(1 - clamp(t), 3), seg = (t, a, b) => clamp((t - a) / (b - a)), bell = t => Math.sin(clamp(t) * Math.PI);
   const back = t => { t = clamp(t); return 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2) };
@@ -162,23 +169,43 @@
     g.save(); g.translate(p.x, py); g.rotate(an); add(g, () => { for (const [w, cc, o] of [[W * .2, c, .35], [W * .09, C.white, .95]]) { const gr = g.createLinearGradient(-L, 0, W * .25, 0); gr.addColorStop(0, `rgba(${cc},0)`); gr.addColorStop(.75, `rgba(${cc},${o * al})`); gr.addColorStop(1, `rgba(${C.white},${al})`); g.fillStyle = gr; g.beginPath(); g.moveTo(-L * k, -w * .5); g.lineTo(W * .3 * k, 0); g.lineTo(-L * k, w * .5); g.closePath(); g.fill() } }); g.restore();
     add(g, () => { const kk = seg(t, .22, 1); glow(g, p.x, py, W * .7 * bell(seg(t, .15, .6)), C.white, .7); ring(g, p.x, py, W * .7 * eo(kk), W * .7 * eo(kk), W * .04 * (1 - kk), c, 1 - kk); star4(g, p.x, py, W * .6 * (1 - kk), C.white, 1 - kk, an); sparks(g, e, 9, p.x, py, W * .9, W * .03, kk, c, { a0: an - .9, arc: 1.8, grav: W * .2 }) }); return true }
 
-  /* v98.406 · which effects the game draws with this kit — chosen one by one (editor → ✨ VFX):
-     localStorage 'vfx-kit-kinds' = { [kind]: 'new' | 'old' } ('impact' = all four hit weights); a kind not listed follows the old all-or-nothing switch 'vfx-kit' = '1'.
-     ?vfx=new / ?vfx=old on the page URL overrides everything (for a quick look). Pushed with the editor settings so every player gets the same choice. */
-  const KEY = 'vfx-kit-kinds', nameOf = k => k === 'impactCore' ? 'impact' : k;
+  // Version the selection map so drafts from before the painted rollout
+  // cannot mask the new defaults. Selections made in this map still win.
+  const KEY = 'vfx-kit-kinds-v2', nameOf = k => k === 'impactCore' ? 'impact' : k;
   let mode; try { mode = new URLSearchParams(root.location?.search || '').get('vfx') } catch (_) { }
   let cache = null, cacheAt = 0;
-  const choices = () => { const now = Date.now(); if (cache && now - cacheAt < 1500) return cache; cacheAt = now; try { cache = JSON.parse(root.localStorage?.getItem(KEY) || '{}') || {} } catch (_) { cache = {} } try { cache.__all = root.localStorage?.getItem('vfx-kit') === '1' } catch (_) { } return cache };
+  const choices = () => {
+    const now = Date.now();
+    if (cache && now - cacheAt < 1500) return cache;
+    cacheAt = now;
+    try { cache = JSON.parse(root.localStorage?.getItem(KEY) || '{}') || {} } catch (_) { cache = {} }
+    return cache;
+  };
   /* v98.594 · each effect has a LIST of looks: 'old' (the painted picture) · 'new' (this kit) · any extra look added later with VfxKit.addVariant(kind, id, label, fn) — the editor shows them all and the game uses the one chosen. */
   const EXTRA = {};
   const variants = k => { k = nameOf(k); return [['old', 'เดิม (ภาพวาดแปะ)'], ['new', 'ใหม่ (วาดด้วยโค้ด)'], ...Object.entries(EXTRA[k] || {}).map(([id, v]) => [id, v.label])] };
   const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
-  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.drawnImpact ? 'drawnImpact' : EXTRA[k]?.drawnSequence ? 'drawnSequence' : EXTRA[k]?.painted8 ? 'painted8' : EXTRA[k]?.atlas ? 'atlas' : EXTRA[k]?.paintedLight ? 'paintedLight' : 'old') };
+  root.addEventListener?.('storage', e => { if (e.key === KEY || e.key === null) cache = null; });
+  const defaultChoice = kind => {
+    const looks = EXTRA[nameOf(kind)];
+    return ['drawnImpact', 'drawnSequence', 'painted8', 'atlas', 'paintedLight'].find(id => looks?.[id]) || 'old';
+  };
+  const choiceOf = kind => {
+    const k = nameOf(kind);
+    if (mode === 'old' || mode === '0') return 'old';
+    if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old';
+    const saved = choices()[k];
+    if (saved === 'old' || (saved === 'new' && FX[k]) || EXTRA[k]?.[saved]) return saved;
+    return defaultChoice(k);
+  };
+  const resetChoices = () => {
+    try { root.localStorage.setItem(KEY, '{}'); cache = null } catch (_) { }
+  };
   const uses = k => { k = nameOf(k); if (!FX[k] && !EXTRA[k]) return false; return choiceOf(k) !== 'old' };
   const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = (v === 'new' || (v && v !== 'old')) ? String(v) : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
   const enabled = () => Object.keys(FX).some(uses);
   function draw(e, t, p, a, g, camera, variant) { const k = nameOf(e.kind), id = variant || choiceOf(k), f = (id !== 'old' && id !== 'new' && EXTRA[k]?.[id]?.fn) || FX[k]; if (!f) return false; g.save(); try { return !!f(g, e, clamp(t), p, a || p, camera.w) } catch (err) { return false } finally { g.restore() } }
-  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], kinds: Object.keys(FX), uses, setChoice, choiceOf, variants, addVariant, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
+  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], resetChoices, kinds: Object.keys(FX), uses, setChoice, choiceOf, variants, addVariant, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
 
   /* v98.621 · FIRE — hand-painted frame animation (two 4×4 sheets, 16 frames each: assets/fx/anim/fire-ball.webp = the flying fireball, fire-impact.webp = the burst that grows, burns and fades into smoke).
      Added as an extra look of 'fire' (id 'atlas'); the editor lists it next to 'old' and 'new', and the game plays it when it is the chosen one. Frames cross-fade, so it stays smooth at any frame rate. */
@@ -187,7 +214,7 @@
     hit: { file: 'fire-impact', cw: 282, ch: 270, ax: .5, ay: .98 }      /* anchored at the ground under the target */
   };
   const animImg = {};
-  function animSheet(n) { const d = ANIM[n]; let im = animImg[n]; if (!im) { im = animImg[n] = new Image(); im.decoding = 'async'; im.src = SRC ? new URL('../assets/fx/anim/' + d.file + '.webp', SRC).href : 'assets/fx/anim/' + d.file + '.webp' } return im.complete && im.naturalWidth ? im : null }
+  function animSheet(n) { const d = ANIM[n]; let im = animImg[n]; if (!im) { im = animImg[n] = new Image(); im.decoding = 'async'; im.src = artURL('assets/fx/anim/' + d.file + '.webp') } return im.complete && im.naturalWidth ? im : null }
   animSheet('ball'); animSheet('hit');
   /* Interpolate premultiplied RGBA on one reusable cell-sized surface. Drawing
      weighted frames source-over directly would darken the midpoint / pop at cuts.
@@ -260,7 +287,7 @@
   function spellImage(kind) {
     if (!spellImages[kind] && typeof Image !== 'undefined') {
       const im = new Image(); im.decoding = 'async';
-      im.src = SRC ? new URL('../assets/fx/anim/' + kind + '-cast.webp', SRC).href : 'assets/fx/anim/' + kind + '-cast.webp';
+      im.src = artURL('assets/fx/anim/' + kind + '-cast.webp');
       spellImages[kind] = im;
     }
     const im = spellImages[kind]; return im && im.complete && im.naturalWidth > 0 && im.naturalHeight > 0 ? im : null;
@@ -380,13 +407,56 @@
     root.VfxKit.addVariant(kind, 'painted8', 'ภาพวาด 2D + แสงและอนุภาค', (g, e, t, p, a, cw) => spellAtlas(kind, g, e, t, p, a, cw));
   }
 
+  function floorImpact(kind, g, hit, p, W) {
+    if (hit <= 0 || hit >= 1) return;
+    const color = LIGHT[kind][0];
+    const envelope = seg(hit, 0, .055) * (1 - hit) ** 2;
+    const radius = W * (.22 + eo(hit) * (kind === 'water' || kind === 'blunt' ? 1.6 : 1.12));
+    add(g, () => {
+      glow(g, p.x, p.y - W * .12, W * .54, color, envelope * .64);
+      ring(g, p.x, p.y, radius, radius * .38, W * .019, color, envelope * .57);
+      if (kind === 'water') ring(g, p.x, p.y, radius * .72, radius * .26, W * .013, color, envelope * .42);
+    });
+  }
+
+  function aftermath(kind, g, e, hit, p, W) {
+    if (hit <= .34 || hit >= 1) return;
+    const low = root.BattlePolish?.quality === 'low';
+    if (kind === 'lightning') {
+      add(g, () => {
+        for (let i = 0; i < (low ? 2 : 4); i++) {
+          const k = seg(hit, .39 + i * .12, .51 + i * .14);
+          if (!k || k === 1) continue;
+          const dir = i % 2 ? -1 : 1, x = p.x + dir * W * (.15 + R(e, i + 711) * .42);
+          const y = p.y - W * (.09 + R(e, i + 720) * .44);
+          bolt(g, e, x, y, x + dir * W * .35, y - W * .15, W * .12, 730 + i * 3,
+            W * .012, C.boltHi, bell(k) * .63);
+        }
+      });
+      return;
+    }
+    const residue = { fire: 'smoke', earth: 'dust', blunt: 'dust', ice: 'mist', water: 'splash', wind: 'leaf', dark: 'mote' }[kind];
+    if (!residue) return;
+    for (let i = 0; i < (low ? 2 : 5); i++) {
+      const k = seg(hit, .35 + .05 * i, .78 + .052 * i);
+      if (!k || k === 1) continue;
+      const drift = (R(e, i + 771) - .5) * W * (.55 + k * .65);
+      const rise = W * (kind === 'fire' ? .68 : .28) * eo(k);
+      root.BattleVFX?.stamp?.(g, 'particle/' + residue, p.x + drift, p.y - W * .12 - rise,
+        W * (.17 + k * (kind === 'fire' ? .53 : .28)), {
+          alpha: bell(k) * .54, rot: drift / W, blend: 'source-over'
+        });
+    }
+  }
+
   const DRAWN = {
     lightning: { size: 3.7, anchor: .941, cuts: [0, .08, .16, .24, .33, .45, .58, .72, .88], contact: .24 },
     ice: { size: 2.85, anchor: .815, cuts: [0, .09, .18, .29, .44, .58, .72, .86, 1], contact: .29 }
   };
 
   function drawnImpact(kind, im, g, e, t, p, a, cw) {
-    if (!im.complete || !im.naturalWidth || !im.naturalHeight) return spellAtlas(kind, g, e, t, p, a, cw);
+    const extended = sequenceReady(kind, true);
+    if (!extended && (!im.complete || !im.naturalWidth || !im.naturalHeight)) return spellAtlas(kind, g, e, t, p, a, cw);
     const spec = DRAWN[kind], W = cw * (e.scale || 1), size = W * spec.size;
     const still = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const low = root.BattlePolish?.quality === 'low';
@@ -407,15 +477,20 @@
         }
       });
     }
-    const cell = still ? 4 : spec.cuts.findIndex(end => k < end) - 1;
-    if (cell >= 0 && k < 1) {
-      const w = im.naturalWidth / 4, h = im.naturalHeight / 2;
-      g.save();
-      g.globalCompositeOperation = 'screen';
-      g.globalAlpha *= still ? .65 * (1 - t) : 1 - seg(k, spec.cuts[7], spec.cuts[8]);
-      g.drawImage(im, (cell % 4) * w, Math.floor(cell / 4) * h, w, h,
-        p.x - size * .5, p.y - size * spec.anchor, size, size);
-      g.restore();
+    if (extended && k < 1) {
+      const frame = still ? 6 : phaseFrame(k, spec.contact, 5);
+      sequenceFrame(g, kind, frame, p.x, p.y, size, still ? .65 * (1 - t) : 1 - seg(k, .75, .94), 0, spec.anchor);
+    } else if (!extended) {
+      const cell = still ? 4 : spec.cuts.findIndex(end => k < end) - 1;
+      if (cell >= 0 && k < 1) {
+        const w = im.naturalWidth / 4, h = im.naturalHeight / 2;
+        g.save();
+        g.globalCompositeOperation = 'screen';
+        g.globalAlpha *= still ? .65 * (1 - t) : 1 - seg(k, spec.cuts[7], spec.cuts[8]);
+        g.drawImage(im, (cell % 4) * w, Math.floor(cell / 4) * h, w, h,
+          p.x - size * .5, p.y - size * spec.anchor, size, size);
+        g.restore();
+      }
     }
     if (!still && thunder && k >= .18 && k < .58) {
       const strength = bell(seg(k, .18, .58)) * .57, top = p.y - size * .86;
@@ -428,16 +503,21 @@
         }
       });
     }
-    if (!still && hit > 0) paintedLight(kind, g, e, hit, p, W, true);
+    if (!still && hit > 0) {
+      paintedLight(kind, g, e, hit, p, W, true);
+      aftermath(kind, g, e, hit, p, W);
+    }
     return true;
   }
 
+  const drawnImages = {};
   if (typeof Image !== 'undefined') for (const kind of Object.keys(DRAWN)) {
     const im = new Image();
     im.decoding = 'async';
+    drawnImages[kind] = im;
     const path = 'assets/fx/anim/' + kind + '-drawn.webp';
-    im.src = SRC ? new URL('../' + path, SRC).href : path;
-    addVariant(kind, 'drawnImpact', 'ภาพวาด 8 เฟรม + แสงปะทะ',
+    im.src = artURL(path);
+    addVariant(kind, 'drawnImpact', 'ภาพวาด 12 เฟรม + แสงปะทะ',
       (g, e, t, p, a, cw) => drawnImpact(kind, im, g, e, t, p, a, cw));
   }
 
@@ -448,26 +528,44 @@
     holy: ['holy', 'death', 'burn', 'poison'],
     status: ['sleep', 'freeze', 'shock', 'weak'],
     hit: ['light', 'heavy', 'critical', 'finisher'],
-    bind: ['silence', 'bind']
+    bind: ['silence', 'bind'],
+    elements: ['wind', 'water', 'earth', 'dark'],
+    support: ['heal', 'healGold', 'shield', 'fire']
   };
-  const sequences = {};
-  if (typeof Image !== 'undefined') for (const [group, kinds] of Object.entries(SEQUENCE_GROUPS)) {
+  const sequences = {}, expanded = {};
+  const liveImage = im => !!(im?.complete && im.naturalWidth && im.naturalHeight);
+  function loadSequenceImage(path) {
     const im = new Image();
     im.decoding = 'async';
-    const path = 'assets/fx/anim/sequence-' + group + '.webp';
-    im.src = SRC ? new URL('../' + path, SRC).href : path;
-    kinds.forEach((kind, row) => { sequences[kind] = { im, row, rows: kinds.length }; });
+    im.src = artURL(path);
+    return im;
+  }
+  if (typeof Image !== 'undefined') for (const [group, kinds] of Object.entries(SEQUENCE_GROUPS)) {
+    const extension = group === 'elements' || group === 'support' ? '.png' : '.webp';
+    const im = loadSequenceImage('assets/fx/anim/sequence-' + group + extension);
+    const more = loadSequenceImage('assets/fx/anim/twelve-' + group + '.webp');
+    kinds.forEach((kind, row) => {
+      sequences[kind] = { im, row, rows: kinds.length, columns: 4 };
+      expanded[kind] = { im: more, row, rows: kinds.length, columns: 12 };
+    });
+  }
+  if (typeof Image !== 'undefined') {
+    const im = loadSequenceImage('assets/fx/anim/twelve-strike.webp');
+    ['lightning', 'ice'].forEach((kind, row) => { expanded[kind] = { im, row, rows: 2, columns: 12 }; });
   }
 
-  function sequenceReady(kind) {
-    const im = sequences[kind]?.im;
-    return !!(im?.complete && im.naturalWidth && im.naturalHeight);
+  function sequenceReady(kind, requireExpanded = false) {
+    return liveImage(expanded[kind]?.im) || (!requireExpanded && liveImage(sequences[kind]?.im));
   }
+  const sequenceLength = kind => sequenceReady(kind, true) ? 12 : 4;
+  const phaseFrame = (t, contact, anticipation) => t < contact
+    ? Math.min(anticipation - 1, Math.floor(t / contact * anticipation))
+    : Math.min(11, anticipation + Math.floor(seg(t, contact, 1) * (12 - anticipation)));
 
   function sequenceFrame(g, kind, cell, x, y, size, alpha, angle = 0, anchor = .5) {
     if (!sequenceReady(kind)) return false;
-    const { im, row, rows } = sequences[kind];
-    const w = im.naturalWidth / 4, h = im.naturalHeight / rows;
+    const { im, row, rows, columns } = sequenceReady(kind, true) ? expanded[kind] : sequences[kind];
+    const w = im.naturalWidth / columns, h = im.naturalHeight / rows;
     g.save();
     g.translate(x, y);
     if (angle) {
@@ -481,46 +579,93 @@
     return true;
   }
   root.VfxKit.sequenceFrame = sequenceFrame;
+  root.VfxKit.sequenceLength = sequenceLength;
 
   const ACTION_SEQUENCES = {
     sword: 2.1, knife: 1.8, blunt: 2.3, spear: 1.9, rapier: 1.8,
-    arrow: 1.45, parry: 1.7, arcane: 1.95, holy: 2.45, death: 2.2, impact: 1.45
+    arrow: 1.45, parry: 1.7, arcane: 1.95, holy: 2.45, death: 2.2, impact: 1.45,
+    wind: 2.45, water: 2.65, earth: 2.55, dark: 2.45, heal: 2.5, shield: 2.5, fire: 2.65
   };
   const IMPACT_SIZE = { light: .8, heavy: 1, critical: 1.12, finisher: 1.28 };
 
+  const GROUND_ANCHOR = {
+    blunt: .64, holy: .76, death: .76, wind: .88, water: .88, earth: .88, dark: .87,
+    heal: .84, shield: .78, fire: .78
+  };
+  const SPELL_TRAVEL = { wind: .28, water: .28, dark: .28, fire: .42 };
+  const sequenceArt = (kind, e) => kind === 'impact' ? (IMPACT_SIZE[e.tier] ? e.tier : 'light')
+    : kind === 'heal' && /^#[ef]/i.test(e.color || '') ? 'healGold' : kind;
+  function paintedState(e, variant) {
+    const kind = nameOf(e.kind);
+    const art = variant === 'drawnSequence' ? sequenceArt(kind, e) : kind;
+    const im = variant === 'drawnSequence' || variant === 'drawnImpact' ? expanded[art]?.im : null;
+    if (!im) return null;
+    if (!im.complete) return 'loading';
+    return im.naturalWidth && im.naturalHeight ? 'ready' : 'missing';
+  }
+  root.VfxKit.paintedState = paintedState;
+
   function actionSequence(kind, g, e, t, p, a, cw) {
     const battle = root.BattleVFX;
-    const art = kind === 'impact' ? (IMPACT_SIZE[e.tier] ? e.tier : 'light') : kind;
+    const art = sequenceArt(kind, e);
     const fallback = kind === 'impact' ? { ...e, kind: 'impactCore' } : e;
     if (kind === 'impact' && !battle?.impactEnabled()) return false;
-    if (!sequenceReady(art)) return battle?.drawOld(fallback, t, p, a, g, { w: cw }) || false;
+    if (!sequenceReady(art)) {
+      if (kind === 'fire' && fireAtlas(g, e, t, p, a, cw)) return true;
+      if (SPELLS[kind] && spellAtlas(kind, g, e, t, p, a, cw)) return true;
+      return battle?.drawOld(fallback, t, p, a, g, { w: cw }) || false;
+    }
     if (t >= 1) return true;
     const W = cw * (e.scale || 1), size = W * ACTION_SEQUENCES[kind] * (IMPACT_SIZE[art] || 1);
     const still = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const startY = a.y - cw * .75, targetY = chest(p, cw);
     const direction = Math.atan2(targetY - startY, p.x - a.x);
     const travel = !still && e.from && Math.hypot(p.x - a.x, p.y - a.y) > 4;
+    const flightSplit = travel ? SPELL_TRAVEL[kind] : 0;
+    if (flightSplit && t < flightSplit) {
+      const f = t / flightSplit, x = lerp(a.x, p.x, f), y = lerp(startY, targetY, f);
+      groundLight(g, x, lerp(a.y, p.y, f), W * .86, LIGHT[kind][0], .31);
+      if (kind === 'fire' && animSheet('ball')) {
+        g.save();
+        g.translate(x, y);
+        g.rotate(direction);
+        animPlay(g, 'ball', f * 1.6, W * .96, 1, true);
+        g.restore();
+      } else {
+        fly(g, e, t, a, p, cw, flightSplit, LIGHT[kind][0], C.white, W * .27);
+      }
+      return true;
+    }
+    const expandedArt = sequenceLength(art) === 12;
     const split = travel ? ({ arrow: .72, arcane: .36 }[kind] || 0) : 0;
     if (t < split) {
       const k = t / split, x = lerp(a.x, p.x, k);
       groundLight(g, x, lerp(a.y, p.y, k), W * .7, LIGHT[kind][0], .27);
-      return sequenceFrame(g, art, Math.min(1, Math.floor(k * 2)), x,
+      return sequenceFrame(g, art, expandedArt ? Math.min(3, Math.floor(k * 4)) : Math.min(1, Math.floor(k * 2)), x,
         lerp(startY, targetY, k), size * .72, 1, direction);
     }
-    const k = seg(t, split, 1);
-    const groundAnchor = { blunt: .64, holy: .76, death: .76 }[kind];
+    const k = seg(t, flightSplit || split, 1);
+    const groundAnchor = GROUND_ANCHOR[kind];
     const aimed = ['sword', 'knife', 'spear', 'rapier', 'arrow'].includes(kind);
-    const frame = still ? 1 : split ? (k < .38 ? 2 : 3) : k < .13 ? 0 : k < .32 ? 1 : k < .58 ? 2 : 3;
+    const contact = split ? 0 : .23;
+    const frame = expandedArt ? (still ? 4 : phaseFrame(k, contact, 4))
+      : still ? 1 : split ? (k < .38 ? 2 : 3) : k < .13 ? 0 : k < .32 ? 1 : k < .58 ? 2 : 3;
     const strength = still ? .65 * (1 - t) : 1 - seg(k, .7, 1);
-    const hit = seg(k, split ? 0 : .13, 1);
-    if (!still) paintedLight(kind, g, e, hit, p, W, false);
+    const hit = seg(k, expandedArt ? contact : split ? 0 : .13, 1);
+    if (!still) {
+      paintedLight(kind, g, e, hit, p, W, false);
+      floorImpact(kind, g, hit, p, W);
+    }
     sequenceFrame(g, art, frame, p.x, groundAnchor ? p.y : targetY,
       size, strength, aimed ? direction : 0, groundAnchor || .5);
-    if (!still) paintedLight(kind, g, e, hit, p, W, true);
+    if (!still) {
+      paintedLight(kind, g, e, hit, p, W, true);
+      aftermath(kind, g, e, hit, p, W);
+    }
     return true;
   }
   for (const kind of Object.keys(ACTION_SEQUENCES)) {
-    addVariant(kind, 'drawnSequence', 'ภาพวาด 4 เฟรม + แสงและอนุภาค',
+    addVariant(kind, 'drawnSequence', 'ภาพวาด 12 เฟรม + แสงและอนุภาค',
       (g, e, t, p, a, cw) => actionSequence(kind, g, e, t, p, a, cw));
   }
 
