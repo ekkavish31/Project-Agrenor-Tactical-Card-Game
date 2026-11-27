@@ -13,8 +13,17 @@ let ready=false,marketReady=false,initialized=false,lastStamp='',lastMotion='',i
 // Cover the iframe before navigation, including the gap before its own scripts run.
 const loading=window.StdLoader?window.StdLoader.make({title:'กำลังเตรียมสถานที่',step:'กำลังเปิดหน้าบันทึกการเดินทาง',absolute:true}):document.createElement('div');loading.hidden=true;host.appendChild(loading);   /* v98.1108 · the standard loading screen (js/game-loader.js) */
 let loadTimer=0;(loading.querySelector('.gl-retry')||{}).onclick=()=>{if(marketOpen){marketReady=false;marketFrame.src=marketFrame.src;sync()}};
-function syncLoading(){const wait=marketOpen&&!marketReady;document.body.classList.toggle('scene-loading',wait);   /* v98.1055 · the quest tracker (z-index 1200) used to float over this black loading screen */
- if(wait===!loading.hidden)return;loading.hidden=!wait;clearTimeout(loadTimer);{const rb=loading.querySelector('.gl-retry');if(rb)rb.hidden=true}if(wait){const sp=loading.querySelector('.gl-step');if(sp)sp.textContent='กำลังเปิดหน้าบันทึกการเดินทาง';loadTimer=setTimeout(()=>{if(sp)sp.textContent='กำลังรอภาพของสถานที่…';const rb=loading.querySelector('.gl-retry');if(rb)rb.hidden=false},15000)}}
+let loadingWait=false,loadEndToken=0;
+function syncLoading(){
+ const wait=marketOpen&&!marketReady;if(wait===loadingWait)return;loadingWait=wait;const token=++loadEndToken;clearTimeout(loadTimer);
+ const rb=loading.querySelector('.gl-retry');if(rb)rb.hidden=true;
+ if(wait){loading.hidden=false;document.body.classList.toggle('scene-loading',true);window.MipLoader?.still(loading,false);
+  window.StdLoader?.progress(loading,null);const sp=loading.querySelector('.gl-step');if(sp)sp.textContent='กำลังเปิดหน้าบันทึกการเดินทาง';loadTimer=setTimeout(()=>{if(sp)sp.textContent='กำลังรอภาพของสถานที่…';if(rb)rb.hidden=false},15000);
+ }else{const end=()=>{if(token!==loadEndToken)return;loading.hidden=true;document.body.classList.toggle('scene-loading',false)};
+  if(!marketOpen||loading.hidden){window.MipLoader?.still(loading,false);end()}
+  else{window.StdLoader?.progress(loading,1);Promise.resolve(window.StdLoader?.finish(loading)||window.MipLoader?.still(loading,true)).then(()=>setTimeout(end,350))}
+ }
+}
 
 function post(f,data){f.contentWindow?.postMessage({source:'project-a-game',...data},'*')}
 function send(data){if(ready)post(frame,data)}
