@@ -28,7 +28,7 @@
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const MIP = '<div class="mip-track" aria-hidden="true"><div class="mip-go"><div class="mip-flip"><div class="mip-run"><i></i></div><div class="mip-idle"><i></i></div></div></div></div>';
   function css() {   /* pages that did not link the stylesheets get them here */
-    for (const h of ['css/mip-loader.css?v=v98.1035', 'css/game-loader.css?v=v98.1117']) { const name = h.split('/')[1].split('?')[0]; if ([...document.styleSheets].some(s => (s.href || '').includes(name)) || document.querySelector('link[href*="' + name + '"]')) continue; const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; (document.head || document.documentElement).appendChild(l) }
+    for (const h of ['css/mip-loader.css?v=v98.1160', 'css/game-loader.css?v=v98.1117']) { const name = h.split('/')[1].split('?')[0]; if ([...document.styleSheets].some(s => (s.href || '').includes(name)) || document.querySelector('link[href*="' + name + '"]')) continue; const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; (document.head || document.documentElement).appendChild(l) }
   }
   function make(o = {}) {
     css(); const el = document.createElement('div'); el.className = 'gl-std' + (o.absolute ? ' gl-abs' : ''); if (o.id) el.id = o.id; el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite');
@@ -37,7 +37,7 @@
     const lo = el.querySelector('.gl-lore'), tx = pick(LORE.filter(x => x[0] <= loreLevel()).map(x => x[1])); lo.querySelector('.gl-note-text').textContent = tx || ''; lo.hidden = !tx;
     if (o.progress != null) progress(el, o.progress); rotate(el); return el;
   }
-  function progress(el, f) { const b = el?.querySelector('.gl-bar'); if (!b) return; if (f == null) { b.classList.add('ind'); b.querySelector('i').style.width = ''; return } b.classList.remove('ind'); const pc = Math.round(Math.max(0, Math.min(1, f)) * 100); b.querySelector('i').style.width = pc + '%'; const pe = el.querySelector('.gl-pct'); if (pe) { pe.hidden = false; pe.textContent = pc + '%' } }
+  function progress(el, f) { const b = el?.querySelector('.gl-bar'); if (!b) return; if (f == null) { root.MipLoader?.still(el,false); b.classList.add('ind'); b.querySelector('i').style.width = ''; return } b.classList.remove('ind'); const pc = Math.round(Math.max(0, Math.min(1, f)) * 100); b.querySelector('i').style.width = pc + '%'; const pe = el.querySelector('.gl-pct'); if (pe) { pe.hidden = false; pe.textContent = pc + '%' } if(f>=1)return finish(el);if(pc===0)root.MipLoader?.still(el,false) }
   function step(el, text) { const s = el?.querySelector('.gl-step'); if (s) s.textContent = text || '' }
   /* TIPS and LORE change while the screen waits: every line is shown once (shuffled) before any repeats, each held long enough to read (~85 ms per character, at least 6 s);
      the text fades out / in. rotate(el, {level}) → stop(); it also stops by itself when the element leaves the page. */
@@ -54,6 +54,7 @@
     timer = setTimeout(tick, 6500);
     const stop = () => { stopped = true; clearTimeout(timer) }; el._glRot = stop; return stop;
   }
-  function hide(el, ms = 380) { if (!el) return; el.classList.add('gl-out'); setTimeout(() => el.remove(), ms) }
-  root.StdLoader = { make, progress, step, hide, rotate, TIPS, LORE, loreLevel };
+  function finish(el) { return root.MipLoader?.still(el,true)||Promise.resolve(false) }
+  async function hide(el, ms = 380) { if (!el) return; await finish(el); if(!el.isConnected)return; await new Promise(r=>setTimeout(r,350));el.classList.add('gl-out'); setTimeout(() => el.remove(), ms) }
+  root.StdLoader = { make, progress, step, finish, hide, rotate, TIPS, LORE, loreLevel };
 })(globalThis);

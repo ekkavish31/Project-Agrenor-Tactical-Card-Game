@@ -30,7 +30,7 @@
   const complete=list.length>0&&n===list.length&&document.readyState!=='loading'&&painted;
   progress.value=Math.min(99,Math.round(n/Math.max(1,list.length)*95));
   quiet=complete&&stable?quiet+1:0;
-  if(quiet>=3){open=false;progress.value=100;root.__imgGateOpen=false;if(root.Image===TrackedImage)root.Image=Orig;veil.remove();list.length=0;resolve();root.dispatchEvent(new Event('agrenor-scene-ready'));return}
+  if(quiet>=3){open=false;progress.value=100;if(root.Image===TrackedImage)root.Image=Orig;Promise.resolve(root.StdLoader?.finish(veil)).then(()=>setTimeout(()=>{root.__imgGateOpen=false;veil.remove();list.length=0;resolve();root.dispatchEvent(new Event('agrenor-scene-ready'))},350));return}
   if(performance.now()-t0>15000){msg.textContent='กำลังรอภาพของฉาก หากรอนานลองโหลดใหม่ได้';retry.hidden=false}
   setTimeout(tick,90);
  }
