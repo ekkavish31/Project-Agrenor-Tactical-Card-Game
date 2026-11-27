@@ -278,6 +278,12 @@ body.fb-open #storyTracker{display:none!important}
 #questAnnouncement .qa-title.qa-visible{opacity:1}
 #questAnnouncement .qa-card{box-sizing:border-box;width:min(640px,100%);margin-top:calc(var(--qa-width,560px)*-.10);position:relative;border:22px solid transparent;border-image:url('../assets/ui/va-frame.webp') 12% fill / 22px / 0 stretch;padding:12px 20px 16px;color:#44301a;filter:drop-shadow(0 7px 12px #0005);max-height:max(120px,calc(100dvh - var(--qa-top) - var(--qa-width,560px)*.4 - 14px));overflow:auto}
 #questAnnouncement .qa-card[hidden]{display:none}
+#questAnnouncement [hidden]{display:none!important}
+/* v98.1164 · lesson pages: ◀ page ▶ row above the continue button (the continue button is only on the last page) */
+#questAnnouncement .qa-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 6px}
+#questAnnouncement .qa-nav button{display:block;width:auto;flex:none;padding:3px 10px;border-width:8px;border-image:url('../assets/ui/battle-btn.webp') 14 fill / 8px / 0 stretch;color:#f6e6c2;font:700 14px/1.4 VillageThai,system-ui;text-shadow:0 1px 2px #000}
+#questAnnouncement .qa-nav button:disabled{opacity:.4;cursor:default;filter:none}
+#questAnnouncement .qa-pg{font:700 14px VillageThai,system-ui;color:#6a4a22;letter-spacing:.08em}
 #questAnnouncement .qa-kind{font-size:11px;letter-spacing:.15em;color:#806038}
 #questAnnouncement h3{font-size:22px;margin:5px 0 10px;color:#543718}
 #questAnnouncement h3:empty,#questAnnouncement ul:empty{display:none}
