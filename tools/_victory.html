@@ -1,0 +1,5 @@
+<!doctype html><meta charset="utf-8"><base href="/"><body style="margin:0;background:#445"><script src="js/victory-screen.js"></script><script>
+window.demo=()=>VictoryScreen.show({title:'ทดสอบ',goal:'ล้มศัตรูทั้งหมด',kills:6,turns:7,gold:20,members:[{id:'hero',name:'Arz',pic:'hero-male',hp:40,max:50,lv0:1,lv1:1,xp0:0,xp1:5,gain:5,needFn:l=>60},{id:'sib',name:'Liz',pic:'hero-female',hp:30,max:40,lv0:1,lv1:1,xp0:0,xp1:4,gain:4,needFn:l=>60}],
+ stat:{turns:7,dealt:{hero:90,sib:40},taken:{foe:0,hero:10},kills:{hero:4,sib:2},healed:{},cards:[],crit:1,adv:0,dis:0,flank:0,high:0,dotFoe:6,dotUs:0,maxHit:{dmg:20,by:'hero'},
+ foes:[...Array.from({length:6},(_, i)=>({id:'m'+i,name:'แพะบ้า '+(i+1),src:'/assets/cards/portraits/en-goat.webp',pos:'50% 28%',size:'150%',maxHp:20,hp:0,down:true,total:20,by:i%2?{hero:12,sib:8}:{hero:20},dot:i==2?6:0,killer:i%2?'sib':'hero',boss:false})),{id:'b',name:'หัวหน้าแพะ',src:'/assets/cards/portraits/en-goat.webp',pos:'50% 28%',size:'150%',maxHp:60,hp:15,down:false,total:45,by:{hero:45},dot:0,killer:null,boss:true}]}});
+</script>
