@@ -161,12 +161,13 @@
       document.addEventListener('keydown', onKey, true);
       document.addEventListener('pointerup', onPointer, true);
 
-      small.then(() => {
+      small.then(async () => {
+        if (playback !== current) return;
+        await window.MipLoader?.still(gate.mip, true);
         if (playback !== current) return;
         ready = true;
         gate.msg.textContent = matchMedia('(pointer:coarse)').matches ? 'แตะหน้าจอเพื่อเริ่ม' : 'กดปุ่มใดก็ได้เพื่อเริ่ม';
         gate.gate.classList.add('ready');
-        window.MipLoader?.still(gate.mip, true);   // loading done: Mip stops in the middle and hops while waiting for the key
         go();
       });
     }

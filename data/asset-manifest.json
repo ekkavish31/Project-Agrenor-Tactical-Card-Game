@@ -167047,6 +167047,82 @@
    "usedIn": [
     "js/quest-announcement.js"
    ]
+  },
+  {
+   "id": "mip-sit-sheet",
+   "file": "assets/ui/mip-sit-sheet.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    2048,
+    256
+   ],
+   "usedIn": "MipLoader · all shared loading screens",
+   "artRevision": "v98.1156",
+   "source": "User supplied Mip transition and seated idle sheets; no new generation used",
+   "description": "256 px frame cells; shared neck/feet datums and fixed anatomical scale per sequence",
+   "atlas": {
+    "cols": 8,
+    "rows": 1
+   }
+  },
+  {
+   "id": "mip-rest-sheet",
+   "file": "assets/ui/mip-rest-sheet.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    3072,
+    256
+   ],
+   "usedIn": "MipLoader · all shared loading screens",
+   "artRevision": "v98.1156",
+   "source": "User supplied Mip transition and seated idle sheets; no new generation used",
+   "description": "256 px frame cells; shared neck/feet datums and fixed anatomical scale per sequence",
+   "atlas": {
+    "cols": 12,
+    "rows": 1
+   }
+  },
+  {
+   "id": "mip-sit-source",
+   "file": "assets/ui/mip-sit-source.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1774,
+    887
+   ],
+   "usedIn": "MipLoader · all shared loading screens",
+   "artRevision": "v98.1156",
+   "source": "User supplied Mip transition and seated idle sheets; no new generation used",
+   "description": "Original user-supplied source sheet",
+   "atlas": {
+    "cols": 4,
+    "rows": 2
+   }
+  },
+  {
+   "id": "mip-rest-source",
+   "file": "assets/ui/mip-rest-source.webp",
+   "category": "ui",
+   "status": "final",
+   "transparent": true,
+   "size": [
+    1010,
+    853
+   ],
+   "usedIn": "MipLoader · all shared loading screens",
+   "artRevision": "v98.1156",
+   "source": "User supplied Mip transition and seated idle sheets; no new generation used",
+   "description": "Original user-supplied source sheet",
+   "atlas": {
+    "cols": 4,
+    "rows": 3
+   }
   }
  ],
  "studioReviews": {
