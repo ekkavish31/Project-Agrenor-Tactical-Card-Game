@@ -11,10 +11,11 @@
   let queue = Promise.resolve();
 
   function cardIdOf(key) { const C = root.CardStudio; if (!C?.cardById) return null; for (const p of PREFIX) if (C.cardById(p + key)) return p + key; return null }
-  function info(key) {
-    const AD = root.ADVENTURE_DATA || {}, id = cardIdOf(key), d = AD.CONSUMABLES?.[key] || AD.GOODS?.[key] || AD.EVENT_CARDS?.[key] || {};
+  /* v98.1173 · info(key, explicitId): a tactic card (movement / combat) is given by its card id ('a-thunder' · 'm-step'), not by a bag key */
+  function info(key, explicitId) {
+    const AD = root.ADVENTURE_DATA || {}, id = explicitId || cardIdOf(key), d = AD.CONSUMABLES?.[key] || AD.GOODS?.[key] || AD.EVENT_CARDS?.[key] || {};
     const card = id && root.CardStudio.cardById(id), lore = id && root.CardLore?.get?.(id);
-    const name = card?.name || d.name || key, kind = (id && root.CardLore?.kindLine?.(id, card)) || d.kind || '';
+    const name = card?.name || d.name || (explicitId && root.TacticsDecks && ((explicitId[0] === 'm' ? root.TacticsDecks.MOVE : root.TacticsDecks.COMBAT)?.[key]?.name)) || key, kind = (id && root.CardLore?.kindLine?.(id, card)) || d.kind || '';
     const rule = lore?.use || (d.text || '').split(' · ')[0] || '';
     const desc = lore?.desc || d.text || '';
     return { key, id, name, kind, desc, rule, note: lore?.note || '', html: id ? root.CardStudio.renderCard(id, { mini: false }) : '', icon: d.icon || '🎁' };
@@ -61,7 +62,7 @@
   }
 
   function run(list, opt) {
-    const items = (list || []).filter(x => x && x.key && (x.n || 1) > 0).map(x => ({ ...info(x.key), n: x.n || 1 }));
+    const items = (list || []).filter(x => x && (x.key || x.id) && (x.n || 1) > 0).map(x => ({ ...info(x.key ?? String(x.id).replace(/^[a-z]+-/, ''), x.id), n: x.n || 1, text: x.text, kicker: x.kicker }));
     if (!items.length || !document.body) return Promise.resolve();
     css();
     return new Promise(resolve => {
@@ -76,9 +77,9 @@
         el.classList.remove('go'); void el.offsetWidth;
         cardEl.innerHTML = it.html || `<div class="ig-plain">${esc(it.icon)}</div>`; try { root.CardStudio?.fit?.(cardEl) } catch (e) { }
         cnt.textContent = '×' + it.n; cnt.style.display = it.n > 1 ? '' : 'none';
-        inf.innerHTML = `<div class="ig-body"><small class="ig-k">${esc(opt.kicker || 'ได้รับไอเทม')}</small><h2>${esc(it.name)}</h2>${it.kind ? `<span class="ig-type">${esc(it.kind)}</span>` : ''}`
+        inf.innerHTML = `<div class="ig-body"><small class="ig-k">${esc(it.kicker || opt.kicker || 'ได้รับไอเทม')}</small><h2>${esc(it.name)}</h2>${it.kind ? `<span class="ig-type">${esc(it.kind)}</span>` : ''}`
           + `<div class="ig-desc">${esc(it.desc)}</div>${it.note ? `<div class="ig-note">“${esc(it.note)}”</div>` : ''}${it.rule ? `<div class="ig-rule">${esc(it.rule)}</div>` : ''}`
-          + `${opt.from || opt.text ? `<div class="ig-from">${esc(opt.text || opt.from)}</div>` : ''}</div>`
+          + `${it.text || opt.from || opt.text ? `<div class="ig-from">${esc(it.text || opt.text || opt.from)}</div>` : ''}</div>`
           + `<div class="ig-bar"><button type="button" class="ig-btn">${last ? 'เก็บเข้าสมุดผนึก' : 'ต่อไป ▶'}</button>${items.length > 1 ? `<span class="ig-dots">${items.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
         try { root.Sfx?.play?.(last ? 'ui-confirm' : 'ui-click') } catch (e) { }
         requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('go')));

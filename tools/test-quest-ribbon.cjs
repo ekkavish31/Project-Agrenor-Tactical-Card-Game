@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
   await p.goto('http://localhost:8767/tools/_ribbon.html');
   await p.evaluate(()=>{window.__p=QuestAnnouncement.show({title:'ไปหาผู้ใหญ่บ้าน',lesson:{title:'เดินในหมู่บ้าน',lines:Array.from({length:9},(_, i)=>'บรรทัดบทเรียนยาวๆ ข้อ '+(i+1)+' ลองเดินไปคุยกับผู้ใหญ่บ้านแล้วคลิกที่ตัวเพื่อคุย')}})});
   await p.waitForTimeout(150);
-  const at=()=>p.evaluate(()=>{const r=document.querySelector('#questAnnouncement .qa-visual').getBoundingClientRect(),c=document.querySelector('#questAnnouncement .qa-card'),cr=c.hidden?null:c.getBoundingClientRect();return {cy:r.top+r.height/2,H:innerHeight,cardBottom:cr&&cr.bottom,hidden:c.hidden}});
+  const at=()=>p.evaluate(()=>{const r=document.querySelector('#questAnnouncement .qa-visual').getBoundingClientRect(),c=document.querySelector('#questAnnouncement .qa-card'),cr=c.hidden?null:c.getBoundingClientRect();return {cy:r.top+r.height/2,rh:r.height,H:innerHeight,cardBottom:cr&&cr.bottom,hidden:c.hidden}});
   const a=await at();await p.waitForFunction(()=>!document.querySelector('#questAnnouncement .qa-card').hidden,null,{timeout:6000});const z=await at();
   const q=z.cy/z.H,moved=Math.abs(a.cy-z.cy)>1,over=z.cardBottom>z.H+1;
   /* pages */
@@ -20,5 +20,5 @@ const {chromium}=require('playwright');
   if(!pgOk||!stable||seen!==9||(total<2&&h<700))bad++;
   const after=await at();if(Math.abs(after.cy-z.cy)>1){bad++;console.log('   ribbon moved while paging')}
   console.log(w+'x'+h,'ribbon centre',(q*100).toFixed(1)+'%','moved',moved,'card bottom',Math.round(z.cardBottom),'/',z.H,over?'OVERFLOW':'');
-  if(moved||over||(w>=800&&Math.abs(q-.25)>.02))bad++;await p.close()}
+  if(moved||over||Math.abs(z.cy-Math.max(.25*z.H,8+z.rh/2))>2)bad++;await p.close()}
  await b.close();console.log(bad?'FAIL':'PASS');process.exit(bad?1:0)})()
