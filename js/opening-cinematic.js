@@ -17,12 +17,10 @@
     logo.className = 'ag-logo'; logo.src = 'assets/intro/agrenor-logo.webp?v=2'; logo.alt = 'Agrenor: Paths Unwritten'; logo.draggable = false;
     h1.append(logo);
     brand.querySelector('p').remove();
-    kicker.textContent = 'FROM SMALL THINGS, A WORLD';   /* v98.652 · shorter tagline (was two lines: EVERY SMALL BEGINNING / CAN CHANGE A GREATER WORLD) */
-    brand.append(kicker);
+    kicker.remove();   /* v98.1148 · tagline removed at the user's request */
+    //kicker.textContent = 'FROM SMALL THINGS, A WORLD';   /* v98.652 · shorter tagline (was two lines: EVERY SMALL BEGINNING / CAN CHANGE A GREATER WORLD) */
     title.classList.add('ag-title');
-    const horizon = document.createElement('div');
-    horizon.className = 'ag-horizon'; horizon.setAttribute('aria-hidden', 'true'); horizon.textContent = 'To New Horizons';
-    main.append(horizon);
+    /* v98.1148 · 'To New Horizons' removed at the user's request (horizon element no longer added) */
 
     const replay = document.createElement('button');
     replay.className = 'ag-replay';
