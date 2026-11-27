@@ -300,4 +300,4 @@ body.quest-announcement-open #storyTracker{visibility:hidden}
 .cs-ib.on,.cs-ib:hover{background:transparent!important;box-shadow:none!important;color:#fff!important;-webkit-text-fill-color:#fff;border-radius:10px;outline:2px solid #fff;outline-offset:2px;text-shadow:0 0 6px #fff,0 0 12px #ffe3a0,0 0 22px #ffc96acc}
 .cs-ib.on img,.cs-ib:hover img{filter:brightness(1.12) drop-shadow(0 0 6px #ffffffaa)}
 .cs-ib:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.cs-ib.on,.cs-ib:hover,.cs-ib:focus-visible{color:#fff!important;-webkit-text-fill-color:#fff}   /* v98.1156 · the label stays white on the black bar in every highlighted state (a global button:hover colour made it dark brown) */
+.cs-ib.on,.cs-ib:hover,.cs-ib:focus-visible{color:#fff!important;-webkit-text-fill-color:#fff}   /* v98.1157 · the label stays white on the black bar in every highlighted state (a global button:hover colour made it dark brown) */
