@@ -290,11 +290,12 @@
     if (mir) { g.transform(-1, 0, 0, 1, W, 0) }
     if (A.hole && sky) {   /* the sky / daylight shows only through the opening (a tinted copy of the hole mask) */
       const hm = artImgs[name + '#h'] || (artImgs[name + '#h'] = Object.assign(new Image(), { src: A.hole }));
-      if (hm.complete && hm.naturalWidth) { const oc = holeCv || (holeCv = document.createElement('canvas')); oc.width = hm.naturalWidth; oc.height = hm.naturalHeight; const o = oc.getContext('2d'); o.drawImage(hm, 0, 0); o.globalCompositeOperation = 'source-in'; o.fillStyle = sky; o.fillRect(0, 0, oc.width, oc.height); g.drawImage(oc, 0, 0) }
+      /* v98.1175 · the tinted hole mask is built ONCE per (picture, sky colour) and reused — it was re-made (canvas resized, mask redrawn, tinted) for every window, every frame */
+      if (hm.complete && hm.naturalWidth) { const key = name + '|' + sky; let oc = holeTint.get(key); if (!oc) { oc = document.createElement('canvas'); oc.width = hm.naturalWidth; oc.height = hm.naturalHeight; const o = oc.getContext('2d'); o.drawImage(hm, 0, 0); o.globalCompositeOperation = 'source-in'; o.fillStyle = sky; o.fillRect(0, 0, oc.width, oc.height); holeTint.set(key, oc); if (holeTint.size > 16) holeTint.delete(holeTint.keys().next().value) } g.drawImage(oc, 0, 0) }
     }
     g.drawImage(im, 0, 0); g.restore(); return true
   }
-  let holeCv = null;
+  let holeCv = null; const holeTint = new Map();
   function wallDeco(d, t, day) {
     /* hand-painted wall pieces first; the code-drawn shapes below stay as the fallback while a picture loads */
     const WD = { board: ['noticeboard', 46], antlers: ['antlers', 70], sword: ['swords-shield', 66], torch: ['wall-torch', 60], painting: ['painting', 64], banner: KIND === 'guild' ? ['banner-guild', 56] : ['banner-long', 36] };

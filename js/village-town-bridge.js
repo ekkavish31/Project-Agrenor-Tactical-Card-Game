@@ -27,7 +27,7 @@ function syncLoading(){
 
 function post(f,data){f.contentWindow?.postMessage({source:'project-a-game',...data},'*')}
 function send(data){if(ready)post(frame,data)}
-function stateData(){return{location:s.village.location,name:heroName(),day:s.day,minutes:s.minutes,hp:s.hp,stamina:s.stamina,coins:s.village.coins,message:s.log,exits:Object.entries(window.ADVENTURE_DATA.AREAS).map(([id,a])=>({id,name:a.name,exit:a.exit})),actions:placeActions().map(a=>({id:a.id,name:a.name,cost:a.cost,effect:a.effect,reason:a.reason||''}))}}
+function stateData(){return{location:s.village.location,name:heroName(),day:s.day,minutes:s.minutes,hp:s.hp,stamina:s.stamina,coins:s.village.coins,message:s.log,exits:Object.entries(window.ADVENTURE_DATA.AREAS).map(([id,a])=>({id,name:a.name,exit:a.exit})),actions:placeActions().map(a=>({id:a.id,name:a.name,cost:a.cost,effect:a.effect,reason:a.reason||'',with:a.with}))}}
 function modalOpen(){return !!document.querySelector('dialog[open]')}
 function activeHide(){return !!window.TitleScreen?.active||inside||s.mode==='battle'||!!window.Adventure?.state()||!$('tacticsLayer').hidden}
 /* v98.198 · keyboard focus follows the visible frame: after entering/leaving a place the iframe that is now on screen was never focused (the key presses went to the hidden one or the parent), so WASD/arrows did nothing until the player clicked */

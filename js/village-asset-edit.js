@@ -3032,7 +3032,11 @@
 
  // keep the panel in step with the map: mode switches, undo/redo, test walk
  let lastSig = '';
- (function tick() {
+ let tickAt = 0;
+ (function tick(now) {
+  /* v98.1175 · outside the editor this only has to notice a change now and then: JSON.stringify(data) of the whole village ran on EVERY animation frame (all game long, even indoors) */
+  if (!editing && !place && now - tickAt < 300) { requestAnimationFrame(tick); return }
+  tickAt = now;
   if (place && testWalk) leave(true);
   const sig = [editing, testWalk, UX.getMode(), place?.id, place?.tab, place?.keys.join(), selChar, frame.length, JSON.stringify(data).length, UX.undoMark(), UX.selectedRoad?.(), UX.roadList?.().length, courtDraw].join('|');
   if (sig !== lastSig && !sliding && !picker?.open) {

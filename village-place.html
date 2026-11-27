@@ -1297,7 +1297,10 @@ function actionInfo(id) {
 function stationActs(s) {
  const own = s?.actions || [];
  const extra = (state?.actions || []).filter(a => Array.isArray(a.with) && !own.includes(a.id) && own.some(id => a.with.includes(id))).map(a => a.id);
- return [...own, ...extra]
+ const all = [...own, ...extra];
+ /* v98.1175 · when other actions joined this station, keep the game's own order (the bed: นอนพัก 3 ชม. · นอนถึงเช้า · นาฬิกาปลุก · จัดการเตียง) */
+ if (extra.length) { const ord = (state?.actions || []).map(a => a.id); all.sort((a, b) => (ord.indexOf(a) < 0 ? 99 : ord.indexOf(a)) - (ord.indexOf(b) < 0 ? 99 : ord.indexOf(b))) }
+ return all
 }
 
 function travel(i) {
