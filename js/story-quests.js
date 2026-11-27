@@ -120,7 +120,7 @@ function lessonCard(id){const L=LESSON[id];if(!L)return Promise.resolve();const 
  return root.QuestAnnouncement.show({title:step?.title||L[0],lesson:{title:L[0],lines:L[1]}}).then(()=>rememberLesson(id))}
 async function questBriefing(step,d){
  const L=!d.lessonSeen&&LESSON[step.id];
- await root.QuestAnnouncement.show({title:step.title,details:[step.goal,...(!L&&step.hint?[step.hint]:[])].filter(Boolean),lesson:L?{title:L[0],lines:L[1]}:null});
+ await root.QuestAnnouncement.show({title:step.title,details:[step.goal,...(!L&&step.hint?[step.hint]:[])].filter(Boolean),lesson:L?{title:L[0],lines:L[1]}:null,todo:step.todo?.(d)||null});
  d.briefingPending=false;if(L){d.lessonSeen=true;rememberLesson(step.id)}doSave();
 }
 /* world map only when the prologue sends you out (or you are already out on a step) */
@@ -144,7 +144,7 @@ const STEPS=[
  talkStep({id:'goatsBack',outro:'goatsDone',reward:()=>{addCoins(15);toast('รางวัล: +15 เหรียญ')},title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
 talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮิลดา',talk:'hilda',goal:'ไปหาฮิลดาชาวนา ถามว่าช่วยอะไรได้บ้าง',hint:'เช้าอยู่ที่ไร่ เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
   reward:()=>{V().story.seeds=true}}),
-{id:'pumpkin',tag:'real',outro:'pumpkinDone',npc:'hilda',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
+{id:'pumpkin',tag:'real',outro:'pumpkinDone',npc:'hilda',todo:d=>[{t:'เก็บฟักทองสุกในไร่ 3 ลูก',done:(d.got||0)>=3},{t:'ดูแลฟักทองประกวดของฮิลดา (วันละครั้ง)',done:waterDays()>=1}],title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
   spot:SPOT.ripe,progress:d=>Math.min(1,((d.got||0)+(waterDays()>=1?1:0))/4),targets:()=>({spots:wateredToday()?[]:[SPOT.plot]}),check:d=>(d.got||0)>=3&&waterDays()>=1,acts:[guideBtn],
   reward:async()=>{/* v98.605 · Hilda's thank-you: the first attack card (⚡ อัสนีบาต). It goes to the collection only — NOT into the deck — so the deck lesson at home has something to place */
    const thunderOK=await (async()=>{try{await root.StarterKit?.unlock?.([{group:'combat',id:'thunder',n:1}],{noReveal:true});return true}catch(e){return false}})();   /* v98.1173 · the card and the small pumpkin are shown together in ONE gift scene (◀ ▶) */
@@ -163,7 +163,7 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
  {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'งานวันนี้เสร็จแล้ว — พระอาทิตย์ใกล้ตก เดินกลับบ้านแล้วไปที่เตียงเพื่อนอนพัก',hint:'ตอนเย็นของวันแรกเวลาเดินช้าลงให้ทำงานครบ · ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
   place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn]},
  talkStep({id:'tom',chapter:'วันที่ 2 · ทำของ และหาคน',skip:()=>!!V().story?.tomDone,outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
- {id:'planks',tag:'real',skip:()=>!!V().story?.tomDone,title:'เก็บไม้สองกอง',goal:'เก็บไม้ให้ครบสองกอง — กองหน้าบ้านเคน และกองที่โรงตีเหล็ก',hint:'เดินไปแตะกองไม้ 🪵 ทั้งสองกอง · ได้ไม้เข้าสมุดผนึก (หมวดวัตถุดิบ)',
+ {id:'planks',tag:'real',skip:()=>!!V().story?.tomDone,title:'เก็บไม้สองกอง',todo:d=>[{t:'เก็บกองไม้กองที่ 1',done:(d.got||0)>=1},{t:'เก็บกองไม้กองที่ 2',done:(d.got||0)>=2}],goal:'เก็บไม้ให้ครบสองกอง — กองหน้าบ้านเคน และกองที่โรงตีเหล็ก',hint:'เดินไปแตะกองไม้ 🪵 ทั้งสองกอง · ได้ไม้เข้าสมุดผนึก (หมวดวัตถุดิบ)',
   spot:SPOT.planks,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
   onSpot:d=>{mats().wood=(mats().wood||0)+1;d.got=(d.got||0)+1;doSave();doRender();return {msg:'🪵 ไม้ +1 ('+d.got+'/2)',consume:true}}},
  {id:'stall',tag:'real',skip:()=>!!V().story?.tomDone,outro:'stallDone',title:'ซ่อมแผงขายของ',goal:'เดินไปที่แผงหน้าตลาด แล้วซ่อม (ใช้ไม้ 2)',hint:'เดินไปแตะแผง 🛠️ · ใช้แรง 6 และเวลา 30 นาที · ไม้ไม่พอซื้อได้ที่ตลาด',
@@ -227,7 +227,7 @@ function water(){const st=V().story;st.water||={};if(st.water[G().day])return '�
 function questTargets(){const step=cur();if(!step||onWorld())return null;const d=dataOf(step);return {id:step.id,...targetsOf(step,d)}}
 async function questEvent(ev){const step=cur();if(!step||!ev)return null;const d=dataOf(step);
  if(ev.key==='plot')return {msg:water(),consume:wateredToday()};
- if(step.spot?.key===ev.key&&step.onSpot){const r=await step.onSpot(d);doSave();return r}
+ if(step.spot?.key===ev.key&&step.onSpot){const r=await step.onSpot(d);doSave();try{if(step.check?.(d))setTimeout(()=>tick().catch(()=>{}),30);else dropHold()}catch(e){dropHold()}return r}
  return null}
 function talked(id){const step=cur();if(!step)return false;const d=dataOf(step);if(step.talk===id&&!d.talked){d.talked=true;doSave();setTimeout(()=>tick().catch(()=>{}),50);return true}return false}
 /* lanterns are made at the forge's anvil like any other station work (village-place.html joins actions with `with` to that station) */
@@ -268,6 +268,10 @@ function warmBattle(kind){
    const urls=[...(L.common||[]),...(L[kind]||[])],imgs=urls.filter(u=>/\.(png|webp|jpe?g)$/i.test(u)),rest=urls.filter(u=>!imgs.includes(u)),sw=navigator.serviceWorker?.controller;
    if(sw){for(let i=0;i<imgs.length;i+=20){sw.postMessage({type:'precache',urls:imgs.slice(i,i+20)});await sleep(400)}}else for(const u of imgs){await fetch(u).catch(()=>{});await sleep(30)}
    for(const u of rest){await fetch(u).catch(()=>{});await sleep(30)}})()}catch(e){}}
+/* v98.1177 · NO VILLAGE FLASH: when a quest fight is won, a black cover (below the cut-scene layer, above the village) is put up as the battle frame is removed. It stays until the step's outro scene has started (the cut-scene layer, z 9500, fades in over it) —
+   or until the step turns out not to be finished (questEvent) — and a 3.5 s failsafe always removes it. */
+function holdCover(){if(document.getElementById('storyHold'))return;const h=document.createElement('div');h.id='storyHold';h.style.cssText='position:fixed;inset:0;z-index:940;background:#07080c;opacity:1;transition:opacity .35s;pointer-events:none';document.body.appendChild(h);setTimeout(dropHold,3500)}
+function dropHold(){const h=document.getElementById('storyHold');if(!h)return;h.style.opacity='0';setTimeout(()=>h.remove(),400)}
 function questBattle(d,o){return new Promise(resolve=>{
  if(d.fighting||onWorld()){resolve('busy');return}
  const g=G(),v=V();if((g.hp||0)<30)g.hp=Math.max(g.hp||0,40);
@@ -280,7 +284,7 @@ function questBattle(d,o){return new Promise(resolve=>{
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
   const win=r.outcome==='win';let xpGot=0;const VS=root.VictoryScreen,before=win&&VS?VS.snap(g):null;
   if(win){v.battles=(v.battles||0)+1;v.kills=(v.kills||0)+(r.kills||0);if(root.Progression){const xp=Progression.battleXp({dang:.25,kills:r.kills});xpGot=xp;gainCharacterXP(xp);for(const p of v.party||[])Progression.gainAlly(p,Math.round(xp*.8))}}
-  const cleanup=()=>{fr.remove();doRender();heroBack(spot);VS?.fightUI?.(false)};
+  const cleanup=()=>{if(win)holdCover();fr.remove();doRender();heroBack(spot);VS?.fightUI?.(false)};
   /* v98.996 · the Victory report opens OVER the battle scene (the frame is removed only after its Continue button). v98.597 · the "fighting" lock stays ON while it is up — otherwise another goat standing next to the hero started a second fight behind it */
   if(win&&VS)VS.show({title:o.title,goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,before,xpGot,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(()=>{cleanup();d.fighting=false;doSave();resolve('win')});else if(win){cleanup();d.fighting=false;doSave();resolve('win')}else if(r.outcome==='lose'&&VS)VS.show({defeat:true,title:o.title,goal:r.goal,kills:r.kills||0,turns:r.turns,members:VS.members(g,null,0,{fought:(r.party||[]).map(x=>x.key)}),stat:r.stat}).then(()=>{cleanup();d.fighting=false;doSave();resolve('out')});else{cleanup();d.fighting=false;doSave();resolve('out')}};
  {const cut=battleCut();battleReady(fr).then(()=>cut.open())}addEventListener('message',done);root.VictoryScreen?.fightUI?.(true);document.body.appendChild(fr)})}
@@ -373,8 +377,10 @@ async function tick(){if(busy||root.QuestAnnouncement?.busy()||!G()||!V())return
   if(!d.begun){d.begun=true;d.briefingPending=true;step.begin?.(d);doSave()}
   const introId=typeof step.intro==='function'?step.intro():step.intro;
   if(introId&&!d.introSeen){d.introSeen=true;if(introId==='opening'){V().story.bookSeen=true;V().story.bookIntro=true}doSave();draw();await root.Cutscene.play(sceneAt(introId));if(introId==='opening')await bookTour()}
+  /* v98.1177 · the step was already finished before its briefing could open (e.g. the fight started the moment the hero arrived): do NOT pop the briefing after the fight — go straight to the outro. The lesson is still filed in the journal. */
+  if((d.briefingPending||LESSON[step.id]&&!d.lessonSeen)&&step.check(d)){d.briefingPending=false;if(LESSON[step.id]&&!d.lessonSeen){d.lessonSeen=true;rememberLesson(step.id)}doSave()}
   if(d.briefingPending||LESSON[step.id]&&!d.lessonSeen){if(['cave','expedition'].includes(step.id))V().story.tut=step.id;doSave();if(step.id==='wake'&&root.GuidedTour&&!V().story.walkTour)await walkTour();await questBriefing(step,d)}
-  if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId)await root.Cutscene.play(sceneAt(outroId));await step.reward?.(d);st.i++;doSave();doRender();try{root.RunSlots?.tm?.mark()}catch(e){}   /* v98.1080 · time machine checkpoint at every new step */
+  if(step.check(d)){d.done=true;const outroId=typeof step.outro==='function'?step.outro(d):step.outro;if(outroId){const pl=root.Cutscene.play(sceneAt(outroId));setTimeout(dropHold,900);await pl}else dropHold();await step.reward?.(d);st.i++;doSave();doRender();try{root.RunSlots?.tm?.mark()}catch(e){}   /* v98.1080 · time machine checkpoint at every new step */
    const nx=STEPS[st.i];try{root.Sfx?.play('quest-done')}catch(e){}if(nx){if(st.closed)st.unseen=(st.unseen||0)+1;/* The next step presents its ribbon and lesson together after its intro. */tracker().classList.remove('stk-pop');void tracker().offsetWidth;tracker().classList.add('stk-pop')}else{st.mode='done';doSave()}}
  }finally{busy=false}draw()}
 
