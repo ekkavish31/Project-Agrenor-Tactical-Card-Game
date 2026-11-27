@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1165';
+  const V = '98.1167';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -991,6 +991,7 @@
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
       if (r.status) floatText(r.status.unit, (FB.STATUS[r.status.kind]?.icon || '') + ' ' + (FB.STATUS[r.status.kind]?.name || ''), '#ffe08a', true);
       for (const x of r.statuses || []) floatText(x.unit, (FB.STATUS[x.kind]?.icon || '') + ' ' + (FB.STATUS[x.kind]?.name || ''), '#ffe08a', true);
+      if (r.bump) { const bu = r.bump.unit || m; shake(11, 320); fx('fallDust', bu); floatText(bu, 'ชน −' + r.bump.damage, '#ffb08a', false, true); floatText(bu, '💫 สตันท์', '#ffe08a', true); bu.shown = bu.hp; hudSync() }   /* v98.1166 · pushed into an obstacle */
       if (r.fall) { shake(12, 380); fx('fallDust', m); floatText(m, 'FALL −' + r.fall.damage, '#ffb08a', false, true); m.shown = m.hp; hudSync() }
       if (kill) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
@@ -1094,6 +1095,7 @@
           floatText(tu, '−' + x.damage, x.crit ? '#ffe14d' : '#ffe0a0', false, true); tu.shown = Math.max(tu.hp, tu.shown - x.damage); hudSync(); await wait(r.hits.length > 1 ? 240 : 200);
         }
         if (r.moved && t.hp > 0) { const from = { u: t.vu - .5, v: t.vv - .5 }; shake(6, 200); await walkAnim(t, [from, { u: t.u, v: t.v }], 5, true) }
+        if (r.bump) { shake(11, 320); fx('fallDust', t); floatText(t, 'ชน −' + r.bump.damage, '#ffb08a', false, true); floatText(t, '💫 สตันท์', '#ffe08a', true); t.shown = t.hp; hudSync() }   /* v98.1163 */
         for (const x of r.statuses || []) floatText(x.unit, (FB.STATUS[x.kind]?.icon || '') + ' ' + (FB.STATUS[x.kind]?.name || ''), '#ffe08a', true);
         if (r.stun && r.stun.hp > 0) { floatText(r.stun, 'FROZEN', '#bfe8ff', true); glows.push({ u: r.stun.vu, v: r.stun.vv, col: '150,220,255', r: UNIT * 1.4, t0: now(), dur: 700 }) }
         for (const x of r.hits) x.target.shown = x.target.hp; hudSync();
