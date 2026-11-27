@@ -101,6 +101,19 @@
 #vsv h2{color:#a5521a;text-shadow:0 2px 0 #fff3cf,0 0 22px #ffd77a,0 0 50px #ffc95a99}
 #vsv .sub{color:#5a3a18}#vsv .goal{color:#2c6a3c}
 #vsv .chips span{background:#fff4d6d9;border-color:#b58a45;color:#7a4a14}
+/* v98.1168 · the "ล้มศัตรู" chip is a button → enemy page */
+#vsv .chips .cpb{padding:4px 12px;border-radius:999px;background:#fff4d6d9;border:1px solid #b58a45;color:#7a4a14;font:inherit;font-size:13.5px;cursor:pointer;opacity:0;animation:vsPop .4s cubic-bezier(.2,1.6,.4,1) forwards;box-shadow:0 0 0 0 #ffd77a;transition:transform .12s,box-shadow .15s}
+#vsv .chips .cpb:hover{transform:translateY(-1px);box-shadow:0 0 10px 2px #ffd77acc;background:#fff0c4}#vsv .chips .cpb:active{transform:translateY(1px)}
+#vsv[data-page=fo] .book{width:min(940px,96vw)}#vsv .pg.fo{box-sizing:border-box;width:100%;max-height:94vh}
+#vsv .fsum{text-align:center;color:#5a3a18;margin:0 0 8px;font-size:14px}#vsv .fsum b{color:#a5521a}
+#vsv .fl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:8px;margin-bottom:10px}
+#vsv .fe{display:grid;grid-template-columns:56px 1fr;gap:9px;align-items:center;padding:7px 9px;border-radius:12px;background:linear-gradient(100deg,#f7e7bf,#ecd7a3);border:1px solid #c9a35a;color:#4a2e12}
+#vsv .fe:not(.dn){background:linear-gradient(100deg,#f1e1d2,#e4cdb6)}
+#vsv .fe .ff{width:56px;height:56px;border-radius:10px;overflow:hidden;border:2px solid #b58a45;background:#e5d0a0;position:relative}#vsv .fe .ff img{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);object-fit:cover;max-width:none}#vsv .fe.dn .ff img{filter:grayscale(.55) brightness(.9)}
+#vsv .fe .fn{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}#vsv .fe .fn b{font-size:15.5px;color:#4a2e12}#vsv .fe .fn span{font-size:12px;margin-left:auto}#vsv .fe .fn .ok{color:#8a3a2c}#vsv .fe .fn .no{color:#2c6a3c}
+#vsv .fe .bs{font-style:normal;font-size:10.5px;padding:0 6px;border-radius:8px;background:#a5521a;color:#fff3cf}
+#vsv .fe .fd{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0}#vsv .fe .fd span{font-size:12px;padding:1px 8px;border-radius:999px;background:#fff4d6;border:1px solid #c9a35a;color:#6a4a22}#vsv .fe .fd span b{color:#a5521a}#vsv .fe .fd .kl{background:#ffe3a3;border-color:#a5521a;color:#4a2e12;font-weight:700}#vsv .fe .fd .dim{opacity:.7}
+#vsv .fe .ft{font-size:11.5px;color:#7a5a30}#vsv .fe .ft b{color:#4a2e12}
 #vsv .card{background:linear-gradient(100deg,#f7e7bf,#ecd7a3);border:1px solid #c9a35a}
 #vsv .face{border-color:#b58a45;background:#e5d0a0;color:#8a5a1a}
 #vsv .nm{color:#4a2e12}#vsv .nm .lv{color:#8a6a3a}#vsv .nm .lv.up{color:#c4561c}#vsv .nm .xp{color:#b5651d}
@@ -140,19 +153,20 @@
       const el = doc.createElement('div'); el.id = 'vsv'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', d.defeat ? 'พ่ายแพ้' : 'ชัยชนะ'); if (d.defeat) el.classList.add('vs-defeat');
       const word = (d.defeat ? 'DEFEAT' : 'VICTORY!').split('').map((c, i) => `<span style="animation-delay:${.2 + i * .08}s">${c}</span>`).join('');
       const t0 = 1.35, step = .36;
-      const chips = [d.kills ? [ic('pack/skull'), 'ล้มศัตรู ' + d.kills + ' ตัว'] : null, d.turns || S?.turns ? [ic('pack/refresh'), (d.turns || S.turns) + ' เทิร์น'] : null, d.gold ? [ic('menu/treasure'), '+' + d.gold + ' เหรียญ'] : null, ...(d.loot || []).map(x => [ic('menu/bag'), x]), ...(d.notes || []).map(x => [ic('pack/def'), x])].filter(Boolean);
+      const chips = [d.kills ? [ic('pack/skull'), 'ล้มศัตรู ' + d.kills + ' ตัว' + (S?.foes?.length ? ' ▸' : ''), S?.foes?.length ? 'foes' : null] : null, d.turns || S?.turns ? [ic('pack/refresh'), (d.turns || S.turns) + ' เทิร์น'] : null, d.gold ? [ic('menu/treasure'), '+' + d.gold + ' เหรียญ'] : null, ...(d.loot || []).map(x => [ic('menu/bag'), x]), ...(d.notes || []).map(x => [ic('pack/def'), x])].filter(Boolean);
       const card = (m, i) => `<div class="card" data-i="${i}" style="animation-delay:${t0 + i * step}s"><div class="face"><img alt="" src="${esc(portrait(m))}" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='assets/cards/portraits/u-${esc(m.pic && !/^hero-/.test(m.pic) ? m.pic : 'hero')}.webp'}else this.remove()"><span>${esc((m.name || '?')[0])}</span></div>
         <div><div class="nm"><span>${esc(m.name)}<span class="lv">${m.lv0 != null ? 'Lv.' + m.lv0 : ''}</span></span><span class="xp" data-g="${m.gain || 0}">${m.gain ? 'EXP +0' : ''}</span></div><div class="bar"><i></i></div>
         <div class="hp"><span>HP</span><div class="hb"><i style="width:${m.max ? Math.max(0, Math.min(100, m.hp / m.max * 100)) : 0}%"></i></div><b>${num(m.hp)}/${num(m.max)}</b></div></div></div>`;
       const job = d.job ? `<div class="job"><b>${esc((d.job.icon || '') + ' ' + (d.job.name || ''))}</b><span class="lv${d.job.ups?.length ? ' up' : ''}">Lv.${d.job.lv}</span><div class="bar"><i style="width:${d.job.lv >= d.job.max ? 100 : Math.min(100, d.job.jp / d.job.need * 100)}%;background:${esc(d.job.col || '#ffd77a')}"></i></div><span>${d.job.ups?.length ? 'อาชีพเลเวลอัป!' : 'แต้มอาชีพ'}</span></div>` : '';
       const btnD = t0 + members.length * step + .9;
       el.innerHTML = `<div class="aura"></div><canvas></canvas><div class="book">
-        <section class="pg fr"><div class="crest"></div><h2>${word}</h2>
+        <section class="pg fr" data-pg="fr"><div class="crest"></div><h2>${word}</h2>
           <div class="sub">${esc(String(d.title || (d.defeat ? 'พ่ายแพ้' : 'ชนะการต่อสู้')).replace(/\s*·\s*$/, ''))}</div>${d.goal ? `<div class="goal">${ic('pack/crown')}เป้าหมาย: ${esc(d.goal)}${d.defeat ? '<i class="ex"></i>' : '<i class="chk"></i>'}</div>` : ''}
-          <div class="chips">${chips.map(([i0, x], i) => `<span style="animation-delay:${1.05 + i * .1}s">${i0}${esc(x)}</span>`).join('')}</div>
+          <div class="chips">${chips.map(([i0, x, act], i) => act ? `<button type="button" class="cpb" data-a="${act}" title="ดูรายละเอียดศัตรู" style="animation-delay:${1.05 + i * .1}s">${i0}${esc(x)}</button>` : `<span style="animation-delay:${1.05 + i * .1}s">${i0}${esc(x)}</span>`).join('')}</div>
           <div class="cards">${members.map(card).join('')}</div>${job}
           <div class="btns" style="--d:${btnD}s">${S ? '<button class="b2" data-a="more" type="button">ดูรายละเอียดการต่อสู้</button>' : ''}<button class="b1" data-a="go" type="button" disabled>จบการต่อสู้</button></div></section>
-        <section class="pg rp" hidden>${S ? report(d, members, S) : ''}</section></div>`;
+        <section class="pg rp" data-pg="rp" hidden>${S ? report(d, members, S) : ''}</section>
+        <section class="pg rp fo" data-pg="fo" hidden>${S?.foes?.length ? foePage(d, members, S) : ''}</section></div>`;
       document.body.append(el);
       try { root.Sfx?.play?.(d.defeat ? 'lose' : 'victory') } catch (e) { } if (!d.defeat) try { root.GameBGM?.force?.('victory') } catch (e) { }
       /* gold sparks */
@@ -193,8 +207,8 @@
 
       /* page flip */
       function flip(to) {
-        if (!S || to === page) return; const a = el.querySelector(page === 'fr' ? '.fr' : '.rp'), b = el.querySelector(to === 'fr' ? '.fr' : '.rp'); a.classList.add('out');
-        setTimeout(() => { a.hidden = true; a.classList.remove('out'); b.hidden = false; b.classList.add('out'); void b.offsetWidth; b.classList.remove('out'); page = to; if (to === 'rp') el.querySelectorAll('.rp .row i[data-w]').forEach(i => { i.style.width = i.dataset.w + '%' }) }, 340);
+        if (!S || to === page) return; const a = el.querySelector(`[data-pg="${page}"]`), b = el.querySelector(`[data-pg="${to}"]`); if (!a || !b) return; a.classList.add('out');
+        setTimeout(() => { a.hidden = true; a.classList.remove('out'); b.hidden = false; b.classList.add('out'); void b.offsetWidth; b.classList.remove('out'); page = to; el.dataset.page = to; if (to === 'rp') el.querySelectorAll('.rp .row i[data-w]').forEach(i => { i.style.width = i.dataset.w + '%' }) }, 340);
       }
       function close() {
         if (closed) return; closed = true; removeEventListener('keydown', key, true); removeEventListener('resize', fit); cancelAnimationFrame(raf); timers.forEach(clearTimeout); try { root.GameBGM?.force?.(null) } catch (e) { }
@@ -202,7 +216,7 @@
       }
       el.addEventListener('click', e => {
         const b = e.target.closest('button'); if (!b) { if (!skipped) finishAll(); return }   /* a click on the backdrop only finishes the animation */
-        if (b.dataset.a === 'go') { if (!b.disabled) close() } else if (b.dataset.a === 'more') flip('rp'); else if (b.dataset.a === 'back') flip('fr');
+        if (b.dataset.a === 'go') { if (!b.disabled) close() } else if (b.dataset.a === 'more') flip('rp'); else if (b.dataset.a === 'back') flip('fr'); else if (b.dataset.a === 'foes') flip('fo');
       });
       const key = e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); if (!skipped) { finishAll(); return } if (ready) close() }
@@ -212,6 +226,20 @@
       };
       addEventListener('keydown', key, true);
     });
+  }
+
+  /* ---- v98.1168 · page 3: the enemies (opened from the "ล้มศัตรู" chip): who they were, who hurt them, who took them down ---- */
+  function foePage(d, members, S) {
+    const idOf = m => m.id ?? m.key ?? m.name, nameOf = id => id === 'foe' ? 'ศัตรู' : (members.find(m => idOf(m) === id)?.name || (id === 'hero' ? 'ตัวเอก' : id));
+    const foes = S.foes || [], dn = foes.filter(f => f.down).length;
+    const face = f => f.src ? `<div class="ff"><img alt="" src="${esc(f.src)}" style="object-position:${esc(f.pos || '50% 28%')};${f.size ? 'width:' + esc(f.size) + ';height:' + esc(f.size) + ';' : ''}" onerror="this.remove()"></div>` : '<div class="ff"></div>';
+    const row = f => { const by = Object.entries(f.by || {}).sort((a, b) => b[1] - a[1]), tot = f.total + (f.dot || 0);
+      return `<div class="fe${f.down ? ' dn' : ''}">${face(f)}<div class="fi"><div class="fn"><b>${esc(f.name)}</b>${f.boss ? '<i class="bs">บอส</i>' : ''}<span class="${f.down ? 'ok' : 'no'}">${f.down ? '💀 ล้มแล้ว' : 'ยังเหลือ ' + num(f.hp) + '/' + num(f.maxHp) + ' HP'}</span></div>
+        <div class="fd">${by.length ? by.map(([k, v]) => `<span class="${k === f.killer ? 'kl' : ''}">${esc(nameOf(k))} <b>${num(v)}</b>${k === f.killer ? ' · ล้ม' : ''}</span>`).join('') : '<span class="dim">ไม่ได้โดนโจมตีโดยตรง</span>'}${f.dot ? `<span>พิษ/ไฟ <b>${num(f.dot)}</b></span>` : ''}</div>
+        <div class="ft">ดาเมจรวมที่ได้รับ <b>${num(tot)}</b>${f.down && !f.killer ? ' · ล้มจากพิษ/ไฟ/สถานะ' : ''}</div></div></div>` };
+    return `<h3>ศัตรูที่เจอ</h3><div class="fsum">ทั้งหมด <b>${foes.length}</b> ตัว · ล้มแล้ว <b>${dn}</b>${foes.length - dn ? ` · ยังเหลือ <b>${foes.length - dn}</b>` : ''}</div>
+      <div class="fl">${foes.map(row).join('')}</div>
+      <div class="btns" style="--d:.2s"><button class="b2" data-a="back" type="button">กลับ</button><button class="b1" data-a="go" type="button">จบการต่อสู้</button></div>`;
   }
 
   /* ---- page 2: the report ---- */
