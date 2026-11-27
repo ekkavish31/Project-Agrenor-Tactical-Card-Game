@@ -79,7 +79,7 @@ function targetsOf(step,d){const t=typeof step.targets==='function'?step.targets
 /* street objects (shared by several steps) */
 const SPOT={
  goats:{key:'goats',kind:'goat',near:['square','inn','market','npc7'],n:2,spread:7,flee:true},   /* v98.331 · 2 goats (was 3): touching one starts the goat fight */
- planks:{key:'planks',kind:'plank',near:['npc3'],n:2,spread:3,mark:true,label:'แผ่นไม้ของเคน'},
+ planks:{key:'planks',kind:'plank',near:['npc3','forge'],n:2,spread:2,mark:true,label:'กองไม้'},   /* v98.1176 · TWO separate piles: one by Ken's house, one at the forge */
  ripe:{key:'ripe',kind:'ripe',near:['npc13'],n:3,spread:4,mark:true,label:'ฟักทองสุก'},
  plot:{key:'plot',kind:'plot',near:['npc13'],n:1,spread:2,mark:true,label:'ฟักทองประกวดของฮิลดา'},
  stall:{key:'stall',kind:'stall',near:['market'],n:1,spread:3,mark:true,label:'แผงขายของ'},
@@ -151,24 +151,26 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
    try{const dk=V().tacticDecks;if(dk?.combat?.thunder){dk.combat.thunder-=1;if(dk.combat.thunder<=0)delete dk.combat.thunder;doSave()}}catch(e){}
    try{const gifts=[];if(thunderOK)gifts.push({id:'a-thunder',key:'thunder',n:1,text:'ฮิลดาให้ไพ่ใบนี้เป็นของขอบคุณ — ยังไม่ได้ใส่ในสำรับ ไว้ตอนเย็นจัดสำรับที่บ้านนะ'});
     if(typeof addItem==='function'){addItem('smallPumpkin',1);doSave();doRender();toast('🎃 ฮิลดาให้ ฟักทองลูกเล็ก ×1 (ฟื้น HP +30 · แรง +30) — ดูในสมุดผนึก');gifts.push({key:'smallPumpkin',n:1,text:'ฮิลดาให้เป็นของขอบคุณที่ช่วยดูแลฟักทอง'})}
-    if(gifts.length)await root.ItemGet?.show(gifts,{kicker:'ของขวัญจากฮิลดา'})}catch(e){}},
+    if(gifts.length)await root.ItemGet?.show(gifts,{kicker:'ของขวัญจากฮิลดา'})}catch(e){}
+   /* v98.1176 · the pumpkin job ends the day: the clock jumps to 18:00 (dusk — the village lights come on) so going home for dinner fits */
+   try{const g=G();if(g&&(g.minutes||0)<1080){g.minutes=1080;doSave();doRender();toast('🌇 งานในไร่เสร็จตอนหัวค่ำ — ตอนนี้ 18:00')}}catch(e){}},
   onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:4,biome:'grass',poi:'patch',bg:'pumpkin-patch',keepBgm:true});
    if(r==='win'){d.got=3;doSave();return {msg:'🎃 เก็บฟักทองสุกครบ 3 ลูกแล้ว!',consume:true}}return {msg:r==='busy'?'':'ฟักทองยังรอเก็บอยู่ · กลับไปเก็บต่อได้เลย',consume:false}}},
- talkStep({id:'tom',outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
- {id:'planks',tag:'real',title:'แผ่นไม้ของเคน',goal:'เก็บแผ่นไม้ 2 แผ่นที่กองไว้หน้าบ้านเคน',hint:'เดินไปแตะกองไม้ 🪵 · ได้ไม้เข้าสมุดผนึก (หมวดวัตถุดิบ)',
-  spot:SPOT.planks,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
-  onSpot:d=>{mats().wood=(mats().wood||0)+1;d.got=(d.got||0)+1;doSave();doRender();return {msg:'🪵 ไม้ +1 ('+d.got+'/2)',consume:true}}},
- {id:'stall',tag:'real',outro:'stallDone',title:'ซ่อมแผงขายของ',goal:'เดินไปที่แผงหน้าตลาด แล้วซ่อม (ใช้ไม้ 2)',hint:'เดินไปแตะแผง 🛠️ · ใช้แรง 6 และเวลา 30 นาที · ไม้ไม่พอซื้อได้ที่ตลาด',
-  spot:SPOT.stall,check:d=>!!d.built,acts:[guideBtn],
-  reward:async()=>{addCoins(20);try{mats().iron=(mats().iron||0)+3}catch(e){}toast('รางวัล: +20 เหรียญ · แท่งเหล็ก ×3 จากลุงทอม');try{await root.ItemGet?.show([{key:'iron',n:3}],{kicker:'ค่าแรงจากลุงทอม',text:'ลุงทอมจ่ายเป็นเหล็กไว้ให้ใช้ตีของครั้งแรก'})}catch(e){}   /* v98.605 · Tom pays in iron too (for the first forging) *//* v98.604 · Tom's job ends the afternoon: the clock jumps to 18:00 (evening prep) so going home to sleep fits */try{const g=G();if(g&&(g.minutes||0)<1080){g.minutes=1080;doSave();doRender();toast('🌇 งานเสร็จตอนเย็น — ตอนนี้ 18:00 · เตรียมค่ำ')}}catch(e){}},
-  onSpot:d=>{if((mats().wood||0)<2)return {msg:'ไม้ไม่พอ (ต้องใช้ 2)'};const why=spend(6,30,3);if(why)return {msg:why};mats().wood-=2;d.built=true;d.got=1;doSave();doRender();return {msg:'🔨 ซ่อมแผงเสร็จ!',consume:true}}},
  /* v98.605 · day-1 evening at home: dinner with Mom (scene homeWelcome, played by homeHooks when the hero is inside the house) → free time but NO going outside (Story.homeLock) → chest lesson → deck lesson → bed */
  {id:'homeWelcome',tag:'real',title:'กลับบ้าน',goal:'เย็นแล้ว — เดินกลับบ้าน แม่รออยู่',hint:'งานวันนี้เสร็จแล้ว เดินกลับบ้านได้เลย · แม่ทำอาหารอุ่น ๆ รออยู่',place:'home',check:d=>!!d.welcomed,acts:[guideBtn]},
- {id:'chestLesson',tag:'real',title:'ฝากของในหีบ',goal:'ในบ้าน: เดินไปที่หีบแล้วฝากของอย่างน้อย 1 ชิ้น (เช่นแท่งเหล็กที่ลุงทอมให้)',hint:'เดินไปที่หีบในบ้าน → เลือก หีบเก็บของ → กดฝาก · คืนนี้ยังออกไปข้างนอกไม่ได้ ทำอะไรในบ้านก็ได้',place:'home',begin:d=>{d.base=chestCount()},check:d=>chestCount()>(d.base||0),acts:[guideBtn]},
+ {id:'chestLesson',tag:'real',title:'ฝากของในหีบ',goal:'ในบ้าน: เดินไปที่หีบแล้วฝากของอย่างน้อย 1 ชิ้น (เช่นฟักทองลูกเล็กหรือวัตถุดิบที่เก็บมา)',hint:'เดินไปที่หีบในบ้าน → เลือก หีบเก็บของ → กดฝาก · คืนนี้ยังออกไปข้างนอกไม่ได้ ทำอะไรในบ้านก็ได้',place:'home',begin:d=>{/* v98.1176 · the iron from Tom no longer exists on day 1: make sure there is something to put in the chest */try{const m=mats();if(!Object.values(m).some(n=>(+n||0)>0)){m.wood=(m.wood||0)+2;doSave();toast('🪵 แม่ให้ฟืนสองท่อน — ลองเอาไปฝากในหีบดู')}}catch(e){}d.base=chestCount()},check:d=>chestCount()>(d.base||0),acts:[guideBtn]},
  {id:'deckLesson',tag:'real',title:'จัดสำรับ',goal:'ที่โต๊ะจัดสำรับ: ใส่ไพ่ อัสนีบาต ที่ฮิลดาให้ลงสำรับโจมตี แล้วกดบันทึก',hint:'เดินไปที่โต๊ะ → จัดสำรับ → หาไพ่ อัสนีบาต กด + → บันทึก',place:'home',check:d=>deckHas('thunder'),acts:[guideBtn]},
  {id:'sleep1',tag:'real',outro:'day2',title:'จบวันแรก',goal:'งานวันนี้เสร็จแล้ว — พระอาทิตย์ใกล้ตก เดินกลับบ้านแล้วไปที่เตียงเพื่อนอนพัก',hint:'ตอนเย็นของวันแรกเวลาเดินช้าลงให้ทำงานครบ · ในบ้านเดินไปที่เตียงแล้วเลือก "นอนพัก" · การนอนข้ามไปเช้าวันถัดไป',
   place:'home',begin:d=>{d.day=G().day},check:d=>G().day>d.day,acts:[guideBtn]},
- talkStep({id:'guard',chapter:'วันที่ 2 · ทำของ และหาคน',outro:'guardTalk',reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'push',n:1}],{kicker:'คำแนะนำของยามดอร์ก',title:'ผลัก',text:'ผลักศัตรูถอยหนึ่งช่อง · ผลักตกที่สูงเสีย HP เพิ่ม'}),title:'ยามประตูหมู่บ้าน',talk:'dork',goal:'ไปคุยกับยามดอร์กก่อนออกนอกหมู่บ้าน',hint:'ยามดอร์กเฝ้าอยู่ที่ลานกลางหมู่บ้านทั้งวัน · '+HINT_WALK}),
+ talkStep({id:'tom',chapter:'วันที่ 2 · ทำของ และหาคน',skip:()=>!!V().story?.tomDone,outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
+ {id:'planks',tag:'real',skip:()=>!!V().story?.tomDone,title:'เก็บไม้สองกอง',goal:'เก็บไม้ให้ครบสองกอง — กองหน้าบ้านเคน และกองที่โรงตีเหล็ก',hint:'เดินไปแตะกองไม้ 🪵 ทั้งสองกอง · ได้ไม้เข้าสมุดผนึก (หมวดวัตถุดิบ)',
+  spot:SPOT.planks,progress:d=>(d.got||0)/2,check:d=>(d.got||0)>=2,acts:[guideBtn],
+  onSpot:d=>{mats().wood=(mats().wood||0)+1;d.got=(d.got||0)+1;doSave();doRender();return {msg:'🪵 ไม้ +1 ('+d.got+'/2)',consume:true}}},
+ {id:'stall',tag:'real',skip:()=>!!V().story?.tomDone,outro:'stallDone',title:'ซ่อมแผงขายของ',goal:'เดินไปที่แผงหน้าตลาด แล้วซ่อม (ใช้ไม้ 2)',hint:'เดินไปแตะแผง 🛠️ · ใช้แรง 6 และเวลา 30 นาที · ไม้ไม่พอซื้อได้ที่ตลาด',
+  spot:SPOT.stall,check:d=>!!d.built,acts:[guideBtn],
+  reward:async()=>{addCoins(20);try{mats().iron=(mats().iron||0)+3}catch(e){}toast('รางวัล: +20 เหรียญ · แท่งเหล็ก ×3 จากลุงทอม');try{await root.ItemGet?.show([{key:'iron',n:3}],{kicker:'ค่าแรงจากลุงทอม',text:'ลุงทอมจ่ายเป็นเหล็กไว้ให้ใช้ตีของครั้งแรก'})}catch(e){}   /* v98.605 · Tom pays in iron too (for the first forging) *//* v98.1176 · the Tom steps now run on DAY 2 (after the evening at home): no clock jump here any more — the jump to dusk moved to the end of the pumpkin step */},
+  onSpot:d=>{if((mats().wood||0)<2)return {msg:'ไม้ไม่พอ (ต้องใช้ 2)'};const why=spend(6,30,3);if(why)return {msg:why};mats().wood-=2;d.built=true;d.got=1;V().story.tomDone=true;doSave();doRender();return {msg:'🔨 ซ่อมแผงเสร็จ!',consume:true}}},
+ talkStep({id:'guard',outro:'guardTalk',reward:()=>root.StarterKit?.unlock?.([{group:'combat',id:'push',n:1}],{kicker:'คำแนะนำของยามดอร์ก',title:'ผลัก',text:'ผลักศัตรูถอยหนึ่งช่อง · ผลักตกที่สูงเสีย HP เพิ่ม'}),title:'ยามประตูหมู่บ้าน',talk:'dork',goal:'ไปคุยกับยามดอร์กก่อนออกนอกหมู่บ้าน',hint:'ยามดอร์กเฝ้าอยู่ที่ลานกลางหมู่บ้านทั้งวัน · '+HINT_WALK}),
  {id:'cave',tag:'real',outro:'crystal',title:'ผลึกในถ้ำเหมืองเก่า',goal:'เดินออกทางออกหมู่บ้าน ไปทางเหมืองเก่า แล้วชนะการต่อสู้ 1 ครั้ง',hint:'บนแผนที่โลกเดินทีละช่อง · ระหว่างทางมีศัตรูดักอยู่ · สนามรบมีเนินและหน้าผา ยืนที่สูงตีแรงกว่า',
   exit:true,begin:d=>{d.base=V().battles||0},check:d=>(V().battles||0)>d.base,acts:[guideBtn],
   reward:async()=>{crystalBag();const gb=V().bag;gb.glowCrystal=(gb.glowCrystal||0)+3;try{await root.ItemGet?.show([{key:'glowCrystal',n:3}],{kicker:'จากผนังถ้ำ',text:'ผลึกที่เก็บมาได้จากอุโมงค์'})}catch(e){}return root.StarterKit?.unlock?.([{group:'combat',id:'skill',n:2}],{kicker:'บทเรียนจากถ้ำ',title:'ท่าโจมตีหนัก',text:'ตีแรงกว่าปกติ แต่ใช้แรงมากขึ้น · เพิ่มเข้าสำรับแล้ว'})}},
@@ -311,12 +313,15 @@ const OLD_TO={pumpkin:'seeds',stall:'tom',cave:'guard',lanterns:'gus',prep:'saf'
 const V2_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','prep','expedition','return','sellLoot','rest'];
 /* v98.605 · v3 → v4: three steps (homeWelcome · chestLesson · deckLesson) were inserted before sleep1 — a saved position is mapped by step id */
 const V3_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','sibSword','potions','prep','expedition','return','hospital','sellLoot','rest'];
-function migrate(st){if(st&&st.v===3){const old=V3_IDS[st.i];if(old){const i=byId(old);if(i>=0)st.i=i}else if(st.i>=V3_IDS.length)st.i=STEPS.length;st.v=4;doSave();return st}
+/* v98.1176 · v4 → v5: the Tom steps (tom · planks · stall) moved from before the evening at home to DAY 2 (after sleep1). A save before them restarts at homeWelcome and does Tom on day 2; a save that was past them keeps them done (story.tomDone) so they are skipped. */
+const V4_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','homeWelcome','chestLesson','deckLesson','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','sibSword','potions','prep','expedition','return','hospital','sellLoot','rest'];
+function migrate(st){if(st&&st.v===4){const old=V4_IDS[st.i];if(old){const oi=V4_IDS.indexOf(old);if(['tom','planks','stall'].includes(old)){const i=byId('homeWelcome');if(i>=0)st.i=i}else{if(oi>V4_IDS.indexOf('stall'))(V().story||st).tomDone=true;const i=byId(old);if(i>=0)st.i=i}}else if(st.i>=V4_IDS.length)st.i=STEPS.length;st.v=5;doSave();return st}
+ if(st&&st.v===3){const old=V3_IDS[st.i];if(old){const i=byId(old);if(i>=0)st.i=i}else if(st.i>=V3_IDS.length)st.i=STEPS.length;st.v=4;doSave();return st}
  if(st&&st.v===2){const old=V2_IDS[st.i];if(old){const i=byId(old==='prep'?'sibSword':old);if(i>=0)st.i=i}else if(st.i>=V2_IDS.length)st.i=STEPS.length;st.v=3;doSave();return st}
  if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=2;doSave();return st}
 function story(){const v=V();if(!v)return null;return migrate(v.story||null)}
 function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).filter(m=>m.key!=='sib').length&&!v.adventure}
-function init(){const v=V();if(!v||v.story)return;v.story={v:4,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
+function init(){const v=V();if(!v||v.story)return;v.story={v:5,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
 function cur(){const st=story();return st&&st.mode==='active'?STEPS[st.i]:null}
 function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step.id]}
 
@@ -362,7 +367,7 @@ async function tick(){if(busy||root.QuestAnnouncement?.busy()||!G()||!V())return
  step.tick?.(d);
  warmBattle(WARM_FOR[step.id]);
  if(root.Cutscene?.isPlaying()||tacticsOpen()||document.getElementById('storyBattle')){draw();return}
- goatsHook().catch(()=>{});   /* v98.1074 · the pause scene right after leaving the market */
+ tomHook().catch(()=>{});goatsHook().catch(()=>{});   /* v98.1074 · the pause scene right after leaving the market */
  homeHooks().catch(()=>{});   /* v98.600 · first time out of the house → the sister sends the hero to open the card-book */
  busy=true;try{
   if(!d.begun){d.begun=true;d.briefingPending=true;step.begin?.(d);doSave()}
@@ -400,7 +405,7 @@ function mystery(ev){const v=V();if(!v||ev!=='seen')return;v.story=v.story||{};v
 async function guildFirst(){const v=V();if(!v||!root.Cutscene)return false;v.story=v.story||{};if(v.story.guildSeen)return false;v.story.guildSeen=true;doSave();await root.Cutscene.play(D().SCENES.guildFirst);return true}
 /* v98.586 · DAY 1 PACING: pumpkins used to end at dusk, leaving the planks / stall quests in the dark. Until the "จบวันแรก" step is done the clock runs slower through the day and
    stops near 18:30 (golden hour), so every day-1 task (goats → Hilda → pumpkins → Tom → planks → stall) fits before the evening; the player sleeps when ready. Started at 08:00 (WorldState). */
-const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','tom','planks','stall','homeWelcome','chestLesson','deckLesson','sleep1']);
+const DAY1=new Set(['goats','goatsBack','seeds','pumpkin','homeWelcome','chestLesson','deckLesson','sleep1']);
 function timeScale(){if(root.QuestAnnouncement?.busy())return 0;try{const st=story();if(!st||st.mode!=='active')return 1;const step=STEPS[st.i];if(!step||!DAY1.has(step.id))return 1;const g=G();if(!g||g.day>1)return 1;const m=g.minutes||480;return m<720?.4:m<900?.3:m<1020?.2:m<1110?.1:0}catch(e){return 1}}
 /* v98.589 · the card-book lesson plays once, the first time the player opens the book during the prologue (old saves past the prologue never see it) */
 /* v98.607 · the world map asks where the current step sends the player (beacon + edge arrow, js/world-map.js guideOf) */
@@ -419,6 +424,12 @@ async function homeHooks(){const st=story();if(homeBusy||!st||st.mode!=='active'
 /* v98.1074 · step goats: the first time the hero is on the village map (out of the market, not inside a place) a short talk with the sibling plays — "where did the goats go?" — before anything can run / fight.
    It waits until no scene / fight / panel is up and the hero is on the plain village map; auto-walk is cancelled when it starts. */
 let goatBusy=false;
+/* v98.1176 · step tom (DAY 2): the first time the hero is out on the village map, the sibling reminds them what Mom said at dinner — go and ask Uncle Tom about the stall (same rules as goatsHook) */
+let tomBusy=false;
+async function tomHook(){const st=story();if(tomBusy||!st||st.mode!=='active'||!root.Cutscene)return;const step=STEPS[st.i];if(!step||step.id!=='tom')return;const d=dataOf(step);if(d.hintSeen||scene()!=='town')return;
+ if(root.Cutscene.isPlaying()||document.getElementById('storyBattle')||tacticsOpen())return;
+ const halt=()=>{try{const w=root.VillageTown?.frame?.contentWindow;w?.TownUX?.stop?.();w?.TownQuest?.cancel?.();w?.TownNPC?.cancel?.()}catch(e){}};
+ tomBusy=true;try{d.hintSeen=true;doSave();halt();await root.Cutscene.play(D().SCENES.tomHint);halt()}finally{tomBusy=false}}
 async function goatsHook(){const st=story();if(goatBusy||!st||st.mode!=='active'||!root.Cutscene)return;const step=STEPS[st.i];if(!step||step.id!=='goats')return;const d=dataOf(step);if(d.lookSeen||scene()!=='town')return;
  if(root.Cutscene.isPlaying()||document.getElementById('storyBattle')||tacticsOpen())return;
  const halt=()=>{try{const w=root.VillageTown?.frame?.contentWindow;w?.TownUX?.stop?.();w?.TownQuest?.cancel?.();w?.TownNPC?.cancel?.()}catch(e){}};   /* v98.1139 · nothing may keep walking / chasing: after the talk the hero STOPS and the player decides (walk by hand or press auto-walk) */
