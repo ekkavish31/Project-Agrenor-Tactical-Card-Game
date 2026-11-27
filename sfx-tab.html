@@ -1,0 +1,53 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · Sound Effect</title>
+<!-- v98.1151 · Editor › 🔊 เสียง: ฟังทุกเสียงในแค็ตตาล็อก (js/sfx.js) · ปรับความดัง/ระดับเสียง/ปิดรายตัว · เลือกว่าท่าต่อสู้แต่ละท่าใช้เสียงไหน · ค่าเก็บใน project-a-sfx-mix-v1 แล้ว ⬆ Push ผ่าน Cart ได้ -->
+<style>
+html,body{margin:0;background:#14130f;color:#eee;font:13px system-ui,"Noto Sans Thai",sans-serif}
+body{padding:10px 14px 40px}h2{margin:18px 0 6px;font-size:15px;color:#ffd98a}h3{margin:12px 0 4px;font-size:13px;color:#cdbb92}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:0;background:#14130fee;padding:6px 0;z-index:5;border-bottom:1px solid #333}
+button,select{font:inherit;color:#eee;background:#2b2f25;border:1px solid #4a5140;border-radius:7px;padding:3px 9px;cursor:pointer}button:hover{background:#3a4032}
+button.p{background:#496b3b;border-color:#6f9a5a}small,.dim{color:#9a9a8a}
+table{border-collapse:collapse;width:100%}td,th{padding:4px 6px;border-bottom:1px solid #2a2a22;text-align:left;vertical-align:middle}
+.chip{display:inline-flex;gap:3px;align-items:center;background:#262a20;border:1px solid #4a5140;border-radius:12px;padding:1px 3px 1px 9px;margin:2px}.chip b{font-weight:400}.chip button{padding:0 6px;border-radius:10px}
+input[type=range]{width:110px;vertical-align:middle}.chg{color:#ffd98a}.mut td{opacity:.45}
+</style></head><body>
+<div class="bar"><b>🔊 Sound Effect</b><label>ระดับเสียงทดสอบ <input id="vol" type="range" min="0" max="1" step=".05" value=".65"></label><button id="stopMsg" class="p" disabled>✓ ค่าบันทึกอัตโนมัติ</button><button id="reset">↺ ล้างค่าที่แก้ทั้งหมด</button><span class="dim" id="status"></span>
+<small>แก้แล้วเกมเห็นเมื่อรีโหลดหน้าเกม · ถาวรทุกเครื่อง: เปิด 🛒 Cart แล้ว Push · ไฟล์เสียงมาจาก Kenney (CC0) ใน assets/audio/sfx/kenney/</small></div>
+<h2>⚔ ท่าต่อสู้ → ใช้เสียงอะไร</h2><div class="dim">แต่ละท่าสุ่มเล่นหนึ่งเสียงจากรายการ · เพิ่ม/ลบได้ · "ค่าเดิม" คือรายการในโค้ด</div><table id="kinds"></table>
+<h2>📚 แค็ตตาล็อกเสียงทั้งหมด</h2><div class="dim">ความดัง ×1 = ตามค่าเดิม · ระดับเสียง (pitch) ต่ำ = หนัก/ทุ้ม</div><div id="cat"></div>
+<script src="js/editor-store.js?v=v98.1151"></script><script src="js/sfx.js?v=v98.1151"></script><script>
+(function(){
+const S=window.Sfx,$=id=>document.getElementById(id);let mixc;
+const load=()=>{try{mixc=JSON.parse(localStorage.getItem(S.MIXKEY)||'{}')||{}}catch(e){mixc={}}mixc.gain=mixc.gain||{};mixc.rate=mixc.rate||{};mixc.mute=mixc.mute||{};mixc.map=mixc.map||{}};
+const save=()=>{for(const k of ['gain','rate','mute','map'])for(const n of Object.keys(mixc[k]))if(k==='mute'?!mixc[k][n]:(k==='map'?!mixc[k][n]?.length:mixc[k][n]===(k==='gain'?1:1)))delete mixc[k][n];
+ const empty=!['gain','rate','mute','map'].some(k=>Object.keys(mixc[k]).length);try{if(empty)localStorage.removeItem(S.MIXKEY);else localStorage.setItem(S.MIXKEY,JSON.stringify(mixc))}catch(e){}$('status').textContent='บันทึกแล้ว '+new Date().toLocaleTimeString()};
+load();
+const unlock=()=>{S.set({});return S.play('ui-tick',{vol:0})};
+const vol=()=>{window.BattlePolish={volume:+$('vol').value}};vol();$('vol').oninput=vol;
+const names=Object.keys(S.V),fam=n=>n.split('-')[0];
+const loadAll=()=>S.preload(names);loadAll();
+function playN(n,i){S.preload([n]);let tries=0;const go=()=>{if(!S.play(n,{i,exact:1})&&tries++<12)setTimeout(go,120)};go()}
+/* kinds */
+function kinds(){const T=$('kinds'),K=Object.keys(S.BATTLE);
+ T.innerHTML='<tr><th>ท่า</th><th>เสียงที่ใช้</th><th></th></tr>'+K.map(k=>{const cur=mixc.map[k]?.length?mixc.map[k]:S.BATTLE[k],ch=mixc.map[k]?.length;
+  return `<tr data-k="${k}"><td><b>${k}</b>${ch?' <span class="chg">แก้แล้ว</span>':''}</td><td>${cur.map((n,i)=>`<span class="chip"><b>${n}</b><button data-rm="${i}" title="เอาออก">×</button></span>`).join('')}<select data-add><option value="">＋ เพิ่ม…</option>${names.map(n=>`<option>${n}</option>`).join('')}</select></td><td><button data-t>▶ ลอง</button> <button data-t2 title="ลองแบบหนัก">▶ แรง</button> ${ch?'<button data-def>ค่าเดิม</button>':''}</td></tr>`}).join('')}
+$('kinds').onclick=e=>{const tr=e.target.closest('tr[data-k]');if(!tr)return;const k=tr.dataset.k,b=e.target.closest('button');if(!b)return;unlock();
+ const cur=()=>(mixc.map[k]?.length?mixc.map[k]:S.BATTLE[k]).slice();
+ if(b.hasAttribute('data-t'))S.battle(k,.5);else if(b.hasAttribute('data-t2'))S.battle(k,1);
+ else if(b.dataset.rm!=null){const l=cur();l.splice(+b.dataset.rm,1);mixc.map[k]=l.length?l:S.BATTLE[k].slice();save();kinds()}
+ else if(b.hasAttribute('data-def')){delete mixc.map[k];save();kinds()}};
+$('kinds').onchange=e=>{const sel=e.target.closest('select[data-add]');if(!sel||!sel.value)return;const tr=sel.closest('tr'),k=tr.dataset.k,l=(mixc.map[k]?.length?mixc.map[k]:S.BATTLE[k]).slice();l.push(sel.value);mixc.map[k]=l;save();kinds();unlock();S.battle(k,.5)};
+/* catalog */
+function cat(){const g={};names.forEach(n=>(g[fam(n)]=g[fam(n)]||[]).push(n));
+ $('cat').innerHTML=Object.keys(g).map(f=>`<h3>${f}</h3><table>`+g[f].map(n=>{const ga=mixc.gain[n]??1,ra=mixc.rate[n]??1,mu=!!mixc.mute[n];
+  return `<tr data-n="${n}" class="${mu?'mut':''}"><td style="width:150px"><b>${n}</b></td><td>${Array.from({length:S.V[n]},(_,i)=>`<button data-v="${i+1}">▶ ${S.V[n]>1?i+1:''}</button>`).join(' ')} ${S.V[n]>1?'<button data-any>สุ่ม</button>':''}</td><td>ดัง <input type="range" data-g min="0" max="1.5" step=".05" value="${ga}"> <span class="${ga!==1?'chg':''}">×${ga.toFixed(2)}</span></td><td>pitch <input type="range" data-r min=".5" max="1.5" step=".05" value="${ra}"> <span class="${ra!==1?'chg':''}">${ra.toFixed(2)}</span></td><td><label><input type="checkbox" data-m ${mu?'checked':''}> ปิด</label></td></tr>`}).join('')+'</table>').join('')}
+$('cat').onclick=e=>{const tr=e.target.closest('tr[data-n]');if(!tr)return;const n=tr.dataset.n,b=e.target.closest('button');if(!b)return;unlock();if(b.dataset.v)playN(n,+b.dataset.v);else if(b.hasAttribute('data-any'))playN(n,0)};
+$('cat').oninput=e=>{const tr=e.target.closest('tr[data-n]');if(!tr)return;const n=tr.dataset.n,t=e.target;
+ if(t.hasAttribute('data-g')){mixc.gain[n]=+t.value;t.nextElementSibling.textContent='×'+(+t.value).toFixed(2);t.nextElementSibling.className=+t.value!==1?'chg':''}
+ else if(t.hasAttribute('data-r')){mixc.rate[n]=+t.value;t.nextElementSibling.textContent=(+t.value).toFixed(2);t.nextElementSibling.className=+t.value!==1?'chg':''}
+ else if(t.hasAttribute('data-m')){mixc.mute[n]=t.checked;tr.classList.toggle('mut',t.checked)}
+ save()};
+$('cat').onchange=e=>{const t=e.target,tr=t.closest('tr[data-n]');if(tr&&(t.hasAttribute('data-g')||t.hasAttribute('data-r'))){unlock();playN(tr.dataset.n,0)}};
+$('reset').onclick=()=>{if(!confirm('ล้างค่าเสียงที่แก้ทั้งหมด กลับเป็นค่าเดิมในโค้ด?'))return;mixc={gain:{},rate:{},mute:{},map:{}};save();kinds();cat()};
+kinds();cat();
+})();
+</script></body></html>

@@ -21,6 +21,9 @@
   /* the battle's own sound kinds → catalog names (v98.298: magic / elements / victory / defeat now have recordings too; a kind that is not listed keeps the old synth) */
   const BATTLE = { slash: ['hit-blade'], swing: ['draw-knife', 'knife'], knife: ['knife', 'hit-metal-light'], spear: ['hit-blade'], rapier: ['hit-metal', 'hit-blade'], sword: ['hit-blade'], hammer: ['hit-plate-heavy', 'hit-thud'], blunt: ['hit-thud'], axe: ['hit-thud', 'chop'], unarmed: ['hit-punch-heavy'], bow: ['hit-generic'], block: ['hit-plate-heavy'], critical: ['hit-plate-heavy', 'hit-metal-heavy'], miss: ['cloth'], down: ['hit-thud'], step: ['step-stone'],
     cast: ['mg-cast'], magic: ['mg-magic'], fusion: ['mg-magic'], staff: ['mg-cast'], tome: ['page'], heal: ['mg-heal'], lightning: ['mg-lightning'], fire: ['mg-fire'], earth: ['mg-earth'], ice: ['hit-glass', 'mg-shield'], shield: ['mg-shield'], buff: ['mg-buff'], debuff: ['mg-debuff'], boom: ['mg-boom'], slime: ['mg-slime'], victory: ['victory'], lose: ['defeat'] };
+  /* v98.1151 · MIX (Editor › 🔊 เสียง): per-sound loudness / pitch / mute and which sounds a battle kind uses · stored in localStorage 'project-a-sfx-mix-v1' (pushed like other editor values) */
+  const MIXKEY = 'project-a-sfx-mix-v1'; let mixC = null, mixRaw = null;
+  const mix = () => { let r = null; try { r = localStorage.getItem(MIXKEY) } catch (e) { } if (r !== mixRaw || !mixC) { mixRaw = r; try { mixC = JSON.parse(r || '{}') || {} } catch (e) { mixC = {} } } return mixC };
   const Q = new URLSearchParams(location.search);
   let ac = null, off = Q.get('sfx') === '0' || Q.get('edit') === '1';
   const cfg = (() => { try { return JSON.parse(localStorage.getItem('project-a-sfx') || '{}') } catch (e) { return {} } })();
@@ -36,19 +39,20 @@
   /* play one variant · o = { vol (0–1 on top of the family gain), rate (pitch) } · returns true if it started now */
   function play(n, o = {}) {
     if (off || !V[n]) return false; const v = vol(); if (!v) return false; const a = ctx(); if (!a || a.state !== 'running') return false;
-    const i = 1 + Math.floor(Math.random() * V[n]), b = buf[file(n, i)];
+    const M = mix(); if (M.mute?.[n]) return false;
+    const i = o.i || 1 + Math.floor(Math.random() * V[n]), b = buf[file(n, i)];
     if (!b) { load(n, i); return false }          /* first time: it loads for the NEXT press */
-    const s = a.createBufferSource(), g = a.createGain(); s.buffer = b; s.playbackRate.value = (o.rate || 1) * (.96 + Math.random() * .08); g.gain.value = Math.min(1, v * gainOf(n) * (o.vol ?? 1)); s.connect(g); g.connect(a.destination); s.start(); return true;
+    const s = a.createBufferSource(), g = a.createGain(); s.buffer = b; s.playbackRate.value = (o.rate || 1) * (M.rate?.[n] || 1) * (o.exact ? 1 : .96 + Math.random() * .08); g.gain.value = Math.min(1, v * gainOf(n) * (M.gain?.[n] ?? 1) * (o.vol ?? 1)); s.connect(g); g.connect(a.destination); s.start(); return true;
   }
   /* the battle's own kinds: true = a recording played */
-  function battle(kind, strength = .6) { const L = BATTLE[kind]; if (!L || off) return false; const n = L[Math.floor(Math.random() * L.length)]; return play(n, { vol: .55 + strength * .6, rate: n.startsWith('hit-') ? .9 - Math.min(.15, strength * .1) : 1 }) }   /* v98.1143 · hits a bit lower = heavier */
+  function battle(kind, strength = .6) { const L = mix().map?.[kind]?.length ? mix().map[kind] : BATTLE[kind]; if (!L || off) return false; const n = L[Math.floor(Math.random() * L.length)]; return play(n, { vol: .55 + strength * .6, rate: n.startsWith('hit-') ? .9 - Math.min(.15, strength * .1) : 1 }) }   /* v98.1143 · hits a bit lower = heavier */
   /* v98.1146 · cancel / close: soft paper-book thud + a low pluck falling away (replaces the 8-bit bleep) · hover: a light glassy tick */
   function back() { play('book-close', { vol: .75, rate: 1.05 }); play('ui-pluck', { vol: .6, rate: .7 }) }
   let hoverT = 0; function hover() { const n = performance.now(); if (n - hoverT < 70) return; hoverT = n; play('ui-hover', { vol: .55 }) }
   let stepT = 0, stepI = 0;
   function walk(dt, moving, surface = 'grass', every = .36) { if (!moving) { stepT = every * .6; return } stepT += dt; if (stepT >= every) { stepT = 0; stepI++; play('step-' + surface, { vol: .8 + (stepI % 2) * .1 }) } }
   function preload(list) { for (const n of list) if (V[n]) for (let i = 1; i <= V[n]; i++) load(n, i) }
-  const api = root.Sfx = { V, play, back, hover, battle, walk, preload, has: n => !!V[n], ready, set(p) { Object.assign(cfg, p); try { localStorage.setItem('project-a-sfx', JSON.stringify(cfg)) } catch (e) { } }, off: v => { off = !!v } };
+  const api = root.Sfx = { V, BATTLE, gainOf, mix, MIXKEY, play, back, hover, battle, walk, preload, has: n => !!V[n], ready, set(p) { Object.assign(cfg, p); try { localStorage.setItem('project-a-sfx', JSON.stringify(cfg)) } catch (e) { } }, off: v => { off = !!v } };
 
   /* ---- automatic UI sounds ---- */
   const HIT = 'button,[role=button],a[href],summary,select,input[type=checkbox],input[type=radio],.btn,label.chk,[data-a],[data-act]';

@@ -159,7 +159,7 @@
     'set-piece-edits-v1', 'proportion-rulers-v1', 'proportion-datum-v1', 'proportion-done-v1', 'proportion-girth-v1', 'proportion-master-v1', 'proportion-standard-v1', 'proportion-templates-v1', 'scale-lineup-ok-v1',
     'pose-sheet.rulers', 'project-a-uploaded-decor-v1', 'project-a-village-asset-lib-v1', 'card-studio-v1',
     'battleground-v1', 'object-asset-preset-v1', 'storyMapPos', 'storyMapGeo', 'projectA.roadEdgeStyle', 'vfx-kit-kinds-v2', 'asset-batches-v1',
-    'tactics-anchors-v1', 'project-a-ct-crops-v32', 'project-a-battle-polish', 'three-card-config-v2', 'three-card-routes-v1', 'everyday-layout-v1', 'everyday-village-map-v03', 'everyday-village-routes-v1'];
+    'tactics-anchors-v1', 'project-a-ct-crops-v32', 'project-a-battle-polish', 'project-a-sfx-mix-v1', 'three-card-config-v2', 'three-card-routes-v1', 'everyday-layout-v1', 'everyday-village-map-v03', 'everyday-village-routes-v1'];
   const SYNC_PRE = ['proportion-zones-v1:'];   /* one key per picture */
   /* v98.881 · EVERY localStorage key the pages use has a class. Only 'sync' / 'layout' / 'manifest' data is editor work that must follow the repo;
      'device' = a preference of this browser (panels, zoom, sound, token, caches) · 'save' = the player's game save (per device by design, moved with
