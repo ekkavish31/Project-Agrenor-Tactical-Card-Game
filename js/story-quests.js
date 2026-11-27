@@ -91,6 +91,7 @@ const plotIfDry=()=>(V()?.story?.seeds&&!wateredToday())?[SPOT.plot]:[];
    The battles of the prologue pass ?tut= to the arena, which coaches move by move (js/town-battle.js). The prologue cannot be skipped
    and the world map only opens when a step sends you out — free play starts when the finale is reached. */
 const LESSON={
+ bread:['กินของฟื้นพลัง',['ขนมปังป้าเมย์ฟื้น HP และแรง — เปิดสมุดผนึก แท็บ ของใช้ แล้วกด "ใช้" ที่การ์ดขนมปัง','ใช้แล้วการ์ดจะหมดไป 1 ใบ · เก็บของฟื้นฟูไว้ใช้ตอนเจ็บหรือหมดแรง']],
  chestLesson:['หีบเก็บของ',['หีบในบ้านฝากของได้ทั้งวัตถุดิบ (เหล็ก ถ่าน ไม้ เสบียง) และอุปกรณ์ที่ไม่ได้สวมใส่ — ของในหีบไม่หายตอนออกเดินทาง','ใช้ได้เฉพาะตอนอยู่ที่บ้าน · เดินไปที่หีบแล้วเลือก หีบเก็บของ · ฝากได้ทีละชิ้น ลองฝากแท่งเหล็กที่ลุงทอมให้ 1 ชิ้นดู']],
  deckLesson:['จัดสำรับ',['สำรับคือไพ่ที่ตัวละครใช้ในสนามรบ แยกเป็นไพ่เดินกับไพ่โจมตี — ไพ่ใหม่ที่ได้มาอยู่ในสมุดก่อน ยังไม่ลงสำรับเอง','เดินไปที่โต๊ะจัดสำรับ แล้วเพิ่มไพ่ อัสนีบาต ที่ฮิลดาให้ลงสำรับโจมตี (กด + ที่ใบนั้น) แล้วกดบันทึก · ไพ่แต่ละธาตุชนะศัตรูต่างธาตุ']],
  wake:['เดินในหมู่บ้าน',['คลิกถนนหรืออาคารเพื่อเดิน · ลากพื้นเพื่อเลื่อนกล้อง · หมุนล้อเพื่อซูม','◆ สีทองบนแผนที่คือสิ่งที่เควสต้องการ · กด 📍 นำทาง ให้ตัวเอกเดินไปเอง','คลิกคนเพื่อคุย · กด Esc เปิดเมนู (สมุดผนึก สำรับ ตัวละคร บันทึกเกม)','กด Shift ค้างไว้ → เคอร์เซอร์เป็นรอยเท้า คลิกพื้นตรงไหนก็เดินไปตรงนั้นอย่างเดียว (ไม่คุยกับใคร ไม่เข้าสถานที่ ไม่หยิบของ) · ใช้ได้ทุกแมพที่เดินเองได้ (เฉพาะเมาส์)','เดินด้วยปุ่ม W A S D หรือลูกศร (จอสัมผัส/จอยสติ๊กใช้จอยซ้าย) · เดินชนประตูหรือคนค้างไว้สักครู่ก็เข้าไปทำสิ่งนั้นเอง','กด E หรือ Space (จอสัมผัสใช้ปุ่มกลมใหญ่ · จอยใช้ปุ่ม A) เพื่อทำสิ่งตรงหน้า เช่น คุย เข้าอาคาร เก็บของ · กดค้างครึ่งวินาทีเพื่อเปิดวงกลมตัวเลือก แล้วปล่อยบนตัวเลือก']],
@@ -142,6 +143,9 @@ const STEPS=[
   onSpot:async d=>{const r=await questBattle(d,{title:'จับแพะของปิ๊บ ·',ms:'goat*1,goat*1',tut:'goat',seed:4101,r:6,biome:'grass',scene:'goatStreet',keepBgm:true}   /* v98.570 · a fixed town-street scene (was: the village map around the fountain) */);
    if(r==='win'){d.got=2;try{root.Story?.mystery?.('seen')}catch(e){}return {msg:'🐐 จับแพะได้ครบ 2 ตัวแล้ว!',consume:true}}return {msg:r==='busy'?'':'แพะยังหนีอยู่ · กลับไปจับต่อได้เลย',consume:false}}},
  talkStep({id:'goatsBack',outro:'goatsDone',reward:()=>{addCoins(15);toast('รางวัล: +15 เหรียญ')},title:'พาแพะกลับไปคืน',talk:'pip',goal:'เอาแพะไปคืนปิ๊บ',hint:'ปิ๊บอยู่ที่ลานกลางหมู่บ้านช่วงเช้า บ่ายไปตลาด · '+HINT_WALK}),
+/* v98.1179 · after the goats: the hero is hungry → open the card-book and EAT the bread (the card turns into the real item with a restoring effect, js/item-use-fx.js) */
+{id:'bread',tag:'real',intro:'breadHungry',outro:'breadDone',title:'หิวแล้ว',goal:'เปิดสมุดผนึก แล้วกินขนมปังป้าเมย์',hint:'กดไอคอน สมุดผนึก มุมขวาบน → แท็บ ของใช้ → การ์ดขนมปังป้าเมย์ → กด ใช้',
+  begin:d=>{try{const b=V().bag||(V().bag={});if(!((b.mayBread||0)>0||(b.bread||0)>0||(b.smallPumpkin||0)>0)){b.mayBread=1;doSave();toast('🍞 แม่ยัดขนมปังป้าเมย์ไว้ในสมุดให้ 1 ก้อน')}}catch(e){}},check:d=>!!d.ate,acts:[]},
 talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮิลดา',talk:'hilda',goal:'ไปหาฮิลดาชาวนา ถามว่าช่วยอะไรได้บ้าง',hint:'เช้าอยู่ที่ไร่ เที่ยงถึงบ่ายสามขายผักที่ตลาด · '+HINT_WALK,
   reward:()=>{V().story.seeds=true}}),
 {id:'pumpkin',tag:'real',outro:'pumpkinDone',npc:'hilda',todo:d=>[{t:'เก็บฟักทองสุกในไร่ 3 ลูก',done:(d.got||0)>=3},{t:'ดูแลฟักทองประกวดของฮิลดา (วันละครั้ง)',done:waterDays()>=1}],title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
@@ -229,6 +233,8 @@ async function questEvent(ev){const step=cur();if(!step||!ev)return null;const d
  if(ev.key==='plot')return {msg:water(),consume:wateredToday()};
  if(step.spot?.key===ev.key&&step.onSpot){const r=await step.onSpot(d);doSave();try{if(step.check?.(d))setTimeout(()=>tick().catch(()=>{}),30);else dropHold()}catch(e){dropHold()}return r}
  return null}
+/* v98.1179 · the bag reports every consumable the player uses (js/bag.js) — eating during step 'bread' finishes it */
+function itemUsed(key,msg){const step=cur();if(!step||step.id!=='bread'||!/^ใช้/.test(msg||''))return;const d=dataOf(step);if(!d.ate){d.ate=true;doSave();setTimeout(()=>tick().catch(()=>{}),1700)}}
 function talked(id){const step=cur();if(!step)return false;const d=dataOf(step);if(step.talk===id&&!d.talked){d.talked=true;doSave();setTimeout(()=>tick().catch(()=>{}),50);return true}return false}
 /* lanterns are made at the forge's anvil like any other station work (village-place.html joins actions with `with` to that station) */
 /* v98.1022 · the glowing crystals are a card in the book (bag.glowCrystal); an old save's counter (story.crystals) is moved into the bag once */
@@ -319,13 +325,17 @@ const V2_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall
 const V3_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','sibSword','potions','prep','expedition','return','hospital','sellLoot','rest'];
 /* v98.1176 · v4 → v5: the Tom steps (tom · planks · stall) moved from before the evening at home to DAY 2 (after sleep1). A save before them restarts at homeWelcome and does Tom on day 2; a save that was past them keeps them done (story.tomDone) so they are skipped. */
 const V4_IDS=['wake','goats','goatsBack','seeds','pumpkin','tom','planks','stall','homeWelcome','chestLesson','deckLesson','sleep1','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','sibSword','potions','prep','expedition','return','hospital','sellLoot','rest'];
-function migrate(st){if(st&&st.v===4){const old=V4_IDS[st.i];if(old){const oi=V4_IDS.indexOf(old);if(['tom','planks','stall'].includes(old)){const i=byId('homeWelcome');if(i>=0)st.i=i}else{if(oi>V4_IDS.indexOf('stall'))(V().story||st).tomDone=true;const i=byId(old);if(i>=0)st.i=i}}else if(st.i>=V4_IDS.length)st.i=STEPS.length;st.v=5;doSave();return st}
- if(st&&st.v===3){const old=V3_IDS[st.i];if(old){const i=byId(old);if(i>=0)st.i=i}else if(st.i>=V3_IDS.length)st.i=STEPS.length;st.v=4;doSave();return st}
- if(st&&st.v===2){const old=V2_IDS[st.i];if(old){const i=byId(old==='prep'?'sibSword':old);if(i>=0)st.i=i}else if(st.i>=V2_IDS.length)st.i=STEPS.length;st.v=3;doSave();return st}
- if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=2;doSave();return st}
+/* v98.1179 · v5 → v6: the step 'bread' (eat the bread · lesson) was inserted after goatsBack. Every branch below maps a saved position BY STEP ID into the current STEPS and ends at STORY_V. */
+const STORY_V=6;
+const V5_IDS=['wake','goats','goatsBack','seeds','pumpkin','homeWelcome','chestLesson','deckLesson','sleep1','tom','planks','stall','guard','cave','caveBack','gus','lanterns','craft','hire','sleep2','sell','contest','raid','plate','saf','sibSword','potions','prep','expedition','return','hospital','sellLoot','rest'];
+function migrate(st){if(st&&st.v===5){const old=V5_IDS[st.i];if(old){const i=byId(old);if(i>=0)st.i=i}else if(st.i>=V5_IDS.length)st.i=STEPS.length;st.v=STORY_V;doSave();return st}
+ if(st&&st.v===4){const old=V4_IDS[st.i];if(old){const oi=V4_IDS.indexOf(old);if(['tom','planks','stall'].includes(old)){const i=byId('homeWelcome');if(i>=0)st.i=i}else{if(oi>V4_IDS.indexOf('stall'))(V().story||st).tomDone=true;const i=byId(old);if(i>=0)st.i=i}}else if(st.i>=V4_IDS.length)st.i=STEPS.length;st.v=STORY_V;doSave();return st}
+ if(st&&st.v===3){const old=V3_IDS[st.i];if(old){const i=byId(old);if(i>=0)st.i=i}else if(st.i>=V3_IDS.length)st.i=STEPS.length;st.v=STORY_V;doSave();return st}
+ if(st&&st.v===2){const old=V2_IDS[st.i];if(old){const i=byId(old==='prep'?'sibSword':old);if(i>=0)st.i=i}else if(st.i>=V2_IDS.length)st.i=STEPS.length;st.v=STORY_V;doSave();return st}
+ if(!st||st.v>=2)return st;const old=OLD_IDS[st.i];if(old){const id=OLD_TO[old]||old,i=byId(id);if(i>=0){st.i=i;if(OLD_TO[old])delete st.data[old]}}else if(st.i>=OLD_IDS.length)st.i=STEPS.length;st.v=STORY_V;doSave();return st}
 function story(){const v=V();if(!v)return null;return migrate(v.story||null)}
 function freshSave(){const g=G(),v=V();if(v.starterKit===1&&g.day<=1&&!g.wins&&!v.adventure)return true;return g.day<=1&&!g.wins&&!(g.inventory||[]).length&&!(v.companions||[]).length&&!(v.party||[]).filter(m=>m.key!=='sib').length&&!v.adventure}
-function init(){const v=V();if(!v||v.story)return;v.story={v:5,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
+function init(){const v=V();if(!v||v.story)return;v.story={v:STORY_V,mode:freshSave()?'active':'offer',i:0,data:{},water:{},crystals:0};doSave()}
 function cur(){const st=story();return st&&st.mode==='active'?STEPS[st.i]:null}
 function dataOf(step){const st=story();st.data[step.id]||={};return st.data[step.id]}
 
@@ -528,7 +538,7 @@ function menuLock(k){const st=story();if(!st||st.mode!=='active')return '';const
  return ''}
 /* v98.1106 · a place / the world map the story keeps closed: the SIBLING cuts in with the reason (a talk line) instead of a system window */
 function sibBlock(why){const t='เดี๋ยวก่อนนะ! '+String(why||'').replace(/[<>&]/g,'');try{if(root.GuidedTour?.interject){root.GuidedTour.interject(t);return true}}catch(e){}return false}
-root.Story={menuLock,sibBlock,bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={itemUsed,menuLock,sibBlock,bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},

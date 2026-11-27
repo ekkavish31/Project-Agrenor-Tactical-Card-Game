@@ -121,7 +121,9 @@ renderBag=function(){baseBag();let host=$('panelContent');if(!host)return;let b=
  ${sec('การ์ดเหตุการณ์ · ใช้แล้วจะเกิดเรื่องราว','event',k=>`<button data-event="${k}">ใช้การ์ด</button>`)}
  ${sec('ไอเทมทั่วไป · ขายได้ที่ตลาด'+(atMarket?'':' (ไปตลาดเพื่อขาย)'),'goods',k=>SellCards.button('item',k))}<p id="bagMsg" class="small" role="status"></p></div>`);
  window.CardStudio?.fit(host);
- host.querySelectorAll('[data-use]').forEach(x=>x.onclick=()=>{let m=useConsumable(x.dataset.use);renderBag();$('bagMsg')&&($('bagMsg').textContent=m);refreshMap()});
+ host.querySelectorAll('[data-use]').forEach(x=>x.onclick=()=>{const k=x.dataset.use,cardEl=x.closest('.bag-item-card')?.querySelector('.adv-card'),rect=cardEl?.getBoundingClientRect(),node=cardEl?.cloneNode(true);let m=useConsumable(k);renderBag();$('bagMsg')&&($('bagMsg').textContent=m);refreshMap();
+  /* v98.1179 · the card turns into the real item + a restoring effect (js/item-use-fx.js); the story's "eat the bread" lesson is told about it */
+  if(/^ใช้/.test(m||'')){try{const hp=+((m.match(/HP \+(\d+)/)||[])[1]||0),st=+((m.match(/แรง \+(\d+)/)||[])[1]||0);if(rect)window.ItemUseFX?.play({key:k,hp,st,rect,node})}catch(e){}try{window.Story?.itemUsed?.(k,m)}catch(e){}}});
  host.querySelectorAll('[data-event]').forEach(x=>x.onclick=()=>{$('panel').close();runEvent(x.dataset.event,{card:x.dataset.event})});
  host.querySelectorAll('[data-sellc]').forEach(x=>x.onclick=()=>{const [kd,k]=x.dataset.sellc.split(':');const m=SellCards.sell(kd,k);render();renderBag();$('bagMsg')&&($('bagMsg').textContent=m);window.toast?.(m)})};
 window.addEventListener('load',()=>{if(s.village?.adventure){s.village.adventure=null;save()}});   // a save from the old area maps simply comes home
