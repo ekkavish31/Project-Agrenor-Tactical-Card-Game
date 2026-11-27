@@ -235,6 +235,8 @@ async function questEvent(ev){const step=cur();if(!step||!ev)return null;const d
  return null}
 /* v98.1179 · the bag reports every consumable the player uses (js/bag.js) — eating during step 'bread' finishes it */
 function itemUsed(key,msg){const step=cur();if(!step||step.id!=='bread'||!/^ใช้/.test(msg||''))return;const d=dataOf(step);if(!d.ate){d.ate=true;doSave();setTimeout(()=>tick().catch(()=>{}),1700)}}
+/* v98.1184 · the player's story phase for loading-screen tips (js/game-loader.js): 0 = day 1 daytime · 1 = day 1 evening (chest / deck) · 2 = day 2–3 festival · 3 = after the raid → leaving · 4 = free play / done */
+function phase(){try{const st=story();if(!st)return 0;if(st.mode!=='active')return 4;const i=st.i,B=id=>{const k=byId(id);return k<0?1e9:k};return i<B('homeWelcome')?0:i<=B('sleep1')?1:i<B('raid')?2:i<B('expedition')?3:4}catch(e){return 0}}
 function talked(id){const step=cur();if(!step)return false;const d=dataOf(step);if(step.talk===id&&!d.talked){d.talked=true;doSave();setTimeout(()=>tick().catch(()=>{}),50);return true}return false}
 /* lanterns are made at the forge's anvil like any other station work (village-place.html joins actions with `with` to that station) */
 /* v98.1022 · the glowing crystals are a card in the book (bag.glowCrystal); an old save's counter (story.crystals) is moved into the bag once */
@@ -538,7 +540,7 @@ function menuLock(k){const st=story();if(!st||st.mode!=='active')return '';const
  return ''}
 /* v98.1106 · a place / the world map the story keeps closed: the SIBLING cuts in with the reason (a talk line) instead of a system window */
 function sibBlock(why){const t='เดี๋ยวก่อนนะ! '+String(why||'').replace(/[<>&]/g,'');try{if(root.GuidedTour?.interject){root.GuidedTour.interject(t);return true}}catch(e){}return false}
-root.Story={itemUsed,menuLock,sibBlock,bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
+root.Story={phase,itemUsed,menuLock,sibBlock,bookTour,worldGuide,homeLock,sceneAt,bookIntro,pumpkinDays:waterDays,victory:victorySummary,bookFirst,timeScale,guildFirst,mipSeen,mystery,resumeFight,trackerInfo,openTracker,lock,placeLock,lessons:()=>(V()?.story?.lessons||[]).map(id=>({id,title:LESSON[id]?.[0],lines:LESSON[id]?.[1]})),lesson:lessonCard,steps:STEPS,state:story,questTargets,questEvent,talked,guide,
  reset(){if(!V())return;delete V().story;init();V().story.mode='active';doSave();draw(true)},
  goto(id){const st=story()||(init(),story());const i=byId(id);if(i<0)return false;st.mode='active';st.i=i;delete st.data[id];doSave();draw(true);return true},
  skip(){const st=story();if(st){st.mode='done';doSave();draw(true)}},
