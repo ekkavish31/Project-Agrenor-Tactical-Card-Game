@@ -320,7 +320,9 @@ async function enter(isNew){if(busyTitle)return;busyTitle=true;try{localStorage.
  await run(isNew?'เริ่มต้นการผจญภัย':'กำลังโหลดเซฟ',[{label:'ฟอนต์',items:fonts()},{label:'หมู่บ้าน',items:villageSet()},{label:'ตัวละครและบทสนทนา',items:portraitSet()},{label:'สร้างฉากหมู่บ้าน',share:.3,items:[Promise.race([whenTownDrawn(),wait(16000)])]},...(isNew?[]:[{label:'กลับไปที่เดิม',items:[Promise.race([Promise.resolve(root.Resume?.prepare?.()).catch(()=>{}),wait(16000)])]}])],{bg:'assets/home.webp',minMs:storyReady?0:isNew?900:500,quiet:storyReady,lore0:isNew});
  /* v97.04 · New Game: the opening cutscene (mother wakes the hero) fades in over the last prologue page and the title goes away underneath it,
     so the village map never shows in between (the story loop only starts a cutscene once T.active is false) */
- if(isNew&&root.Story&&root.Cutscene){T.active=false;const t0=Date.now();while(!root.Cutscene.isPlaying()&&Date.now()-t0<4000)await wait(100);if(root.Cutscene.isPlaying())await wait(reduced?0:600)}
+ if(isNew&&root.Story&&root.Cutscene){T.active=false;const t0=Date.now();/* v98.1156 · wait until the cutscene is really ON SCREEN (body.cs-open + .cs-live), not just 'playing': play() first decodes its portraits / backdrop (can take > 600 ms the first time) and only then fades in — the title used to leave in that gap and the village flashed between the loading screen and the mum scene */
+  const csLive=()=>document.body.classList.contains('cs-open')&&!!document.querySelector('.cs.cs-live');
+  while(!csLive()&&Date.now()-t0<6000)await wait(60);if(csLive())await wait(reduced?0:700)}
  title.classList.add('ts-out');document.documentElement.classList.remove('title-boot');T.active=false;await wait(reduced?0:450);art?.stop();art=null;title.remove();
  try{if(typeof render==='function')render()}catch{}root.VillageTown?.sync?.();root.GameBGM?.refresh?.();startPrefetch();
  if(!isNew&&game()?.village&&!game().village.heroName)root.HeroIdentity?.askHeroName?.(true)}
