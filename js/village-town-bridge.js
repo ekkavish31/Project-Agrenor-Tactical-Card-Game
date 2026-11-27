@@ -44,7 +44,9 @@ function sync(){host.hidden=activeHide();back.hidden=!inside||s.mode==='battle'|
  {const fk=JSON.stringify([!host.hidden,marketOpen,placeId,ready,marketReady,modalOpen()]);if(fk!==lastFocusKey){lastFocusKey=fk;setTimeout(focusActive,0);setTimeout(focusActive,250)}}
  const vis=JSON.stringify([!host.hidden,marketOpen,ready,marketReady,modalOpen()]);if(vis!==lastVisible){lastVisible=vis;send({type:'visibility',visible:!host.hidden&&!marketOpen&&!modalOpen()});if(marketReady)post(marketFrame,{type:'visibility',visible:!host.hidden&&marketOpen&&!modalOpen()})}
  const data=stateData(),stamp=JSON.stringify(data);if(stamp!==lastStamp){lastStamp=stamp;send({type:'state',data});if(marketReady)post(marketFrame,{type:'state',data})}
- const motion=HeroMotion.snapshot(TACTICS_SPRITES),sig=JSON.stringify(motion);if(sig!==lastMotion){lastMotion=sig;send({type:'motion',data:motion});if(marketReady)post(marketFrame,{type:'motion',data:motion})}
+ /* v98.1183 · SELF-HEAL (walk sprite turned female after the goat quest · reload fixed it · cause not reproduced): if the walk frames that are about to be sent belong to the OTHER look, re-apply the chosen look to the table first */
+ let motion=HeroMotion.snapshot(TACTICS_SPRITES);if(!motionIsOwn(motion)){try{HeroVariant.apply(HeroVariant.get());motion=HeroMotion.snapshot(TACTICS_SPRITES);console.warn('[hero-motion] walk frames of the other look were on the hero table — chosen look re-applied')}catch(e){}}
+ const sig=JSON.stringify(motion);if(sig!==lastMotion){lastMotion=sig;send({type:'motion',data:motion});if(marketReady)post(marketFrame,{type:'motion',data:motion})}
 }
 function openTown(){if(busy||s.mode==='battle')return;if(inside||marketOpen){const why=window.Story?.homeLock?.();if(why){villageDialog('ยังออกไปไม่ได้','<p>'+why.replace(/[<>&]/g,'')+'</p>');return}}   /* v98.605 · day-1 evening: no going out until bed */
 inside=false;marketOpen=false;if($('panel').open)$('panel').close();send({type:'return'});sync();send({type:'focus'})}
@@ -79,6 +81,7 @@ window.addEventListener('message',e=>{const m=e.data;if(e.source===frame.content
 /* v94: the old area adventure (adventure.js node maps) is archived — leaving the village always opens the world map in the town frame */
 function openWorld(){if(busy||s.mode==='battle')return;/* v97.16: the prologue decides when the world map opens */const lock=window.Story?.lock?.();if(lock){if(!window.Story?.sibBlock?.(lock))villageDialog('ยังไม่ถึงเวลา','<p>'+lock.replace(/[<>&]/g,'')+'</p>');return}let reason=s.hp<20?'HP ต่ำกว่า 20 พักก่อน':'';{const IJ=window.Injury,G0=window.WorldState?.game?.()||s;if(!reason&&IJ&&(!IJ.canFight(G0,'hero')||!IJ.canTravel(G0,'hero')))reason='ตัวเอกบาดเจ็บหนัก ('+IJ.describe(G0,'hero')+') ต้องพักฟื้นที่โรงพยาบาลก่อน'}if(reason){villageDialog('ยังออกเดินทางไม่ได้','<p>'+reason+'</p>');return}if($('panel').open)$('panel').close();openTown();ready=false;frame.src='world-map.html';sync()}
 function openInterior(id,name){if(busy||s.mode==='battle')return;if($('panel').open)$('panel').close();openTown();enterPlace(id,'',name||id);sync()}
+function motionIsOwn(m){try{const v=window.HeroVariant?.get?.(),bad=v==='male'?'hero-female':v==='female'?'hero-male':null;if(!bad||!m?.directions)return true;return !Object.values(m.directions).some(d=>(d.walk||[]).some(f=>f?.src&&f.src.includes('/'+bad+'/')))}catch(e){return true}}
 function onWorld(){try{return /world-map\.html/.test(frame.contentWindow.location.pathname)}catch{return false}}
 function placeMaps(){try{return JSON.parse(localStorage.getItem('place-maps-v1')||'{}')}catch{return{}}}
 function chooseExpedition(){openWorld()}function expedition(){openWorld()}
