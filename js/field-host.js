@@ -558,12 +558,16 @@ function panel(now) {
 function resize() { W = innerWidth; H = innerHeight; cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio); cv.style.width = W + 'px'; cv.style.height = H + 'px'; scale = Math.max(.7, Math.min(1.4, Math.min(W / 900, H / 620))) }
 addEventListener('resize', resize); resize();
 window.applyRenderScale = () => { cv.width = Math.round(W * devicePixelRatio); cv.height = Math.round(H * devicePixelRatio) };   /* v98.574 · js/perf-scale.js lowers the resolution when frames are slow (the fights had no such safety net) */
+for (const ev of ['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart']) addEventListener(ev, e => { if (ev !== 'pointermove' || e.buttons) window.__fieldTouchAt = performance.now() }, { capture: true, passive: true });
 function frame(t) {
   OCC.frame++;
   window.__feDirtyGround = () => { groundCanvas = null };   // BG Editor: repaint the ground (blocked-cell tint) after a prop moved
 requestAnimationFrame(frame);
   /* v98.1168 · while a battle-talk (Hilda before the pumpkin fight…) is open the arena is a still backdrop: it repaints at ~20 fps instead of every frame (the full repaint — ground, tilt-shift, props, spotlight — cost ~25 ms/frame and made the typing and portraits stutter) */
   if (window.BattleTalk?.busy?.() && t - (frame.talkT || 0) < 48) return; frame.talkT = t;
+  /* v98.1169 · CALM VIEW: while it is the player's turn and nothing is moving (no walk, effect, floating number or camera move) the arena repaints at ~30 fps instead of 60+: the picture is the same, half the GPU / fill work
+     (the big fight maps were raster-bound and dipped hard). Any click, key, wheel or drag gives the full rate back for half a second. */
+  if (window.TownBattle?.calm?.() && t - (frame.calmT || 0) < 30 && performance.now() - (window.__fieldTouchAt || 0) > 500) return; frame.calmT = t;
   if (TURN) stepTurn(performance.now());
   if (!groundCanvas) paintGround();
   window.TownBattle?.pre?.();

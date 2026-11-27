@@ -2082,21 +2082,30 @@
   }
   /* ---------- HD-2D light (code-drawn) ----------
      spotlight: a dark veil in screen space with soft holes over the fighters; always a light vignette, deep during cut-scenes */
-  let veil = null;
+  let veil = null, veilKey = '';
+  /* v98.1169 · the veil is soft, so it is built at HALF resolution (¼ of the pixels to fill) and only REBUILT when something it shows changed (a fighter moved, the light / zoom / pan changed);
+     a still turn reuses last frame's veil — it was a full-screen gradient + one hole per unit + a full-screen blit every frame (the biggest single cost of the fight view). */
   function spotlight(g, units) {
-    const dpr = devicePixelRatio || 1, w = Math.round(W * dpr), h = Math.round(H * dpr);
-    if (!veil) veil = document.createElement('canvas'); if (veil.width !== w || veil.height !== h) { veil.width = w; veil.height = h }
-    const v = veil.getContext('2d'), k = scale * zoom * dpr, base = .1 + light * .42 + (NIGHT ? .38 : 0);
-    v.globalCompositeOperation = 'source-over'; v.clearRect(0, 0, w, h);
-    const vg = v.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .35, w / 2, h / 2, Math.max(w, h) * .75); vg.addColorStop(0, NIGHT ? `rgba(8,14,48,${base * .8})` : `rgba(10,12,28,${base * .6})`); vg.addColorStop(1, NIGHT ? `rgba(4,6,24,${Math.min(.92, base + .25)})` : `rgba(6,6,16,${base + .2})`);
-    v.fillStyle = vg; v.fillRect(0, 0, w, h);
-    v.globalCompositeOperation = 'destination-out';
-    for (const u of units) {
-      const p = project(u.vu, u.vv), x = ((p.x - WORLD_W / 2) * scale * zoom + W / 2 + pan.x) * dpr, y = ((p.y - UNIT * .7 - WORLD_H / 2) * scale * zoom + H / 2 + pan.y) * dpr, r = UNIT * 1.9 * k;
-      const hg = v.createRadialGradient(x, y, r * .15, x, y, r); hg.addColorStop(0, `rgba(0,0,0,${.35 + light * .65})`); hg.addColorStop(1, 'rgba(0,0,0,0)');
-      v.fillStyle = hg; v.beginPath(); v.arc(x, y, r, 0, 7); v.fill();
+    const dpr = devicePixelRatio || 1, w = Math.round(W * dpr), h = Math.round(H * dpr), S = .5, vw = Math.ceil(w * S), vh = Math.ceil(h * S);
+    if (!veil) veil = document.createElement('canvas');
+    const k = scale * zoom * dpr, base = .1 + light * .42 + (NIGHT ? .38 : 0), holes = [];
+    for (const u of units) { const p = project(u.vu, u.vv); holes.push(Math.round(((p.x - WORLD_W / 2) * scale * zoom + W / 2 + pan.x) * dpr), Math.round(((p.y - UNIT * .7 - WORLD_H / 2) * scale * zoom + H / 2 + pan.y) * dpr)) }
+    const key = w + 'x' + h + '|' + base.toFixed(3) + '|' + light.toFixed(2) + '|' + (NIGHT ? 1 : 0) + '|' + k.toFixed(3) + '|' + holes.join(',');
+    if (veil.width !== vw || veil.height !== vh) { veil.width = vw; veil.height = vh; veilKey = '' }
+    if (key !== veilKey) {
+      veilKey = key;
+      const v = veil.getContext('2d'); v.setTransform(S, 0, 0, S, 0, 0);
+      v.globalCompositeOperation = 'source-over'; v.clearRect(0, 0, w, h);
+      const vg = v.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .35, w / 2, h / 2, Math.max(w, h) * .75); vg.addColorStop(0, NIGHT ? `rgba(8,14,48,${base * .8})` : `rgba(10,12,28,${base * .6})`); vg.addColorStop(1, NIGHT ? `rgba(4,6,24,${Math.min(.92, base + .25)})` : `rgba(6,6,16,${base + .2})`);
+      v.fillStyle = vg; v.fillRect(0, 0, w, h);
+      v.globalCompositeOperation = 'destination-out';
+      for (let n = 0; n < holes.length; n += 2) {
+        const x = holes[n], y = holes[n + 1], r = UNIT * 1.9 * k;
+        const hg = v.createRadialGradient(x, y, r * .15, x, y, r); hg.addColorStop(0, `rgba(0,0,0,${.35 + light * .65})`); hg.addColorStop(1, 'rgba(0,0,0,0)');
+        v.fillStyle = hg; v.beginPath(); v.arc(x, y, r, 0, 7); v.fill();
+      }
     }
-    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(veil, 0, 0); g.restore();
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = true; g.drawImage(veil, 0, 0, vw, vh, 0, 0, w, h); g.restore();
   }
   function glowDraw(g, t) {
     glows = glows.filter(x => t - x.t0 < x.dur);
@@ -2196,6 +2205,6 @@
     return o;
   }
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') padOn = false }, true);
-  window.TownBattle = { fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
+  window.TownBattle = { calm: () => !!st && !busy && !cine && st.turn === 'hero' && !anims.length && !effects.length && !texts.length, fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
     act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, crystal: crystalAct }, busy: () => busy };
 })();
