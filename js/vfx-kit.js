@@ -407,13 +407,56 @@
     root.VfxKit.addVariant(kind, 'painted8', 'ภาพวาด 2D + แสงและอนุภาค', (g, e, t, p, a, cw) => spellAtlas(kind, g, e, t, p, a, cw));
   }
 
+  function floorImpact(kind, g, hit, p, W) {
+    if (hit <= 0 || hit >= 1) return;
+    const color = LIGHT[kind][0];
+    const envelope = seg(hit, 0, .055) * (1 - hit) ** 2;
+    const radius = W * (.22 + eo(hit) * (kind === 'water' || kind === 'blunt' ? 1.6 : 1.12));
+    add(g, () => {
+      glow(g, p.x, p.y - W * .12, W * .54, color, envelope * .64);
+      ring(g, p.x, p.y, radius, radius * .38, W * .019, color, envelope * .57);
+      if (kind === 'water') ring(g, p.x, p.y, radius * .72, radius * .26, W * .013, color, envelope * .42);
+    });
+  }
+
+  function aftermath(kind, g, e, hit, p, W) {
+    if (hit <= .34 || hit >= 1) return;
+    const low = root.BattlePolish?.quality === 'low';
+    if (kind === 'lightning') {
+      add(g, () => {
+        for (let i = 0; i < (low ? 2 : 4); i++) {
+          const k = seg(hit, .39 + i * .12, .51 + i * .14);
+          if (!k || k === 1) continue;
+          const dir = i % 2 ? -1 : 1, x = p.x + dir * W * (.15 + R(e, i + 711) * .42);
+          const y = p.y - W * (.09 + R(e, i + 720) * .44);
+          bolt(g, e, x, y, x + dir * W * .35, y - W * .15, W * .12, 730 + i * 3,
+            W * .012, C.boltHi, bell(k) * .63);
+        }
+      });
+      return;
+    }
+    const residue = { fire: 'smoke', earth: 'dust', blunt: 'dust', ice: 'mist', water: 'splash', wind: 'leaf', dark: 'mote' }[kind];
+    if (!residue) return;
+    for (let i = 0; i < (low ? 2 : 5); i++) {
+      const k = seg(hit, .35 + .05 * i, .78 + .052 * i);
+      if (!k || k === 1) continue;
+      const drift = (R(e, i + 771) - .5) * W * (.55 + k * .65);
+      const rise = W * (kind === 'fire' ? .68 : .28) * eo(k);
+      root.BattleVFX?.stamp?.(g, 'particle/' + residue, p.x + drift, p.y - W * .12 - rise,
+        W * (.17 + k * (kind === 'fire' ? .53 : .28)), {
+          alpha: bell(k) * .54, rot: drift / W, blend: 'source-over'
+        });
+    }
+  }
+
   const DRAWN = {
     lightning: { size: 3.7, anchor: .941, cuts: [0, .08, .16, .24, .33, .45, .58, .72, .88], contact: .24 },
     ice: { size: 2.85, anchor: .815, cuts: [0, .09, .18, .29, .44, .58, .72, .86, 1], contact: .29 }
   };
 
   function drawnImpact(kind, im, g, e, t, p, a, cw) {
-    if (!im.complete || !im.naturalWidth || !im.naturalHeight) return spellAtlas(kind, g, e, t, p, a, cw);
+    const extended = sequenceReady(kind, true);
+    if (!extended && (!im.complete || !im.naturalWidth || !im.naturalHeight)) return spellAtlas(kind, g, e, t, p, a, cw);
     const spec = DRAWN[kind], W = cw * (e.scale || 1), size = W * spec.size;
     const still = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const low = root.BattlePolish?.quality === 'low';
@@ -434,15 +477,20 @@
         }
       });
     }
-    const cell = still ? 4 : spec.cuts.findIndex(end => k < end) - 1;
-    if (cell >= 0 && k < 1) {
-      const w = im.naturalWidth / 4, h = im.naturalHeight / 2;
-      g.save();
-      g.globalCompositeOperation = 'screen';
-      g.globalAlpha *= still ? .65 * (1 - t) : 1 - seg(k, spec.cuts[7], spec.cuts[8]);
-      g.drawImage(im, (cell % 4) * w, Math.floor(cell / 4) * h, w, h,
-        p.x - size * .5, p.y - size * spec.anchor, size, size);
-      g.restore();
+    if (extended && k < 1) {
+      const frame = still ? 6 : phaseFrame(k, spec.contact, 5);
+      sequenceFrame(g, kind, frame, p.x, p.y, size, still ? .65 * (1 - t) : 1 - seg(k, .75, .94), 0, spec.anchor);
+    } else if (!extended) {
+      const cell = still ? 4 : spec.cuts.findIndex(end => k < end) - 1;
+      if (cell >= 0 && k < 1) {
+        const w = im.naturalWidth / 4, h = im.naturalHeight / 2;
+        g.save();
+        g.globalCompositeOperation = 'screen';
+        g.globalAlpha *= still ? .65 * (1 - t) : 1 - seg(k, spec.cuts[7], spec.cuts[8]);
+        g.drawImage(im, (cell % 4) * w, Math.floor(cell / 4) * h, w, h,
+          p.x - size * .5, p.y - size * spec.anchor, size, size);
+        g.restore();
+      }
     }
     if (!still && thunder && k >= .18 && k < .58) {
       const strength = bell(seg(k, .18, .58)) * .57, top = p.y - size * .86;
@@ -455,7 +503,10 @@
         }
       });
     }
-    if (!still && hit > 0) paintedLight(kind, g, e, hit, p, W, true);
+    if (!still && hit > 0) {
+      paintedLight(kind, g, e, hit, p, W, true);
+      aftermath(kind, g, e, hit, p, W);
+    }
     return true;
   }
 
@@ -466,7 +517,7 @@
     drawnImages[kind] = im;
     const path = 'assets/fx/anim/' + kind + '-drawn.webp';
     im.src = artURL(path);
-    addVariant(kind, 'drawnImpact', 'ภาพวาด 8 เฟรม + แสงปะทะ',
+    addVariant(kind, 'drawnImpact', 'ภาพวาด 12 เฟรม + แสงปะทะ',
       (g, e, t, p, a, cw) => drawnImpact(kind, im, g, e, t, p, a, cw));
   }
 
@@ -481,25 +532,40 @@
     elements: ['wind', 'water', 'earth', 'dark'],
     support: ['heal', 'healGold', 'shield', 'fire']
   };
-  const sequences = {};
-  if (typeof Image !== 'undefined') for (const [group, kinds] of Object.entries(SEQUENCE_GROUPS)) {
+  const sequences = {}, expanded = {};
+  const liveImage = im => !!(im?.complete && im.naturalWidth && im.naturalHeight);
+  function loadSequenceImage(path) {
     const im = new Image();
     im.decoding = 'async';
-    const extension = group === 'elements' || group === 'support' ? '.png' : '.webp';
-    const path = 'assets/fx/anim/sequence-' + group + extension;
     im.src = artURL(path);
-    kinds.forEach((kind, row) => { sequences[kind] = { im, row, rows: kinds.length }; });
+    return im;
+  }
+  if (typeof Image !== 'undefined') for (const [group, kinds] of Object.entries(SEQUENCE_GROUPS)) {
+    const extension = group === 'elements' || group === 'support' ? '.png' : '.webp';
+    const im = loadSequenceImage('assets/fx/anim/sequence-' + group + extension);
+    const more = loadSequenceImage('assets/fx/anim/twelve-' + group + '.webp');
+    kinds.forEach((kind, row) => {
+      sequences[kind] = { im, row, rows: kinds.length, columns: 4 };
+      expanded[kind] = { im: more, row, rows: kinds.length, columns: 12 };
+    });
+  }
+  if (typeof Image !== 'undefined') {
+    const im = loadSequenceImage('assets/fx/anim/twelve-strike.webp');
+    ['lightning', 'ice'].forEach((kind, row) => { expanded[kind] = { im, row, rows: 2, columns: 12 }; });
   }
 
-  function sequenceReady(kind) {
-    const im = sequences[kind]?.im;
-    return !!(im?.complete && im.naturalWidth && im.naturalHeight);
+  function sequenceReady(kind, requireExpanded = false) {
+    return liveImage(expanded[kind]?.im) || (!requireExpanded && liveImage(sequences[kind]?.im));
   }
+  const sequenceLength = kind => sequenceReady(kind, true) ? 12 : 4;
+  const phaseFrame = (t, contact, anticipation) => t < contact
+    ? Math.min(anticipation - 1, Math.floor(t / contact * anticipation))
+    : Math.min(11, anticipation + Math.floor(seg(t, contact, 1) * (12 - anticipation)));
 
   function sequenceFrame(g, kind, cell, x, y, size, alpha, angle = 0, anchor = .5) {
     if (!sequenceReady(kind)) return false;
-    const { im, row, rows } = sequences[kind];
-    const w = im.naturalWidth / 4, h = im.naturalHeight / rows;
+    const { im, row, rows, columns } = sequenceReady(kind, true) ? expanded[kind] : sequences[kind];
+    const w = im.naturalWidth / columns, h = im.naturalHeight / rows;
     g.save();
     g.translate(x, y);
     if (angle) {
@@ -513,6 +579,7 @@
     return true;
   }
   root.VfxKit.sequenceFrame = sequenceFrame;
+  root.VfxKit.sequenceLength = sequenceLength;
 
   const ACTION_SEQUENCES = {
     sword: 2.1, knife: 1.8, blunt: 2.3, spear: 1.9, rapier: 1.8,
@@ -530,8 +597,8 @@
     : kind === 'heal' && /^#[ef]/i.test(e.color || '') ? 'healGold' : kind;
   function paintedState(e, variant) {
     const kind = nameOf(e.kind);
-    const im = variant === 'drawnSequence' ? sequences[sequenceArt(kind, e)]?.im
-      : variant === 'drawnImpact' ? drawnImages[kind] : null;
+    const art = variant === 'drawnSequence' ? sequenceArt(kind, e) : kind;
+    const im = variant === 'drawnSequence' || variant === 'drawnImpact' ? expanded[art]?.im : null;
     if (!im) return null;
     if (!im.complete) return 'loading';
     return im.naturalWidth && im.naturalHeight ? 'ready' : 'missing';
@@ -569,27 +636,36 @@
       }
       return true;
     }
+    const expandedArt = sequenceLength(art) === 12;
     const split = travel ? ({ arrow: .72, arcane: .36 }[kind] || 0) : 0;
     if (t < split) {
       const k = t / split, x = lerp(a.x, p.x, k);
       groundLight(g, x, lerp(a.y, p.y, k), W * .7, LIGHT[kind][0], .27);
-      return sequenceFrame(g, art, Math.min(1, Math.floor(k * 2)), x,
+      return sequenceFrame(g, art, expandedArt ? Math.min(3, Math.floor(k * 4)) : Math.min(1, Math.floor(k * 2)), x,
         lerp(startY, targetY, k), size * .72, 1, direction);
     }
     const k = seg(t, flightSplit || split, 1);
     const groundAnchor = GROUND_ANCHOR[kind];
     const aimed = ['sword', 'knife', 'spear', 'rapier', 'arrow'].includes(kind);
-    const frame = still ? 1 : split ? (k < .38 ? 2 : 3) : k < .13 ? 0 : k < .32 ? 1 : k < .58 ? 2 : 3;
+    const contact = split ? 0 : .23;
+    const frame = expandedArt ? (still ? 4 : phaseFrame(k, contact, 4))
+      : still ? 1 : split ? (k < .38 ? 2 : 3) : k < .13 ? 0 : k < .32 ? 1 : k < .58 ? 2 : 3;
     const strength = still ? .65 * (1 - t) : 1 - seg(k, .7, 1);
-    const hit = seg(k, split ? 0 : .13, 1);
-    if (!still) paintedLight(kind, g, e, hit, p, W, false);
+    const hit = seg(k, expandedArt ? contact : split ? 0 : .13, 1);
+    if (!still) {
+      paintedLight(kind, g, e, hit, p, W, false);
+      floorImpact(kind, g, hit, p, W);
+    }
     sequenceFrame(g, art, frame, p.x, groundAnchor ? p.y : targetY,
       size, strength, aimed ? direction : 0, groundAnchor || .5);
-    if (!still) paintedLight(kind, g, e, hit, p, W, true);
+    if (!still) {
+      paintedLight(kind, g, e, hit, p, W, true);
+      aftermath(kind, g, e, hit, p, W);
+    }
     return true;
   }
   for (const kind of Object.keys(ACTION_SEQUENCES)) {
-    addVariant(kind, 'drawnSequence', 'ภาพวาด 4 เฟรม + แสงและอนุภาค',
+    addVariant(kind, 'drawnSequence', 'ภาพวาด 12 เฟรม + แสงและอนุภาค',
       (g, e, t, p, a, cw) => actionSequence(kind, g, e, t, p, a, cw));
   }
 

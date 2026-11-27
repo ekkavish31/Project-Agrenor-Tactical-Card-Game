@@ -5,7 +5,7 @@ main{flex:1;position:relative}iframe{position:absolute;inset:0;width:100%;height
 <!-- v98.690 · Editor › Visual: the old VFX tab + the new HUD tab (menu icons · cursors · pointing arrows) -->
 <nav><button data-id="vfx" aria-pressed="true" title="เอฟเฟกต์สนามรบ: เทียบของเดิมกับของใหม่ ทีละตัว">✨ VFX</button><button data-id="hud" title="ไอคอนเมนู · เคอร์เซอร์ · ลูกศรชี้ (Head arrow)">🎛 HUD</button></nav>
 <main id="m"></main>
-<script src="js/editor-store.js?v=v98.1151"></script><script>const SRC={vfx:'vfx-kit-preview.html?build=v98.1149',hud:'hud-tab.html'};const m=document.getElementById('m');let last='vfx';try{last=localStorage.getItem('visual-tab-sub')||'vfx'}catch(e){}if(!SRC[last])last='vfx';
+<script src="js/editor-store.js?v=v98.1151"></script><script>const SRC={vfx:'vfx-kit-preview.html?build=v98.1153',hud:'hud-tab.html'};const m=document.getElementById('m');let last='vfx';try{last=localStorage.getItem('visual-tab-sub')||'vfx'}catch(e){}if(!SRC[last])last='vfx';
 function show(id){last=id;try{localStorage.setItem('visual-tab-sub',id)}catch(e){}document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
  for(const f of m.children)f.hidden=f.dataset.id!==id;if(!m.querySelector('[data-id="'+id+'"]')){const f=document.createElement('iframe');f.dataset.id=id;const url=new URL(SRC[id],location.href);for(const [key,value] of new URLSearchParams(location.search))if(!url.searchParams.has(key))url.searchParams.set(key,value);f.src=url.href;m.append(f)}}
 document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.id)};show(last);</script></body></html>
