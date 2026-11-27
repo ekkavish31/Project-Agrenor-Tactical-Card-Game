@@ -686,13 +686,13 @@
     S = L.save(); const back = MIND?.tick(S) || []; if (back.length) { L.writeSave(S); for (const b of back) toast(`💼 ${L.P[b.id]?.name || b.id} กลับจากงานแล้ว · ${b.gain}`) }
     const c = CLK.read(), icon = daylight() > .5 ? '☀' : '🌙';
     const here = [...people.values()].filter(a => !a.leaving);
-    const html = `<h1>${esc(NAME)}</h1><div class="sub">Fernvale · ${window.WorldState?.season ? window.WorldState.season(c.day)[2] + ' ' : ''}วันที่ ${c.day} · ${icon} ${CLK.label(c.hour)}</div>
-      <div class="row"><span>💰 ${S.gold}</span><span>🧪 ${S.potions}</span><span>ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</span></div>
+    const html = `<h1>${esc(NAME)}</h1><div class="sub">ทีม ${S.party.length}/${L.MAX_ACTIVE}${S.bench.length ? ' (+' + S.bench.length + ')' : ''}</div>
       <div>${KIND === 'healer' ? '<button id="inWard">🏥 ห้องผู้ป่วย</button>' : ''}${KIND === 'inn' ? '<button id="inParty">👥 จัดทีม</button><button id="inRoom">🛏 เช่าห้อง 10💰</button>' : ''}${KIND === 'home' ? '<button id="inSleep">🛏 นอนพัก</button>' : ''}${KIND === 'farm' ? (() => { const G = farmG(), b = G ? window.Garden.badge(G) : ''; const Gd = window.Garden, c = G ? Gd.fieldCount(G) : null; return '<div style="font-size:12px;margin:2px 0">🌱 เมล็ดในมือ <select id="fmSeed"><option value="">— เลือกตอนปลูก —</option>' + Object.entries(Gd.CROPS).filter(([k]) => Gd.canPlant(k)).map(([k, C]) => `<option value="${k}" ${k === seedPick ? 'selected' : ''}>${C.icon} ${C.name} ${C.seed}💰</option>`).join('') + '</select></div>' + (c ? `<div style="font-size:12px">แปลงไถแล้ว ${c.soil} · ปลูก ${c.planted} · ต้องถาง ${c.debris}</div>` : '') + '<button id="fmOpen">🌾 จัดการไร่' + b + '</button><button id="fmWater">💧 รดน้ำทุกแปลง</button><button id="fmHarvest">🧺 เก็บทุกแปลงที่สุก</button>' })() : ''}${services()}<button id="inOut" class="ghost">🚪 ออกไปข้างนอก</button></div>
       <div class="who">${here.length ? here.map(a => `<div data-id="${a.id}"><span>${a.p.recruit && !L.inParty(S, a.id) ? '★ ' : ''}${esc(a.p.name)}</span><small>${esc(a.p.benched ? 'พักกับทีม' : fill(a.p.role))}</small></div>`).join('') : '<small style="color:#bba57f">ไม่มีใครอยู่ตอนนี้</small>'}</div>
       <div style="margin-top:6px;font-size:11px;color:#9a8a6a">${KIND === 'farm' ? 'คลิกช่องในไร่ = ถาง → ไถ → ปลูก → รดน้ำ → เก็บ · กระท่อม = จัดการไร่ · กล่องส่งขาย = ขายของในตะกร้า · คอก = ลูบหัวสัตว์ · บ่อน้ำ = ตกปลา · ประตูซ้าย = ออก' : 'คลิกพื้น = เดิน · คลิกคน = คุย · ★ = ชวนเข้าทีมได้ · ประตูซ้าย = ออก'}</div>`;
     if (html === hud._html) return; hud._html = html; hud.innerHTML = html;   // only rebuild when something changed (keeps clicks reliable)
     hud.querySelector('#inOut').onclick = () => walkTo(DOOR, leave);
+    window.InteriorUI = { leave: () => walkTo(DOOR, leave) };   /* v98.1185 · the top HUD's 'กลับหมู่บ้าน' icon (js/place-hud.js) */
     if (hud.querySelector('#inWard')) hud.querySelector('#inWard').onclick = () => openWard();
     if (KIND === 'farm') {
       hud.querySelector('#fmOpen').onclick = () => openFarm();
