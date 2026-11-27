@@ -42,10 +42,13 @@
   }
   /* the battle's own kinds: true = a recording played */
   function battle(kind, strength = .6) { const L = BATTLE[kind]; if (!L || off) return false; const n = L[Math.floor(Math.random() * L.length)]; return play(n, { vol: .55 + strength * .6, rate: n.startsWith('hit-') ? .9 - Math.min(.15, strength * .1) : 1 }) }   /* v98.1143 · hits a bit lower = heavier */
+  /* v98.1146 · cancel / close: soft paper-book thud + a low pluck falling away (replaces the 8-bit bleep) · hover: a light glassy tick */
+  function back() { play('book-close', { vol: .75, rate: 1.05 }); play('ui-pluck', { vol: .6, rate: .7 }) }
+  let hoverT = 0; function hover() { const n = performance.now(); if (n - hoverT < 70) return; hoverT = n; play('ui-hover', { vol: .55 }) }
   let stepT = 0, stepI = 0;
   function walk(dt, moving, surface = 'grass', every = .36) { if (!moving) { stepT = every * .6; return } stepT += dt; if (stepT >= every) { stepT = 0; stepI++; play('step-' + surface, { vol: .8 + (stepI % 2) * .1 }) } }
   function preload(list) { for (const n of list) if (V[n]) for (let i = 1; i <= V[n]; i++) load(n, i) }
-  const api = root.Sfx = { V, play, battle, walk, preload, has: n => !!V[n], ready, set(p) { Object.assign(cfg, p); try { localStorage.setItem('project-a-sfx', JSON.stringify(cfg)) } catch (e) { } }, off: v => { off = !!v } };
+  const api = root.Sfx = { V, play, back, hover, battle, walk, preload, has: n => !!V[n], ready, set(p) { Object.assign(cfg, p); try { localStorage.setItem('project-a-sfx', JSON.stringify(cfg)) } catch (e) { } }, off: v => { off = !!v } };
 
   /* ---- automatic UI sounds ---- */
   const HIT = 'button,[role=button],a[href],summary,select,input[type=checkbox],input[type=radio],.btn,label.chk,[data-a],[data-act]';
@@ -58,13 +61,13 @@
     let n = 'ui-click';
     if (t.matches('input[type=checkbox],input[type=radio]') || t.matches('label.chk')) n = 'ui-toggle';
     else if (t.matches('select')) n = 'ui-tick';
-    else if (BACK.test(txt) || t.matches('[data-x],.x,.close')) n = 'ui-back';
+    else if (BACK.test(txt) || t.matches('[data-x],.x,.close')) { back(); return }
     else if (OK.test(txt)) n = 'ui-confirm';
     else if (t.closest('.hand,.card,[data-card],#hand')) { play('card-slide', { vol: .9 }); play('ui-pluck', { vol: .35 }); return }
     play(n);
   }
   document.addEventListener('pointerdown', onPress, true);
-  document.addEventListener('pointerdown', function first() { document.removeEventListener('pointerdown', first, true); ctx(); preload(['ui-click', 'ui-back', 'ui-confirm', 'ui-toggle', 'ui-tick', 'ui-select', 'ui-open', 'ui-close', 'coins', 'step-grass', 'step-stone']) }, true);
+  document.addEventListener('pointerdown', function first() { document.removeEventListener('pointerdown', first, true); ctx(); preload(['book-close', 'ui-pluck', 'ui-hover', 'ui-click', 'ui-back', 'ui-confirm', 'ui-toggle', 'ui-tick', 'ui-select', 'ui-open', 'ui-close', 'coins', 'step-grass', 'step-stone']) }, true);
   /* dialogs (<dialog>.showModal / .close) */
   try {
     const P = root.HTMLDialogElement?.prototype;
