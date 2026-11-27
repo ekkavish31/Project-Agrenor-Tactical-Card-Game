@@ -63,6 +63,7 @@
   /* create + resume the AudioContext inside the first key/tap of this page (Safari / mobile only allow that inside a gesture) */
   for (const ev of ['pointerdown', 'keydown', 'touchend']) document.addEventListener(ev, () => { audio(); }, { capture: true, passive: true });
 
+  try { if (typeof document !== 'undefined' && !document.getElementById('dfxGemCss')) { const st = document.createElement('style'); st.id = 'dfxGemCss'; st.textContent = '.dfx-gem{display:inline-block;width:1.15em;height:1.5em;vertical-align:-.3em;margin:0 .1em;background:url(assets/ui/quest-marker.webp) center/contain no-repeat;filter:drop-shadow(0 1px 2px #0006)}'; document.head.append(st) } } catch (e) { }
   /* ---------------- sentences & pages ---------------- */
   /* → [{t, nl}] : sentences of one text (nl = it starts after a line break inside the text) */
   function sentences(text) {
@@ -143,7 +144,7 @@
       if (o.fade) { runFade(pg); return; }
       /* v98.181 · stable layout: the whole page is placed first (hidden), then each word is switched on in the spot it will keep — centred text no longer
          grows outwards from the middle; the first word already sits where it will end up and the rest extends behind it */
-      for (const sg of segs) { const sp = document.createElement('span'); sp.textContent = sg; sp.style.visibility = 'hidden'; el.appendChild(sp); spans.push(sp); }
+      for (const sg of segs) { const sp = document.createElement('span'); if (sg === '◆') { sp.className = 'dfx-gem'; sp.setAttribute('aria-label', '◆') } else sp.textContent = sg; sp.style.visibility = 'hidden'; el.appendChild(sp); spans.push(sp); }   /* v98.1182 · the gold ◆ of a hint = the painted quest crystal, like in the quest windows */
       tick();
     }
     /* v98.234 · opts.fade (prologue narration): no word-by-word typing — each sentence fades in whole, one after another, overlapping a little so it stays gentle and short.
