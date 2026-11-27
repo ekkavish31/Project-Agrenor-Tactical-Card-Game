@@ -3034,7 +3034,7 @@
  let lastSig = '';
  let tickAt = 0;
  (function tick(now) {
-  /* v98.1175 · outside the editor this only has to notice a change now and then: JSON.stringify(data) of the whole village ran on EVERY animation frame (all game long, even indoors) */
+  /* v98.1178 · outside the editor this only has to notice a change now and then: JSON.stringify(data) of the whole village ran on EVERY animation frame (all game long, even indoors) */
   if (!editing && !place && now - tickAt < 300) { requestAnimationFrame(tick); return }
   tickAt = now;
   if (place && testWalk) leave(true);

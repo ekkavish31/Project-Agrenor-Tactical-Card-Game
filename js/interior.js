@@ -290,7 +290,7 @@
     if (mir) { g.transform(-1, 0, 0, 1, W, 0) }
     if (A.hole && sky) {   /* the sky / daylight shows only through the opening (a tinted copy of the hole mask) */
       const hm = artImgs[name + '#h'] || (artImgs[name + '#h'] = Object.assign(new Image(), { src: A.hole }));
-      /* v98.1175 · the tinted hole mask is built ONCE per (picture, sky colour) and reused — it was re-made (canvas resized, mask redrawn, tinted) for every window, every frame */
+      /* v98.1178 · the tinted hole mask is built ONCE per (picture, sky colour) and reused — it was re-made (canvas resized, mask redrawn, tinted) for every window, every frame */
       if (hm.complete && hm.naturalWidth) { const key = name + '|' + sky; let oc = holeTint.get(key); if (!oc) { oc = document.createElement('canvas'); oc.width = hm.naturalWidth; oc.height = hm.naturalHeight; const o = oc.getContext('2d'); o.drawImage(hm, 0, 0); o.globalCompositeOperation = 'source-in'; o.fillStyle = sky; o.fillRect(0, 0, oc.width, oc.height); holeTint.set(key, oc); if (holeTint.size > 16) holeTint.delete(holeTint.keys().next().value) } g.drawImage(oc, 0, 0) }
     }
     g.drawImage(im, 0, 0); g.restore(); return true
