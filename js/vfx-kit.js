@@ -162,23 +162,43 @@
     g.save(); g.translate(p.x, py); g.rotate(an); add(g, () => { for (const [w, cc, o] of [[W * .2, c, .35], [W * .09, C.white, .95]]) { const gr = g.createLinearGradient(-L, 0, W * .25, 0); gr.addColorStop(0, `rgba(${cc},0)`); gr.addColorStop(.75, `rgba(${cc},${o * al})`); gr.addColorStop(1, `rgba(${C.white},${al})`); g.fillStyle = gr; g.beginPath(); g.moveTo(-L * k, -w * .5); g.lineTo(W * .3 * k, 0); g.lineTo(-L * k, w * .5); g.closePath(); g.fill() } }); g.restore();
     add(g, () => { const kk = seg(t, .22, 1); glow(g, p.x, py, W * .7 * bell(seg(t, .15, .6)), C.white, .7); ring(g, p.x, py, W * .7 * eo(kk), W * .7 * eo(kk), W * .04 * (1 - kk), c, 1 - kk); star4(g, p.x, py, W * .6 * (1 - kk), C.white, 1 - kk, an); sparks(g, e, 9, p.x, py, W * .9, W * .03, kk, c, { a0: an - .9, arc: 1.8, grav: W * .2 }) }); return true }
 
-  /* v98.406 · which effects the game draws with this kit — chosen one by one (editor → ✨ VFX):
-     localStorage 'vfx-kit-kinds' = { [kind]: 'new' | 'old' } ('impact' = all four hit weights); a kind not listed follows the old all-or-nothing switch 'vfx-kit' = '1'.
-     ?vfx=new / ?vfx=old on the page URL overrides everything (for a quick look). Pushed with the editor settings so every player gets the same choice. */
-  const KEY = 'vfx-kit-kinds', nameOf = k => k === 'impactCore' ? 'impact' : k;
+  // Version the selection map so drafts from before the painted rollout
+  // cannot mask the new defaults. Selections made in this map still win.
+  const KEY = 'vfx-kit-kinds-v2', nameOf = k => k === 'impactCore' ? 'impact' : k;
   let mode; try { mode = new URLSearchParams(root.location?.search || '').get('vfx') } catch (_) { }
   let cache = null, cacheAt = 0;
-  const choices = () => { const now = Date.now(); if (cache && now - cacheAt < 1500) return cache; cacheAt = now; try { cache = JSON.parse(root.localStorage?.getItem(KEY) || '{}') || {} } catch (_) { cache = {} } try { cache.__all = root.localStorage?.getItem('vfx-kit') === '1' } catch (_) { } return cache };
+  const choices = () => {
+    const now = Date.now();
+    if (cache && now - cacheAt < 1500) return cache;
+    cacheAt = now;
+    try { cache = JSON.parse(root.localStorage?.getItem(KEY) || '{}') || {} } catch (_) { cache = {} }
+    return cache;
+  };
   /* v98.594 · each effect has a LIST of looks: 'old' (the painted picture) · 'new' (this kit) · any extra look added later with VfxKit.addVariant(kind, id, label, fn) — the editor shows them all and the game uses the one chosen. */
   const EXTRA = {};
   const variants = k => { k = nameOf(k); return [['old', 'เดิม (ภาพวาดแปะ)'], ['new', 'ใหม่ (วาดด้วยโค้ด)'], ...Object.entries(EXTRA[k] || {}).map(([id, v]) => [id, v.label])] };
   const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
-  const choiceOf = k => { k = nameOf(k); if (mode === 'old' || mode === '0') return 'old'; if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old'; const c = choices(), v = c[k]; if (v === 'new') return FX[k] ? 'new' : 'old'; if (v && v !== 'old' && EXTRA[k]?.[v]) return v; return v === 'old' ? 'old' : (c.__all && FX[k] ? 'new' : EXTRA[k]?.drawnImpact ? 'drawnImpact' : EXTRA[k]?.drawnSequence ? 'drawnSequence' : EXTRA[k]?.painted8 ? 'painted8' : EXTRA[k]?.atlas ? 'atlas' : EXTRA[k]?.paintedLight ? 'paintedLight' : 'old') };
+  root.addEventListener?.('storage', e => { if (e.key === KEY || e.key === null) cache = null; });
+  const defaultChoice = kind => {
+    const looks = EXTRA[nameOf(kind)];
+    return ['drawnImpact', 'drawnSequence', 'painted8', 'atlas', 'paintedLight'].find(id => looks?.[id]) || 'old';
+  };
+  const choiceOf = kind => {
+    const k = nameOf(kind);
+    if (mode === 'old' || mode === '0') return 'old';
+    if (mode === 'new' || mode === '1') return FX[k] ? 'new' : 'old';
+    const saved = choices()[k];
+    if (saved === 'old' || (saved === 'new' && FX[k]) || EXTRA[k]?.[saved]) return saved;
+    return defaultChoice(k);
+  };
+  const resetChoices = () => {
+    try { root.localStorage.setItem(KEY, '{}'); cache = null } catch (_) { }
+  };
   const uses = k => { k = nameOf(k); if (!FX[k] && !EXTRA[k]) return false; return choiceOf(k) !== 'old' };
   const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = (v === 'new' || (v && v !== 'old')) ? String(v) : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
   const enabled = () => Object.keys(FX).some(uses);
   function draw(e, t, p, a, g, camera, variant) { const k = nameOf(e.kind), id = variant || choiceOf(k), f = (id !== 'old' && id !== 'new' && EXTRA[k]?.[id]?.fn) || FX[k]; if (!f) return false; g.save(); try { return !!f(g, e, clamp(t), p, a || p, camera.w) } catch (err) { return false } finally { g.restore() } }
-  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], kinds: Object.keys(FX), uses, setChoice, choiceOf, variants, addVariant, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
+  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], resetChoices, kinds: Object.keys(FX), uses, setChoice, choiceOf, variants, addVariant, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
 
   /* v98.621 · FIRE — hand-painted frame animation (two 4×4 sheets, 16 frames each: assets/fx/anim/fire-ball.webp = the flying fireball, fire-impact.webp = the burst that grows, burns and fades into smoke).
      Added as an extra look of 'fire' (id 'atlas'); the editor lists it next to 'old' and 'new', and the game plays it when it is the chosen one. Frames cross-fade, so it stays smooth at any frame rate. */

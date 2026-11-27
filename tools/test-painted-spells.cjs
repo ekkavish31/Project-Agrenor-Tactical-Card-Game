@@ -65,6 +65,13 @@ function setup({ loading = false, reduced = false, search = '', values = {} } = 
       assert.ok(hybrid.kit.draw({ kind, seed: 17 }, f / 60, { x: 150, y: 285 }, null, probe, { w: 60 }));
     assert.equal(active.size, 8, kind + ' plays all eight distinct painted cells');
   }
+  const migrated = setup({ values: { 'vfx-kit-kinds': '{"sword":"old","lightning":"painted8"}', 'vfx-kit': '1' } }).kit;
+  assert.equal(migrated.choiceOf('sword'), 'drawnSequence');
+  assert.equal(migrated.choiceOf('lightning'), 'drawnImpact');
+  migrated.setChoice('sword', 'old');
+  assert.equal(migrated.choiceOf('sword'), 'old');
+  migrated.resetChoices();
+  assert.equal(migrated.choiceOf('sword'), 'drawnSequence');
   const pending = setup({ loading: true }).kit;
   assert.equal(pending.draw({ kind: 'ice' }, .4, { x: 10, y: 20 }, null, ctx, { w: 60 }), false, 'loading falls back');
   assert.equal(setup({ search: '?vfx=old' }).kit.choiceOf('ice'), 'old');
