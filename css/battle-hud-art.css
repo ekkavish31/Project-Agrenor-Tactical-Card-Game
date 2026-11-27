@@ -30,3 +30,6 @@ html body #fbActions.fb-art-controls #fbMenu{bottom:12px}html body #fbActions.fb
 #fbHand .fb-pile-count{top:auto;bottom:16px;transform:translateX(-50%);min-width:30px}
 /* the two portrait cards: stacked, the attacker on top */
 @media (min-width:861px) and (min-height:561px){#fbDuel:not(.min){flex-direction:column!important;align-items:center;gap:0}#fbDuel:not(.min) .cl{margin:-14px 0!important}}
+/* v98.1171 · Grid + Menu: the same width and the same centre line (their pictures were different widths, so the left edges / centres did not line up) */
+html body #fbActions.fb-art-controls #gridBtn,html body #fbActions.fb-art-controls #fbMenu{left:14px;width:64px!important;min-width:64px!important;max-width:64px;box-sizing:border-box;display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;padding-left:0!important;padding-right:0!important;margin:0!important}
+html body #fbActions.fb-art-controls #gridBtn .fb-control-art,html body #fbActions.fb-art-controls #fbMenu .fb-control-art{margin-left:auto;margin-right:auto}
