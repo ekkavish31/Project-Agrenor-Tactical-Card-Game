@@ -928,7 +928,7 @@
   }
   /* dive: a free cell next to the target, the one closest to where the hero stands */
   function leapSpot(st, h, t) { let best = null; for (const [du, dv] of DIRS) { const u = t.u + du, v = t.v + dv; if (!free(st, u, v, h) && !(u === h.u && v === h.v)) continue; const d = Math.abs(u - h.u) + Math.abs(v - h.v); if (!best || d < best.d) best = { u, v, d } } return best && { u: best.u, v: best.v } }
-  /* v98.1163 · COLLISION: a push that cannot move the target because something is in the way (blocked cell, another unit, a wall 2+ levels higher, the map edge) slams it into the obstacle:
+  /* v98.1166 · COLLISION: a push that cannot move the target because something is in the way (blocked cell, another unit, a wall 2+ levels higher, the map edge) slams it into the obstacle:
      it takes BUMP_DMG extra damage and is STUNNED (skips its next turn). A pull never collides. out.bump = {damage} for the UI. */
   const BUMP_DMG = 8;
   function bump(st, t, out) {

@@ -991,7 +991,7 @@
       if (r.moved) { const from = { u: m.vu - .5, v: m.vv - .5 }; shake(6, 200); await walkAnim(m, [from, { u: m.u, v: m.v }], 5, true) }
       if (r.status) floatText(r.status.unit, (FB.STATUS[r.status.kind]?.icon || '') + ' ' + (FB.STATUS[r.status.kind]?.name || ''), '#ffe08a', true);
       for (const x of r.statuses || []) floatText(x.unit, (FB.STATUS[x.kind]?.icon || '') + ' ' + (FB.STATUS[x.kind]?.name || ''), '#ffe08a', true);
-      if (r.bump) { const bu = r.bump.unit || m; shake(11, 320); fx('fallDust', bu); floatText(bu, 'ชน −' + r.bump.damage, '#ffb08a', false, true); floatText(bu, '💫 สตันท์', '#ffe08a', true); bu.shown = bu.hp; hudSync() }   /* v98.1163 · pushed into an obstacle */
+      if (r.bump) { const bu = r.bump.unit || m; shake(11, 320); fx('fallDust', bu); floatText(bu, 'ชน −' + r.bump.damage, '#ffb08a', false, true); floatText(bu, '💫 สตันท์', '#ffe08a', true); bu.shown = bu.hp; hudSync() }   /* v98.1166 · pushed into an obstacle */
       if (r.fall) { shake(12, 380); fx('fallDust', m); floatText(m, 'FALL −' + r.fall.damage, '#ffb08a', false, true); m.shown = m.hp; hudSync() }
       if (kill) { banner('VICTORY!', 'win'); setTimeout(() => sfx('victory'), 400); await wait(1100) } else await wait(260); h.pose = 'idle';
     }, { z: heavy ? 1.95 : 1.75 });
