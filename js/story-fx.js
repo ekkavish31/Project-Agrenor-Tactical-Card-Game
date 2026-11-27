@@ -102,7 +102,7 @@ function showLine(group){const line=group[0],box=$('.cs-box'),sp=speaker(line.wh
  box.classList.remove('cs-in');void box.offsetWidth;box.classList.add('cs-in');
  const t=$('.cs-text');T?.stop();
  /* v98.179: the consecutive lines of one speaker are one passage: rapid typing + a voice, split into pages only at sentence ends; a full page waits for the player */
- T=root.DialogueFX.create(t,{maxLines:innerHeight<520?3:4,voice:line.who||null,
+ T=root.DialogueFX.create(t,{maxLines:innerHeight<520?2:3,voice:line.who||null,
   onPageStart:txt=>{full=txt;clearTimeout(autoT);root.StoryActors?.talk(!!line.who)},
   onPageDone:skipped=>{root.StoryActors?.talk(false);box.classList.toggle('cs-more',!!T?.hasMore());if(!skipped)autoNext()}});
  T.load(group.map(g=>fill(g.text)));T.start()}
