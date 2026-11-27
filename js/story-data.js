@@ -197,7 +197,7 @@ const SCENES={
   {who:'tom',text:'ได้ไม้แล้วไปที่แผงหน้าตลาด ตอกตามที่ข้าสอน ไม่ยากหรอก'},
   {text:'เป้าหมาย: เก็บแผ่นไม้ 2 แผ่นหน้าบ้านเคน แล้วซ่อมแผงหน้าตลาด'}]},
  stallDone:{bg:B.market,tint:'day',fx:['dust','motes'],lines:[
-  {shake:true,burst:{x:.5,y:.7,hue:35,n:50,speed:3,ring:false},text:'ตอก! ตอก! ตอก!'},
+  {shake:true,burst:{x:.5,y:.7,hue:35,n:50,speed:3,ring:false},text:'โป๊ก! โป๊ก! โป๊ก!'},
   {face:'happy',who:'tom',text:'ฝีมือไม่เลวนี่ เจ้าหนู แผงนี้ตั้งได้อีกสิบปี'},
   {face:'happy',who:'B',text:'ลุงสอนดีนะ ตอกตามที่บอกเป๊ะเลย'},
   {face:'think',who:'S',text:'แล้วขาลุงตอนนี้เป็นยังไงบ้าง'},
