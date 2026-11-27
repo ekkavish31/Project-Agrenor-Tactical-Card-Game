@@ -18,16 +18,36 @@ button{font:inherit;color:inherit;background:#252b36;border:1px solid var(--line
 figure[data-v]{cursor:pointer;border:2px solid transparent;border-radius:10px;padding:3px;position:relative}figure[data-v]:hover{border-color:#6a5a3a}figure.chosen{border-color:#d9a441;background:#d9a44118}.use{display:none;text-align:center;font-size:11px;font-weight:700;color:#d9a441;margin-top:2px}figure.chosen .use{display:block}.pair.many{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}canvas{display:block;width:100%;border-radius:8px;background:#20281f}
 #dlg{position:fixed;inset:0;z-index:20;background:#000a;display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto}#dlg[hidden]{display:none}#dlg .box{background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:12px 14px;width:min(980px,100%)}#dlg .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}#dlg h3{margin:0;font-size:16px;color:var(--gold)}.card.shown figcaption b{color:var(--gold)}.card.shown figcaption u{text-decoration:none;color:#d9a441}
 p.note{margin:6px 16px;color:var(--muted);max-width:900px}
+/* v98.1183 · COMPACT TILES + CATEGORIES: small tiles that still show the CURRENT effect clearly (live preview, a coloured badge = which look the game uses), a category bar, a search box and a tile-size switch */
+:root{--tile:210px}
+.bar2{position:sticky;top:var(--hh,58px);z-index:4;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 16px;background:#161a21f2;border-bottom:1px solid var(--line)}
+.cats{display:flex;flex-wrap:wrap;gap:6px}.cats button{padding:4px 12px;border-radius:999px}.cats button[aria-pressed=true]{background:var(--gold);color:#1d1608;border-color:#e6c47c;font-weight:700}.cats button i{font-style:normal;opacity:.7;margin-left:5px;font-size:11px}
+.bar2 input[type=search]{font:inherit;color:inherit;background:#10131a;border:1px solid var(--line);border-radius:8px;padding:5px 10px;width:170px}
+.seg{display:flex;gap:0}.seg button{border-radius:0;padding:4px 10px}.seg button:first-child{border-radius:8px 0 0 8px}.seg button:last-child{border-radius:0 8px 8px 0}.seg button[aria-pressed=true]{background:var(--gold);color:#1d1608;border-color:#e6c47c;font-weight:700}
+section[data-cat]{margin-bottom:6px}section[hidden]{display:none}section h2{display:flex;align-items:baseline;gap:8px;margin:16px 16px 8px}section h2 small{color:var(--muted);font-size:12px;font-weight:400}
+.grid{grid-template-columns:repeat(auto-fill,minmax(var(--tile),1fr));gap:10px}
+.card{padding:6px;border-radius:10px;display:flex;flex-direction:column;gap:4px;position:relative;transition:border-color .15s,transform .15s}.card[hidden]{display:none}
+.card.pickable:hover{border-color:#8a7440;transform:translateY(-1px)}
+.card .hd{display:flex;align-items:baseline;gap:6px;min-width:0}.card .hd b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card .hd small{font-size:10px;opacity:.7;margin-left:auto;white-space:nowrap}
+.card .pair{margin-top:0}.card figure{padding:0;border:0}.card canvas{border-radius:7px}
+.card figcaption{display:flex;align-items:center;gap:6px;justify-content:flex-start;text-align:left;font-size:11px;line-height:1.3;margin-top:3px;min-width:0}
+.card figcaption .lk{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--muted)}
+.badge{flex:none;font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px;border:1px solid}.badge.p{color:#1d1608;background:#e0b858;border-color:#f0cf80}.badge.c{color:#0b1a24;background:#6cc1e8;border-color:#9bd8f2}.badge.o{color:#e8e4d8;background:#4a4f5a;border-color:#6b717e}.badge.l{color:#e8e4d8;background:#7a5a2a;border-color:#a37a3a}
+.card.shown .use{display:none!important}
+.empty{display:none;margin:30px 16px;color:var(--muted)}.empty.on{display:block}
+p.note{display:none}
 </style></head><body>
 <header><h1>✨ VFX Preview</h1>
  <span class="sw">ในเกมใช้: <b id="sumUse"></b></span><button id="usePainted" class="primary">ใช้ชุดภาพวาดล่าสุด</button><button id="allNew">โค้ดล้วนทั้งหมด</button><button id="allOld">เดิมทั้งหมด</button><button id="pushBtn" class="primary" title="ใส่ค่าที่เลือกลง Cart เพื่อ Push — ทุกเครื่องที่เปิดเกมจะใช้ตามนี้">⬆ ใส่ Cart (Push)</button><small id="pushMsg"></small>
  <label>ความเร็ว <select id="speed"><option value="1">ปกติ</option><option value=".5">ช้า ½</option><option value=".25">ช้า ¼</option></select></label>
 </header>
+<div class="bar2"><div class="cats" id="cats"></div><input type="search" id="q" placeholder="ค้นหาท่า เช่น ไฟ ดาบ พิษ…"><div class="seg" id="sizeSeg" title="ขนาดการ์ด"><button data-s="150">เล็ก</button><button data-s="210" aria-pressed="true">กลาง</button><button data-s="300">ใหญ่</button></div><span id="count" style="color:var(--muted);font-size:12px"></span></div>
 <p class="note">พรีวิวตามตัวเลือกเดียวกับสนามต่อสู้ คลิกท่าเพื่อดูแบบอื่น หรือกด <b>ใช้ชุดภาพวาดล่าสุด</b> เพื่อคืนค่าทุกท่า</p>
-<h2>อาวุธ</h2><div class="grid" id="gWeapon"></div>
-<h2>ธาตุและเวท</h2><div class="grid" id="gMagic"></div>
-<h2>แรงกระแทกตอนโดนตี / ล้ม</h2><div class="grid" id="gHit"></div>
-<h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว)</h2><div class="grid" id="gStatus"></div>
+<section data-cat="weapon" data-title="อาวุธ"><h2>อาวุธ <small></small></h2><div class="grid" id="gWeapon"></div></section>
+<section data-cat="magic" data-title="ธาตุและเวท"><h2>ธาตุและเวท <small></small></h2><div class="grid" id="gMagic"></div></section>
+<section data-cat="hit" data-title="แรงกระแทกตอนโดนตี / ล้ม"><h2>แรงกระแทกตอนโดนตี / ล้ม <small></small></h2><div class="grid" id="gHit"></div></section>
+<section data-cat="status" data-title="สถานะบนตัว (ใช้ในเกมอยู่แล้ว)"><h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว) <small></small></h2><div class="grid" id="gStatus"></div></section>
+<p class="empty" id="empty">ไม่พบท่าที่ค้นหา</p>
 <div id="dlg" hidden><div class="box"><div class="top"><h3 id="dlgTitle"></h3><button id="dlgClose">ปิด ✕</button></div><div id="dlgGrid"></div></div></div>
 <script src="js/editor-store.js?v=v98.1152"></script><script src="js/game-settings.js?v=v98.1148"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.1144"></script><script src="js/vfx-kit.js?v=v98.1162"></script><script src="js/status-fx.js?v=v98.1153"></script>
 <script>
@@ -39,9 +59,10 @@ const DUR = { sword: 620, knife: 620, blunt: 760, spear: 640, rapier: 560, arrow
 const cards = [];
 function person(g, x, y, col, lean = 0) { g.fillStyle = 'rgba(0,0,0,.28)'; g.beginPath(); g.ellipse(x, y, 20, 7, 0, 0, 7); g.fill(); g.fillStyle = col; g.beginPath(); g.roundRect(x - 13 + lean, y - 62, 26, 62, 10); g.fill(); g.beginPath(); g.arc(x + lean, y - 74, 14, 0, 7); g.fill() }
 function scene(g, both = true) { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1b2330'); gr.addColorStop(.62, '#27342a'); gr.addColorStop(1, '#31412f'); g.fillStyle = gr; g.fillRect(0, 0, W, H); if (both) person(g, A.x, A.y, '#7b8794'); person(g, P.x, P.y, '#8a6a5a') }
+const K = 1.25;   /* tile canvas scale (the picker dialog draws at 2×) */
 function mk(host, title, sub, draws) {   /* draws = [[caption, fn(g, t, now)], …] */
-  const el = document.createElement('div'); el.className = 'card'; el.innerHTML = `<b>${title}</b> <small>${sub || ''}</small><div class="pair${draws.length < 2 ? ' one' : ''}">${draws.map(d => `<figure><canvas width="${W * 2}" height="${H * 2}"></canvas><figcaption>${d[0]}</figcaption></figure>`).join('')}</div>`;
-  host.append(el); const cvs = [...el.querySelectorAll('canvas')]; cards.push({ el, cvs, draws }); return el }
+  const el = document.createElement('div'); el.className = 'card'; el.dataset.name = (title + ' ' + (sub || '')).toLowerCase(); el.innerHTML = `<div class="hd"><b title="${title}">${title}</b> <small>${sub || ''}</small></div><div class="pair${draws.length < 2 ? ' one' : ''}">${draws.map(d => `<figure><canvas width="${Math.round(W * K)}" height="${Math.round(H * K)}"></canvas><figcaption>${d[0]}</figcaption></figure>`).join('')}</div>`;
+  host.append(el); const cvs = [...el.querySelectorAll('canvas')]; cards.push({ el, cvs, draws, k: K }); return el }
 const fxCard = (host, kind, extra = {}, title) => { const dur = extra.dur || DUR[kind] || 700, e = { kind, seed: 7, from: A, color: '#ff8a5a', ...extra };
   const run = fn => (g, now) => { const cyc = dur + 520, t = ((now % cyc) / dur); scene(g); if (t <= 1) fn({ ...e, seed: 7 + Math.floor(now / cyc) }, t, g) };
   const oldFn = run((ev, t, g) => { const ok = BattleVFX.drawOld(ev.kind === 'impact' ? { ...ev, kind: 'impactCore' } : ev, t, P, A, g, { w: CW, h: CW / 2 }); if (!ok) { g.fillStyle = '#9a937f'; g.font = '12px sans-serif'; g.fillText('(ภาพเดิมยังโหลดไม่เสร็จ/ไม่มี)', 60, 24) } });
@@ -62,13 +83,14 @@ const fxCard = (host, kind, extra = {}, title) => { const dur = extra.dur || DUR
       c.refresh();
     }
   }]]); c.dataset.old = '1'; c.dataset.kind = kind; c.classList.add('shown');
-  const fig = c.querySelector('figure'), cap = fig.querySelector('figcaption'); c.refresh = () => { cap.innerHTML = 'ใช้อยู่: <b>' + cur()[0] + '</b>' + (lastState === 'loading' ? ' · กำลังโหลดภาพชุดนี้' : lastState === 'missing' ? ' · โหลดภาพชุดนี้ไม่สำเร็จ กำลังใช้ภาพสำรอง' : '') + (extra.pick !== false && d.length > 1 ? ' · <u>กดเพื่อเปลี่ยน (' + d.length + ' แบบ)</u>' : '') };
+  const fig = c.querySelector('figure'), cap = fig.querySelector('figcaption'); c.refresh = () => { const id = VfxKit.choiceOf(kind), lb = cur()[0], bad = lastState === 'loading' ? ['l', 'กำลังโหลด'] : lastState === 'missing' ? ['l', 'ใช้ภาพสำรอง'] : id === 'old' ? ['o', 'เดิม'] : id === 'new' ? ['c', 'โค้ด'] : ['p', 'ภาพวาด'];
+    cap.innerHTML = `<span class="badge ${bad[0]}">${bad[1]}</span><span class="lk" title="${lb}${extra.pick !== false && d.length > 1 ? ' · คลิกเพื่อเปลี่ยน (' + d.length + ' แบบ)' : ''}">${lb}</span>` };
   if (extra.pick !== false) { c.classList.add('pickable'); fig.style.cursor = 'pointer'; fig.title = 'คลิกเพื่อเลือกเอฟเฟกต์อื่นของท่านี้'; fig.classList.add('chosen'); fig.insertAdjacentHTML('beforeend', '<div class="use">✓ ในเกมใช้</div>'); fig.onclick = () => openPicker(kind, ttl, d) }
   c.refresh() };
 /* picker: every look of one effect, animated; click one to use it in the game */
 function openPicker(kind, ttl, d) { const dlg = document.getElementById('dlg'), box = document.getElementById('dlgGrid'); box.innerHTML = ''; document.getElementById('dlgTitle').textContent = ttl + ' — เลือกเอฟเฟกต์';
   const el = document.createElement('div'); el.className = 'pair many'; el.innerHTML = d.map(x => `<figure data-v="${x[2]}"><canvas width="${W * 2}" height="${H * 2}"></canvas><figcaption>${x[0]}</figcaption><div class="use">✓ ในเกมใช้</div></figure>`).join(''); box.append(el);
-  const entry = { el: dlg, cvs: [...el.querySelectorAll('canvas')], draws: d.map(x => [x[0], x[1]]), picker: true }; cards.push(entry);
+  const entry = { el: dlg, cvs: [...el.querySelectorAll('canvas')], draws: d.map(x => [x[0], x[1]]), picker: true, k: 2 }; cards.push(entry);
   const mark = () => el.querySelectorAll('figure').forEach(f => f.classList.toggle('chosen', VfxKit.choiceOf(kind) === f.dataset.v)); mark();
   const close = () => { dlg.hidden = true; const i = cards.indexOf(entry); if (i >= 0) cards.splice(i, 1) };
   el.onclick = ev => { const f = ev.target.closest('figure'); if (!f) return; VfxKit.setChoice(kind, f.dataset.v); mark(); syncPicks(); setTimeout(close, 220) };
@@ -84,7 +106,7 @@ for (const k of StatusFX.kinds) { const u = { id: 'pv-' + k, hp: 1, sts: k === '
   mk(gStatus, NAMES[k] || k, k, [['ในเกม', (g, now) => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1b2330'); gr.addColorStop(.62, '#27342a'); gr.addColorStop(1, '#31412f'); g.fillStyle = gr; g.fillRect(0, 0, W, H); const x = W / 2, y = 164; StatusFX.back(g, u, x, y, 104, now + 5000); person(g, x, y, '#8a6a5a'); StatusFX.front(g, u, x, y, 104, now + 5000) }]]) }
 let speed = 1, clock = 0, last = performance.now();
 function frame(now) { clock += (now - last) * speed; last = now;
-  for (const c of cards) { const r = c.el.getBoundingClientRect(); if (r.bottom < -50 || r.top > innerHeight + 50) continue; c.cvs.forEach((cv, i) => { if (cv.offsetParent === null) return; const g = cv.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0); try { c.draws[i][1](g, clock) } catch (e) { } }) }
+  for (const c of cards) { const r = c.el.getBoundingClientRect(); if (r.bottom < -50 || r.top > innerHeight + 50) continue; c.cvs.forEach((cv, i) => { if (cv.offsetParent === null) return; const g = cv.getContext('2d'); const k = c.k || 2; g.setTransform(k, 0, 0, k, 0, 0); try { c.draws[i][1](g, clock) } catch (e) { } }) }
   requestAnimationFrame(frame) }
 requestAnimationFrame(frame);
 const GAME_KINDS = () => [...new Set([...document.querySelectorAll('.shown[data-kind]')].map(r => r.dataset.kind))];
@@ -104,6 +126,31 @@ document.getElementById('allOld').onclick = () => { for (const k of GAME_KINDS()
 document.getElementById('pushBtn').onclick = async () => { const m = document.getElementById('pushMsg'), G = window.GitHubPush; if (!G) { m.textContent = 'ไม่พบระบบ Push'; return } if (!G.config().token) return G.openSettings();
   for (const k of GAME_KINDS()) VfxKit.setChoice(k, VfxKit.choiceOf(k));   /* write every kind out, so the pushed setting is complete */
   try { const t = await G.pushSettings([VfxKit.KEY], 'VFX สนามรบ: เลือกเดิม/ใหม่ต่อเอฟเฟกต์'); m.textContent = String(t || 'ใส่แล้ว') } catch (err) { m.textContent = 'ไม่สำเร็จ: ' + err.message } };
+
+/* ---- categories · search · tile size (v98.1183) ---- */
+const SECTIONS = [...document.querySelectorAll('section[data-cat]')];
+let catNow = localStorage.getItem('vfx-cat') || 'all';
+const catsEl = document.getElementById('cats'), qEl = document.getElementById('q');
+function renderCats() {
+  const counts = Object.fromEntries(SECTIONS.map(x => [x.dataset.cat, x.querySelectorAll('.card').length]));
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  catsEl.innerHTML = [['all', 'ทั้งหมด', total], ...SECTIONS.map(x => [x.dataset.cat, x.dataset.title.replace(/ \(.*\)$/, ''), counts[x.dataset.cat]])].map(([id, n, c]) => `<button data-c="${id}" aria-pressed="${id === catNow}">${n}<i>${c}</i></button>`).join('');
+}
+function applyFilter() {
+  const q = qEl.value.trim().toLowerCase(); let shown = 0;
+  for (const sec of SECTIONS) { const on = catNow === 'all' || catNow === sec.dataset.cat; let n = 0;
+    sec.querySelectorAll('.card').forEach(c => { const ok = !q || c.dataset.name.includes(q); c.hidden = !ok; if (ok) n++ });
+    sec.hidden = !on || !n; if (on) shown += n; sec.querySelector('h2 small').textContent = n + ' ท่า' }
+  document.getElementById('empty').classList.toggle('on', !shown); document.getElementById('count').textContent = shown + ' ท่า';
+  catsEl.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.c === catNow)));
+}
+catsEl.onclick = e => { const b = e.target.closest('button'); if (!b) return; catNow = b.dataset.c; try { localStorage.setItem('vfx-cat', catNow) } catch (_) { } applyFilter() };
+qEl.oninput = applyFilter;
+const sizeSeg = document.getElementById('sizeSeg'); const setSize = v => { document.documentElement.style.setProperty('--tile', v + 'px'); sizeSeg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === String(v)))); try { localStorage.setItem('vfx-tile', v) } catch (_) { } };
+sizeSeg.onclick = e => { const b = e.target.closest('button'); if (b) setSize(+b.dataset.s) }; setSize(+(localStorage.getItem('vfx-tile') || 210));
+renderCats(); applyFilter();
+/* the sticky bar sits right under the header */
+const fixBar = () => document.documentElement.style.setProperty('--hh', document.querySelector('header').offsetHeight + 'px'); fixBar(); addEventListener('resize', fixBar);
 syncPicks();
 document.getElementById('speed').onchange = e => { speed = +e.target.value };
 </script></body></html>
