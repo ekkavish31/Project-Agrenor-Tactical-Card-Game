@@ -487,7 +487,7 @@ async function walkTour(){if(tourBusy||!root.GuidedTour)return false;tourBusy=tr
   const steps=[
    {who:'sib',free:true,text:'ต่อไปลองเดินดูกัน — คลิกที่พื้นถนนตรงไหนก็ได้ (เคอร์เซอร์จะเป็นรอยเท้า) ตัวละครจะเดินไปตรงนั้นให้',wait:()=>clicked},
    ...(fine?[{who:'sib',free:true,text:'เดินด้วยคีย์บอร์ดก็ได้นะ ลองกด W A S D หรือปุ่มลูกศร ค้างไว้สักพักดูสิ',prep:()=>{lock(true,{click:false,keys:true},W2);held0=0;lastT=0},wait:heldWait(3000)}]:[]),
-   {who:'sib',text:'ผู้ใหญ่โอเรนอยู่ที่ตลาดนะ ถ้าหลงทาง ให้กดปุ่ม "เดินอัตโนมัติ" (รูปธง) ที่ลูกศรชี้ ตัวละครจะเดินไปหาผู้ใหญ่ให้เอง — ลองกดเลย',target:'#storyTracker [data-act="0"]',arrow:'up',showTracker:true,prep:()=>lock(false)}];   /* the player must press the flag (the arrow sits ABOVE it, like the book lesson); nothing else can be clicked */
+   {who:'sib',text:'ผู้ใหญ่โอเรนอยู่ที่ตลาดนะ ถ้าหลงทาง ให้กดปุ่ม "เดินอัตโนมัติ" (รูปธง) ที่ลูกศรชี้ ตัวละครจะเดินไปหาผู้ใหญ่ให้เอง — ลองกดเลย',target:'#storyTracker [data-act="0"]',arrow:'up',showTracker:true,hidePic:'L',prep:()=>lock(false)}];   /* the player must press the flag (the arrow sits ABOVE it, like the book lesson); nothing else can be clicked */
   const ok=await root.GuidedTour.run(steps,{bright:true});
   lock(false);for(const w of keyWins)try{w.removeEventListener('keydown',onKey,true);w.removeEventListener('keyup',onKeyUp,true);w.removeEventListener('blur',onBlur)}catch(e){}v.story.walkTour=true;doSave();if(ok)setTimeout(walkTips,600);return ok}
  finally{tourBusy=false}}

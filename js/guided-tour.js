@@ -1,7 +1,7 @@
 /* v98.617 · GuidedTour — a TEACHING conversation that is played on the LIVE game: the two siblings talk at the sides of the screen (portraits left / right + a text box at the bottom),
    the middle stays the real village map, and the player is told to do each step by hand — only the highlighted thing can be clicked, an arrow points at it (it moves in and out), everything else is blocked.
    GuidedTour.run([step, …]) → Promise (resolves when the last step is done or Esc skips the tour)
-   step = { who:'B'|'S', text, target?: selector | () => Element, wait?: 'click' (default when there is a target) | 'next' | () => boolean, hint?: 'อาร์โรว์ข้อความสั้น', pad?: px }
+   step = { who:'B'|'S', hidePic?:'L'|'R' (that portrait steps aside), text, target?: selector | () => Element, wait?: 'click' (default when there is a target) | 'next' | () => boolean, hint?: 'อาร์โรว์ข้อความสั้น', pad?: px }
      • who 'B' = the elder brother · 'S' = the younger sister (resolved to the lead / the follower by js/story-fx.js roleWho) · text may use {Bn} {Sn} {S2B} {B2S} {hero} {sib}
      • no target → a text-only line: click ANYWHERE / Enter / Space = next      • target → the step finishes when the target is clicked (the click still goes through to it)
    The UI lives inside the open <dialog> when there is one (a modal dialog makes everything outside it inert), otherwise in <body>. */
@@ -17,6 +17,7 @@
 #gtour .arrow svg{width:100%;height:100%;animation:gtBob .8s ease-in-out infinite;transform-origin:50% 50%}
 #gtour .pic{position:fixed;bottom:0;height:min(58vh,520px);display:flex;align-items:flex-end;pointer-events:none;transition:filter .25s,opacity .25s,transform .25s}
 #gtour .pic img{max-height:100%;max-width:26vw;object-fit:contain;filter:drop-shadow(0 8px 16px #000c)}
+#gtour .pic.hid{opacity:0;transform:translateX(-28px)}#gtour .pic.R.hid{transform:translateX(28px)}   /* v98.1160 · step.hidePic 'L'|'R' — this step's portrait steps aside (it covered the quest panel's button) */
 #gtour .pic.L{left:1vw}#gtour .pic.R{right:1vw}#gtour .pic.dim{filter:brightness(.55) saturate(.7);transform:translateY(8px)}
 #gtour .box{position:fixed;left:50%;bottom:1.4vw;transform:translateX(-50%);width:min(72vw,1500px);padding:1.15vw 1.6vw 1.3vw;background:linear-gradient(#2a2016f2,#15100af2);border:1.5px solid #d8b46a;border-radius:1vw;box-shadow:0 12px 36px #000c;color:#fff1d2;pointer-events:auto}
 #gtour.adv .blk,#gtour.adv .box{cursor:pointer}
@@ -112,7 +113,7 @@ body.gt-on #storyTracker,body.gt-on #storyToasts,body.gt-on #smithWip{visibility
     try {
       for (const st of steps) {
         if (skipped) break;
-        const who = resolve(C, st.who || 'S'), side = who === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('dim', side !== 'L'); $('.pic.R').classList.toggle('dim', side !== 'R');
+        const who = resolve(C, st.who || 'S'), side = who === 'hero' ? 'L' : 'R'; $('.pic.L').classList.toggle('hid', st.hidePic === 'L'); $('.pic.R').classList.toggle('hid', st.hidePic === 'R'); $('.pic.L').classList.toggle('dim', side !== 'L'); $('.pic.R').classList.toggle('dim', side !== 'R');
         { const fem = root.HeroVariant?.get?.() === 'female'; nm.textContent = who === 'hero' ? (C?.fill ? C.fill('{hero}') : (fem ? 'น้องสาว' : 'พี่ชาย')) : (C?.fill ? C.fill('{sib}') : (fem ? 'พี่ชาย' : 'น้องสาว')) }
         typed = fill(st.text); say.textContent = ''; let i = 0; clearInterval(typeTimer); typeTimer = setInterval(() => { i += 2; say.textContent = typed.slice(0, i); if (i >= typed.length) { clearInterval(typeTimer); typeTimer = 0 } }, 22);
         stepSeq++; curArrow = st.arrow || null; curFree = !!st.free; el.classList.toggle('free', curFree); document.body.classList.toggle('gt-on', !(st.free || st.showTracker));   /* a free step / a step that points at the quest window leaves the quest window visible */
