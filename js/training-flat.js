@@ -33,7 +33,9 @@
       /* v98.996 · a won training fight shows the Victory report over the scene first; the frame goes after Continue */
       if (r.outcome === 'win' && VS) VS.show({ title: 'ลานฝึกหุ่นฟาง', goal: r.goal, kills: r.kills || 0, turns: r.turns, members: VS.members(g, before, xpPaid, { fought: (r.party || []).map(x => x.key) }), stat: r.stat }).then(fin); else fin();
     };
-    addEventListener('message', done); root.VictoryScreen?.fightUI?.(true); document.body.appendChild(fr);
+    addEventListener('message', done);
+    /* v98.1146 · opens under the encounter cut and waits for the arena (it popped in empty before) */
+    if (root.BattleLauncher) root.BattleLauncher.mount(fr); else { root.VictoryScreen?.fightUI?.(true); document.body.appendChild(fr) }
   }
   /* training only — the archived expedition / adventure calls keep the old engine */
   /* v98.444 · the old grid-battle bridge (js/tactics-bridge.js: TacticsLab, expedition, #tacticsLayer) is archived — training is the only battle opened from here */
