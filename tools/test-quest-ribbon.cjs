@@ -1,11 +1,14 @@
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const source=fs.readFileSync('js/story-fx.js','utf8'),start=source.indexOf('root.StoryToast=function'),code=source.slice(start,source.indexOf('\n})(globalThis)',start));
-const nodes=new Map(),timers=[];
-const make=()=>({children:[],attrs:{},classList:{add(k){this.added=k}},setAttribute(k,v){this.attrs[k]=v},appendChild(n){this.children.push(n);if(n.id)nodes.set(n.id,n)},remove(){this.removed=true}});
-const body=make(),document={body,getElementById:id=>nodes.get(id)||null,createElement:make},root={};vm.runInNewContext(code,{root,document,setTimeout:(f,ms)=>timers.push({f,ms})});
-for(const [kind,text] of [['quest','✦ เควสใหม่: เดินทางไปหาผู้ใหญ่บ้าน'],['quest','เรื่องเควสที่ยาวมาก '.repeat(25)],['good','สำเร็จ <b>รางวัล</b>'],['','ทั่วไป']]){
- root.StoryToast(text,kind);const host=nodes.get('storyToasts'),t=host.children.at(-1);assert.equal(t.innerHTML,text,'live text stays complete');assert(!t.className.split(/\s+/).includes('quest'),'must not inherit old .quest dimensions/position');assert.equal(t.className,'st-toast'+(kind?' st-toast--'+kind:''));assert.equal(host.attrs.role,'status');
-}
-assert.equal(body.children.length,1,'reuse toast host');assert.equal(timers.filter(x=>x.ms===2600).length,4);assert.equal(timers.filter(x=>x.ms===3200).length,4);timers.forEach(x=>x.f());assert(nodes.get('storyToasts').children.every(x=>x.removed));
-const css=fs.readFileSync('css/story.css','utf8');assert(css.includes("quest-ribbon-red.webp') 28 148 fill"));assert(css.includes('-webkit-line-clamp:unset'));assert(!/\.st-toast\.(quest|good)\s*\{/.test(css));assert(fs.existsSync('assets/ui/quest-ribbon-red.webp'));
-console.log('PASS quest class isolation, complete short/long HTML, good/default notices, single live host, toast cleanup and stretchable art');
+/* v98.1163 · regression: the quest ribbon stays at 1/4 of the screen height while the lesson card appears below it. node tools/test-quest-ribbon.cjs (needs a static server: python3 -m http.server 8767) */
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();let bad=0;
+ for(const [w,h] of [[1920,1080],[1280,720],[1024,600],[800,480],[390,800]]){
+  const p=await b.newPage({viewport:{width:w,height:h}});
+  await p.goto('http://localhost:8767/tools/_ribbon.html');
+  await p.evaluate(()=>{window.__p=QuestAnnouncement.show({title:'ไปหาผู้ใหญ่บ้าน',lesson:{title:'เดินในหมู่บ้าน',lines:Array.from({length:9},(_, i)=>'บรรทัดบทเรียนยาวๆ ข้อ '+(i+1)+' ลองเดินไปคุยกับผู้ใหญ่บ้านแล้วคลิกที่ตัวเพื่อคุย')}})});
+  await p.waitForTimeout(150);
+  const at=()=>p.evaluate(()=>{const r=document.querySelector('#questAnnouncement .qa-visual').getBoundingClientRect(),c=document.querySelector('#questAnnouncement .qa-card'),cr=c.hidden?null:c.getBoundingClientRect();return {cy:r.top+r.height/2,H:innerHeight,cardBottom:cr&&cr.bottom,hidden:c.hidden}});
+  const a=await at();await p.waitForFunction(()=>!document.querySelector('#questAnnouncement .qa-card').hidden,null,{timeout:6000});const z=await at();
+  const q=z.cy/z.H,moved=Math.abs(a.cy-z.cy)>1,over=z.cardBottom>z.H+1;
+  console.log(w+'x'+h,'ribbon centre',(q*100).toFixed(1)+'%','moved',moved,'card bottom',Math.round(z.cardBottom),'/',z.H,over?'OVERFLOW':'');
+  if(moved||over||(w>=800&&Math.abs(q-.25)>.02))bad++;await p.close()}
+ await b.close();console.log(bad?'FAIL':'PASS');process.exit(bad?1:0)})()

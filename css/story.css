@@ -269,13 +269,14 @@ body.fb-open #storyTracker{display:none!important}
 @media(prefers-reduced-motion:reduce){#storyToasts .st-toast{animation:none;transition:none}}
 
 /* v98.1132 · gift unwraps into a 2x quest ribbon, centred with its briefing. */
-#questAnnouncement{position:fixed;inset:0;z-index:9600;display:flex;align-items:center;justify-content:center;padding:12px 16px;background:#0c080555;font-family:VillageThai,'Noto Sans Thai',system-ui,sans-serif;overflow:auto;overscroll-behavior:contain}
-#questAnnouncement .qa-group{width:var(--qa-width,560px);max-width:100%;display:flex;flex-direction:column;align-items:center;flex:none;margin:auto}
+#questAnnouncement{position:fixed;inset:0;z-index:9600;display:block;padding:0;background:#0c080555;font-family:VillageThai,'Noto Sans Thai',system-ui,sans-serif;overflow:auto;overscroll-behavior:contain}
+/* v98.1163 · THE RIBBON IS PINNED: its centre sits at 1/4 of the screen height from the top and never moves — the lesson card hangs below it (it used to be centred together with the ribbon, so the ribbon jumped up when the card appeared). --qa-top = top edge of the ribbon (ribbon height = width / 2). */
+#questAnnouncement .qa-group{--qa-top:max(8px,calc(25dvh - var(--qa-width,560px)/4));position:absolute;left:50%;top:var(--qa-top);transform:translateX(-50%);width:var(--qa-width,560px);max-width:calc(100% - 24px);display:flex;flex-direction:column;align-items:center;flex:none;margin:0}
 #questAnnouncement .qa-visual{position:relative;width:100%;aspect-ratio:2/1;flex:none}
 #questAnnouncement canvas{display:block;width:100%;height:100%;filter:drop-shadow(0 5px 7px #21070477)}
 #questAnnouncement .qa-title{position:absolute;left:15%;top:50%;width:70%;transform:translateY(-50%);margin:0;opacity:0;color:#fff2cb;font-size:34px;font-weight:800;line-height:1.25;text-align:center;text-shadow:0 2px 3px #390508;overflow-wrap:anywhere;transition:opacity .22s}
 #questAnnouncement .qa-title.qa-visible{opacity:1}
-#questAnnouncement .qa-card{box-sizing:border-box;width:min(640px,100%);margin-top:calc(var(--qa-width,560px)*-.10);position:relative;border:22px solid transparent;border-image:url('../assets/ui/va-frame.webp') 12% fill / 22px / 0 stretch;padding:12px 20px 16px;color:#44301a;filter:drop-shadow(0 7px 12px #0005);max-height:48dvh;overflow:auto}
+#questAnnouncement .qa-card{box-sizing:border-box;width:min(640px,100%);margin-top:calc(var(--qa-width,560px)*-.10);position:relative;border:22px solid transparent;border-image:url('../assets/ui/va-frame.webp') 12% fill / 22px / 0 stretch;padding:12px 20px 16px;color:#44301a;filter:drop-shadow(0 7px 12px #0005);max-height:max(120px,calc(100dvh - var(--qa-top) - var(--qa-width,560px)*.4 - 14px));overflow:auto}
 #questAnnouncement .qa-card[hidden]{display:none}
 #questAnnouncement .qa-kind{font-size:11px;letter-spacing:.15em;color:#806038}
 #questAnnouncement h3{font-size:22px;margin:5px 0 10px;color:#543718}
@@ -283,10 +284,11 @@ body.fb-open #storyTracker{display:none!important}
 #questAnnouncement ul{margin:0 0 16px;padding-left:20px;font-size:15px;line-height:1.7}
 #questAnnouncement button{display:block;width:100%;padding:6px 12px;border:8px solid transparent;border-image:url('../assets/ui/battle-btn-hot.webp') 14 fill / 8px / 0 stretch;background:none;color:#38220b;font:700 16px/1.5 VillageThai,system-ui;cursor:pointer;text-shadow:0 1px #fff5}
 #questAnnouncement button:focus-visible{outline:2px solid #8c6028;outline-offset:3px}#questAnnouncement button:hover{filter:brightness(1.1)}
+#questAnnouncement.qa-fallback .qa-group{--qa-top:max(8px,calc(25dvh - 60px))}#questAnnouncement.qa-fallback .qa-card{max-height:max(120px,calc(100dvh - var(--qa-top) - 120px - 26px))}
 #questAnnouncement.qa-fallback .qa-visual{aspect-ratio:auto;min-height:120px;background:url('../assets/ui/quest-ribbon-red.webp') center/100% 100% no-repeat}
 #questAnnouncement.qa-fallback canvas{visibility:hidden;position:absolute}#questAnnouncement.qa-fallback .qa-card{margin-top:12px}
 body.quest-announcement-open #storyTracker{visibility:hidden}
-@media(max-height:580px){#questAnnouncement .qa-group{--qa-width:min(560px,82vw)!important}#questAnnouncement .qa-card{padding:5px 12px 8px;max-height:44dvh;border-width:15px;border-image-width:15px}#questAnnouncement ul{font-size:13px;line-height:1.45;margin-bottom:8px}#questAnnouncement h3{font-size:18px;margin:2px 0 5px}}
+@media(max-height:580px){#questAnnouncement .qa-group{--qa-width:min(560px,82vw)!important}#questAnnouncement .qa-card{padding:5px 12px 8px;border-width:15px;border-image-width:15px}#questAnnouncement ul{font-size:13px;line-height:1.45;margin-bottom:8px}#questAnnouncement h3{font-size:18px;margin:2px 0 5px}}
 @media(prefers-reduced-motion:reduce){#questAnnouncement .qa-title{transition:none}}
 
 @media(max-width:599px){#questAnnouncement .qa-title{font-size:clamp(20px,5vw,30px)}}
