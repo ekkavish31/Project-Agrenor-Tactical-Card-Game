@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1160';
+  const V = '98.1165';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -319,7 +319,7 @@
     const P = window.BattlePolish; if (!P) return;
     try { if (kind === 'slash') P.sample('slash', s); else if (kind === 'swing') P.swing('sword'); else if (kind === 'step') P.footstep('stone'); else if (kind === 'victory') P.victory(true); else if (kind === 'lose') P.victory(false); else P.sound(kind, s) } catch (e) { }
   }
-  try { window.Sfx?.preload(['mg-cast', 'mg-magic', 'mg-heal', 'mg-lightning', 'mg-fire', 'mg-earth', 'mg-shield', 'victory', 'defeat', 'hit-glass', 'hit-metal', 'hit-metal-light', 'draw-knife', 'knife', 'hit-wood-heavy', 'hit-plate', 'hit-metal-heavy', 'hit-punch', 'hit-soft', 'cloth', 'step-stone', 'hit-generic', 'chop', 'hit-punch-heavy']) } catch (e) { }
+  try { window.Sfx?.preload(['page', 'card-slide', 'card-fan', 'mg-cast', 'mg-magic', 'mg-heal', 'mg-lightning', 'mg-fire', 'mg-earth', 'mg-shield', 'victory', 'defeat', 'hit-glass', 'hit-metal', 'hit-metal-light', 'draw-knife', 'knife', 'hit-wood-heavy', 'hit-plate', 'hit-metal-heavy', 'hit-punch', 'hit-soft', 'cloth', 'step-stone', 'hit-generic', 'chop', 'hit-punch-heavy']) } catch (e) { }
   /* v98.304 · ONE size for a monster: the ⚖ Scale Lineup measures the STATIC picture (figure height ÷ picture height). The animation frames are different pictures (other canvas, the figure fills more of it), so each monster's frames are scaled by
      (figure fill of the static picture) ÷ (figure fill of its first idle frame) × MON.k-style base — measured once per monster from the pixels, then every frame (walk, strike, down …) uses the same factor. Without this the animated bandit stood ~1.4× taller than the lineup says. */
   const fillCache = new Map();
@@ -796,7 +796,7 @@
   const TONE = { movement: '#6fc3ff', attack: '#ff7a5c', self: '#7fe08a', magic: '#c39bff' };
   /* the played card pops up full size beside the fight, stays while the action plays, then flies into the discard pile */
   function showPlay(group, id, text, fromEl) {
-    hidePreview(); try { window.Sfx?.play('card-place', { vol: .9 }) } catch (e) { }   /* v98.1143 · paper card laid down */
+    hidePreview(); try { window.Sfx?.play('page', { vol: .9, rate: 1.1 }); setTimeout(() => window.Sfx?.play('card-slide', { vol: .5 }), 120) } catch (e) { }   /* v98.1165 · playing a card = a paper flip + a soft slide (was a table thud) */
     const r = FB.cardRule(id), tone = group === 'movement' ? TONE.movement : r?.self ? TONE.self : r?.range > 1 ? TONE.magic : TONE.attack;
     const el = document.createElement('div'); el.className = 'fb-show play'; el.style.setProperty('--tone', tone);
     el.innerHTML = `<div class="face">${faceHTML(group, id, false)}</div><div class="say"><b>${esc(cardName(group, id))}</b>${text ? '<br>' + esc(text) : ''}</div>`;
