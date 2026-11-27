@@ -35,8 +35,13 @@ function unlock(list,opt={}){const v=V();if(!v)return Promise.resolve();const le
   for(const x of list){const P=v.cardPool[x.group];P[x.id]=(P[x.id]||0)+x.n;
    const room=D.SIZE[x.group].max-sum(deck[x.group]);const add=Math.min(room,x.n);if(add>0)deck[x.group][x.id]=(deck[x.group][x.id]||0)+add}
   try{v.tacticDecks=D.validate(deck)}catch{}}
- doSave();doRender();return reveal(list,opt,legacy)}
-function reveal(list,opt,legacy){return new Promise(done=>{const el=document.createElement('div');el.className='ck-reveal';
+ doSave();doRender();return opt.noReveal?Promise.resolve():reveal(list,opt,legacy)}
+/* v98.1173 · EVERY card you receive uses the same scene as the other gifts (js/item-get.js: the card rises out of golden light and turns face-up · name · kind · story · rule · flies to the card-book) — the old ck-reveal below is only the fallback when ItemGet is missing */
+function reveal(list,opt,legacy){
+ if(root.ItemGet?.show){const items=list.map(x=>({id:(x.group==='movement'?'m-':'a-')+x.id,key:x.id,n:x.n})),one=list.length===1?(((list[0].group==='movement'?D.MOVE:D.COMBAT)[list[0].id])?.name||''):'';
+  return root.ItemGet.show(items,{kicker:[opt.kicker||'การ์ดใหม่',opt.title&&opt.title!==one?opt.title:''].filter(Boolean).join(' · '),text:opt.text||(legacy?'':'เพิ่มเข้าคอลเลกชันและใส่ในสำรับต่อสู้แล้ว · ปรับได้ที่ "สำรับ"')})}
+ return revealOld(list,opt,legacy)}
+function revealOld(list,opt,legacy){return new Promise(done=>{const el=document.createElement('div');el.className='ck-reveal';
  const cards=list.map((x,i)=>{const id=(x.group==='movement'?'m-':'a-')+x.id,html=root.CardStudio?.renderCard(id,{mini:false})||'';const name=(x.group==='movement'?D.MOVE:D.COMBAT)[x.id]?.name||x.id;
   return `<figure class="ck-card" style="--i:${i}"><div class="ck-face">${html||`<div class="ck-plain">${esc(name)}</div>`}</div><figcaption>${esc(name)} <b>×${x.n}</b></figcaption></figure>`}).join('');
  el.innerHTML=`<div class="cfx-aura"></div>${root.ConfettiFX?root.ConfettiFX.html(46):''}<div class="ck-box"><small>${esc(opt.kicker||'การ์ดใหม่')}</small><h2>${esc(opt.title||'ได้รับการ์ดใหม่')}</h2><div class="ck-row">${cards}</div><p>${esc(opt.text||(legacy?'':'เพิ่มเข้าคอลเลกชันและใส่ในสำรับต่อสู้แล้ว · ปรับได้ที่ "สำรับ"'))}</p><button type="button">รับการ์ด</button></div>`;

@@ -147,9 +147,11 @@ talkStep({id:'seeds',outro:'seeds',title:'งานในไร่ของฮ�
 {id:'pumpkin',tag:'real',outro:'pumpkinDone',npc:'hilda',title:'ช่วยงานในไร่',goal:'เก็บฟักทองสุกในไร่ 3 ลูก แล้วดูแลฟักทองประกวดของฮิลดา',hint:'เดินไปแตะฟักทองสุก 🎃 ในไร่ฮิลดา · แล้วแตะฟักทองประกวด 🌿 เพื่อดูแล (วันละครั้ง ยิ่งดูแลครบทุกวัน ฟักทองยิ่งใหญ่ ประกวดวันที่ 3)',
   spot:SPOT.ripe,progress:d=>Math.min(1,((d.got||0)+(waterDays()>=1?1:0))/4),targets:()=>({spots:wateredToday()?[]:[SPOT.plot]}),check:d=>(d.got||0)>=3&&waterDays()>=1,acts:[guideBtn],
   reward:async()=>{/* v98.605 · Hilda's thank-you: the first attack card (⚡ อัสนีบาต). It goes to the collection only — NOT into the deck — so the deck lesson at home has something to place */
-   try{await root.StarterKit?.unlock?.([{group:'combat',id:'thunder',n:1}],{kicker:'ของขวัญจากฮิลดา',title:'อัสนีบาต',text:'ฮิลดาให้ไพ่ใบนี้เป็นของขอบคุณ — ยังไม่ได้ใส่ในสำรับ ไว้ตอนเย็นจัดสำรับที่บ้านนะ'})}catch(e){}
+   const thunderOK=await (async()=>{try{await root.StarterKit?.unlock?.([{group:'combat',id:'thunder',n:1}],{noReveal:true});return true}catch(e){return false}})();   /* v98.1173 · the card and the small pumpkin are shown together in ONE gift scene (◀ ▶) */
    try{const dk=V().tacticDecks;if(dk?.combat?.thunder){dk.combat.thunder-=1;if(dk.combat.thunder<=0)delete dk.combat.thunder;doSave()}}catch(e){}
-   try{if(typeof addItem==='function'){addItem('smallPumpkin',1);doSave();doRender();toast('🎃 ฮิลดาให้ ฟักทองลูกเล็ก ×1 (ฟื้น HP +30 · แรง +30) — ดูในสมุดผนึก');await root.ItemGet?.show([{key:'smallPumpkin',n:1}],{kicker:'ของขวัญจากฮิลดา',text:'ฮิลดาให้เป็นของขอบคุณที่ช่วยดูแลฟักทอง'})}}catch(e){}},
+   try{const gifts=[];if(thunderOK)gifts.push({id:'a-thunder',key:'thunder',n:1,text:'ฮิลดาให้ไพ่ใบนี้เป็นของขอบคุณ — ยังไม่ได้ใส่ในสำรับ ไว้ตอนเย็นจัดสำรับที่บ้านนะ'});
+    if(typeof addItem==='function'){addItem('smallPumpkin',1);doSave();doRender();toast('🎃 ฮิลดาให้ ฟักทองลูกเล็ก ×1 (ฟื้น HP +30 · แรง +30) — ดูในสมุดผนึก');gifts.push({key:'smallPumpkin',n:1,text:'ฮิลดาให้เป็นของขอบคุณที่ช่วยดูแลฟักทอง'})}
+    if(gifts.length)await root.ItemGet?.show(gifts,{kicker:'ของขวัญจากฮิลดา'})}catch(e){}},
   onSpot:async d=>{const r=await questBattle(d,{title:'ฟักทองในไร่ ·',ms:'pumpkin*1,pumpkin*1,pumpkin*1,pest*1,pest*1,pest*1',tut:'pumpkin',seed:4102,r:4,biome:'grass',poi:'patch',bg:'pumpkin-patch',keepBgm:true});
    if(r==='win'){d.got=3;doSave();return {msg:'🎃 เก็บฟักทองสุกครบ 3 ลูกแล้ว!',consume:true}}return {msg:r==='busy'?'':'ฟักทองยังรอเก็บอยู่ · กลับไปเก็บต่อได้เลย',consume:false}}},
  talkStep({id:'tom',outro:'tomStall',title:'แผงขายของพัง',talk:'tom',goal:'ไปถามลุงทอมช่างไม้ว่าซ่อมแผงอย่างไร',hint:'ลุงทอมอยู่บ้านช่วงเช้า เที่ยงถึงห้าโมงเย็นช่วยงานที่โรงตีเหล็ก · '+HINT_WALK}),
