@@ -275,6 +275,71 @@
     return true }
   if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'atlas', 'ภาพวาดเคลื่อนไหว (อะนิเมชันไฟ)', fireAtlas);
 
+  /* v98.1162 · PROTOTYPE · FIRE "layered" — the painted fireball / impact sheets are only the PEAK of the effect; this look wraps them with the layers that make it belong to the scene
+     (docs/TODO.md §42 proposal): windup at the caster → fireball + a trail of cooling embers → impact with a ground shock-ring + a scorch mark that stays → embers that fly, fall, bounce and settle.
+     Everything is code on top of the same two sheets (no new art); every layer is deterministic per effect (R(e,i)) and the decorative ones are fewer on quality 'low'.
+     Pick it in the VFX editor / vfx-kit-preview.html: 'ไฟ · หลายชั้น (ต้นแบบ)'. */
+  function fireLayered(g, e, t, p, a, cw) {
+    if (!animSheet('ball') || !animSheet('hit')) return false;
+    const reduced = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return fireAtlas(g, e, t, p, a, cw);
+    const W = cw * (e.scale || 1), low = root.BattlePolish?.quality === 'low', far = !!a && (Math.abs(a.x - p.x) + Math.abs(a.y - p.y)) >= 4;
+    const t0 = far ? .12 : 0, mySplit = far ? t0 + .46 * (1 - t0) : 0, ti = far ? seg(t, mySplit, 1) : t, ground = p.y + cw * .08;
+    const ellipse = (x, y, r, fn) => { g.save(); g.translate(x, y); g.scale(1, .5); fn(r); g.restore() };   /* 2:1 ground perspective */
+    /* 1 · windup: light gathers at the caster, embers are drawn in, a ring on the ground closes */
+    if (far && t < t0 + .05) {
+      const k = seg(t, 0, t0), out = 1 - seg(t, t0, t0 + .05), cy = a.y - cw * .65;
+      add(g, () => {
+        glow(g, a.x, cy, W * (.18 + .3 * k), C.fireHi, .55 * k * out);
+        glow(g, a.x, cy, W * (.4 + .35 * k), C.fire, .35 * k * out);
+        const n = low ? 4 : 9;
+        for (let i = 0; i < n; i++) { const an = R(e, i + 300) * TAU, d = W * .75 * (1 - k) * (.6 + .4 * R(e, i + 320)); glow(g, a.x + Math.cos(an) * d, cy + Math.sin(an) * d * .6, W * .035, C.fireHi, .8 * out) }
+        ellipse(a.x, a.y + cw * .08, W * (.85 - .45 * k), r => { g.strokeStyle = `rgba(${C.fire},${.5 * k * out})`; g.lineWidth = W * .035; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.stroke() });
+      });
+    }
+    /* 2 · back layers on the ground: shock ring + scorch mark (the mark stays until the end of the effect, fading last) */
+    if (ti > 0) {
+      const ring = seg(ti, 0, .5), mark = seg(ti, 0, .12) * (1 - seg(ti, .72, 1)), heat = 1 - seg(ti, .08, .65);
+      ellipse(p.x, ground, W * .8, r => {
+        const gr = g.createRadialGradient(0, 0, 0, 0, 0, r); gr.addColorStop(0, `rgba(22,12,8,${.5 * mark})`); gr.addColorStop(.6, `rgba(30,16,10,${.32 * mark})`); gr.addColorStop(1, 'rgba(30,16,10,0)');
+        g.fillStyle = gr; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
+      });
+      add(g, () => {
+        ellipse(p.x, ground, W * .55, r => { const gr = g.createRadialGradient(0, 0, 0, 0, 0, r); gr.addColorStop(0, `rgba(${C.fireHi},${.55 * heat})`); gr.addColorStop(.5, `rgba(${C.fire},${.3 * heat})`); gr.addColorStop(1, `rgba(${C.fire},0)`); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill() });
+        if (ring < 1) ellipse(p.x, ground, W * (.3 + 1.25 * eo(ring)), r => { g.strokeStyle = `rgba(${C.fireHi},${.75 * (1 - ring)})`; g.lineWidth = W * .05 * (1 - ring) + 1; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.stroke() });
+      });
+    }
+    /* 3 · the painted fireball + impact (existing sheets), remapped to start after the windup */
+    if (!far || t >= t0) fireAtlas(g, e, far ? seg(t, t0, 1) : t, p, a, cw);
+    /* 4 · trail: embers shed along the flight, each cools (yellow → red), drifts up and fades on its own clock */
+    if (far && t > t0) {
+      const n = low ? 6 : 14, py = chest(p, cw), ay = a.y - cw * .75;
+      add(g, () => {
+        for (let i = 0; i < n; i++) {
+          const at = t0 + (mySplit - t0) * (.05 + .9 * R(e, i + 400)), age = (t - at) / .26; if (age < 0 || age > 1) continue;
+          const f = (at - t0) / (mySplit - t0), x = lerp(a.x, p.x, f) + (R(e, i + 420) - .5) * W * .12, y = lerp(ay, py, f) - age * W * .28 + (R(e, i + 440) - .5) * W * .1;
+          glow(g, x, y, W * .05 * (1 - age * .5), age < .45 ? C.fireHi : C.fire, .85 * (1 - age));
+        }
+      });
+    }
+    /* 5 · debris embers: thrown up from the impact, fall under gravity, bounce once on the ground, cool and go out */
+    if (ti > 0) {
+      const n = low ? 5 : 12;
+      add(g, () => {
+        for (let i = 0; i < n; i++) {
+          const life = .55 + .35 * R(e, i + 500), s = ti / life; if (s <= 0 || s >= 1) continue;
+          const vx = (R(e, i + 520) - .5) * W * 1.5, vy = W * (.55 + .7 * R(e, i + 540)), gr = W * 2.4, sd = s * 1.15;
+          let y = p.y - cw * .15 - vy * sd + .5 * gr * sd * sd; const x = p.x + vx * sd;
+          if (y > ground) { y = ground - (y - ground) * .35; if (y > ground) y = ground }   /* one soft bounce, then it lies there */
+          const cool = seg(s, .35, 1);
+          glow(g, x, y, W * .04 * (1 - s * .4), cool < .5 ? C.fireHi : C.fire, .9 * (1 - seg(s, .6, 1)));
+        }
+      });
+    }
+    return true;
+  }
+  if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'layered', 'ไฟ · หลายชั้น (ต้นแบบ)', fireLayered);
+
   /* Painted spell animation. Fixed 4×2 cells share a feet anchor; never trim frames
      independently, which would make a growing effect jump. Existing explicit VFX
      choices still win. A missing/loading sheet returns false to BattleVFX's old art. */
