@@ -18,7 +18,7 @@ button{font:inherit;color:inherit;background:#252b36;border:1px solid var(--line
 figure[data-v]{cursor:pointer;border:2px solid transparent;border-radius:10px;padding:3px;position:relative}figure[data-v]:hover{border-color:#6a5a3a}figure.chosen{border-color:#d9a441;background:#d9a44118}.use{display:none;text-align:center;font-size:11px;font-weight:700;color:#d9a441;margin-top:2px}figure.chosen .use{display:block}.pair.many{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}canvas{display:block;width:100%;border-radius:8px;background:#20281f}
 #dlg{position:fixed;inset:0;z-index:20;background:#000a;display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto}#dlg[hidden]{display:none}#dlg .box{background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:12px 14px;width:min(980px,100%)}#dlg .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}#dlg h3{margin:0;font-size:16px;color:var(--gold)}.card.shown figcaption b{color:var(--gold)}.card.shown figcaption u{text-decoration:none;color:#d9a441}
 p.note{margin:6px 16px;color:var(--muted);max-width:900px}
-/* v98.1182 · COMPACT TILES + CATEGORIES: small tiles that still show the CURRENT effect clearly (live preview, a coloured badge = which look the game uses), a category bar, a search box and a tile-size switch */
+/* v98.1183 · COMPACT TILES + CATEGORIES: small tiles that still show the CURRENT effect clearly (live preview, a coloured badge = which look the game uses), a category bar, a search box and a tile-size switch */
 :root{--tile:210px}
 .bar2{position:sticky;top:var(--hh,58px);z-index:4;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 16px;background:#161a21f2;border-bottom:1px solid var(--line)}
 .cats{display:flex;flex-wrap:wrap;gap:6px}.cats button{padding:4px 12px;border-radius:999px}.cats button[aria-pressed=true]{background:var(--gold);color:#1d1608;border-color:#e6c47c;font-weight:700}.cats button i{font-style:normal;opacity:.7;margin-left:5px;font-size:11px}
@@ -127,7 +127,7 @@ document.getElementById('pushBtn').onclick = async () => { const m = document.ge
   for (const k of GAME_KINDS()) VfxKit.setChoice(k, VfxKit.choiceOf(k));   /* write every kind out, so the pushed setting is complete */
   try { const t = await G.pushSettings([VfxKit.KEY], 'VFX สนามรบ: เลือกเดิม/ใหม่ต่อเอฟเฟกต์'); m.textContent = String(t || 'ใส่แล้ว') } catch (err) { m.textContent = 'ไม่สำเร็จ: ' + err.message } };
 
-/* ---- categories · search · tile size (v98.1182) ---- */
+/* ---- categories · search · tile size (v98.1183) ---- */
 const SECTIONS = [...document.querySelectorAll('section[data-cat]')];
 let catNow = localStorage.getItem('vfx-cat') || 'all';
 const catsEl = document.getElementById('cats'), qEl = document.getElementById('q');
