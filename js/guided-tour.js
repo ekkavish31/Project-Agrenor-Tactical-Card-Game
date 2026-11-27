@@ -17,7 +17,7 @@
 #gtour .arrow svg{width:100%;height:100%;animation:gtBob .8s ease-in-out infinite;transform-origin:50% 50%}
 #gtour .pic{position:fixed;bottom:0;height:min(58vh,520px);display:flex;align-items:flex-end;pointer-events:none;transition:filter .25s,opacity .25s,transform .25s}
 #gtour .pic img{max-height:100%;max-width:26vw;object-fit:contain;filter:drop-shadow(0 8px 16px #000c)}
-#gtour .pic.hid{opacity:0;transform:translateX(-28px)}#gtour .pic.R.hid{transform:translateX(28px)}   /* v98.1160 · step.hidePic 'L'|'R' — this step's portrait steps aside (it covered the quest panel's button) */
+#gtour .pic.hid{opacity:0;transform:translateX(-28px)}#gtour .pic.R.hid{transform:translateX(28px)}   /* v98.1161 · step.hidePic 'L'|'R' — this step's portrait steps aside (it covered the quest panel's button) */
 #gtour .pic.L{left:1vw}#gtour .pic.R{right:1vw}#gtour .pic.dim{filter:brightness(.55) saturate(.7);transform:translateY(8px)}
 #gtour .box{position:fixed;left:50%;bottom:1.4vw;transform:translateX(-50%);width:min(72vw,1500px);padding:1.15vw 1.6vw 1.3vw;background:linear-gradient(#2a2016f2,#15100af2);border:1.5px solid #d8b46a;border-radius:1vw;box-shadow:0 12px 36px #000c;color:#fff1d2;pointer-events:auto}
 #gtour.adv .blk,#gtour.adv .box{cursor:pointer}
