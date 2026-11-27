@@ -17,9 +17,25 @@
    return {open:()=>new Promise(res=>{const wait=Math.max(0,1050-(performance.now()-t0));setTimeout(()=>{town?.classList.remove('qb-zoom');el.classList.add('out');setTimeout(()=>{el.remove();res()},560)},wait)}),drop:()=>{town?.classList.remove('qb-zoom');el.remove()}}}
   function battleReady(fr){return new Promise(res=>{const on=e=>{if(e.source===fr.contentWindow&&e.data?.type==='agrenor-battle-ready'){removeEventListener('message',on);res()}};addEventListener('message',on);setTimeout(res,20000)})}
   function heroQuery(g) { try { return root.Progression && g ? '&' + root.Progression.battleParam(g, root.Progression.recipes) : '' } catch (e) { return '' } }
+  /* v98.1180 · BATTLE PROFILES — the defaults of each kind of fight in ONE table (TODO §42 B1). url(profile, params) builds the frame address: page + ?v=… &battle=1 &embed=1 + the profile's defaults overridden by
+     `params` (null / '' / false = left out). `raw` is appended as is (e.g. the hero's stats from heroQuery). Kinds: quest (story fights: immortal heroes, no fleeing, the village music keeps playing) · raid (the festival
+     camp raid on the village square) · training (scarecrows on the village square) · duel (inn, one on one, night) · wild (world-map fights: set up in js/world-map.js — still its own URL, not moved yet). */
+  const PROFILES = {
+    quest: { page: 'battle-field.html', imm: 1, noflee: 1, r: 6, biome: 'grass', seed: 4100 },
+    raid: { page: 'village-town.html', r: 6 },
+    training: { page: 'village-town.html', r: 5 },
+    duel: { page: 'battle-field.html', r: 5, biome: 'grass', night: 1, m: 'bandit' },
+    wild: { page: 'battle-field.html', r: 7 }
+  };
+  function url(name, params) {
+    const d = Object.assign({}, PROFILES[name] || {}, params || {}), page = d.page || 'battle-field.html', raw = d.raw || ''; delete d.page; delete d.raw;
+    const q = ['v=' + encodeURIComponent((root.GAME_VERSION && root.GAME_VERSION.v) || ''), 'battle=1', 'embed=1'];
+    for (const k of Object.keys(d)) { const v = d[k]; if (v === null || v === undefined || v === '' || v === false) continue; q.push(k + '=' + encodeURIComponent(String(v))) }
+    return page + '?' + q.join('&') + (raw ? (raw[0] === '&' ? raw : '&' + raw) : '');
+  }
   async function mount(fr, o) {
     o = o || {}; const c = cut(); try { root.VictoryScreen?.fightUI?.(true) } catch (e) { }
     document.body.appendChild(fr); await battleReady(fr); await c.open(); return fr;
   }
-  root.BattleLauncher = { cut: cut, ready: battleReady, heroQuery, mount };
+  root.BattleLauncher = { cut: cut, ready: battleReady, heroQuery, mount, PROFILES, url };
 })(globalThis);

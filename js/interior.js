@@ -964,7 +964,7 @@
     S = L.save(); modalOpen = true;
     const fr = document.createElement('iframe'); fr.id = 'inBattle';
     /* v98.1146 · the duel carries the hero's level / weapon / stats like every other fight (it did not) and opens under the encounter cut, like the quest fights */
-    fr.src = `battle-field.html?battle=1&embed=1&r=5&biome=grass&night=1&m=bandit&ms=${encodeURIComponent('bandit*1.5')}&party=&hhp=${S.hp || 60}&hmax=${S.maxHp || 60}${window.BattleLauncher?.heroQuery(window.WorldState?.game?.()) || ''}&title=${encodeURIComponent('ดวล · นาเดีย ·')}`;
+    fr.src = window.BattleLauncher ? BattleLauncher.url('duel', { ms: 'bandit*1.5', hhp: S.hp || 60, hmax: S.maxHp || 60, title: 'ดวล · นาเดีย ·', raw: BattleLauncher.heroQuery(window.WorldState?.game?.()) }) : `battle-field.html?battle=1&embed=1&r=5&biome=grass&night=1&m=bandit&ms=${encodeURIComponent('bandit*1.5')}&party=&hhp=${S.hp || 60}&hmax=${S.maxHp || 60}&title=${encodeURIComponent('ดวล · นาเดีย ·')}`;
     if (window.BattleLauncher) await BattleLauncher.mount(fr); else { window.VictoryScreen?.fightUI?.(true); document.body.append(fr) }
     const res = await new Promise(r => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); r(e.data) } }; addEventListener('message', on) });
     /* v98.996 · a won duel: the Victory report over the scene first, the frame goes after Continue */
