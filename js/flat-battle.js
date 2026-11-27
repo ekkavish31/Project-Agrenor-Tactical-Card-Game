@@ -575,7 +575,7 @@
     for (const o of list) for (let i = 0; i < (sk.hits || 1); i++) { if (!alive(o)) break; const crit = (st.rng || Math.random)() < CRIT.ally, en = [], r = hurt(st, o, sk.dmg * heightMult(st, a, o) * elMult(st, FX_EL[sk.fx] || a.el, o, en) * (crit ? CRIT.mult : 1)); r.notes.push(...en); out.hits.push({ target: o, damage: r.damage, notes: r.notes, crit }) }
     if (sk.stun && alive(t)) { t.stun = 1; out.stun = t }
     if (sk.status) { out.statuses = []; for (const o of list) { const k = alive(o) && inflict(st, o, sk.status[0], sk.status[1]); if (k) out.statuses.push({ unit: o, kind: k }) } }   /* v98.1019 */
-    if (sk.push && alive(t)) out.moved = shove(st, t, a, 1);
+    if (sk.push && alive(t)) { out.moved = shove(st, t, a, 1); if (!out.moved) bump(st, t, out) }
     st.log.push(a.name + ' ' + sk.name + ' −' + out.hits.reduce((x, h) => x + h.damage, 0)); checkOutcome(st);
     return out;
   }
@@ -762,7 +762,7 @@
     if (rule.guardAfter) { h.guard = Math.max(h.guard, rule.guardAfter); out.guard = h.guard }
     const total = out.hits.reduce((a, x) => a + x.damage, 0);
     st.log.push(h.name + ' ' + name + ' −' + total + (out.hits[0]?.notes.length ? ' (' + out.hits[0].notes.join(', ') + ')' : ''));
-    if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2 && !t.fly) { const fd = Math.min(t.hp - (t.immortal ? 1 : 0), Math.round(5 * drop)); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
+    if (alive(t) && (rule.push || rule.pull)) { const fu = t.u, fv = t.v; out.moved = shove(st, t, h, rule.push ? 1 : -1); if (!out.moved && rule.push) bump(st, t, out); if (out.moved) { const drop = lv(st, fu, fv) - lv(st, t.u, t.v); if (drop >= 2 && !t.fly) { const fd = Math.min(t.hp - (t.immortal ? 1 : 0), Math.round(5 * drop)); t.hp -= fd; out.fall = { drop, damage: fd }; st.log.push(t.name + ' ตกลง ' + drop + ' ระดับ −' + fd) } } }
     if (rule.slow && alive(t)) { t.slowed = 1; out.slowed = t }
     if (CARD_STATUS[id] && out.hits.some(x => x.target === t && x.damage > 0)) { const k = inflict(st, t, CARD_STATUS[id][0], CARD_STATUS[id][1]); if (k) out.status = { unit: t, kind: k } }   /* v97.19 */
     if (CARD_STATUS[id] && rule.statusAll) { out.statuses = []; for (const o of new Set(out.hits.filter(x => x.damage > 0 && x.target !== t).map(x => x.target))) { const k = inflict(st, o, CARD_STATUS[id][0], CARD_STATUS[id][1]); if (k) out.statuses.push({ unit: o, kind: k }) } }   /* v98.1019 · splash cards that mark everyone they hit */
@@ -928,6 +928,13 @@
   }
   /* dive: a free cell next to the target, the one closest to where the hero stands */
   function leapSpot(st, h, t) { let best = null; for (const [du, dv] of DIRS) { const u = t.u + du, v = t.v + dv; if (!free(st, u, v, h) && !(u === h.u && v === h.v)) continue; const d = Math.abs(u - h.u) + Math.abs(v - h.v); if (!best || d < best.d) best = { u, v, d } } return best && { u: best.u, v: best.v } }
+  /* v98.1163 · COLLISION: a push that cannot move the target because something is in the way (blocked cell, another unit, a wall 2+ levels higher, the map edge) slams it into the obstacle:
+     it takes BUMP_DMG extra damage and is STUNNED (skips its next turn). A pull never collides. out.bump = {damage} for the UI. */
+  const BUMP_DMG = 8;
+  function bump(st, t, out) {
+    if (!alive(t)) return; const d = Math.max(0, Math.min(t.hp - (t.immortal ? 1 : 0), BUMP_DMG));
+    t.hp -= d; t.stun = 1; out.bump = { unit: t, damage: d }; st.log.push(t.name + ' ชนสิ่งกีดขวาง −' + d + ' · มึนงง (สตันท์)');
+  }
   /* push (dir 1) the target one cell away from `from`, or pull (dir −1) it one cell toward; stays put when blocked */
   function shove(st, t, from, dir) {
     const du = t.u - from.u, dv = t.v - from.v, su = Math.abs(du) >= Math.abs(dv) ? Math.sign(du) : 0, sv = su ? 0 : Math.sign(dv);
