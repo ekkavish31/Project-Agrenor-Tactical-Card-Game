@@ -284,7 +284,7 @@ function questBattle(d,o){return new Promise(resolve=>{
  d.fighting=true;doSave();const spot=heroSpot();
  const party=(v.party||[]).filter(p=>p.hp>0).map(p=>p.key+':'+p.hp+':'+p.max+':'+(p.order||'charge')+':'+(p.level||1)).join(',');
  const fr=document.createElement('iframe');fr.id='storyBattle';fr.title=o.title;fr.style.cssText='position:fixed;inset:0;z-index:950;width:100%;height:100%;border:0;background:#07080c';
- fr.src=root.BattleLauncher.url('quest',{page:o.page,r:o.r||6,biome:o.biome||'grass',seed:o.seed||4100,poi:o.poi,scene:o.scene,bgm:o.keepBgm?'parent':'',bg:o.bg,ms:o.ms,party:party,hhp:g.hp||60,hmax:g.maxHp||60,title:o.title||'',tut:o.tut||'',raw:root.Progression?Progression.battleParam(g,Progression.recipes):''});   /* v98.1180 · the address comes from the battle profile table (js/battle-launcher.js) */
+ fr.src=root.BattleLauncher.url('quest',{page:o.page,r:o.r||6,biome:o.biome||'grass',seed:o.seed||4100,poi:o.poi,scene:o.scene,bgm:o.keepBgm?'parent':'',bg:o.bg,ms:o.ms,party:party,hhp:g.hp||60,hmax:g.maxHp||60,title:o.title||'',tut:o.tut||'',raw:root.Progression?Progression.battleParam(g,Progression.recipes):''});   /* v98.1181 · the address comes from the battle profile table (js/battle-launcher.js) */
  if(d.resumeSrc){fr.src=d.resumeSrc;d.resumeSrc=null}else{try{localStorage.removeItem('projectA.battleSnap')}catch{}}   /* v98.340 · resumed from the temporary save: same field, same moment */
  const done=e=>{if(e.source!==fr.contentWindow||e.data?.type!=='agrenor-battle')return;removeEventListener('message',done);const r=e.data;
   g.hp=Math.max(1,Math.min(g.maxHp||60,r.hp??g.hp));for(const x of r.party||[]){const p=(v.party||[]).find(q=>q.key===x.key);if(p){p.hp=Math.max(1,x.hp);if(x.order)p.order=x.order}}
