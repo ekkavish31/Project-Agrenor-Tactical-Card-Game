@@ -45,7 +45,9 @@
 #itemGet .ig-note{margin-top:8px;font-style:italic;color:#d8c48f;font-size:15px}
 #itemGet .ig-rule{margin-top:12px;padding:8px 12px;border-left:3px solid #ffd98a;background:#00000040;border-radius:0 8px 8px 0;font-size:15px;color:#ffe9b0}
 #itemGet .ig-from{margin-top:10px;font-size:14px;color:#c9b98a}
-#itemGet .ig-bar{margin-top:16px;display:flex;align-items:center;gap:14px}
+#itemGet .ig-info{display:flex;flex-direction:column;height:min(470px,86vh)}   /* v98.1158 · fixed height: the text scrolls inside .ig-body and the button bar is pinned to the bottom, so it never moves between cards */
+#itemGet .ig-body{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;padding-right:6px}
+#itemGet .ig-bar{margin-top:auto;padding-top:14px;flex:none;display:flex;align-items:center;gap:14px}
 #itemGet .ig-btn{font:700 17px AgThai,system-ui,sans-serif;padding:9px 26px;border-radius:12px;border:2px solid #fff0b8;background:linear-gradient(#e7bd5a,#b98524);color:#2a1a04;cursor:pointer;box-shadow:0 4px 14px #000a}
 #itemGet .ig-btn:hover{filter:brightness(1.1)}
 #itemGet .ig-dots{display:flex;gap:7px}#itemGet .ig-dots i{width:9px;height:9px;border-radius:50%;background:#fff4;transition:.2s}#itemGet .ig-dots i.on{background:#ffd98a;transform:scale(1.35)}
@@ -53,7 +55,7 @@
 @keyframes igSpark{0%{opacity:0;transform:translate(0,0) scale(.4)}12%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1)}}
 #itemGet.fly .ig-card{transition:transform .7s cubic-bezier(.5,0,.8,.4),opacity .7s;transform:translate(var(--fx,30vw),var(--fy,30vh)) scale(.12);opacity:0}
 #itemGet.fly .ig-info{opacity:0;transition:.25s}
-@media(max-width:760px){#itemGet .ig-box{flex-direction:column;overflow:auto;gap:14px}#itemGet .ig-card{width:min(210px,52vw)}#itemGet .ig-info{max-width:92vw;text-align:center}#itemGet .ig-bar{justify-content:center}}
+@media(max-width:760px){#itemGet .ig-box{flex-direction:column;overflow:auto;gap:14px}#itemGet .ig-card{width:min(210px,52vw)}#itemGet .ig-info{max-width:92vw;text-align:center;height:auto;max-height:46vh}#itemGet .ig-bar{justify-content:center}}
 @media(prefers-reduced-motion:reduce){#itemGet .ig-spark{animation:none}#itemGet .ig-card .ig-in{transition:none}}`;
     document.head.append(s);
   }
@@ -74,9 +76,9 @@
         el.classList.remove('go'); void el.offsetWidth;
         cardEl.innerHTML = it.html || `<div class="ig-plain">${esc(it.icon)}</div>`; try { root.CardStudio?.fit?.(cardEl) } catch (e) { }
         cnt.textContent = '×' + it.n; cnt.style.display = it.n > 1 ? '' : 'none';
-        inf.innerHTML = `<small class="ig-k">${esc(opt.kicker || 'ได้รับไอเทม')}</small><h2>${esc(it.name)}</h2>${it.kind ? `<span class="ig-type">${esc(it.kind)}</span>` : ''}`
+        inf.innerHTML = `<div class="ig-body"><small class="ig-k">${esc(opt.kicker || 'ได้รับไอเทม')}</small><h2>${esc(it.name)}</h2>${it.kind ? `<span class="ig-type">${esc(it.kind)}</span>` : ''}`
           + `<div class="ig-desc">${esc(it.desc)}</div>${it.note ? `<div class="ig-note">“${esc(it.note)}”</div>` : ''}${it.rule ? `<div class="ig-rule">${esc(it.rule)}</div>` : ''}`
-          + `${opt.from || opt.text ? `<div class="ig-from">${esc(opt.text || opt.from)}</div>` : ''}`
+          + `${opt.from || opt.text ? `<div class="ig-from">${esc(opt.text || opt.from)}</div>` : ''}</div>`
           + `<div class="ig-bar"><button type="button" class="ig-btn">${last ? 'เก็บเข้าสมุดผนึก' : 'ต่อไป ▶'}</button>${items.length > 1 ? `<span class="ig-dots">${items.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>`;
         try { root.Sfx?.play?.(last ? 'ui-confirm' : 'ui-click') } catch (e) { }
         requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('go')));
