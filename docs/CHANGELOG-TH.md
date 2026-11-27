@@ -8332,3 +8332,6 @@ v35b: เปลี่ยนการหมุนสนามจาก crossfade 
 - เก็บที่ `localStorage['project-a-sfx-mix-v1']` (เพิ่มใน `EditorStore.SYNC` → Push ผ่าน 🛒 Cart ให้ถาวรทุกเครื่องได้)
 - `js/sfx.js`: อ่านค่า mix ตอนเล่น (`mix()`), `play(n,{i,exact})` เล่นแบบระบุแบบ/ไม่สุ่ม pitch, export `V/BATTLE/mix/MIXKEY`
 - ทดสอบ Playwright: ตาราง 33 ท่า + 80 เสียงขึ้นครบ, ค่าบันทึก/ล้างถูกต้อง, ไม่มี error
+
+## v98.1152 · 27 พ.ย. 2026 — ปุ่มข้ามบทนำ = ปุ่มข้ามแบบฉากสนทนา
+- `js/title-screen.js` + `css/title-screen.css`: ปุ่ม "ข้าม ▸▸" ของบทนำ (ฉากโลกก่อนเข้าเกม) เปลี่ยนเป็นปุ่มวาดแบบเดียวกับฉากสนทนา (ไอคอน `assets/ui/story-controls/skip-scene.webp` + ข้อความ "ข้ามฉาก", ขนาดตามความสูงจอ) · อยู่มุมขวาบนเหมือนเดิม · Esc ข้ามได้เหมือนเดิม
