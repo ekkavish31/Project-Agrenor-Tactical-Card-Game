@@ -5,6 +5,8 @@
  // Alpha bounds measured on the source sheet. Align the centre, never resize
  // frames independently: box -> rolls -> long ribbon remains at one anchor.
  const CENTRES=[[222.5,120],[222,126.5],[221.5,118],[223,109.5],[220.5,115],[221,121.5],[222,126],[222,128.5],[222,127],[220.5,127],[219.5,126.5],[223.5,125],[223,128],[221,128],[222,128],[222.5,128]];
+ /* v98.1174 · the gold ◆ in a hint = the painted quest crystal (assets/ui/quest-marker.webp), shrunk inline — the same picture that floats over the villager on the map */
+ function gemText(el,text){String(text??'').split('◆').forEach((part,i)=>{if(i){const im=document.createElement('img');im.className='qa-gem';im.alt='◆';im.src='assets/ui/quest-marker.webp';im.draggable=false;el.appendChild(im)}if(part)el.appendChild(document.createTextNode(part))})}
  const frameAt=ms=>Math.min(15,Math.max(0,Math.floor(ms/FRAME_MS)));
  function drawFrame(g,image,n,w,h){n=Math.max(0,Math.min(15,n|0));const fw=image.naturalWidth/COLS,fh=image.naturalHeight/ROWS,c=CENTRES[n];g.clearRect(0,0,w,h);g.drawImage(image,(n%4)*fw,Math.floor(n/4)*fh,fw,fh,w/2-c[0]/443.5*w,h/2-c[1]/221.75*h,w,h)}
  let sheet=null,load=null,current=null;const queue=[];
@@ -18,7 +20,7 @@
   d.querySelector('.qa-kind').textContent=lesson?'📘 บทเรียน':(o.kicker||'รายละเอียดเควส');d.querySelector('h3').textContent=lesson?.title||o.detailTitle||'';
   /* v98.1164 · a long lesson is split into PAGES (no scrollbar): items are packed into the card until it is full, never cutting one item; ◀ ▶ move between pages and only the LAST page shows the continue button */
   const items=[...(o.details||[]),...(lesson?.lines||[])].filter(Boolean),ul=d.querySelector('ul'),nav=d.querySelector('.qa-nav'),prev=d.querySelector('.qa-prev'),next=d.querySelector('.qa-next'),pgLbl=d.querySelector('.qa-pg');
-  let pages=[items],page=0;const mk=t=>{const li=document.createElement('li');li.textContent=t;return li},setItems=a=>ul.replaceChildren(...a.map(mk));
+  let pages=[items],page=0;const mk=t=>{const li=document.createElement('li');gemText(li,t);return li},setItems=a=>ul.replaceChildren(...a.map(mk));
   function renderPage(){setItems(pages[page]);const last=page>=pages.length-1;nav.hidden=pages.length<2;button.hidden=!last;prev.disabled=page===0;next.style.visibility=last?'hidden':'';pgLbl.textContent=(page+1)+' / '+pages.length;card.scrollTop=0}
   function paginate(){card.style.minHeight='';card.style.visibility='hidden';nav.hidden=false;button.hidden=false;
    const fits=()=>card.scrollHeight<=card.clientHeight+1,out=[];let cur=[];
@@ -38,5 +40,5 @@
   imageReady().then(im=>{if(closed)return;if(!im){reveal(true);return}job.started=performance.now();const draw=t=>{if(closed)return;const ms=reduced?DURATION:t-job.started;drawFrame(cv.getContext('2d'),im,frameAt(ms),cv.width,cv.height);if(ms>=DURATION)reveal(false);else raf=requestAnimationFrame(draw)};draw(job.started)});
  }
  if(typeof document!=='undefined')imageReady();
- const api={show,busy:()=>!!current,frameAt,drawFrame,FRAMES:16,DURATION,SRC,CENTRES};root.QuestAnnouncement=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+ const api={show,gemText,busy:()=>!!current,frameAt,drawFrame,FRAMES:16,DURATION,SRC,CENTRES};root.QuestAnnouncement=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(globalThis);
