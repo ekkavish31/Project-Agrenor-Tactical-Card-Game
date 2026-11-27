@@ -67,7 +67,7 @@
     else if (t.matches('select')) n = 'ui-tick';
     else if (BACK.test(txt) || t.matches('[data-x],.x,.close')) { back(); return }
     else if (OK.test(txt)) n = 'ui-confirm';
-    else if (t.closest('.hand,.card,[data-card],#hand')) { play('card-slide', { vol: .9 }); play('ui-pluck', { vol: .35 }); return }
+    else if (t.closest('.hand,.card,[data-card],#hand')) { play('card-slide', { vol: .95, rate: 1.08 }); return }   /* v98.1165 · picking a card = paper picked up (no chime) */
     play(n);
   }
   document.addEventListener('pointerdown', onPress, true);
