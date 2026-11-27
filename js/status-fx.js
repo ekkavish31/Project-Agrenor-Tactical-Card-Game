@@ -129,7 +129,8 @@
     const artX = nearHead ? x + h * .28 : x;
     const artSize = h * (nearHead ? .38 : back ? .82 : .57);
     const alpha = still ? (back ? .35 : .61) : pulse * (back ? .61 : .74);
-    const frame = still ? 1 : Math.min(3, Math.floor(k * 4));
+    const count = root.VfxKit?.sequenceLength(kind) || 4;
+    const frame = still ? Math.floor(count / 3) : Math.min(count - 1, Math.floor(k * count));
     if (nearHead && back) return false;
     const painted = root.VfxKit?.sequenceFrame(g, kind, frame, artX, artY, artSize, alpha, 0, anchored ? .74 : .5)
       || (!still && spec[0] && stamp(g, spec[0], artX, artY, artSize, {

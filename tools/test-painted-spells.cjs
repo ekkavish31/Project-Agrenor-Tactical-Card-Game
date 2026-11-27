@@ -58,12 +58,12 @@ function setup({ loading = false, reduced = false, search = '', values = {} } = 
     const probe = createCanvas(300, 350).getContext('2d');
     const paint = probe.drawImage.bind(probe);
     probe.drawImage = (...args) => {
-      if (args[0].src === 'assets/fx/anim/' + kind + '-drawn.webp') active.add(args.slice(1, 3).join(','));
+      if (args[0].src === 'assets/fx/anim/twelve-strike.webp') active.add(args.slice(1, 3).join(','));
       return paint(...args);
     };
     for (let f = 0; f <= 60; f++)
       assert.ok(hybrid.kit.draw({ kind, seed: 17 }, f / 60, { x: 150, y: 285 }, null, probe, { w: 60 }));
-    assert.equal(active.size, 8, kind + ' plays all eight distinct painted cells');
+    assert.equal(active.size, 12, kind + ' plays all twelve distinct painted cells');
   }
   const migrated = setup({ values: { 'vfx-kit-kinds': '{"sword":"old","lightning":"painted8"}', 'vfx-kit': '1' } }).kit;
   assert.equal(migrated.choiceOf('sword'), 'drawnSequence');
@@ -76,14 +76,14 @@ function setup({ loading = false, reduced = false, search = '', values = {} } = 
     const offsets = new Set(), probe = createCanvas(300, 350).getContext('2d');
     const paint = probe.drawImage.bind(probe);
     probe.drawImage = (...args) => {
-      if (/sequence-(?:elements|support)\.png$/.test(args[0].src)) offsets.add(args.slice(1, 3).join(','));
+      if (/twelve-(?:elements|support)\.webp$/.test(args[0].src)) offsets.add(args.slice(1, 3).join(','));
       return paint(...args);
     };
     const e = { kind, color, seed: 17 };
     assert.equal(hybrid.kit.paintedState(e, 'drawnSequence'), 'ready');
     for (let f = 0; f < 60; f++)
       assert.ok(hybrid.kit.draw(e, f / 60, { x: 150, y: 285 }, null, probe, { w: 60 }));
-    assert.equal(offsets.size, 4, kind + ' plays each new frame');
+    assert.equal(offsets.size, 12, kind + ' plays each new frame');
   }
   const pending = setup({ loading: true }).kit;
   assert.equal(pending.draw({ kind: 'ice' }, .4, { x: 10, y: 20 }, null, ctx, { w: 60 }), false, 'loading falls back');
