@@ -76,7 +76,7 @@ function setup({ loading = false, reduced = false, search = '', values = {} } = 
     const offsets = new Set(), probe = createCanvas(300, 350).getContext('2d');
     const paint = probe.drawImage.bind(probe);
     probe.drawImage = (...args) => {
-      if (/twelve-(?:elements|support)\.webp$/.test(args[0].src)) offsets.add(args.slice(1, 3).join(','));
+      if (/twelve-(?:elements|support|water)\.webp$/.test(args[0].src)) offsets.add(args.slice(1, 3).join(','));
       return paint(...args);
     };
     const e = { kind, color, seed: 17 };
