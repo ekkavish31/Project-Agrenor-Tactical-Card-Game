@@ -550,6 +550,8 @@
     });
   }
   if (typeof Image !== 'undefined') {
+    const water = loadSequenceImage('assets/fx/anim/twelve-water.webp');
+    expanded.water = { im: water, row: 0, rows: 1, columns: 12 };
     const im = loadSequenceImage('assets/fx/anim/twelve-strike.webp');
     ['lightning', 'ice'].forEach((kind, row) => { expanded[kind] = { im, row, rows: 2, columns: 12 }; });
   }
