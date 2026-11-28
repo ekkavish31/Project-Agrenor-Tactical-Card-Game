@@ -30,12 +30,17 @@ canvas{background:#d8d8dc;max-width:96%;max-height:96%;aspect-ratio:1;cursor:cro
 <label><input type="checkbox" id="sil"> เงาสีชมพู (ตัวจองตำแหน่ง)</label>
 <label><input type="checkbox" id="onion" checked> เห็นท่าอีกท่าจางๆ เทียบ</label>
 <label><input type="checkbox" id="play"> ▶ เล่น เตรียม → โจมตี วนซ้ำ</label>
+<h2>โปรไฟล์การโจมตี (ฟัน / แทง ต่างกันอย่างไร)</h2>
+<div class="row" id="kinds"></div>
+<div class="hint" style="margin:0 0 4px">ใช้กับทุกตัวที่ถืออาวุธชนิดนั้น · กด "▶ เล่น" ด้านบนเพื่อดูผลทันที</div>
+<div id="prof"></div>
+<div class="row"><button id="profReset">รีเซ็ตโปรไฟล์นี้</button></div>
 <h2>จัดการ</h2>
 <div class="row"><button id="cpMir">คัดลอกไปทิศสะท้อน</button><button id="cpPose">คัดลอกจากท่าอื่น</button><button id="reset">รีเซ็ตเป็นค่าเริ่มต้น</button><button id="off">ปิดจุดนี้ (ใช้อาวุธลอย)</button></div>
 <div class="hint">คลิกหรือลากบนภาพ = ย้ายจุดจับ (วงกลมเหลือง) · ลากสี่เหลี่ยมฟ้าที่ปลายอาวุธ = หมุนมุม<br>ค่าบันทึกอัตโนมัติในเบราว์เซอร์ · ต้องการให้ถาวรทุกเครื่อง: เปิด 🛒 Cart แล้ว Push<br>ทิศที่ไม่มีจุดของตัวเองจะใช้ภาพสะท้อนของทิศคู่ (SE↔SW · NE↔NW) · แก้ทิศนั้นเมื่อภาพสองด้านไม่เหมือนกันพอดี</div>
 </aside>
 <main><canvas id="cv" width="768" height="768"></canvas><div id="msg"></div></main>
-<script src="js/editor-store.js?v=v98.1191"></script><script src="js/tactics-sprites.js?v=v98.1191"></script><script src="js/weapon-anchors.js?v=v98.1191"></script>
+<script src="js/editor-store.js?v=v98.1191"></script><script src="js/tactics-sprites.js?v=v98.1191"></script><script src="js/attack-profiles.js?v=v98.1192"></script><script src="js/weapon-anchors.js?v=v98.1192"></script>
 <script>
 (function(){
 const WA=window.WeaponAnchors,A=(typeof TACTICS_SPRITES!=='undefined'?TACTICS_SPRITES:null),$=id=>document.getElementById(id);
@@ -45,7 +50,7 @@ const S={ch:'kier',pose:'windup',dir:'SE',wk:'sword'},IM={},size=768;
 const img=src=>{if(IM[src])return IM[src].ok?IM[src].i:null;const i=new Image();IM[src]={i,ok:false};i.onload=()=>{IM[src].ok=true;draw()};i.onerror=()=>{IM[src].bad=true};i.src=src;return null};
 const cv=$('cv'),g=cv.getContext('2d');
 const frameSrc=(c,p,d)=>`assets/tactics/${c}_${d.toLowerCase()}_${p}.webp`;
-function btns(el,list,key,fmt){el.innerHTML='';for(const v of list){const b=document.createElement('button');b.textContent=fmt?fmt(v):v;b.dataset.v=Array.isArray(v)?v[0]:v;b.onclick=()=>{S[key]=b.dataset.v;if(key==='ch')S.wk=CHARS[S.ch]||S.wk;sync()};el.append(b)}}
+function btns(el,list,key,fmt){el.innerHTML='';for(const v of list){const b=document.createElement('button');b.textContent=fmt?fmt(v):v;b.dataset.v=Array.isArray(v)?v[0]:v;b.onclick=()=>{S[key]=b.dataset.v;if(key==='ch'){S.wk=CHARS[S.ch]||S.wk;kind=AP.kindOf(S.wk);profUI()}sync()};el.append(b)}}
 btns($('chars'),Object.keys(CHARS),'ch');btns($('poses'),POSES,'pose',v=>v[1]);btns($('dirs'),DIRS,'dir');
 $('wsel').innerHTML=WEAPONS.map(w=>`<option>${w}</option>`).join('');$('wsel').onchange=()=>{S.wk=$('wsel').value;draw()};
 const cur=()=>WA.get(S.ch,S.pose,S.dir),srcOf=()=>WA.source(S.ch,S.pose,S.dir);
@@ -73,7 +78,7 @@ function sync(saved){for(const b of $('chars').children)b.classList.toggle('on',
  $('wsel').value=S.wk;const a=cur(),w=work(),s=srcOf();
  const T={user:['บันทึกไว้เอง (ของคุณ)',''],default:['ค่าเริ่มต้นของเกม','warn'],mirror:['ใช้ภาพสะท้อนของทิศคู่ — คลิกเพื่อแก้เป็นจุดของทิศนี้เอง','warn'],none:['ยังไม่มีจุด — ใช้อาวุธลอยแบบเดิม','warn'],off:['ปิดจุดนี้ไว้ — ใช้อาวุธลอยแบบเดิม','warn']}[s];$('src').textContent='สถานะ: '+T[0]+(saved?' · บันทึกแล้ว':'');$('src').className='st '+T[1];
  $('h').value=w.h;$('hv').textContent=w.h.toFixed(2);$('a').value=Math.round(w.a);$('av').value=Math.round(w.a);$('lu').classList.toggle('on',w.layer!=='over');$('lo').classList.toggle('on',w.layer==='over');
- for(const id of ['h','a','av','lu','lo'])$(id).disabled=!a;draw()}
+ for(const id of ['h','a','av','lu','lo'])$(id).disabled=!a;if(!$('play')?.checked)draw()}
 const edit=f=>{const w=work();f(w);save(w)};
 $('h').oninput=()=>edit(w=>w.h=+$('h').value);$('a').oninput=()=>edit(w=>w.a=+$('a').value);$('av').onchange=()=>edit(w=>w.a=Math.max(-180,Math.min(180,+$('av').value||0)));
 $('lu').onclick=()=>edit(w=>w.layer='under');$('lo').onclick=()=>edit(w=>w.layer='over');
@@ -87,9 +92,34 @@ cv.onpointerdown=e=>{if($('play').checked)return;const [x,y]=pt(e),a=cur(),t=a&&
  if(t&&Math.hypot(x-t[0],y-t[1])<16){drag='tip'}else{drag='hand';edit(w=>{w.x=Math.max(0,Math.min(1,x/size));w.y=Math.max(0,Math.min(1,y/size))})}};
 cv.onpointermove=e=>{if(!drag)return;const [x,y]=pt(e);if(drag==='hand')edit(w=>{w.x=Math.max(0,Math.min(1,x/size));w.y=Math.max(0,Math.min(1,y/size))});else edit(w=>{let ang=Math.atan2(x-w.x*size,-(y-w.y*size))*180/Math.PI;if(e.shiftKey)ang=Math.round(ang/15)*15;w.a=Math.round(ang)})};
 cv.onpointerup=cv.onpointercancel=()=>{drag=null};
-let timer=0;$('play').onchange=()=>{clearTimeout(timer);playPose=null;if($('play').checked){const tick=()=>{playPose=playPose==='windup'?'strike':'windup';draw();timer=setTimeout(tick,playPose==='windup'?420:200)};tick()}else draw()};
+/* ---- attack profiles (js/attack-profiles.js) ---- */
+const AP=window.AttackProfiles;let kind=AP.kindOf(S.wk);
+const FIELDS=[['windMs','เวลาง้าง (ms)',50,500,5],['strikeMs','ความเร็วฟัน/แทง (ms) — น้อย = เร็ว',20,300,1],['hold','ค้างที่สุดการโจมตี (ms)',0,500,5],['lunge','พุ่งตัวไปข้างหน้า (px)',0,50,1],['lean','เอนตัว',0,.5,.01],['squash','บีบ/ยืดตัว',0,.2,.01],['bulge','ความโค้งของเส้นทางอาวุธ',0,.6,.01],['overshoot','เลยจุดแล้วดีดกลับ',0,.4,.01],['pull','ดึงถอยก่อนแทง (เฉพาะเส้นตรง)',0,.3,.01],['smear','จำนวนเงาตามหลัง',0,6,1],['roll','กล้องเอียง',0,4,.1],['shake','กล้องสั่น (px)',0,30,1]];
+const SELS=[['path','เส้นทางอาวุธ',[['arc','โค้ง (ฟัน)'],['line','ตรง (แทง)']]],['trail','รอยเอฟเฟกต์',[['arc','เสี้ยวพระจันทร์'],['line','เส้นตรงเรียว']]],['sfx','เสียงตอนโจมตี',[['swing','ลมกวาด'],['knife','แหลมสั้น'],['hammer','ทุ้มหนัก'],['axe','ขวาน']]]];
+const profEl=$('prof');
+function profUI(){const P=AP.get(kind);for(const b of $('kinds').children)b.classList.toggle('on',b.dataset.v===kind);profEl.innerHTML='';
+ for(const [k,label,opts] of SELS){const l=document.createElement('label');l.textContent=label+' ';const sel=document.createElement('select');sel.innerHTML=opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('');sel.value=P[k];sel.onchange=()=>{AP.set(kind,{[k]:sel.value});profUI()};l.append(sel);profEl.append(l)}
+ for(const [k,label,min,max,step] of FIELDS){if(k==='pull'&&P.path!=='line')continue;const l=document.createElement('label');const sp=document.createElement('span');sp.textContent=label;sp.style.cssText='width:150px;font-size:12px';const r=document.createElement('input');r.type='range';r.min=min;r.max=max;r.step=step;r.value=P[k]??0;const v=document.createElement('b');v.style.width='42px';v.textContent=(+r.value).toFixed(step<1?2:0);r.oninput=()=>{v.textContent=(+r.value).toFixed(step<1?2:0);AP.set(kind,{[k]:+r.value})};l.append(sp,r,v);profEl.append(l)}}
+for(const k of Object.keys(AP.NAMES)){const b=document.createElement('button');b.textContent=AP.NAMES[k];b.dataset.v=k;b.onclick=()=>{kind=k;profUI()};$('kinds').append(b)}
+$('profReset').onclick=()=>{AP.set(kind,null);profUI()};
+const oldWsel=$('wsel').onchange;$('wsel').onchange=()=>{S.wk=$('wsel').value;kind=AP.kindOf(S.wk);profUI();draw()};
+/* ---- play: windup hold → strike with the profile (weapon path · body lunge · smear · tip trail) ---- */
+let raf=0,t0=0,tip=[];
+const ease=x=>1-Math.pow(1-Math.min(1,Math.max(0,x)),3);
+function drawPlay(e,P){g.clearRect(0,0,size,size);g.fillStyle='#d8d8dc';g.fillRect(0,0,size,size);
+ const aw=WA.get(S.ch,'windup',S.dir),as=WA.get(S.ch,'strike',S.dir);if(!aw||!as){g.fillStyle='#b8321f';g.font='20px system-ui';g.fillText('ต้องมีจุดจับทั้งท่าง้างและท่าโจมตีของทิศนี้',20,40);return}
+ const dh=defaultH(),A0={...aw,h:aw.h||dh},A1={...as,h:as.h||dh},wind=P.windMs+250;
+ if(e<wind){tip=[];const k=ease(e/P.windMs);g.save();g.translate(size*.5,size*.94);g.translate(-k*7,0);g.rotate(-.15*k);g.scale(1+.03*k,1-.05*k);g.translate(-size*.5,-size*.94);
+  if(A0.layer!=='over')drawWeapon(A0,$('sil').checked);drawFrame('windup',S.dir);if(A0.layer==='over')drawWeapon(A0,$('sil').checked);g.restore();return}
+ const es=e-wind,an=AP.solve(P,A0,A1,es,1),b=AP.body(P,es,1);g.save();g.translate(size*.5,size*.94);g.translate(b.dx,0);g.rotate(b.rot);g.scale(b.sx,b.sy);g.translate(-size*.5,-size*.94);
+ if(es<P.strikeMs+60)for(let j=1;j<=P.smear;j++){const ee=es-j*15;if(ee>=0)drawWeapon(AP.solve(P,A0,A1,ee,1),false,.3/j)}
+ const d=def(),L=d?an.h*size*d.pivot[1]:0,r=an.a*Math.PI/180,m=g.getTransform();const tp=new DOMPoint(an.x*size+Math.sin(r)*L,an.y*size-Math.cos(r)*L).matrixTransform(m);tip.push({x:tp.x,y:tp.y,t:es});if(tip.length>14)tip.shift();
+ if(an.layer!=='over')drawWeapon(an,$('sil').checked);drawFrame('strike',S.dir);if(an.layer==='over')drawWeapon(an,$('sil').checked);g.restore();
+ if(es<P.strikeMs+P.hold){const pts=tip.filter(p=>es-p.t<(P.trail==='line'?120:170));if(pts.length>1){g.save();g.globalCompositeOperation='lighter';g.lineCap='round';for(let i=1;i<pts.length;i++){const k=i/(pts.length-1),w=(P.trail==='line'?.012:.05*k)*size,age=Math.max(0,1-(es-pts[i].t)/170);for(const [wm,al,col] of [[2.4,.16,'255,205,130'],[1,.55,'255,236,200'],[.38,.95,'255,255,248']]){g.strokeStyle=`rgba(${col},${al*age*(P.trail==='line'?1:k)})`;g.lineWidth=Math.max(1,w*wm);g.beginPath();g.moveTo(pts[i-1].x,pts[i-1].y);g.lineTo(pts[i].x,pts[i].y);g.stroke()}}g.restore()}}}
+function loop(ts){if(!$('play').checked)return;const P=AP.get(kind),cyc=P.windMs+250+P.strikeMs+P.hold+520;if(!t0)t0=ts;drawPlay((ts-t0)%cyc,P);raf=requestAnimationFrame(loop)}
+$('play').onchange=()=>{cancelAnimationFrame(raf);t0=0;tip=[];if($('play').checked)raf=requestAnimationFrame(loop);else draw()};
 /* characters without pictures are dropped */
 Promise.all(Object.keys(CHARS).map(c=>new Promise(r=>{const i=new Image();i.onload=()=>r(c);i.onerror=()=>r(null);i.src=frameSrc(c,'windup','SE')}))).then(l=>{const ok=l.filter(Boolean);for(const b of [...$('chars').children])if(!ok.includes(b.dataset.v))b.remove();if(!ok.includes(S.ch)&&ok[0])S.ch=ok[0];S.wk=CHARS[S.ch]||'sword';sync()});
-sync();addEventListener('storage',()=>sync());
+profUI();sync();addEventListener('storage',()=>sync());
 })();
 </script></body></html>
