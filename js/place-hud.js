@@ -11,7 +11,7 @@
   const stub = (tag, attrs, fn) => { const b = document.createElement(tag); if (tag === 'button') b.type = 'button'; for (const [k, v] of Object.entries(attrs || {})) b.setAttribute(k, v); b.onclick = fn; row.append(b); return b };
   for (const k of ['bag', 'character', 'deck', 'journal']) stub('button', { 'data-game': k }, () => toParent('menu', k));
   stub('button', { id: 'activities' }, () => toParent('menu', 'activities'));
-  stub('button', { id: 'townMapBtn' }, () => $('fit')?.click());                      /* the sub-map's own "see everything" view */
+  stub('button', { id: 'townMapBtn' }, () => { if ($('fit')) $('fit').click(); else toParent('menu', 'map') });   /* sub-map: its own view-all · a room (place-interior): the village map */                      /* the sub-map's own "see everything" view */
   stub('button', { class: 'town-go' }, () => toParent('menu', 'adventure'));
   stub('button', { id: 'elChart' }, () => { try { (parent.ElementWheel || root.ElementWheel)?.showChart() } catch (e) { } });
   document.body.append(row);
@@ -38,6 +38,6 @@
     if (!row.querySelector('.hud-ico')) return; clearInterval(t);
     const b = document.createElement('button'); b.type = 'button'; b.className = 'hud-ico'; b.dataset.hud = 'leave'; b.title = 'กลับหมู่บ้าน';
     b.innerHTML = '<span class="hud-medal has-img"><img src="assets/icons/menu/village.webp" alt="" draggable="false"></span><span class="hud-lbl">กลับหมู่บ้าน</span>';
-    b.onclick = () => $('leave')?.click(); const first = row.querySelector('.hud-ico'); row.insertBefore(b, first);
+    b.onclick = () => { if ($('leave')) $('leave').click(); else root.InteriorUI?.leave?.() }; const first = row.querySelector('.hud-ico'); row.insertBefore(b, first);
   }, 100);
 })(window);
