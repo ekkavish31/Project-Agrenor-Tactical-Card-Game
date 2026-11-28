@@ -533,6 +533,14 @@
       /* the innkeeper sometimes carries drinks to a table */
       if (a.id === 'marta' && !a.walking && !a.leaving && Math.random() < dt * .05) { const tbl = R.spots.filter(s => s.tag === 'table'); const s = tbl[Math.floor(Math.random() * tbl.length)]; const back = a.spot; if (s && back) { const near = [[0, 1], [1, 0], [0, -1], [-1, 0]].map(([du, dv]) => ({ u: s.u + du, v: s.v + dv })).find(c => free(c.u, c.v)); const p = near && pathTo({ u: a.u, v: a.v }, near); if (p) { a.path = p; a.walking = true; setTimeout(() => { if (people.get('marta') === a && !a.leaving) { a.path = pathTo({ u: a.u, v: a.v }, back) || []; } }, 5000) } } }
     }
+    /* v98.1188 · every body in the room is solid (js/crowd-sep.js, TODO §44/§45): the ones walking are pushed off each other and off anybody standing / sitting / the hero; nobody is pushed into furniture */
+    try {
+      if (window.CrowdSep) {
+        const mv = [], pn = [{ id: 'hero', u: hero.vu, v: hero.vv, kind: 'hero', pin: true }];
+        for (const [id, a] of people) { const b = { id, u: a.vu, v: a.vv, kind: a.p?.look?.small ? 'small' : 'adult', set: (u, v) => { a.vu = u; a.vv = v } }; if (a.walking && !a.leaving && a !== talkingTo) mv.push(b); else { b.pin = true; pn.push(b) } }
+        CrowdSep.run(dt, { movers: mv, pins: pn, blocked: (u, v) => !free(Math.floor(u), Math.floor(v)) });
+      }
+    } catch (e) { }
     if (t > sceneAt && !scenePlaying) { sceneAt = t + 16000 + Math.random() * 14000; playScene(t) }
     if (t > bubbleAt && !scenePlaying) { bubbleAt = t + 3500 + Math.random() * 3000; const list = [...people.values()].filter(a => !a.walking && !a.leaving && a !== talkingTo); const a = list[Math.floor(Math.random() * list.length)]; if (a) { const per = CLK.period(CLK.read().hour); let txt = MIND && L.P[a.id] ? MIND.bubble(a.id, { period: per, place: KIND }) : ''; if (!txt) { const lines = a.p.lines?.[per] || a.p.lines?.day || a.p.lines?.evening || []; txt = lines.length ? lines[Math.floor(Math.random() * lines.length)] : '' } if (txt) a.bubble = { txt: fill(txt), until: t + 3600 } } }
     draw(t);
