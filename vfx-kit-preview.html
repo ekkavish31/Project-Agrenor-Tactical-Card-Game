@@ -49,13 +49,13 @@ p.note{display:none}
 <section data-cat="status" data-title="สถานะบนตัว (ใช้ในเกมอยู่แล้ว)"><h2>สถานะบนตัว (ใช้ในเกมอยู่แล้ว) <small></small></h2><div class="grid" id="gStatus"></div></section>
 <p class="empty" id="empty">ไม่พบท่าที่ค้นหา</p>
 <div id="dlg" hidden><div class="box"><div class="top"><h3 id="dlgTitle"></h3><button id="dlgClose">ปิด ✕</button></div><div id="dlgGrid"></div></div></div>
-<script src="js/editor-store.js?v=v98.1193"></script><script src="js/game-settings.js?v=v98.1148"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.1144"></script><script src="js/vfx-gl.js?v=v98.1202"></script><script src="js/vfx-kit.js?v=v98.1162"></script><script src="js/status-fx.js?v=v98.1153"></script>
+<script src="js/editor-store.js?v=v98.1193"></script><script src="js/game-settings.js?v=v98.1148"></script><script src="js/manifest-merge.js?v=v98.444"></script><script src="js/github-push.js?v=v98.1044"></script><script src="js/battle-vfx.js?v=v98.1144"></script><script src="js/vfx-gl.js?v=v98.1203"></script><script src="js/vfx-lightning-gl.js?v=v98.1203"></script><script src="js/vfx-kit.js?v=v98.1162"></script><script src="js/status-fx.js?v=v98.1153"></script>
 <script>
 const W = 300, H = 200, CW = 78, A = { x: 62, y: 158 }, P = { x: 222, y: 158 };
 const NAMES = { sword: 'ดาบ ฟัน', knife: 'มีด ฟันไขว้', blunt: 'ค้อน/กระบอง ทุบ', spear: 'หอก แทง', rapier: 'เรเปียร์ แทงเร็ว', arrow: 'ธนู', shield: 'โล่ ป้องกัน', parry: 'ปัดป้อง',
   fire: 'ไฟ', ice: 'น้ำแข็ง', lightning: 'สายฟ้า', wind: 'ลม', water: 'น้ำ', earth: 'ดิน', holy: 'แสงศักดิ์สิทธิ์', dark: 'ความมืด', arcane: 'เวทอาร์เคน', heal: 'ฮีล',
   burn: 'ไหม้', poison: 'พิษ', sleep: 'หลับ', freeze: 'แข็ง', shock: 'ชา', weak: 'อ่อนแรง', silence: 'ใบ้', bind: 'เถาวัลย์' };
-const DUR = { sword: 620, knife: 620, blunt: 760, spear: 640, rapier: 560, arrow: 720, shield: 900, parry: 620, fire: 4600, ice: 1150, lightning: 820, wind: 1050, water: 1100, earth: 950, holy: 1150, dark: 1200, arcane: 1150, heal: 1150 };
+const DUR = { sword: 620, knife: 620, blunt: 760, spear: 640, rapier: 560, arrow: 720, shield: 900, parry: 620, fire: 4600, ice: 1150, lightning: 3600, wind: 1050, water: 1100, earth: 950, holy: 1150, dark: 1200, arcane: 1150, heal: 1150 };
 const cards = [];
 function person(g, x, y, col, lean = 0) { g.fillStyle = 'rgba(0,0,0,.28)'; g.beginPath(); g.ellipse(x, y, 20, 7, 0, 0, 7); g.fill(); g.fillStyle = col; g.beginPath(); g.roundRect(x - 13 + lean, y - 62, 26, 62, 10); g.fill(); g.beginPath(); g.arc(x + lean, y - 74, 14, 0, 7); g.fill() }
 function scene(g, both = true) { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#1b2330'); gr.addColorStop(.62, '#27342a'); gr.addColorStop(1, '#31412f'); g.fillStyle = gr; g.fillRect(0, 0, W, H); if (both) person(g, A.x, A.y, '#7b8794'); person(g, P.x, P.y, '#8a6a5a') }

@@ -1311,5 +1311,5 @@
 
 ## 46 · VFX WebGL (ท่าอ้างอิง)
 - [x] Fireball I (ท่าไฟ) — `js/vfx-gl.js` v98.1202 · ค่าเริ่มต้นของ fire
-- [ ] Lightning (สายฟ้า) แบบเดียวกัน: charge ที่ผู้ร่าย → ฟ้าผ่าลงเป้าตรง ๆ (ไม่มี projectile) → impact + เลนส์ + แสงวาบ + กระแสไฟฟ้าวิ่งตามพื้น/ตัว · ใช้ `VfxGL.make` + atlas ภาพวาด `lightning-cast.webp` (รอผู้ใช้ส่งชุดอ้างอิงถ้ามี)
+- [~] Lightning (สายฟ้า) — ตัวอย่างทำแล้ว v98.1203 (`js/vfx-lightning-gl.js`, ดูที่ `vfx-gl-preview.html`) รอผู้ใช้ตรวจแล้วค่อยตั้งเป็นค่าเริ่มต้น · เป้าหมายเดิม: charge ที่ผู้ร่าย → ฟ้าผ่าลงเป้าตรง ๆ (ไม่มี projectile) → impact + เลนส์ + แสงวาบ + กระแสไฟฟ้าวิ่งตามพื้น/ตัว · ใช้ `VfxGL.make` + atlas ภาพวาด `lightning-cast.webp` (รอผู้ใช้ส่งชุดอ้างอิงถ้ามี)
 - [ ] ผูกเสียง `fireball.wav` · วัด FPS บนเครื่องจริง · ปรับ res/quality ตามผล

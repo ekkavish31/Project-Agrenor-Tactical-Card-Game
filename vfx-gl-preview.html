@@ -1,0 +1,20 @@
+<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VFX WebGL · ตัวอย่าง</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#1b1712;color:#f1e2bd;font:14px system-ui;min-height:100vh;display:grid;place-content:center;padding:14px}main{width:min(1100px,96vw)}canvas{width:100%;height:auto;border:2px solid #6a5434;border-radius:8px;background:#222}nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:10px 0}button,select{background:#3b2f1d;color:#f9deb2;border:1px solid #8a7040;border-radius:6px;padding:7px 14px;font:inherit}input[type=range]{accent-color:#d9b86d}label{display:flex;gap:6px;align-items:center}#t{flex:1;min-width:200px}p{color:#b6a47c;font-size:12px}</style>
+<main><canvas id="c" width="1100" height="560"></canvas>
+<nav><select id="kind"><option value="fire">ไฟ · Fireball I</option><option value="lightning">สายฟ้า (ตัวอย่าง)</option></select><button id="play">หยุด</button><button id="again">เล่นใหม่</button><input id="t" type="range" min="0" max="1" step="0.001" value="0"><span id="clock"></span></nav>
+<nav><label>ระยะ <input id="dist" type="range" min="220" max="800" value="540"></label><label>ขนาดตัวละคร <input id="cw" type="range" min="50" max="140" value="84"></label><label>ความเร็ว <select id="spd"><option value="1">1×</option><option value="0.5">0.5×</option><option value="0.25">0.25×</option></select></label></nav>
+<p>เอฟเฟกต์ WebGL จาก <code>js/vfx-gl.js</code> · วาดบนฉากจำลอง (ตัวละครสองตัว) เพื่อดูการชาร์จ ยิง/ผ่า กระทบ · ขยับแถบเวลาเพื่อตรวจทีละช่วง</p></main>
+<script src="js/vfx-gl.js"></script><script src="js/vfx-lightning-gl.js"></script>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d'),$=id=>document.getElementById(id);let t=0,run=true,last=0;
+const LIFE=()=>$('kind').value==='fire'?FireballGL.TIMING.life:LightningGL.TIMING.life;
+$('play').onclick=()=>{run=!run;$('play').textContent=run?'หยุด':'เล่น'};$('again').onclick=()=>{t=0;run=true;$('play').textContent='หยุด'};$('t').oninput=()=>{t=+$('t').value*LIFE()/1000;run=false;$('play').textContent='เล่น'};
+const grd=(()=>{const q=document.createElement('canvas');q.width=1100;q.height=560;const k=q.getContext('2d'),gr=k.createLinearGradient(0,0,0,560);gr.addColorStop(0,'#27322e');gr.addColorStop(1,'#475640');k.fillStyle=gr;k.fillRect(0,0,1100,560);
+ for(let v=-6;v<14;v++)for(let u=-6;u<14;u++){const x=550+(u-v)*64,y=250+(u+v)*26;k.fillStyle=((u+v)&1)?'#00000014':'#ffffff0a';k.beginPath();k.moveTo(x,y);k.lineTo(x+64,y+26);k.lineTo(x,y+52);k.lineTo(x-64,y+26);k.fill()}return q})();
+function figure(x,y,cw,col){g.fillStyle='#00000055';g.beginPath();g.ellipse(x,y,cw*.4,cw*.14,0,0,7);g.fill();g.fillStyle=col;g.fillRect(x-cw*.2,y-cw*.95,cw*.4,cw*.95);g.fillStyle='#e8c9a0';g.beginPath();g.arc(x,y-cw*1.05,cw*.17,0,7);g.fill()}
+function frame(){const cw=+$('cw').value,d=+$('dist').value,ax=550-d/2,px=550+d/2,y=400;g.setTransform(1,0,0,1,0,0);g.drawImage(grd,0,0);figure(ax,y,cw,'#3a4a7a');figure(px,y,cw,'#7a3a3a');
+ const T=LIFE()/1000,tt=t/T,kind=$('kind').value,M=kind==='fire'?FireballGL:LightningGL;const ok=M.draw(g,{scale:1},tt,{x:px,y},{x:ax,y},cw);
+ if(!ok){g.fillStyle='#fff';g.fillText('WebGL ใช้ไม่ได้ / ยังโหลดไม่เสร็จ',20,30)}}
+function loop(now){if(last&&run){t+=Math.min(.05,(now-last)/1000)*+$('spd').value;const T=LIFE()/1000;if(t>T+.6)t=0}last=now;const T=LIFE()/1000;t=Math.max(0,Math.min(t,T));frame();$('t').value=t/T;$('clock').textContent=t.toFixed(2)+' / '+T.toFixed(1)+' วินาที';requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+</script></html>

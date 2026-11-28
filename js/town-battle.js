@@ -102,7 +102,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css'); loadCss('css/battle-hud-art.css');
-    const want = { 'js/battle-hud-art.js': 'BattleHudArt', 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-gl.js': 'VfxGL', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing', 'js/head-arrow.js': 'HeadArrow' };
+    const want = { 'js/battle-hud-art.js': 'BattleHudArt', 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-gl.js': 'VfxGL', 'js/vfx-lightning-gl.js': 'LightningGL', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing', 'js/head-arrow.js': 'HeadArrow' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
@@ -1520,7 +1520,7 @@
     /* v98.332 · free CC0 light / slash sprites (Kenney Particle Pack, assets/fx/kenney) on top of the old effects: a sweep for melee, a flare + star + ring for elements */
     if (to && !o.noK) { const base = effects[effects.length - 1], col = KFX_BURST[kind];
       const visual = window.VfxKit?.choiceOf(kind);
-      if (visual === 'atlas' || visual === 'painted8' || visual === 'drawnImpact' || visual === 'drawnSequence' || visual === 'paintedLight' || visual === 'fireball' || SPECIAL_ART[kind]) return hitMs;
+      if (visual === 'atlas' || visual === 'painted8' || visual === 'drawnImpact' || visual === 'drawnSequence' || visual === 'paintedLight' || visual === 'fireball' || visual === 'lightningGL' || SPECIAL_ART[kind]) return hitMs;
       if (KFX_MELEE.has(kind)) effects.push({ ...base, kind: 'kslash', color: '#fff0c0', duration: 380 });
       else if (col) effects.push({ ...base, kind: 'kburst', color: col, duration: 560 }) }
     return hitMs;

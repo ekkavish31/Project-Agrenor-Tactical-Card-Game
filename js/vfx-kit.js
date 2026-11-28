@@ -187,7 +187,7 @@
   const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
   root.addEventListener?.('storage', e => { if (e.key === KEY || e.key === null) cache = null; });
   /* a look with its own timeline: {life, hit} in ms — the effect plays for `life`, the fight waits only until `hit` (the contact) */
-  const OWN_TIMING = { fire: { fireball: () => root.FireballGL?.ready?.() && root.FireballGL.TIMING } };
+  const OWN_TIMING = { fire: { fireball: () => root.FireballGL?.ready?.() && root.FireballGL.TIMING }, lightning: { lightningGL: () => root.LightningGL?.ready?.() && root.LightningGL.TIMING } };
   const timingOf = kind => { const k = nameOf(kind), f = OWN_TIMING[k]?.[choiceOf(k)]; return f ? f() || null : null };
   const defaultChoice = kind => {
     const looks = EXTRA[nameOf(kind)];
@@ -348,6 +348,12 @@
     return fireAtlas(g, e, t, p, a, cw);
   }
   if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'fireball', 'ไฟ · ลูกไฟ WebGL (Fireball I)', fireGL);
+  /* v98.1203 · LIGHTNING "lightningGL" (sample, opt-in) — js/vfx-lightning-gl.js: charge → bolt straight onto the target → flash, lens, ground currents. Falls back to the painted looks when WebGL is missing. */
+  function lightningGL(g, e, t, p, a, cw) {
+    const reduced = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    return !reduced && !!root.LightningGL && root.LightningGL.draw(g, e, t, p, a, cw);
+  }
+  if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('lightning', 'lightningGL', 'สายฟ้า · WebGL (ตัวอย่าง)', lightningGL);
   if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'layered', 'ไฟ · หลายชั้น (ต้นแบบ)', fireLayered);
 
   /* Painted spell animation. Fixed 4×2 cells share a feet anchor; never trim frames
