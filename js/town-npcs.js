@@ -140,8 +140,10 @@ function emotePop(g,n,p){const now=performance.now();NpcEmote.pop(g,p.x,p.y-(n.s
 function faceOf(du,dv){const x=(du-dv)*28,y=(du+dv)*14;return y>=0?(x>=0?'SE':'SW'):(x>=0?'NE':'NW')}
 /* v98.1187 · every character has a body (js/crowd-sep.js): villagers and goats are pushed apart when they overlap, the hero / the follower / whoever is talking never move for it */
 function crowd(dt){const C=root.CrowdSep,vv=V();if(!C||!npcs||!vv)return;
- const mv=[],pins=[],h=vv.getHero?.();if(h)pins.push({id:'hero',u:h.u,v:h.v,kind:'hero',pin:true});
- try{const f=root.HeroFollower?.pos?.();if(f)pins.push({id:'follower',u:f.u,v:f.v,kind:'follower',pin:true});const m=root.MipFollower?.visible?.()&&root.MipFollower?.pos?.();if(m)pins.push({id:'mip',u:m.u,v:m.v,kind:'mip',pin:true})}catch(e){}
+ const mv=[],pins=[],h=vv.getHero?.();
+ /* v98.1189 · the hero has a body too: villagers step aside more than the hero is pushed (w .35) · the party (hero · follower · Mip) never pushes itself · not while editing / in a fight */
+ if(h){const busy=(vv.isEditing?.()||root.TownBattle?.active?.());const hb={id:'hero',u:h.u,v:h.v,kind:'hero',group:'party',w:.35,set:(u,v)=>{try{vv.nudgeHero?.(u,v)}catch(e){}}};if(busy||!vv.nudgeHero){hb.pin=true;pins.push(hb)}else mv.push(hb)}
+ try{const f=root.HeroFollower?.pos?.();if(f)pins.push({id:'follower',u:f.u,v:f.v,kind:'follower',group:'party',pin:true});const m=root.MipFollower?.visible?.()&&root.MipFollower?.pos?.();if(m)pins.push({id:'mip',u:m.u,v:m.v,kind:'mip',group:'party',pin:true})}catch(e){}
  for(const n of npcs){if(n.inside||n.hidden||n.alpha<.3)continue;const b={id:n.id,u:n.u,v:n.v,kind:n.small?'small':'adult',set:(u,v)=>{n.u=u;n.v=v}};if(n===talking){b.pin=true;pins.push(b)}else mv.push(b)}
  try{for(const g of root.TownQuest?.bodies?.()||[])mv.push(g)}catch(e){}
  C.run(dt,{movers:mv,pins,blocked:(u,v)=>{try{return !!vv.blocked(u,v)}catch(e){return false}}})}

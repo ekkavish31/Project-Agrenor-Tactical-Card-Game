@@ -536,7 +536,7 @@
     /* v98.1188 · every body in the room is solid (js/crowd-sep.js, TODO §44/§45): the ones walking are pushed off each other and off anybody standing / sitting / the hero; nobody is pushed into furniture */
     try {
       if (window.CrowdSep) {
-        const mv = [], pn = [{ id: 'hero', u: hero.vu, v: hero.vv, kind: 'hero', pin: true }];
+        const mv = [{ id: 'hero', u: hero.vu, v: hero.vv, kind: 'hero', group: 'party', w: .35, set: (u, v) => { hero.vu = u; hero.vv = v; hero.u = Math.floor(u); hero.v = Math.floor(v) } }], pn = [];
         for (const [id, a] of people) { const b = { id, u: a.vu, v: a.vv, kind: a.p?.look?.small ? 'small' : 'adult', set: (u, v) => { a.vu = u; a.vv = v } }; if (a.walking && !a.leaving && a !== talkingTo) mv.push(b); else { b.pin = true; pn.push(b) } }
         CrowdSep.run(dt, { movers: mv, pins: pn, blocked: (u, v) => !free(Math.floor(u), Math.floor(v)) });
       }
