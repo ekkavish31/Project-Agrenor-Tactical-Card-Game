@@ -799,145 +799,11 @@
      healer: treat the whole party (1 💰 per 4 HP missing) · buy potions · shop / market: potions, travel food · temple: a free prayer once a day
      (fatigue −40, hero HP +30 %) and an offering (+1 potion of holy water for 25 💰) */
   /* v98.1190 · the place's services (healer / shop / temple / guild / house goods) live in js/place-services.js — the same rules, shared with the sub-map engine */
-  const SV = window.PlaceServices.create({ get S() { return S }, set S(v) { S = v }, get modalOpen() { return modalOpen }, set modalOpen(v) { modalOpen = v }, get dlg() { return dlg }, set dlg(v) { dlg = v }, close: () => close(), heroName: () => heroName(), MIND, wait, resetRoom: () => { people.clear(); taken.clear(); syncPeople(true) }, L, CLK, KIND, OWNER, people, hud, hudSync: () => hudSync(), talk: (a, t) => talk(a, t), toast: t => toast(t), esc });
-  const { services, service, openWard, rest, partyPanel } = SV;
+  const SV = window.PlaceServices.create({ get S() { return S }, set S(v) { S = v }, get modalOpen() { return modalOpen }, set modalOpen(v) { modalOpen = v }, get dlg() { return dlg }, set dlg(v) { dlg = v }, close: () => close(), heroName: () => heroName(), get talkingTo() { return talkingTo }, set talkingTo(v) { talkingTo = v }, hero, VISIT, fill, faceOf: (du, dv, o) => faceOf(du, dv, o), leave: () => leave(), farmDo: f => farmDo(f), syncPeople: x => syncPeople(x), workPanel: a => workPanel(a), MIND, wait, resetRoom: () => { people.clear(); taken.clear(); syncPeople(true) }, L, CLK, KIND, OWNER, people, hud, hudSync: () => hudSync(), toast: t => toast(t), esc });
+  const { services, service, openWard, rest, partyPanel, talk, personOptions, act } = SV;
   /* ---------- talking + recruiting ---------- */
   let modalOpen = false, dlg = null;
   function close() { dlg?.remove(); dlg = null; modalOpen = false; talkingTo = null }
-  /* v97.30 · relationship tiers (Mind npc.aff −5…10) and gifts by what each person likes (p.likes) — once a day per person */
-  const TIERS = [[-99, 'ไม่ไว้ใจ', '💢'], [-1, 'คนแปลกหน้า', '·'], [1, 'คนรู้จัก', '♡'], [3, 'คุ้นเคย', '♥'], [6, 'เพื่อน', '♥♥'], [9, 'เพื่อนรัก', '💛']];
-  const tierOf = aff => TIERS.filter(t => aff >= t[0]).at(-1);
-  const GIFTS = {
-    gold: { name: '10 เหรียญ', icon: '💰', like: /เงิน|เหรียญ|กำไร|แวววาว/, has: () => S.gold >= 10, take: () => { S.gold -= 10 } },
-    food: { name: 'เสบียง', icon: '🍞', like: /ขนมปัง|เนื้อ|สตู|อาหาร/, has: () => S.food > 0, take: () => { S.food -= 1 } },
-    potion: { name: 'ยาสมุนไพร', icon: '🧪', like: /ชา|สมุนไพร|ราก|ยา/, has: () => S.potions > 0, take: () => { S.potions -= 1 } },
-    iron: { name: 'แท่งเหล็ก', icon: '▰', like: /เหล็ก|ดาบ|โล่/, has: () => (mats().iron || 0) > 0, take: () => { mats().iron-- } },
-    wood: { name: 'ไม้', icon: '▤', like: /ไม้/, has: () => (mats().wood || 0) > 0, take: () => { mats().wood-- } }
-  };
-  function mats() { try { return window.WorldState.game().village.materials || {} } catch (e) { return {} } }
-  function giftPanel(a) {
-    const p = a.p, n = MIND.npc(p.id), day = CLK.read().day;
-    if (n.giftDay === day) { talk(a, 'วันนี้ให้ข้ามาแล้วนี่ ไว้วันหลังเถอะ ขอบใจนะ'); return }
-    talk(a, 'ให้ของข้าหรือ? …'); const acts = dlg.querySelector('.acts');
-    acts.innerHTML = Object.entries(GIFTS).map(([k, G]) => `<button data-a="gift:${k}" ${G.has() ? '' : 'disabled'}>${G.icon} ${G.name}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>';
-    acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
-  }
-  function giveGift(a, k) {
-    const p = a.p, G = GIFTS[k], n = MIND.npc(p.id), day = CLK.read().day; S = L.save(); if (!G || !G.has() || n.giftDay === day) return;
-    const liked = G.like.test(p.likes || ''), before = tierOf(n.aff || 0); G.take(); L.writeSave(S); try { window.WorldState.commit?.() } catch (e) { }
-    n.giftDay = day; MIND.affect(p.id, liked ? 2 : .5); MIND.save(); const after = tierOf(n.aff || 0); hud._html = ''; hudSync();
-    talk(a, liked ? `${G.name}! เจ้ารู้ได้ไงว่าข้าชอบ … ขอบใจจริง ๆ` : 'ขอบใจนะ ข้าจะเก็บไว้ใช้');
-    if (after !== before) toast(`${p.name} · ความสัมพันธ์: ${after[1]} ${after[2]}`); else if (liked) toast('💝 ' + p.name + ' ชอบของขวัญนี้มาก');
-  }
-  function talk(a, line) {
-    close(); if (!line) { let quest = false; try { if (parent !== window) quest = !!parent.Story?.talked?.(a.p.id) } catch (e) { }
-      if (quest) {   /* v98.664 · a quest step: the story scene plays, no talk window */
-        /* v98.687 · in a visit house (just the door + the owner) there is nothing to do once the scene has played: the player was left on the empty door page. Leave when the scene ends (or at once if it never started) */
-        if (VISIT) { const t0 = Date.now(); let started = false; const iv = setInterval(() => { let playing = false; try { playing = !!parent.Cutscene?.isPlaying?.() } catch (e) { } if (playing) started = true; if ((started && !playing) || (!started && Date.now() - t0 > 6000) || Date.now() - t0 > 90000) { clearInterval(iv); leave() } }, 400) }
-        return
-      }
-    }
-    modalOpen = true; talkingTo = a; S = L.save();
-    const p = a.p, per = CLK.period(CLK.read().hour), lines = p.lines?.[per] || p.lines?.day || p.lines?.evening || ['…'];
-    let said = null; if (!line && MIND && L.P[p.id]) { said = MIND.talk(p.id, { period: per, place: KIND, save: S }); L.writeSave(S); if (said.reward) setTimeout(() => toast('รางวัล: ' + [said.reward.gold ? '+' + said.reward.gold + ' 💰' : '', said.reward.potions ? 'ยา +' + said.reward.potions : ''].filter(Boolean).join(' · ')), 200) }
-    const txt = line || (said ? fill(said.text) : fill(lines[Math.floor(Math.random() * lines.length)]));
-    const ws = MIND?.wantState(p.id), jobs = MIND && L.P[p.id] && !(p.recruit && !L.inParty(S, p.id)) ? MIND.canWork(p.id, p.benched) : [], aff = MIND?.npc(p.id).aff || 0;
-    const rec = p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null;
-    const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
-    bg.innerHTML = `<div class="in-dlg"><canvas width="220" height="260"></canvas><div><h2>${esc(p.name)} <small class="tier" title="ความสัมพันธ์ ${Math.round(aff * 10) / 10}/10">${tierOf(aff)[2]} ${tierOf(aff)[1]}</small></h2><div class="role">${esc(fill(p.role))}${p.age ? ' · อายุ ' + p.age : ''}${p.benched ? ' · พักอยู่กับทีม' : ''}</div>
-      <p>${esc(txt)}</p>${ws?.asked && !ws.done ? `<div class="cond">🤝 คำขอ: ${esc(ws.def.hint)}</div>` : ''}${rec ? `<div class="cond">★ เงื่อนไขชวนเข้าทีม: <b>${esc(rec.label)}</b><br>${esc(rec.text)}${progressText(p.id, rec)}</div>` : ''}
-      <div class="acts">${talkActs(p, jobs, rec)}</div></div></div>`;
-    document.body.append(bg); dlg = bg;
-    const pc = bg.querySelector('canvas').getContext('2d'); pc.scale(2, 2); VillagerDraw(pc, p.look || {}, 55, 122, performance.now(), { face: 'SE', scale: 1.15 });
-    window.StoryActors?.drawTalkPortrait(bg.querySelector('canvas'), p.id, txt, () => dlg === bg);
-    bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
-    bg.onclick = e => { if (e.target === bg) { close(); if (VISIT) leave() } };
-    a.face = faceOf(hero.u - a.u, hero.v - a.v);
-  }
-
-  /* v98.21 · UI-BRUSHUP #4: at most 4 buttons — 💬 คุย (topics) · 🎁 ให้ของ · the ONE thing this person does (or 🛠 บริการ ▸ when several) · ลาก่อน.
-     Chat topics and services open as a short choice list inside the conversation (with ย้อนกลับ), not as a long row of buttons. */
-  function roleActs(p, jobs, rec) {
-    return [rec && ['recruit', '★ ชวนเข้าทีม'], teachable(p.id) && ['teach', '📖 เรียนท่า'], jobs.length && ['work', '💼 จ้างทำงาน'], p.id === 'olwen' && rec && ['drink', '🍺 เลี้ยงเหล้า 10💰'], p.id === 'marta' && ['room', '🛏 เช่าห้อง 10💰']].filter(Boolean);
-  }
-  function talkActs(p, jobs, rec) {
-    const roles = roleActs(p, jobs, rec), btn = ([k, n]) => `<button data-a="${k}">${n}</button>`;
-    return '<button data-a="chat">💬 คุย</button>' + (MIND && L.P[p.id] ? '<button data-a="gift">🎁 ให้ของ</button>' : '')
-      + (roles.length === 1 ? btn(roles[0]) : roles.length > 1 ? '<button data-a="service">🛠 บริการ ▸</button>' : '') + '<button class="ghost" data-a="bye">ลาก่อน</button>';
-  }
-  function choices(a, line, list) {
-    talk(a, line); const acts = dlg.querySelector('.acts');
-    acts.innerHTML = list.map(([k, n]) => `<button data-a="${k}">${n}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>';
-    acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a));
-  }
-  /* v95.10 · trainers (js/card-sources.js in the game page) */
-  function teachable(id) { try { return parent !== window && !!parent.CardSources?.teaches?.(id) } catch (e) { return false } }
-  function progressText(id, rec) {
-    const r = S.recruit?.[id] || {};
-    if (rec.kind === 'visits') return `<br>คุยกันแล้ว ${(r.days || []).length}/${rec.need} วัน`;
-    if (rec.kind === 'battles') return r.base != null ? `<br>ความคืบหน้า: ชนะแล้ว ${Math.min(rec.need, S.battles - r.base)}/${rec.need}` : '<br>(กด "ชวนเข้าทีม" เพื่อรับเควส)';
-    if (rec.kind === 'drinks') return `<br>เลี้ยงแล้ว ${r.n || 0}/${rec.need}`;
-    if (rec.kind === 'reputation') return `<br>พิชิตแล้ว ${Object.keys(S.done || {}).length}/1`;
-    if (rec.kind === 'boss') return S.done?.[rec.dest] ? '<br>✔ ล้มจ่าฝูงแล้ว' : '';
-    if (rec.kind === 'offering') return `<br>มี ${S.gold}💰 · ยา ${S.potions}`;
-    return '';
-  }
-  function joinNow(a, msg) {
-    S = L.save(); if (!L.join(S, a.id)) { talk(a, 'ข้าอยู่ในทีมเจ้าแล้วนี่'); return }
-    L.writeSave(S); MIND?.emit('recruit:join', { who: a.id, witness: [...people.keys()] }); toast('★ ' + a.p.name + ' เข้าร่วมทีม!' + (S.party.some(x => x.key === a.id) ? '' : ' (พักที่โรงแรม — จัดทีมเพื่อพาไป)'));
-    talk(a, msg); hudSync();
-  }
-  async function act(a, what) {
-    const p = a.p; S = L.save(); const rec = L.RECRUIT[p.id], r = (S.recruit[p.id] ||= {}), hour = CLK.read().hour;
-    if (what === 'bye') { close(); if (VISIT) leave(); return }
-    if (what === 'teach') { close(); try { parent.CardSources?.teach?.(p.id) } catch (e) { } return }
-    if (what === 'talk') { talk(a); return }
-    if (what === 'chat') { choices(a, 'อยากคุยเรื่องอะไรดี?', [['talk', '💬 คุยเล่น'], ['about', '❔ เรื่องของเขา'], ...(MIND && L.P[p.id] ? [['ask', '❓ ถามข่าว…']] : []), ...(p.id === 'marta' ? [['rumor', '📜 ข่าวลือ']] : [])]); return }
-    if (what === 'service') { choices(a, 'ให้ช่วยเรื่องอะไรดี?', roleActs(p, MIND && L.P[p.id] && !(p.recruit && !L.inParty(S, p.id)) ? MIND.canWork(p.id, p.benched) : [], p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null)); return }
-    if (what === 'ask') { talk(a, 'อยากรู้เรื่องอะไรล่ะ?'); const acts = dlg.querySelector('.acts'); acts.innerHTML = [['news', '📰 ข่าวล่าสุด'], ['people', '👥 คนในหมู่บ้าน'], ['road', '🧭 ทางข้างหน้า']].map(([k, n]) => `<button data-a="ask:${k}">${n}</button>`).join('') + '<button class="ghost" data-a="talk">ย้อนกลับ</button>'; acts.querySelectorAll('[data-a]').forEach(b => b.onclick = () => act(a, b.dataset.a)); return }
-    if (what.startsWith('ask:')) { talk(a, fill(MIND.ask(p.id, what.slice(4)))); MIND.save(); return }
-    if (what === 'gift') { giftPanel(a); return }
-    if (what.startsWith('gift:')) { giveGift(a, what.slice(5)); return }
-    if (what === 'about') { const ab = p.about?.length ? fill(p.about[Math.floor(Math.random() * p.about.length)]) : ''; talk(a, (p.trait ? '(' + fill(p.trait) + ') ' : '') + (ab || fill(p.story || '…')) + (L.originText?.(p) ? ' — ' + fill(L.originText(p)) : '')); return }
-    if (what === 'rumor') { talk(a, 'ข่าวลือตอนนี้: ' + ['ถ้ำในป่าตะวันออกมีเสียงหอนทั้งคืน — พวกพรานไม่กล้าเข้าไป', 'คนงานเหมืองหนีออกมาบอกว่าหินในเหมืองลุกขึ้นเดิน', 'ระฆังวิหารเก่าในบึงหมอกดังเองทุกคืนข้างแรม', 'เกรเวนเล่าว่ามีคนกลับจากซากเมืองพร้อมผลึกแปลกประหลาด'][Math.floor(Math.random() * 4)] + ' (ไปที่ "ออกเดินทาง" เพื่อรับภารกิจ)'); return }
-    if (what === 'room') { close(); rest(10); return }
-    if (what === 'work') { workPanel(a); return }
-    if (what.startsWith('job:')) { const k = what.slice(4), J = window.VillageLines.JOBS[k]; const r = MIND.startJob(p.id, k, S); if (!r.ok) { talk(a, r.why === 'gold' ? `ค่าจ้าง ${J.cost} เหรียญ … เจ้ายังมีไม่พอนะ` : 'ข้ายังทำงานเก่าไม่เสร็จเลย'); return } L.writeSave(S); close(); toast(`💼 ${p.name} ออกไป${J.name} · กลับราว ${J.hours} ชม.`); a.bubble = { txt: 'ไปล่ะ! เดี๋ยวกลับมาเล่าให้ฟัง', until: performance.now() + 2500 }; setTimeout(() => { syncPeople(false); hudSync() }, 300); return }
-    if (what === 'drink') {
-      if (!(hour >= 17 || hour < 4)) { talk(a, 'ตอนกลางวันข้ายังไม่ดื่ม… อย่างน้อยก็ไม่ดื่มต่อหน้าคนอื่น มาใหม่ตอนเย็นนะ'); return }
-      const day = CLK.read().day; if (r.day === day) { talk(a, 'วันนี้เจ้าเลี้ยงข้าไปแล้ว … ฮึก … พรุ่งนี้ค่อยว่ากัน'); return }
-      if (S.gold < 10) { talk(a, 'ไม่มีเงิน? งั้นก็ฟังข้าเล่าฟรี ๆ ไปก่อน'); return }
-      S.gold -= 10; r.n = (r.n || 0) + 1; r.day = day; L.writeSave(S); hudSync();
-      if (r.n >= rec.need) { joinNow(a, 'สามแก้วแล้ว! … ข้าจำไม่ได้ว่าสัญญาอะไรไว้ แต่ข้าไปกับเจ้าก็ได้ ไฟของข้ายังไม่ดับหรอก!'); return }
-      talk(a, ['อ้า … องุ่นจากหุบใต้ เจ้ารู้ใจข้า', 'แก้วที่สองแล้ว … ข้าเริ่มชอบหน้าเจ้าแล้วสิ'][r.n - 1] || 'อีกแก้วสิ'); return;
-    }
-    if (what !== 'recruit' || !rec) return;
-    if (rec.kind === 'hire') { if (S.gold < rec.cost) { talk(a, 'เงินยังไม่พอ ' + rec.cost + ' เหรียญ ไม่ต่อราคา'); return } S.gold -= rec.cost; L.writeSave(S); joinNow(a, rec.joinLine || 'ตกลง ขวานของข้าเป็นของเจ้าจนกว่างานจะจบ'); return }
-    /* v94 recruit kinds: a friend just needs asking · "visits" = talk to them on N different days */
-    if (rec.kind === 'friend') { joinNow(a, rec.joinLine || 'ไปด้วยกันสิ!'); return }
-    if (rec.kind === 'visits') { const day = CLK.read().day; r.days ||= []; if (!r.days.includes(day)) r.days.push(day); L.writeSave(S); if (r.days.length >= rec.need) { joinNow(a, rec.joinLine || 'ตกลง ข้าจะไปกับเจ้า'); return } talk(a, (rec.waitLines || [])[r.days.length - 1] || 'มาคุยกันใหม่วันหลังนะ'); return }
-    if (rec.kind === 'battles') { if (r.base == null) { r.base = S.battles || 0; L.writeSave(S); talk(a, 'จริงนะ! งั้นไปชนะศัตรูนอกหมู่บ้านให้ได้สามครั้ง แล้วกลับมาเล่าให้ข้าฟัง!'); return } const n = (S.battles || 0) - r.base; if (n >= rec.need) { joinNow(a, 'เจ้ารอดกลับมาได้จริง ๆ! ข้าไปด้วย ลูกธนูข้าจะไม่พลาดสักดอก!'); return } talk(a, `ยังหรอก ชนะไปแค่ ${Math.max(0, n)} ครั้งเอง อีก ${rec.need - Math.max(0, n)} ครั้งนะ!`); return }
-    if (rec.kind === 'drinks') { talk(a, 'อยากให้ข้าไปด้วย? เลี้ยงเหล้าข้าก่อนสิ … สามแก้ว สามวัน'); return }
-    if (rec.kind === 'reputation') { if (Object.keys(S.done || {}).length) { joinNow(a, 'เจ้าพิชิตที่นั่นได้จริง ๆ! อาจารย์พูดถูก ข้าจะตามเจ้าไป!'); return } talk(a, 'กลับมาพร้อมชัยชนะจากข่าวลือสักแห่งก่อนนะ แล้วข้าจะตามเจ้าไปทุกที่'); return }
-    if (rec.kind === 'offering') { if (S.gold < rec.cost || S.potions < rec.potions) { talk(a, `ยังขาดอยู่ — ต้องการ ${rec.cost} เหรียญ และยาฟื้นฟู ${rec.potions} ขวด (มี ${S.gold}💰 · ยา ${S.potions})`); return } S.gold -= rec.cost; S.potions -= rec.potions; L.writeSave(S); joinNow(a, 'ขอบคุณที่ใจกว้าง ข้าจะเดินทางไปกับเจ้า และเยียวยาทุกคนในทีม'); return }
-    if (rec.kind === 'boss') { if (S.done?.[rec.dest]) { joinNow(a, 'เจ้าล้มมันได้ … พ่อของเรนคงยิ้มอยู่ที่ไหนสักแห่ง ข้าจะไปกับเจ้า'); return } talk(a, 'จ่าฝูงยังอยู่ในถ้ำ ล้มมันก่อน แล้วค่อยมาคุยกับข้า'); return }
-    if (rec.kind === 'duel') { if (!(hour >= 20 || hour < 4)) { talk(a, 'กลางวันข้าไม่ดวลกับใคร'); return } close(); duel(a); return }
-  }
-  /* a 1-vs-1 duel in the battle field (hero alone) */
-  async function duel(a) {
-    S = L.save(); modalOpen = true;
-    const fr = document.createElement('iframe'); fr.id = 'inBattle';
-    /* v98.1146 · the duel carries the hero's level / weapon / stats like every other fight (it did not) and opens under the encounter cut, like the quest fights */
-    fr.src = window.BattleLauncher ? BattleLauncher.url('duel', { ms: 'bandit*1.5', hhp: S.hp || 60, hmax: S.maxHp || 60, title: 'ดวล · นาเดีย ·', raw: BattleLauncher.heroQuery(window.WorldState?.game?.()) }) : `battle-field.html?battle=1&embed=1&r=5&biome=grass&night=1&m=bandit&ms=${encodeURIComponent('bandit*1.5')}&party=&hhp=${S.hp || 60}&hmax=${S.maxHp || 60}&title=${encodeURIComponent('ดวล · นาเดีย ·')}`;
-    if (window.BattleLauncher) await BattleLauncher.mount(fr); else { window.VictoryScreen?.fightUI?.(true); document.body.append(fr) }
-    const res = await new Promise(r => { const on = e => { if (e.data?.type === 'agrenor-battle') { removeEventListener('message', on); r(e.data) } }; addEventListener('message', on) });
-    /* v98.996 · a won duel: the Victory report over the scene first, the frame goes after Continue */
-    if ((res.outcome === 'win' || res.outcome === 'lose') && window.VictoryScreen) { const fem = (() => { try { return window.HeroVariant?.get?.() === 'female' } catch (e) { return false } })(); await VictoryScreen.show({ defeat: res.outcome === 'lose', title: 'ดวล · นาเดีย', goal: res.goal, kills: res.kills || 0, turns: res.turns, stat: res.stat, members: [{ id: 'hero', name: heroName(), pic: fem ? 'hero-female' : 'hero-male', hp: res.hp, max: S.maxHp || 60, gain: 0 }] }) }
-    fr.remove(); window.VictoryScreen?.fightUI?.(false); modalOpen = false;
-    if (res.outcome === 'win' || res.outcome === 'lose') MIND?.emit(res.outcome === 'win' ? 'duel:win' : 'duel:lose', { who: a.id, witness: [...people.keys()] });
-    if (res.outcome === 'win') joinNow(a, 'ฮึ … ไม่เลวนี่ ข้ายอมรับ ข้าจะตามเจ้าไป แต่อย่าคิดว่าข้าจะเชื่อฟังทุกเรื่องนะ');
-    else talk(a, res.outcome === 'flee' ? 'หนีแล้วหรือ? น่าผิดหวัง' : 'แค่นี้เองหรือ? กลับไปฝึกมาใหม่เถอะ');
-  }
   /* party: up to 4 travel, the rest rest at the inn */
   /* v98.397 · number keys press the conversation buttons (the number shows on each button) */
   addEventListener('keydown', e => { if (!dlg || !/^[1-9]$/.test(e.key) || /INPUT|TEXTAREA|SELECT/.test(e.target?.tagName || '')) return; const b = dlg.querySelectorAll('.acts button')[+e.key - 1]; if (b && !b.disabled) { e.preventDefault(); b.click() } });
@@ -954,17 +820,6 @@
     let nu = hero.vu + du * sp, nv = hero.vv + dv * sp;
     if (!ok(nu, nv)) { if (ok(nu, hero.vv)) nv = hero.vv; else if (ok(hero.vu, nv)) nu = hero.vu; else { nu = hero.vu; nv = hero.vv } }
     hero.vu = nu; hero.vv = nv; hero.u = Math.floor(nu); hero.v = Math.floor(nv); hero.face = faceOf(du, dv, hero); hero.walking = true; hero.path = []; hero.then = null; return true;
-  }
-  /* the same registry as the village (js/interactables.js): villagers in the room + the door. Hold the big button on a villager = choices. */
-  /* hold the big button on a villager = a ring of what THIS person can do (the same actions as the talk panel's choice lists) */
-  const ROLE_ICON = { recruit: 'v2-guild', teach: 'v2-skills', work: 'v2-market', drink: 'v2-items', room: 'v2-inn' }, optCache = new Map();
-  function personOptions(a) {
-    const c = optCache.get(a.id); if (c && performance.now() - c.t < 2000) return c.o;
-    const p = a.p; S = L.save(); const rec = p.recruit && !L.inParty(S, p.id) ? L.RECRUIT[p.id] : null, jobs = MIND && L.P[p.id] && !(p.recruit && !L.inParty(S, p.id)) ? MIND.canWork(p.id, p.benched) : [];
-    const o = [{ label: 'คุย', icon: 'party', run: () => talk(a) }];
-    if (MIND && L.P[p.id]) o.push({ label: 'ถามข่าว', icon: 'quest', run: () => act(a, 'ask') }, { label: 'ให้ของ', icon: 'treasure', run: () => act(a, 'gift') });
-    for (const [k, n] of roleActs(p, jobs, rec)) o.push({ label: n.replace(/^\S+\s/, '').replace(/ \d+💰/, ''), icon: ROLE_ICON[k] || 'quest', run: () => act(a, k) });
-    optCache.set(a.id, { t: performance.now(), o: o.slice(0, 5) }); return o.slice(0, 5);
   }
   window.Interactables?.add(() => {
     const out = [], dd = { u: DOOR.u + .5, v: DOOR.v + .5 };
