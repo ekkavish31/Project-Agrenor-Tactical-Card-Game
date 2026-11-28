@@ -351,5 +351,7 @@
   }
   /* v95.14: street objects join the village's own depth-sorted list, so goats are solid and pass in front of / behind the hero and buildings like any villager */
   function sorted(t) { if (editing || !T) return []; const k = Math.min(2.2, K()); return [...objs.values()].flat().map(o => { const p = project(o.u, o.v); return { x: p.x, y: p.y, mobile: true, draw: g => drawObj(g, o, t, k) } }) }
-  root.TownQuest = { cancel: () => { pending = null; chaseTo = null }, frozen, draw, sorted, guide, use, targets, objects: () => [...objs.values()].flat() };
+  root.TownQuest = { cancel: () => { pending = null; chaseTo = null }, frozen, draw, sorted, guide, use, targets, objects: () => [...objs.values()].flat(),
+    /* v98.1187 · the goats are characters with a body too (js/crowd-sep.js): they get pushed off villagers and pushed by nobody */
+    bodies: () => [...objs.values()].flat().filter(o => o.kind === 'goat').map(o => ({ id: 'goat:' + o.key + ':' + o.i, u: o.u, v: o.v, kind: 'goat', set: (u, v) => { o.u = u; o.v = v } })) };
 })(globalThis);

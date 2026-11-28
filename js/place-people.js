@@ -55,8 +55,11 @@
     if (!root.VillagerDraw || !L()) return [];
     const now = performance.now(); chase(now, hero); if (now > lastSync) { lastSync = now + 3000; sync(blocked) }
     const out = [], dt = Math.min(.1, (t - lastT) / 1000 || 0); lastT = t;
-    for (const a of people) {
-      const moving = walk(a, dt, blocked, hero), pt = project(a.u, a.v);
+    /* v98.1187 · the room's people have bodies too (js/crowd-sep.js): walk everybody first, push overlapping ones apart (the hero never moves for it), then draw */
+    const mv = people.map(a => walk(a, dt, blocked, hero));
+    try { if (root.CrowdSep) CrowdSep.run(dt, { movers: people.filter(a => !a.talking).map(a => ({ id: a.p.id, u: a.u, v: a.v, kind: a.p.look?.small ? 'small' : 'adult', set: (u, v) => { a.u = u; a.v = v } })), pins: hero ? [{ id: 'hero', u: hero.u, v: hero.v, kind: 'hero', pin: true }] : [], blocked: (u, v) => !!blocked?.(u, v) }) } catch (e) { }
+    for (let pi = 0; pi < people.length; pi++) {
+      const a = people[pi], moving = mv[pi], pt = project(a.u, a.v);
       out.push({ y: pt.y, wu: a.u, wv: a.v, npc: a.p.id, draw: () => {
         g.fillStyle = 'rgba(20,30,20,.35)'; g.beginPath(); g.ellipse(pt.x, pt.y, 14, 6, 0, 0, 7); g.fill();
         root.VillagerDraw(g, a.p.look || {}, pt.x, pt.y, t, { walking: moving, face: a.face, phase: a.phase, poseAdj: true, scale: castScale('npc:' + a.p.id) });

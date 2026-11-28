@@ -48,5 +48,5 @@
   }
   /* v98.352 · the follower's walk cycle runs HALF a cycle behind the leader's: both stepping with the same foot at the same instant looked mechanical */
   function cycleOf(m, d) { try { const w = (m.directions[d] || m.directions.SE).walk || []; const sum = w.reduce((a, f) => a + (f.ms || 100), 0); return sum > 0 ? sum : 900 } catch (e) { return 900 } }
-  root.HeroFollower = { objects, lookFix, reset() { trail = []; pos = null } };
+  root.HeroFollower = { objects, lookFix, pos: () => pos, reset() { trail = []; pos = null } };
 })(globalThis);

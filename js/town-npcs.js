@@ -98,7 +98,7 @@ function desire(n,hour){const p=n.life,S=lifeSave;
  if(LIFE.present&&!LIFE.present(p,root.VillageClock?.read().day??1,hour))return 'gone';   // v94: travellers and visitors are elsewhere today
  for(const [a,b,at] of p.sched||[])if(hour>=a&&hour<b)return at==='home'?(LIFE.homeOf(p)||'inn'):at;
  return LIFE.homeOf(p)||'inn'}
-function nearSquare(){const v=V(),c=target('square');if(!c)return null;for(let i=0;i<12;i++){const q={u:c.u+(Math.random()-.5)*8,v:c.v+(Math.random()-.5)*8};if(!v.blocked(q.u,q.v))return q}return c}
+function nearSquare(){const v=V(),c=target('square');if(!c)return null;let any=null;for(let i=0;i<16;i++){const q={u:c.u+(Math.random()-.5)*8,v:c.v+(Math.random()-.5)*8};if(v.blocked(q.u,q.v))continue;any=any||q;if(!root.CrowdSep||CrowdSep.free(q.u,q.v,.5))return q}return any||c}   /* v98.1187 · prefers a spot nobody is standing on */
 function lifeGo(n,want){const v=V();n.goal=want;n.enter=null;n.leaveTown=false;
  if(want===null){n.hidden=true;n.inside=null;n.path=[];return}
  if(n.hidden&&want!=='gone'){const h=(n.life?.visit?target(n.life.gate||'east'):null)||target(n.home)||target('square');if(h){n.u=h.u;n.v=h.v}}   // v94: visitors walk in through their gate
@@ -138,9 +138,16 @@ function emoteTick(now){if(now<emoteAt||!npcs||!root.NpcEmote)return;emoteAt=now
  n.emote={e:NpcEmote.idle({walking:n.path.length>0,period:per,near:Math.hypot(n.u-h.u,n.v-h.v)<2.6}),t0:now,until:now+2300}}
 function emotePop(g,n,p){const now=performance.now();NpcEmote.pop(g,p.x,p.y-(n.small?74:100),n.emote.e,{k:zoomK(g),age:now-n.emote.t0})}
 function faceOf(du,dv){const x=(du-dv)*28,y=(du+dv)*14;return y>=0?(x>=0?'SE':'SW'):(x>=0?'NE':'NW')}
-function objects(t){const dt=Math.min(.1,(t-last)/1000||0);last=t;if(root.VillageAssetEdit?.frozen?.()){if(!npcs)(LIFE?lifeInit:init)()}else(LIFE?lifeUpdate:update)(dt);chase(performance.now());emoteTick(performance.now());if(!npcs)return[];const v=V();
+/* v98.1187 · every character has a body (js/crowd-sep.js): villagers and goats are pushed apart when they overlap, the hero / the follower / whoever is talking never move for it */
+function crowd(dt){const C=root.CrowdSep,vv=V();if(!C||!npcs||!vv)return;
+ const mv=[],pins=[],h=vv.getHero?.();if(h)pins.push({id:'hero',u:h.u,v:h.v,kind:'hero',pin:true});
+ try{const f=root.HeroFollower?.pos?.();if(f)pins.push({id:'follower',u:f.u,v:f.v,kind:'follower',pin:true});const m=root.MipFollower?.visible?.()&&root.MipFollower?.pos?.();if(m)pins.push({id:'mip',u:m.u,v:m.v,kind:'mip',pin:true})}catch(e){}
+ for(const n of npcs){if(n.inside||n.hidden||n.alpha<.3)continue;const b={id:n.id,u:n.u,v:n.v,kind:n.small?'small':'adult',set:(u,v)=>{n.u=u;n.v=v}};if(n===talking){b.pin=true;pins.push(b)}else mv.push(b)}
+ try{for(const g of root.TownQuest?.bodies?.()||[])mv.push(g)}catch(e){}
+ C.run(dt,{movers:mv,pins,blocked:(u,v)=>{try{return !!vv.blocked(u,v)}catch(e){return false}}})}
+function objects(t){const dt=Math.min(.1,(t-last)/1000||0);last=t;if(root.VillageAssetEdit?.frozen?.()){if(!npcs)(LIFE?lifeInit:init)()}else{(LIFE?lifeUpdate:update)(dt);crowd(dt)}chase(performance.now());emoteTick(performance.now());if(!npcs)return[];const v=V();
  return npcs.filter(n=>n.alpha>.02).map(n=>{const p=v.project(n.u,n.v);return {x:p.x,y:p.y,z:root.VillageAssetEdit?.heroLayer?.(n.u,n.v)||0,npc:n,draw:g=>{g.save();g.globalAlpha=Math.max(0,Math.min(1,n.alpha));if(root.Interactables?.isActive('npc:'+n.id)&&'filter' in g)g.filter=OUTLINE_FX;drawVillager(g,n,p,t,n.path.length>0&&n!==talking,n.face);if('filter' in g)g.filter='none';/* v98.606 · the outline glow filter used to wash the name plate out too */if((hover===n||talking===n)&&!(n.say&&performance.now()<n.say.until))tag(g,n,p);/* v98.1093 · a speaking villager's bubble already carries the name: no second plate under it */g.restore()}}})}
-function drawTop(g,t){if(!npcs)return;const v=V();for(const n of npcs){if(n.inside||n.hidden||n.alpha<=.5)continue;const p=v.project(n.u,n.v);if(n.say&&t<n.say.until)sayBubble(g,n,p);else if(n.emote&&t<n.emote.until&&n!==talking&&hover!==n&&root.NpcEmote)emotePop(g,n,p)}}
+function drawTop(g,t){if(!npcs)return;const v=V();try{root.CrowdSep?.debugDraw?.(g,v.project)}catch(e){}for(const n of npcs){if(n.inside||n.hidden||n.alpha<=.5)continue;const p=v.project(n.u,n.v);if(n.say&&t<n.say.until)sayBubble(g,n,p);else if(n.emote&&t<n.emote.until&&n!==talking&&hover!==n&&root.NpcEmote)emotePop(g,n,p)}}
 /* v98.20 · white outline on the villager the mouse is over / the big button would talk to */const OUTLINE_FX='drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)';
 function tag(g,n,p){const role=String(n.role||'').replace(/\{name\}/g,heroName()),top=p.y-(n.small?72:100);/* v98.606 · the shared name plate (js/name-plate.js) */if(root.NamePlate)root.NamePlate.draw(g,n.name,p.x,top,{sub:role,size:17,dir:'up'})}
 

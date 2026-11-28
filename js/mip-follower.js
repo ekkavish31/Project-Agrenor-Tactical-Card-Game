@@ -46,6 +46,6 @@
     } else { g.fillStyle = '#d8b99a'; g.beginPath(); g.ellipse(p.x, p.y - px * .3, px * .3, px * .22, 0, 0, 7); g.fill() }
     g.restore();
   }
-  root.MipFollower = { objects, visible, reset() { trail = []; pos = null; lastX = null } };
+  root.MipFollower = { objects, visible, pos: () => pos, reset() { trail = []; pos = null; lastX = null } };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.MipFollower;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
