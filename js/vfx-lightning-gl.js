@@ -1,4 +1,4 @@
-/* v98.1203 · LIGHTNING GL (sample) — the lightning spell in the same quality standard as Fireball I (js/vfx-gl.js runtime, stage space = world / (cw/217)).
+/* v98.1204 · LIGHTNING GL (sample) — the lightning spell in the same quality standard as Fireball I (js/vfx-gl.js runtime, stage space = world / (cw/217)).
    Timeline (s): charge at the palm .18–.90 (orb, crawling arcs, inward motes, seal on the ground, lens collapsing on the palm) → release .90 (flash + an arc thrown to the sky = the call)
    → the leader feels down from the sky .90–HIT → HIT = the strike: no projectile, the bolt drops straight onto the target (two re-strikes at +.11 / +.24 s), white flash, refractive pressure ring, blue light on the scene,
    a ring of shock + currents running over the floor, currents wrapping the body, sparks, a scorch that fades.   Nothing is drawn outside the effect; the scene stays untouched elsewhere.
@@ -24,21 +24,21 @@ float etch(float distance,float width){return 1.-smoothstep(width,width+.72,dist
 // Vertex f (0..1) of a jagged path a->b: a straight line pushed sideways by a seeded, end-pinned offset.
 vec2 jv(vec2 a,vec2 b,float seed,float amp,float f){
  vec2 d=b-a;float L=length(d);vec2 nrm=vec2(-d.y,d.x)/max(L,.001);
- float i=floor(f*8.+.5);
+ float i=floor(f*12.+.5);
  return a+d*f+nrm*(hash(seed+i*7.3)-.5)*2.*sin(f*3.14159)*amp*L;
 }
 float jag(vec2 p,vec2 a,vec2 b,float seed,float amp){
  float best=1e5;vec2 prev=a;
- for(int i=1;i<=8;i++){
-  float f=float(i)/8.;
-  vec2 q=i==8?b:jv(a,b,seed,amp,f);
+ for(int i=1;i<=12;i++){
+  float f=float(i)/12.;
+  vec2 q=i==12?b:jv(a,b,seed,amp,f);
   best=min(best,segment(p,prev,q));prev=q;
  }
  return best;
 }
 // Core + halo of a thin electric channel at distance d (stage px).
 vec3 chan(float d,float w){
- return vec3(7.,8.2,10.)*exp(-d*d/(w*w*.30))+vec3(.85,2.1,6.)*exp(-d/(w*3.2))+vec3(.22,.55,2.)*exp(-d/(w*13.));
+ return vec3(9.,9.4,11.)*exp(-d*d/(w*w*.30))+vec3(1.15,1.05,4.4)*exp(-d/(w*3.4))+vec3(.30,.22,1.35)*exp(-d/(w*15.));
 }
 vec3 seal(vec2 q,float r,float clock){
  float rho=length(q),angle=atan(q.y,q.x);
@@ -88,7 +88,8 @@ void main(){
  // ---- the strike's own sky flash and the light it throws on the scene ----
  if(el>=0.){
   float flare=exp(-el*16.)*.9+.18*exp(-pow((el-.11)/.05,2.))+.1*exp(-pow((el-.24)/.05,2.));
-  bg*=1.+vec3(.20,.42,1.1)*flare*.55;
+  vec2 fd=(px-target)/(vec2(340.,300.)*size);float fall=exp(-dot(fd,fd));
+  bg*=1.+vec3(.45,.60,1.5)*flare*.8*fall;sum+=vec3(.55,.62,1.5)*flare*.25*fall;
   vec2 lq=(px-target-vec2(0.,40.*size))/(vec2(330.,250.)*size);
   float light=bell(lq)*(.9*exp(-el*6.)+.22*exp(-el*2.2));
   bg=bg*(1.+vec3(.55,1.35,3.4)*light)+vec3(.03,.12,.36)*light;
@@ -146,27 +147,36 @@ void main(){
  vec2 cq=px-caster;float rel=t>=.90?exp(-(t-.90)*50.):0.,windup=smoothstep(.48,.86,t)*(1.-smoothstep(.89,.96,t));
  sum+=vec3(2.4,4.4,7.)*(exp(-dot(cq,cq)/300.)+exp(-abs(cq.y)*.7-abs(cq.x)*.025)*.26)*(windup+rel)*.8;
  // ---- the leader: a faint branching thread feeling down from the sky ----
- vec2 topA=vec2(target.x+34.*(hash(3.)-.5),target.y-1100.*size);
+ vec2 topA=vec2(target.x+34.*(hash(3.)-.5),target.y-520.*size);
  vec2 mid=target+vec2(26.*(hash(5.)-.5),-170.*size),low=target+vec2(0.,38.*size);
  float lead=sat((t-.90)/max(.05,u_hit-.90));
  float strike=el>=0.?exp(-el*9.)+.55*(el>.11?exp(-(el-.11)*14.):0.)+.35*(el>.24?exp(-(el-.24)*14.):0.):0.;
  float wob=floor(max(el,0.)*28.);
  float sd=3.+wob*.017;
- if(t>=.90&&el<2.2){
-  float dMain=min(jag(px,topA,mid,sd,.22),min(jag(px,mid,low,sd+1.,.30),jag(px,low,floorAt,sd+2.,.18)));
-  float dBr=1e5;
-  for(int k=0;k<5;k++){
-   float j=float(k),f=.12+j*.17;
-   vec2 s0=jv(topA,mid,sd,.22,f>.99?.99:f);
-   vec2 dirv=vec2((hash(j+11.)-.5)*2.,.55+hash(j+13.)*.7);
-   vec2 e0=s0+dirv*(70.+hash(j+17.)*80.)*size;
+ float dMain=1e5;
+ if(t>=.90&&el<2.6&&abs(px.x-target.x)<330.*size&&px.y<floorAt.y+30.){
+  dMain=min(jag(px,topA,mid,sd,.20),min(jag(px,mid,low,sd+1.,.26),jag(px,low,floorAt,sd+2.,.16)));
+  float dBr=1e5,dSub=1e5;
+  for(int k=0;k<9;k++){
+   float j=float(k),f=.07+j*.095;
+   vec2 s0=jv(topA,mid,sd,.20,f);
+   vec2 dirv=vec2((hash(j+11.)-.5)*2.,.45+hash(j+13.)*.8);
+   vec2 e0=s0+dirv*(60.+hash(j+17.)*110.)*size;
    dBr=min(dBr,jag(px,s0,e0,j*3.+sd,.30));
+   if(k<5){vec2 m0=jv(s0,e0,j*3.+sd,.30,.55);dSub=min(dSub,jag(px,m0,m0+vec2((hash(j+23.)-.5)*2.,.3+hash(j+29.)*.6)*52.*size,j*5.+sd,.34));}
   }
-  float vis=el<0.?lead*lead*.16:1.;
-  float tipMask=el<0.?step(px.y,topA.y+(low.y-topA.y)*lead):1.;
-  float I=el<0.?1.:strike;
-  vec3 c=chan(dMain,1.55*size)*1.0+chan(dBr,.9*size)*.55;
-  sum+=c*I*vis*tipMask;
+  // forks near the ground: the bolt splits as it lands
+  for(int k=0;k<3;k++){
+   float j=float(k);vec2 s0=jv(mid,low,sd+1.,.26,.35+j*.22);
+   dBr=min(dBr,jag(px,s0,s0+vec2((hash(j+41.)-.5)*2.4,.35+hash(j+43.)*.5)*95.*size,j+sd,.28));
+  }
+  if(el<0.){
+   float vis=lead*lead*.18,tipMask=step(px.y,topA.y+(low.y-topA.y)*lead);
+   sum+=(chan(dMain,3.6*size)+chan(dBr,1.8*size)*.6)*vis*tipMask*.8;
+  }else{
+   sum+=(chan(dMain,7.*size)+chan(dBr,3.6*size)*.62+chan(dSub,2.*size)*.45)*strike;
+   sum+=vec3(.30,.34,1.5)*exp(-dMain/(8.*size))*exp(-el*2.4)*.55;   // the ionised channel hangs in the air after the stroke
+  }
  }
  // ---- impact ----
  if(el>=0.){
@@ -183,28 +193,31 @@ void main(){
   vec2 refl=(px-floorAt)/vec2(220.*size,70.*size);bg+=vec3(.25,.7,2.)*bell(refl)*exp(-el*6.);
   vec2 rq=(px-floorAt)/vec2(1.,.33);float rr=length(rq),rf=size*(40.+170.*(1.-exp(-el*7.)));
   sum+=vec3(.7,1.7,3.6)*exp(-pow((rr-rf)/(9.*size),2.))*exp(-el*5.5)*.9;
+  float dustR=size*(50.+210.*(1.-exp(-el*5.)));vec2 dq=(px-floorAt)/vec2(1.,.33);
+  bg=mix(bg,vec3(.55,.58,.72)*.55,exp(-pow((length(dq)-dustR)/(30.*size),2.))*exp(-el*3.2)*.55*(.4+.6*fbm(vec3(dq*.05,el*2.))));
+  vec2 bq=(px-target)/vec2(46.*size,70.*size);bg+=vec3(.12,.18,.9)*bell(bq*1.1)*exp(-el*1.2)*(.5+.5*step(.5,hash(floor(el*22.))));
   // scorch left on the floor
   vec2 sq=(px-floorAt)/vec2(95.*size,30.*size);bg*=1.-.55*exp(-dot(sq,sq)*1.6)*sat(el*4.)*(1.-smoothstep(2.0,3.3,el));
   // ground currents: arcs run out over the floor and flicker out
   float ef=floor(el*22.);
   if(el<2.8&&abs(px.x-floorAt.x)<300.*size&&abs(px.y-floorAt.y)<110.*size){
-   for(int k=0;k<9;k++){
-    float j=float(k),ang=j*.6981+hash(j+ef*.37)*.5,R=(80.+hash(j+3.)*130.)*size*(1.-exp(-el*9.));
+   for(int k=0;k<12;k++){
+    float j=float(k),ang=j*.5236+hash(j+ef*.37)*.5,R=(80.+hash(j+3.)*130.)*size*(1.-exp(-el*9.));
     vec2 e=floorAt+vec2(cos(ang)*R,sin(ang)*R*.33);
     float on=step(.28,hash(j*5.+ef*.61))*exp(-el*1.5);
     float d=jag(px,floorAt,e,j*4.+ef,.22);
     vec2 m=jv(floorAt,e,j*4.+ef,.22,.5);
     float d2=jag(px,m,m+vec2((hash(j+ef)-.5)*80.,(hash(j+ef+9.)-.3)*50.)*size,j+ef,.3);
-    sum+=(chan(d,.95)+chan(d2,.6)*.7)*on*.8;
+    sum+=(chan(d,2.4)+chan(d2,1.4)*.7)*on*.8;
    }
   }
   // currents wrapping the body of the target
-  if(el<2.2&&abs(px.x-target.x)<110.*size&&abs(px.y-target.y)<130.*size){
-   for(int k=0;k<7;k++){
+  if(el<2.6&&abs(px.x-target.x)<110.*size&&abs(px.y-target.y)<130.*size){
+   for(int k=0;k<10;k++){
     float j=float(k),a0=hash(j+ef*.43)*6.2832,a1=a0+.8+hash(j+ef*.77)*1.6;
     vec2 p0=target+vec2(cos(a0)*30.,sin(a0)*54.)*size,p1=target+vec2(cos(a1)*38.,sin(a1)*66.)*size;
-    float on=step(.25,hash(j*7.+ef*.29))*exp(-el*1.9);
-    sum+=chan(jag(px,p0,p1,j+ef*1.3,.35),.9*size)*on*.7;
+    float on=step(.22,hash(j*7.+ef*.29))*exp(-el*1.3);
+    sum+=chan(jag(px,p0,p1,j+ef*1.3,.35),1.5*size)*on*.7;
    }
   }
   // sparks
@@ -230,7 +243,7 @@ void main(){
  gl_FragColor=vec4(color,1.);
 }
 `;
-  const HIT = 1.05, LIFE = 3600, SIZE = .40, clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+  const HIT = 1.05, LIFE = 3800, SIZE = .40, clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
   let P = null;
   const prog = () => P || (P = root.VfxGL?.make({ frag: FRAG }));
   function draw(g, e, t01, p, a, cw) {
