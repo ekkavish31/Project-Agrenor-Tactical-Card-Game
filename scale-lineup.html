@@ -302,7 +302,7 @@ async function build() {
   if (DOCK) showNow();   /* v98.962 · the row is usable now; the monsters below keep loading and the row refreshes when they arrive */
   /* monsters: read the battle table straight from the game's source so this page never drifts from it */
   try {
-    const src = await (await fetch('js/town-battle.js?v=v98.1193
+    const src = await (await fetch('js/town-battle.js?v=v98.1196
     const start = src.indexOf('const MON = {');
     const blk = src.slice(start, src.indexOf('};', start));
     const MONS = [...blk.matchAll(/^\s*(\w+):\s*\{\s*name:\s*'([^']+)'.*?scale:\s*([\d.]+).*?img:\s*'([^']+)'/gm)];
