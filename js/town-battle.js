@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1185';
+  const V = '98.1191';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -1878,6 +1878,7 @@
     const fa = _assetById.get(fr.assetId), src = (fa?.file || fr.src) + (fa?.artRevision ? '?r=' + fa.artRevision : ''); return im(src);
   }
   function drawAlly(g, u, t) {
+    let anchoredW = null;
     if (u.key === 'sib') {   /* v98.237 · the other hero is drawn by the lead's own routine (drawHero) on the sprite table of its look, so every picture the studio saved for it is used */
       const look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } })(), tab = window.HeroVariant?.tableFor?.(look);
       if (tab) { SPR_TABLE = tab; try { drawHero(g, u, t) } finally { SPR_TABLE = null } return }
@@ -1896,14 +1897,21 @@
     shadow(g, p, UNIT * .24);
     if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1) * (window.CharScaleAdjust?.poseFactor(u.key, u.walking && u.hp > 0 ? 'walk' : pose, null, u.dir) || 1), pm = poseMotion(u, t);
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (useFlip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
+    /* v98.1186 · WEAPON ANCHORS (Editor › 🗡 จุดจับอาวุธ): a real attack picture with a hand anchor draws the class weapon IN the hand — under the body (the fingers close over the grip) or over it — instead of the floating weapon */
+    { const wkA = ALLYW[u.key], A0 = sprites(), WA = window.WeaponAnchors;
+      if (!OLDPOSE && WA && A0 && wkA && u.hp > 0 && !u._rdy && !u.walking && ['windup', 'strike', 'guard'].includes(pose) && FLOATPOSE.includes(actState(u, t).act)) {
+        const imgDir = useFlip ? (back ? 'NE' : 'SE') : u.dir, an = WA.get(u.key, pose, imgDir), Wd = an && weaponDef(A0, wkA, u), wi = Wd && im(Wd.src);
+        if (an && Wd && wi) anchoredW = { an, Wd, wi } } }
     const stowK = !OLDPOSE && u.hp > 0 && sprites() && ALLYW[u.key] && (u.walking || u._rdy || !FLOATPOSE.includes(actState(u, t).act)) ? ALLYW[u.key] : null, aAway = ['NE', 'NW'].includes(u.dir);   /* v98.1131 · the class weapon is stowed on the back unless the ally is really attacking */
     if (stowK && !aAway) stowWeapon(g, u, sprites(), stowK, -size / 2, -size * .94, size);
+    if (anchoredW && anchoredW.an.layer !== 'over') window.WeaponAnchors.draw(g, anchoredW.wi, anchoredW.Wd, anchoredW.an, size, -size / 2, -size * .94);
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
+    if (anchoredW && anchoredW.an.layer === 'over') window.WeaponAnchors.draw(g, anchoredW.wi, anchoredW.Wd, anchoredW.an, size, -size / 2, -size * .94);
     if (stowK && aAway) stowWeapon(g, u, sprites(), stowK, -size / 2, -size * .94, size);
     g.restore();
     { const A = sprites(), wk = ALLYW[u.key];   /* v97.48: class weapon floating in front + swing trail */
-      if (!OLDPOSE && A && wk && u.hp > 0 && !u._rdy && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56); g.restore() } }
+      if (!OLDPOSE && A && wk && u.hp > 0 && !u._rdy && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); if (!anchoredW) actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56); g.restore() } }
     if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
   function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px AgThai,system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
@@ -2208,6 +2216,6 @@
     return o;
   }
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') padOn = false }, true);
-  window.TownBattle = { calm: () => !!st && !busy && !cine && st.turn === 'hero' && !anims.length && !effects.length && !texts.length, fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
+  window.TownBattle = { units: () => st?.units, calm: () => !!st && !busy && !cine && st.turn === 'hero' && !anims.length && !effects.length && !texts.length, fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
     act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, crystal: crystalAct }, busy: () => busy };
 })();
