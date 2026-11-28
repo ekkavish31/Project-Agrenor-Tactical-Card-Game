@@ -32,15 +32,22 @@
   const HW = 34, HH = 17;
   const P = (u, v) => ({ x: (u - v) * HW, y: (u + v) * HH });
   const screen = (u, v) => { const p = P(u, v); return { x: p.x * Z + CX, y: p.y * Z + CY } };
+  const FARM_KEY = 'farm-layout-v1', farmOv = (() => { try { return JSON.parse(localStorage.getItem(FARM_KEY) || '{}') || {} } catch (e) { return {} } })(), FARM_EDIT = new URLSearchParams(location.search).get('edit') === '1';
   const toCell = (sx, sy) => { const x = (sx - CX) / Z, y = (sy - CY) / Z, a = x / HW, b = y / HH; return { u: (a + b) / 2, v: (b - a) / 2 } };
 
   /* ---------- rooms ---------- */
   function room() {
     const R = { W: 8, D: 7, floor: 'wood', wall: 'plaster', door: 5, items: [], spots: [], wallDeco: [], light: [] };
-    const it = (k, u, v, w = 1, d = 1, o = {}) => R.items.push({ k, u, v, w, d, ...o });
+    /* v98.1190 · FARM = a special map with its own editor tab (editor.html › 🌾 ไร่): the placeable parts (cabin, barn, coop, bin, well, trees …) can be dragged to other cells and the layout is stored in
+       localStorage 'farm-layout-v1' as { "<kind>#<n>": {u, v} } (n = the order the part is built in). Everything else (the field tiles, fences, pond, paths) is generated as before. */
+    const FARM_EDIT_KINDS = ['cabin', 'bin', 'well', 'woodpile', 'cart', 'signpost', 'coop', 'barn', 'tree', 'scarecrow', 'compost'], kn = {};
+    const it = (k, u, v, w = 1, d = 1, o = {}) => {
+      if (KIND === 'farm' && FARM_EDIT_KINDS.includes(k) && !o.flat) { const key = k + '#' + (kn[k] = (kn[k] || 0) + 1), ov = farmOv[key]; if (ov && Number.isFinite(ov.u) && Number.isFinite(ov.v)) { u = ov.u; v = ov.v } o = { ...o, ekey: key } }
+      R.items.push({ k, u, v, w, d, ...o })
+    };
     const sp = (tag, u, v, face = 'SE', act = 'stand') => R.spots.push({ tag, u, v, face, act });
     if (KIND === 'farm') {   /* v97.83 · laid out like the old farming games: the field in the middle, the cabin, the shipping bin, coop and barn with a yard, a pond, trees */
-      const G = window.Garden && farmPlot(S) ? window.Garden.of(farmPlot(S)) : null, Gd = window.Garden;
+      const G = window.Garden && farmPlot(S) ? window.Garden.of(farmPlot(S)) : (FARM_EDIT ? { have: new Proxy({}, { get: () => true }) } : null), Gd = window.Garden;   /* v98.1190 · the layout editor shows every part (barn, scarecrow, compost, channel …) even without a farm plot of your own */
       Object.assign(R, { W: 22, D: 17, door: 9, floor: 'grass', wall: 'fence' });
       const F = { u: 3, v: 7 }; R.field = F;
       for (let i = 0; i < (Gd?.FN || 70); i++) it('ftile', F.u + i % (Gd?.FW || 10), F.v + Math.floor(i / (Gd?.FW || 10)), 1, 1, { idx: i, walk: true, flat: true });
@@ -512,7 +519,11 @@
     const c = P(R.W / 2, R.D / 2); CX = (W < 760 ? W / 2 : W / 2 + 120) - c.x * Z; CY = H / 2 + 20 - c.y * Z + WALL_H * Z * .35;
     followCam(true) }
   /* v97.83 · the farm is bigger than the screen: the camera follows the hero (snap on resize, glide otherwise) */
-  function followCam(snap) { const p = P(hero.vu, hero.vv); let tx = (W < 760 ? W / 2 : W / 2 + 120) - p.x * Z, ty = H / 2 + 30 - p.y * Z;
+  function followCam(snap) { const p = P(hero.vu, hero.vv);
+    if (FARM_EDIT && KIND === 'farm' && R) {   /* v98.1190 · layout editor: the whole farm fits on the screen (no following the hero) */
+      const c = [P(0, 0), P(R.W, 0), P(0, R.D), P(R.W, R.D)], x0 = Math.min(...c.map(q => q.x)), x1 = Math.max(...c.map(q => q.x)), y0 = Math.min(...c.map(q => q.y)) - 40, y1 = Math.max(...c.map(q => q.y)) + 30;
+      Z = Math.max(.25, Math.min((W - 40) / (x1 - x0), (H - 120) / (y1 - y0))); CX = W / 2 - (x0 + x1) / 2 * Z; CY = (H + 80) / 2 - (y0 + y1) / 2 * Z; return
+    } let tx = (W < 760 ? W / 2 : W / 2 + 120) - p.x * Z, ty = H / 2 + 30 - p.y * Z;
     if (KIND !== 'farm' && R) {   /* a room: follow the hero but never show empty space beyond the room (when the room is smaller than the screen it stays centred) */
       const c = [P(0, 0), P(R.W, 0), P(0, R.D), P(R.W, R.D)], x0 = Math.min(...c.map(q => q.x)), x1 = Math.max(...c.map(q => q.x)), y0 = Math.min(...c.map(q => q.y)) - WALL_H, y1 = Math.max(...c.map(q => q.y)) + 30, L = W < 760 ? 10 : 300, Rr = W - 10;
       const clamp = (v, lo, hi) => lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, v)); tx = clamp(tx, Rr - x1 * Z, L - x0 * Z); ty = clamp(ty, H - 10 - y1 * Z, 10 - y0 * Z) }
@@ -571,6 +582,11 @@
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     if (hoverId && people.get(hoverId)) { const a = people.get(hoverId), p = screen(a.vu, a.vv); label(a.p.name + ' · ' + fill(a.p.role), p.x, p.y - 100 * Z) }
     placed = []; for (const a of people.values()) if (a.bubble && t < a.bubble.until) bubble(a, a.bubble.txt);
+    if (FARM_EDIT && KIND === 'farm') {   /* v98.1190 · layout editor: every movable part gets a thin outline, the selected one a bright one */
+      g.save(); g.lineJoin = 'round';
+      for (const i of R.items) { if (!i.ekey) continue; const q = [screen(i.u, i.v), screen(i.u + i.w, i.v), screen(i.u + i.w, i.v + i.d), screen(i.u, i.v + i.d)], on = i === farmSel; g.strokeStyle = on ? '#ffe27a' : 'rgba(255,255,255,.35)'; g.lineWidth = on ? 3 : 1; g.beginPath(); q.forEach((pt, k) => k ? g.lineTo(pt.x, pt.y) : g.moveTo(pt.x, pt.y)); g.closePath(); g.stroke() }
+      g.restore()
+    }
     window.SceneLoad?.painted();
   }
   /* v95.01 · the villager the current intro quest wants (js/story-quests.js) gets a gold ◆ */
@@ -629,7 +645,29 @@
   cv.addEventListener('pointermove', e => { const a = personAt(e.clientX, e.clientY); hoverId = a ? a.id : null; cv.style.cursor = a ? 'pointer' : 'default'; let k = ''; if (a) k = 'talk'; else if (!modalOpen) { try { const c = toCell(e.clientX, e.clientY), cell = { u: Math.floor(c.u), v: Math.floor(c.v) };   /* v98.1068 · 'pointer' over the door, 'walk' over free floor (same tests as the click below) */
       if (cell.u <= 0 && Math.abs(cell.v - DOOR.v) <= 1 || (cell.u < 0 && cell.v >= DOOR.v - 1 && cell.v <= DOOR.v + 1)) k = 'door'; else if (free(cell.u, cell.v)) k = 'walk' } catch (x) { } }
     if (modalOpen) k = ''; if (cv.dataset.agc !== k) cv.dataset.agc = k });
-  cv.addEventListener('pointerleave', () => { if (cv.dataset.agc) cv.dataset.agc = '' });   /* v98.1021 · speech-bubble cursor over a villager (js/game-cursor.js) */
+  cv.addEventListener('pointerleave', () => { if (cv.dataset.agc) cv.dataset.agc = '' });
+  /* ---------- v98.1190 · FARM LAYOUT EDITOR (editor.html › 🌾 ไร่ = place-interior.html?place=farm&edit=1) ---------- */
+  let farmSel = null;
+  if (KIND === 'farm' && FARM_EDIT) {
+    let grab = null, dirty = false;
+    const parts = () => R.items.filter(i => i.ekey), clampU = (i, u) => Math.max(0, Math.min(R.W - i.w, Math.round(u))), clampV = (i, v) => Math.max(0, Math.min(R.D - i.d, Math.round(v)));
+    const hit = e => { const c = toCell(e.clientX, e.clientY); let best = null; for (const i of parts()) if (c.u >= i.u && c.u < i.u + i.w && c.v >= i.v && c.v < i.v + i.d && (!best || i.u + i.v > best.u + best.v)) best = i; return best };
+    const bar = document.createElement('div'); bar.id = 'farmEd';
+    bar.style.cssText = 'position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:60;display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:12px;background:#1d2a1fee;border:1px solid #8fb36a;color:#eaf3d8;font:13px AgThai,system-ui,sans-serif;box-shadow:0 6px 20px #0008';
+    bar.innerHTML = '<b>🌾 แก้ผังไร่ (แมพพิเศษ)</b><span style="opacity:.8">ลากอาคาร/ต้นไม้เพื่อย้าย · ลูกศร = เลื่อนทีละช่อง</span><button data-a="save">💾 บันทึก</button><button data-a="reset">↺ คืนค่าเริ่มต้น</button><span id="farmEdMsg" style="min-width:120px"></span>';
+    bar.querySelectorAll('button').forEach(b => b.style.cssText = 'font:inherit;color:#1d1608;background:#e6c47c;border:1px solid #f5dc9c;border-radius:8px;padding:4px 10px;cursor:pointer');
+    document.body.append(bar);
+    const msg = t => { const m = document.getElementById('farmEdMsg'); if (m) m.textContent = t };
+    const mark = i => { farmOv[i.ekey] = { u: i.u, v: i.v }; dirty = true; msg('ยังไม่ได้บันทึก · ' + i.ekey + ' → ' + i.u + ',' + i.v) };
+    cv.addEventListener('pointerdown', e => { e.stopImmediatePropagation(); e.preventDefault(); farmSel = hit(e); if (farmSel) { const c = toCell(e.clientX, e.clientY); grab = { du: c.u - farmSel.u, dv: c.v - farmSel.v }; try { cv.setPointerCapture(e.pointerId) } catch (x) { } msg(farmSel.ekey) } else { grab = null; msg('') } }, true);
+    cv.addEventListener('pointermove', e => { if (!farmSel || !grab || !(e.buttons & 1)) return; e.stopImmediatePropagation(); const c = toCell(e.clientX, e.clientY), u = clampU(farmSel, c.u - grab.du), v = clampV(farmSel, c.v - grab.dv); if (u !== farmSel.u || v !== farmSel.v) { farmSel.u = u; farmSel.v = v; mark(farmSel) } }, true);
+    cv.addEventListener('pointerup', e => { grab = null; e.stopImmediatePropagation(); e.preventDefault() }, true);   /* the room's own walk / talk handler listens on pointerup: it must not run while editing */
+    addEventListener('keydown', e => { if (!farmSel) return; const d = { ArrowLeft: [-1, 1], ArrowRight: [1, -1], ArrowUp: [-1, -1], ArrowDown: [1, 1] }[e.key]; if (!d) return; e.preventDefault(); const u = clampU(farmSel, farmSel.u + d[0]), v = clampV(farmSel, farmSel.v + d[1]); if (u !== farmSel.u || v !== farmSel.v) { farmSel.u = u; farmSel.v = v; mark(farmSel) } }, true);
+    bar.onclick = e => { const a = e.target.closest('button')?.dataset.a; if (a === 'save') { try { localStorage.setItem(FARM_KEY, JSON.stringify(farmOv)); dirty = false; msg('✔ บันทึกแล้ว · เกมเห็นเมื่อรีโหลด') } catch (x) { msg('บันทึกไม่ได้') } } else if (a === 'reset') { try { localStorage.removeItem(FARM_KEY) } catch (x) { } location.reload() } };
+    cv.addEventListener('click', e => { e.stopImmediatePropagation(); e.preventDefault() }, true);   /* no walking / field actions while editing */
+    addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = '' } });
+  }
+   /* v98.1021 · speech-bubble cursor over a villager (js/game-cursor.js) */
   /* v98.1083 · Shift + click = walk only (js/shift-walk.js): nobody is talked to, no door / field / bin reacts */
   window.ShiftWalk?.set({ canvas: cv, ok: () => !modalOpen, walk: e => {
     const c = toCell(e.clientX, e.clientY), cell = { u: Math.floor(c.u), v: Math.floor(c.v) }; let goal = null;
@@ -783,68 +821,9 @@
   /* ---------- v97.24 · B5: the place's own services (only while somebody of the place is in the room) ----------
      healer: treat the whole party (1 💰 per 4 HP missing) · buy potions · shop / market: potions, travel food · temple: a free prayer once a day
      (fatigue −40, hero HP +30 %) and an offering (+1 potion of holy water for 25 💰) */
-  const VP = id => !!window.VillageProjects?.has(id);   /* v97.35 · R3 village projects: herb garden, granary, shrine */
-  /* v97.41 · prices also follow your standing (js/factions.js): merchants for the shop and market, the village for the healer */
-  const FC = () => window.Factions, standing = () => FC()?.priceMult(KIND === 'healer' ? 'village' : 'merchants') ?? 1;
-  const PRICE = { get potion() { return Math.max(5, Math.round(((KIND === 'healer' ? 15 : 18) - (VP('herbs') ? 3 : 0)) * standing())) }, get food() { return Math.max(2, Math.round((VP('granary') ? 3 : 4) * standing())) } };
-  const keeperIn = () => [...people.values()].some(a => !a.leaving && (OWNER ? a.id === OWNER : !a.p.benched && !L.inParty(S, a.id)));   /* somebody of the place is in (not one of your own party) */
-  const missing = () => { S = L.save(); return Math.max(0, (S.maxHp || 60) - (S.hp ?? 60)) + [...S.party, ...S.bench].reduce((n, m) => n + Math.max(0, m.max - m.hp), 0) };
-  const healCost = () => Math.max(3, Math.ceil(missing() / 4 * (VP('herbs') ? .6 : 1) * standing()));
-  function services() {
-    const B = (k, label, cost, why) => `<button data-svc="${k}" ${why || (cost && S.gold < cost) ? 'disabled' : ''} title="${esc(why || '')}">${label}${cost ? ' ' + cost + '💰' : ''}</button>`;
-    const away = keeperIn() ? '' : 'เจ้าของไม่อยู่ตอนนี้';
-    /* v97.52 · T3: with a case open in Fernvale the shops turn you away (pay at the guard Dork's house) */
-    const LW = window.Law, lawWhy = LW && !LW.clean(S, 'fernvale') ? 'มีคดีค้าง — ไปจ่ายค่าปรับที่บ้านยามดอร์ก' : '', steal = LW && (KIND === 'shop' || KIND === 'market') ? B('steal', '🤫 ลักของ', 0, '') : '';
-    if (lawWhy && ['healer', 'shop', 'market', 'guild'].includes(KIND)) return B('x', '⚖ ' + lawWhy, 0, lawWhy) + steal;
-    if (KIND === 'healer') return B('heal', '✚ รักษาทั้งทีม', missing() ? healCost() : 0, away || (missing() ? '' : 'ทุกคนแข็งแรงดี')) + B('potion', '🧪 ซื้อยา', PRICE.potion, away);
-    if (KIND === 'shop' || KIND === 'market') return B('potion', '🧪 ซื้อยา', PRICE.potion, away) + B('food', '🍞 เสบียง ×3', PRICE.food * 3, away) + (KIND === 'market' && window.Settlements ? B('trade', '🛒 ซื้อขายสินค้า', 0, away) : '') + steal;
-    /* v97.40 · the guild's contracts and what each household offers */
-    if (KIND === 'guild') { const c = contract(); if (away) return B('x', '📜 งานกิลด์', 0, 'ซิกริดไม่อยู่ที่เคาน์เตอร์ (8:00–17:00)');
-      const bn = window.Bounties ? B('bounty', '☠ ประกาศจับ' + (window.Bounties.active(S).some(b => b.state === 'slain') ? ' · มีรางวัลรอรับ' : ''), 0) : '';   /* v97.73 · T3 */
-      if (c.active) { const k = Math.max(0, (S.kills || 0) - c.active.base), done = k >= c.active.n; return bn + B('turnin', done ? `✔ ส่งงาน ${c.active.label} +${c.active.reward}💰` : `📜 ${c.active.label} ${k}/${c.active.n}`, 0, done ? '' : 'ล้มศัตรูบนแผนที่โลกให้ครบก่อน') + (done ? '' : B('drop', '✕ ยกเลิกงาน', 0)) }
-      return bn + c.offers.map((o, i) => B('take:' + i, `📜 ${o.label} → ${o.reward}💰`, 0, c.taken ? 'วันนี้รับงานไปแล้ว พรุ่งนี้มีงานใหม่' : '')).join('') }
-    if (KIND === 'house') { const H = HOUSE_SVC[OWNER]; if (H) return H.filter(([k]) => k !== 'payfine' || (window.Law && window.Law.owed(S, 'fernvale'))).map(([k, label, cost]) => B(k, k === 'payfine' ? label + ' ' + window.Law.owed(S, 'fernvale') + '💰' : label, cost, k === 'projects' || k === 'lessons' || k === 'safety' || (k === 'office' && !window.Offices) || (k === 'petition' && !window.Settlements) ? '' : k === 'payfine' ? (S.gold < window.Law.owed(S, 'fernvale') ? 'เงินไม่พอ' : away) : away)).join('') }
-    if (KIND === 'temple') { const prayed = (S.prayDay || 0) === CLK.read().day; return B('pray', '🙏 ภาวนา', 0, prayed ? 'ภาวนาแล้ววันนี้ · พรุ่งนี้มาใหม่' : '') + B('offer', '🕯 ถวาย · น้ำมนต์', 25, away) }
-    return '';
-  }
-  const HOUSE_SVC = { may: [['bread', '🍞 ขนมปัง ×3', 9]], hilda: [['veg', '🥕 ผักสด ×3', 9], ['contest', '🏆 ประกวดผลผลิต', 0]], bryn: [['flour', '🌾 แป้งและเสบียง ×3', 9]], joe: [['fish', '🐟 ปลาย่าง ×3', 9]],
-    saf: [['potion', '🧪 ยาสมุนไพร', 14]], oren: [['projects', '🏗 พัฒนาหมู่บ้าน', 0], ['office', '🏛 รับราชการ', 0], ['petition', '📜 คำร้อง · 🪑 สภาหมู่บ้าน', 0]], mira: [['lessons', '📘 ทบทวนบทเรียน', 0]], dork: [['safety', '🛡 ถามเรื่องความปลอดภัย', 0], ['payfine', '⚖ จ่ายค่าปรับ / ล้างคดี', 0]] };
-  /* guild contracts: 3 a day (seeded by the day), one taken at a time, counted by the foes the hero brings down on the world map (S.kills) */
-  function contract() {
-    S.guild ||= {}; const day = CLK.read().day, G = S.guild;
-    if (G.day !== day) { let h = day * 2654435761 >>> 0; const r = () => (h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0) / 4294967296;
-      G.day = day; G.taken = false; G.offers = [['กวาดล้างสัตว์ร้ายรอบหมู่บ้าน', 3], ['คุ้มกันทางเกวียน', 5], ['ล่าค่าหัวกลุ่มโจรป่า', 7]].map(([t, n]) => { const k = n + Math.floor(r() * 3); return { label: t + ' (ล้ม ' + k + ' ตัว)', n: k, reward: 25 + k * 11 } }) }
-    return G;
-  }
-  function service(k) {
-    S = L.save(); const pay = c => { if (S.gold < c) { toast('เงินไม่พอ'); return false } S.gold -= c; return true };
-    if (k.startsWith('take:')) { const G = contract(), o = G.offers[+k.slice(5)]; if (!o || G.taken || G.active) return; G.active = { ...o, base: S.kills || 0 }; G.taken = true; L.writeSave(S); toast('📜 รับงาน: ' + o.label) }
-    else if (k === 'contest') { const S0 = S; window.Garden?.contestPanel(S0, () => { L.writeSave(S0); hud._html = ''; hudSync() }); return }   /* v97.81 · the harvest contest */
-    else if (k === 'bounty') { const S0 = S; window.Bounties.panel(S0, 'fernvale', () => { L.writeSave(S0); hud._html = ''; hudSync() }); return }
-    else if (k === 'turnin') { const G = contract(), a = G.active; if (!a || (S.kills || 0) - a.base < a.n) return; a.reward = Math.round(a.reward * (FC()?.payMult('guild') ?? 1) * (1 + .15 * (window.Offices?.perk(S, 'magus') || 0))); S.gold += a.reward; FC()?.add('guild', 6, 'ส่งงาน ' + a.label); window.Law?.service(S, 'fernvale'); FC()?.add('village', 2, 'ช่วยกำจัดภัยรอบหมู่บ้าน'); G.done = (G.done || 0) + 1; G.active = null; L.writeSave(S); toast('✔ ส่งงานกิลด์ +' + a.reward + '💰 (ทำสำเร็จแล้ว ' + G.done + ' งาน)') }
-    else if (k === 'drop') { const G = contract(); G.active = null; L.writeSave(S); toast('ยกเลิกงานแล้ว') }
-    else if (['bread', 'veg', 'flour', 'fish'].includes(k)) { if (!pay(9)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast({ bread: '🍞', veg: '🥕', flour: '🌾', fish: '🐟' }[k] + ' ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
-    else if (k === 'steal') { const LW = window.Law; let job = ''; try { job = window.WorldState.game().village.character?.job || '' } catch (e) { }
-      const r = LW.steal(S, 'fernvale', { rogue: job === 'rogue', unwatched: !keeperIn() });
-      if (r.ok) { if (Math.random() < .5) { S.potions = (S.potions || 0) + 1; toast('🤫 หยิบยามาได้ 1 ขวด ไม่มีใครเห็น') } else { S.food = (S.food || 0) + 3; toast('🤫 หยิบเสบียงมาได้ 3 ห่อ ไม่มีใครเห็น') } L.writeSave(S) }
-      else { L.writeSave(S); const S0 = S;   /* the HUD reloads S every tick — keep the object the arrest changes */
-        LW.arrest(S0, 'fernvale', 'มีคนเห็นคุณหยิบของในร้าน ยามมาถึงพอดี').then(a => { if (a === 'jail') { try { window.WorldState.sleep({ relief: 0 }) } catch (e) { } toast('⛓ ติดคุกหนึ่งคืน · ออกมาตอนเช้า') } else if (a === 'run') toast('🚨 คุณหนีไปได้ แต่ถูกหมายจับในเฟิร์นเวลแล้ว'); else toast('💰 จ่ายค่าปรับแล้ว คดีจบ'); L.writeSave(S0); hud._html = ''; hudSync() }) }
-    }
-    else if (k === 'payfine') { if (window.Law.pay(S, 'fernvale')) { L.writeSave(S); toast('⚖ จ่ายค่าปรับแล้ว ล้างคดีเรียบร้อย') } else toast('เงินไม่พอ') }
-    else if (k === 'trade') { const S0 = S; window.Settlements.tradePanel('fernvale', S0, () => { L.writeSave(S0); hud._html = ''; hudSync() }); return }   /* S0: the HUD reloads S every tick */
-    else if (k === 'petition') { window.Settlements?.petitionPanel('fernvale').then(p => { if (p) toast('📜 เฟิร์นเวลเปลี่ยนนโยบายเป็น ' + window.Settlements.POLICIES[p].name); hud._html = ''; hudSync() }); return }
-    else if (k === 'office') { if (!window.Offices) return; const S0 = S; window.Offices.panel(S0, () => { L.writeSave(S0); hud._html = ''; hudSync() }); return }   /* v97.55 · T7 */
-    else if (k === 'projects') { try { (parent.VillageProjects || window.VillageProjects)?.open() } catch (e) { } }
-    else if (k === 'lessons') { let ls = []; try { ls = parent.Story?.lessons?.() || [] } catch (e) { } const a = [...people.values()].find(x => x.id === 'mira'); if (a) talk(a, ls.length ? 'บทเรียนที่เจ้าเคยเรียน: ' + ls.map(x => x.title).filter(Boolean).join(' · ') + ' — อยากทวนเรื่องไหน เปิดสมุดหมู่บ้านดูได้เลยนะ' : 'ยังไม่มีบทเรียนให้ทวนเลย ออกไปลองของจริงก่อนสิ'); else toast('ครูมิราไม่อยู่บ้านตอนนี้') }
-    else if (k === 'safety') { const VPj = window.VillageProjects; const w = VPj?.has('watch'), r = VPj?.has('road'); const a = [...people.values()].find(x => x.id === 'dork'); const line = (w ? 'หอเฝ้ายามตะวันออกช่วยได้มาก ข้ามองเห็นได้ไกลถึงแนวป่า' : 'รั้วตะวันออกยังโหว่ ถ้ามีหอเฝ้ายามสักหลังข้าจะนอนหลับขึ้น') + ' · ' + (r ? 'ถนนใหม่ทำให้พวกพ่อค้ามาบ่อยขึ้น' : 'ถนนออกหมู่บ้านยังพังอยู่ คาราวานบ่นกันทุกคน'); if (a) talk(a, line); else toast('🛡 ' + line) }
-    else if (k === 'heal') { const c = healCost(); if (!missing() || !pay(c)) return; S.hp = S.maxHp || 60; for (const m of [...S.party, ...S.bench]) m.hp = m.max; L.writeSave(S); toast('✚ รักษาแล้ว · ทุกคน HP เต็ม (−' + c + '💰)') }
-    else if (k === 'potion') { if (!pay(PRICE.potion)) return; S.potions = (S.potions || 0) + 1; L.writeSave(S); toast('🧪 ได้ยาฟื้นฟู 1 ขวด (มี ' + S.potions + ')') }
-    else if (k === 'food') { if (!pay(PRICE.food * 3)) return; S.food = (S.food || 0) + 3; L.writeSave(S); toast('🍞 ได้เสบียง 3 ห่อ (มี ' + S.food + ')') }
-    else if (k === 'pray') { const day = CLK.read().day; if ((S.prayDay || 0) === day) return; S.prayDay = day; S.prays = (S.prays || 0) + 1; { const wp = window.Offices?.perk(S, 'warden') || 0; if (wp) for (const m of [...S.party, ...S.bench]) m.hp = Math.min(m.max, m.hp + Math.round(m.max * .3 * wp)) } FC()?.add('temple', 1, 'ภาวนาที่วิหาร'); S.fatigue = (S.fatigue || 0) - 40; const k2 = VP('shrine') ? .5 : .3; S.hp = Math.min(S.maxHp || 60, (S.hp ?? 60) + Math.round((S.maxHp || 60) * k2)); L.writeSave(S); toast('🙏 ใจสงบลง · HP +' + Math.round(k2 * 100) + '%') }
-    else if (k === 'offer') { if (!pay(25)) return; S.potions = (S.potions || 0) + 1 + (FC()?.rank('temple') >= 2 ? 1 : 0); FC()?.add('temple', 4, 'ถวายเงินบำรุงวิหาร'); L.writeSave(S); toast('🕯 ถวายแล้ว · ได้น้ำมนต์ (ยาฟื้นฟู) 1 ขวด') }
-    hud._html = ''; hudSync();
-  }
-
+  /* v98.1190 · the place's services (healer / shop / temple / guild / house goods) live in js/place-services.js — the same rules, shared with the sub-map engine */
+  const SV = window.PlaceServices.create({ get S() { return S }, set S(v) { S = v }, L, CLK, KIND, OWNER, people, hud, hudSync: () => hudSync(), talk: (a, t) => talk(a, t), toast: t => toast(t), esc });
+  const { services, service } = SV;
   /* ---------- talking + recruiting ---------- */
   let modalOpen = false, dlg = null;
   function close() { dlg?.remove(); dlg = null; modalOpen = false; talkingTo = null }
