@@ -58,8 +58,14 @@
     if (img.complete !== false) LM.set(img, r); return r;
   }
   function stowDefault(wk, dir, def) {
-    const away = dir === 'NE' || dir === 'NW', side = (dir === 'SE' || dir === 'NE') ? -1 : 1, tipUp = ['spear', 'staff', 'bow'].includes(wk), flat = wk === 'tome', knife = wk === 'knife' || wk === 'oldKnife';
-    return { rel: 1, x: side * (['knife', 'oldKnife', 'tome', 'bow'].includes(wk) ? .27 : away ? .1 : .2), y: flat ? .56 : knife ? .43 : tipUp ? .48 : .24, a: flat ? 0 : side * (away ? 38 : -38) + (tipUp ? 0 : 180), h: (def?.scale || .63) * .9 };
+    const away = dir === 'NE' || dir === 'NW', side = (dir === 'SE' || dir === 'NE') ? -1 : 1, tipUp = ['spear', 'staff', 'bow'].includes(wk), flat = wk === 'tome', knife = wk === 'knife' || wk === 'oldKnife', h = (def?.scale || .63) * .9;
+    if (!away) {   /* facing the camera: the weapon is slung on the BACK — its grip sits behind the torso (hidden by the body, which is drawn on top) and only the part that sticks out past the shoulder shows */
+      if (flat) return { rel: 1, x: side * .13, y: .5, a: side * 8, h };
+      if (knife) return { rel: 1, x: side * .02, y: .52, a: side * 55, h };
+      if (tipUp) return { rel: 1, x: side * .08, y: .5, a: side * 12, h };
+      return { rel: 1, x: side * .05, y: .46, a: side * 30, h };
+    }
+    return { rel: 1, x: side * (['knife', 'oldKnife', 'tome', 'bow'].includes(wk) ? .27 : .1), y: flat ? .56 : knife ? .43 : tipUp ? .48 : .24, a: flat ? 0 : side * 38 + (tipUp ? 0 : 180) + 0, h };   /* facing away: over the back, as before */
   }
   /* the body-relative anchor (user value → else the default for the weapon class) */
   function stowRel(char, wk, dir, def) { const u = get(char, 'stow:' + wk, dir); return u ? { ...u, rel: 1 } : stowDefault(wk, dir, def) }
