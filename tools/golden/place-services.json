@@ -1,0 +1,179 @@
+{
+ "services": {
+  "healer": [
+   {
+    "k": "heal",
+    "clicked": "ok",
+    "gold": 190,
+    "hp": 60,
+    "potions": 0,
+    "food": 0,
+    "prayDay": 0,
+    "prays": 0,
+    "fatigue": 0,
+    "toast": "✚ รักษาแล้ว · ทุกคน HP เต็ม (−10💰)"
+   },
+   {
+    "k": "potion",
+    "clicked": "ok",
+    "gold": 175,
+    "hp": 60,
+    "potions": 1,
+    "food": 0,
+    "prayDay": 0,
+    "prays": 0,
+    "fatigue": 0,
+    "toast": "🧪 ได้ยาฟื้นฟู 1 ขวด (มี 1)"
+   }
+  ],
+  "shop": [
+   {
+    "k": "potion",
+    "clicked": "ok",
+    "gold": 182,
+    "hp": 20,
+    "potions": 1,
+    "food": 0,
+    "prayDay": 0,
+    "prays": 0,
+    "fatigue": 0,
+    "toast": "🧪 ได้ยาฟื้นฟู 1 ขวด (มี 1)"
+   },
+   {
+    "k": "food",
+    "clicked": "ok",
+    "gold": 170,
+    "hp": 20,
+    "potions": 1,
+    "food": 3,
+    "prayDay": 0,
+    "prays": 0,
+    "fatigue": 0,
+    "toast": "🍞 ได้เสบียง 3 ห่อ (มี 3)"
+   }
+  ],
+  "temple": [
+   {
+    "k": "pray",
+    "clicked": "ok",
+    "gold": 200,
+    "hp": 38,
+    "potions": 0,
+    "food": 0,
+    "prayDay": 1,
+    "prays": 1,
+    "fatigue": 0,
+    "toast": "🙏 ใจสงบลง · HP +30%"
+   },
+   {
+    "k": "offer",
+    "clicked": "ok",
+    "gold": 175,
+    "hp": 38,
+    "potions": 1,
+    "food": 0,
+    "prayDay": 1,
+    "prays": 1,
+    "fatigue": 0,
+    "toast": "🕯 ถวายแล้ว · ได้น้ำมนต์ (ยาฟื้นฟู) 1 ขวด"
+   },
+   {
+    "k": "pray",
+    "clicked": "disabled:ภาวนาแล้ววันนี้ · พรุ่งนี้มาใหม่",
+    "gold": 175,
+    "hp": 38,
+    "potions": 1,
+    "food": 0,
+    "prayDay": 1,
+    "prays": 1,
+    "fatigue": 0,
+    "toast": ""
+   }
+  ]
+ },
+ "panels": {
+  "innBefore": {
+   "gold": 50,
+   "party": [
+    "sib:50"
+   ],
+   "bench": [
+    "kier:10"
+   ],
+   "day": 1,
+   "toast": "",
+   "panel": false,
+   "panelText": ""
+  },
+  "innPanelOpen": {
+   "gold": 50,
+   "party": [
+    "sib:50"
+   ],
+   "bench": [
+    "kier:10"
+   ],
+   "day": 1,
+   "toast": "",
+   "panel": true,
+   "panelText": "👥 จัดทีม  ออกเดินทางได้สูงสุด 4 คน (ไม่รวมฮีโร่) ที่เหลือพักที่โรงแรม · คลิกเพื่อสลับ  ออกเดินทาง (1/4) น้องสาว 50/50 · ออกเดินทาง → พักที่โรงแรม เคียร์ 10/48 "
+  },
+  "innAfterMove": {
+   "gold": 50,
+   "party": [
+    "sib:50",
+    "kier:10"
+   ],
+   "bench": [],
+   "day": 1,
+   "toast": "",
+   "panel": true,
+   "panelText": "👥 จัดทีม  ออกเดินทางได้สูงสุด 4 คน (ไม่รวมฮีโร่) ที่เหลือพักที่โรงแรม · คลิกเพื่อสลับ  ออกเดินทาง (2/4) น้องสาว 50/50 · ออกเดินทาง → เคียร์ 10/48 · ออกเดินทาง "
+  },
+  "innPanelClosed": {
+   "gold": 50,
+   "party": [
+    "sib:50",
+    "kier:10"
+   ],
+   "bench": [],
+   "day": 1,
+   "toast": "",
+   "panel": false,
+   "panelText": ""
+  },
+  "innAfterRent": {
+   "gold": 40,
+   "party": [
+    "sib:50",
+    "kier:48"
+   ],
+   "bench": [],
+   "day": 2,
+   "toast": "พักจนถึงเช้า · ทีมฟื้นเต็ม",
+   "panel": false,
+   "panelText": ""
+  },
+  "wardOpen": {
+   "bed": false,
+   "gold": 200,
+   "dlg": true,
+   "btns": "admit,x",
+   "toast": ""
+  },
+  "wardAdmit": {
+   "bed": true,
+   "gold": 200,
+   "dlg": true,
+   "btns": "out,visit,x",
+   "toast": "🛏 รับเข้าพักฟื้นแล้ว · 10💰/วัน"
+  },
+  "wardOut": {
+   "bed": false,
+   "gold": 200,
+   "dlg": true,
+   "btns": "admit,x",
+   "toast": "🛏 รับเข้าพักฟื้นแล้ว · 10💰/วัน|รับกลับบ้านแล้ว"
+  }
+ }
+}

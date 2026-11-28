@@ -616,7 +616,7 @@
     try { window.ProcMotion?.apply(g, 'tactics.' + (walking ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: walking ? (MOT.directions?.[face]?.walk?.length || 1) : 1, pose: walking ? 'walk' : 'idle' }, t, s, 'town-hero') } catch (e) { }
     if (f.flipImage) g.scale(-1, 1);
     if (LOOK && !motArg) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, false);
-    { const stw = window.WeaponAnchors?.heroStow({ im: im0, f, d: face, size: s, a, follower: !!motArg, look }); if (stw && stw.layer !== 'over') stw.draw(g); g.drawImage(im, -s * a[0], -s * a[1], s, s); if (stw && stw.layer === 'over') stw.draw(g) }   /* v98.1196 · stowed weapon on the back */
+    { const stw = window.WeaponAnchors?.heroStow({ im: im0, f, d: face, size: s, a, follower: !!motArg, look }); if (stw && stw.layer !== 'over') stw.draw(g); g.drawImage(im, -s * a[0], -s * a[1], s, s); if (stw && stw.layer === 'over') stw.draw(g) }   /* v98.1197 · stowed weapon on the back */
     if (LOOK && !motArg) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, true);
     g.restore(); return true;
   }
@@ -777,23 +777,6 @@
   }
   if (KIND === 'farm') window.FarmScene = { go: (u, v) => walkTo({ u, v }), cell: (u, v) => screen(u + .5, v + .5), act: i => fieldAction(i), ship: () => shipAll(), pen: () => penAction(), seed: k => { seedPick = k }, screenOf: i => { const it = R.items.find(x => x.k === 'ftile' && x.idx === i); return it && screen(it.u + .5, it.v + .5) } };   /* for tests and tools */
   /* v98.295 · the ward of the healer (js/injury.js): who is wounded, put a heavily wounded one in a bed (paid by the day), take them home, visit */
-  function openWard() {
-    const I = window.Injury, g = window.WorldState?.game?.(); if (!I || !g) return toast('ระบบบาดเจ็บยังไม่พร้อม');
-    close(); modalOpen = true; const TOWN = 'fernvale', q = I.quality(TOWN), v = g.village || {};
-    const people = [{ id: 'hero', name: heroName() }, { id: 'sib', name: v.siblingName || (window.HeroVariant?.get?.() === 'female' ? 'พี่ชาย' : 'น้องสาว') }, ...[...(v.party || []), ...(v.bench || [])].filter(m => m.key !== 'sib').map(m => ({ id: m.key, name: m.name }))];
-    const day = CLK.read().day, rows = people.filter(p => I.hurt(g, p.id) || I.of(g, p.id)).map(p => {
-      const r = I.of(g, p.id), heavy = I.heavyParts(g, p.id).length > 0;
-      return `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin:8px 0;padding:6px 8px;background:#fff7e3;border-radius:8px"><span><b>${esc(p.name)}</b> · ${esc(I.describe(g, p.id))}${r.bed ? ' · 🛏 นอนพักอยู่' : ''}</span><span>${heavy && !r.bed ? `<button data-a="admit" data-id="${p.id}">ฝากรักษา ${q.cost}💰/วัน</button>` : ''}${r.bed ? `<button data-a="out" data-id="${p.id}">รับกลับ</button>` : ''}${r.bed && r.visitDay !== day ? `<button data-a="visit" data-id="${p.id}">เยี่ยม</button>` : ''}</span></div>`;
-    }).join('');
-    const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
-    bg.innerHTML = `<div class="in-dlg" style="grid-template-columns:1fr"><div><h2>🏥 ห้องผู้ป่วย</h2><p>บาดเจ็บหนักหายได้เฉพาะที่นี่ · เตียงเมืองเล็ก ${q.cost}💰/วัน · ยิ่งนอนนาน โอกาสหายยิ่งสูงขึ้นทุกเช้า</p>${rows || '<p>ตอนนี้ไม่มีใครบาดเจ็บ 🙂</p>'}<div class="acts"><button class="ghost" data-a="x">ออก</button></div></div></div>`;
-    document.body.append(bg); dlg = bg;
-    bg.onclick = e => { const b = e.target.closest('[data-a]'); if (e.target === bg || b?.dataset.a === 'x') return close(); if (!b) return; const id = b.dataset.id;
-      if (b.dataset.a === 'admit') { const r = I.admit(g, id, TOWN); toast(r.ok ? '🛏 รับเข้าพักฟื้นแล้ว · ' + r.cost + '💰/วัน' : r.why) }
-      else if (b.dataset.a === 'out') { I.discharge(g, id); toast('รับกลับบ้านแล้ว') }
-      else if (b.dataset.a === 'visit') { const r = I.visit(g, id, day); if (r.ok) { try { if (MIND && L.P[id]) { MIND.affect(id, r.rel); MIND.save() } } catch (e) { } toast('💛 เยี่ยมไข้ · ความสนิท +' + r.rel + ' · พรุ่งนี้หายง่ายขึ้นเล็กน้อย') } }
-      try { window.WorldState.commit?.() } catch (e) { } close(); openWard() };
-  }
   /* v97.84 · the cabin: the farm's book, or a bed to sleep off the day's clearing */
   function cabinMenu() {
     close(); modalOpen = true; const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
@@ -811,19 +794,13 @@
     window.Garden.open(G, { title: fp.name, pick, onChange: () => { L.writeSave(S0); farmCache = null; hud._html = ''; hudSync() }, onClose: () => { modalOpen = false; L.writeSave(S0); farmCache = null; if (G.plots.length !== size0 || !!G.have.barn !== barn0 || JSON.stringify(G.have) !== have0) location.reload() } });
   }
   function toast(t) { const d = document.createElement('div'); d.className = 'in-toast'; d.textContent = t; document.body.append(d); setTimeout(() => d.remove(), 2300) }
-  async function rest(cost) {
-    S = L.save(); if (S.gold < cost) { toast('เงินไม่พอ'); return }
-    S.gold -= cost; for (const p of [...S.party, ...S.bench]) p.hp = p.max; L.writeSave(S);
-    document.body.style.transition = 'filter .6s'; document.body.style.filter = 'brightness(0)'; await wait(700);
-    window.WorldState.sleep({ relief: cost ? 80 : 70 }); people.clear(); /* v94: same as sleeping at home (next morning 08:00) */ taken.clear(); syncPeople(true); document.body.style.filter = ''; toast('พักจนถึงเช้า · ทีมฟื้นเต็ม'); hudSync();
-  }
 
   /* ---------- v97.24 · B5: the place's own services (only while somebody of the place is in the room) ----------
      healer: treat the whole party (1 💰 per 4 HP missing) · buy potions · shop / market: potions, travel food · temple: a free prayer once a day
      (fatigue −40, hero HP +30 %) and an offering (+1 potion of holy water for 25 💰) */
   /* v98.1190 · the place's services (healer / shop / temple / guild / house goods) live in js/place-services.js — the same rules, shared with the sub-map engine */
-  const SV = window.PlaceServices.create({ get S() { return S }, set S(v) { S = v }, L, CLK, KIND, OWNER, people, hud, hudSync: () => hudSync(), talk: (a, t) => talk(a, t), toast: t => toast(t), esc });
-  const { services, service } = SV;
+  const SV = window.PlaceServices.create({ get S() { return S }, set S(v) { S = v }, get modalOpen() { return modalOpen }, set modalOpen(v) { modalOpen = v }, get dlg() { return dlg }, set dlg(v) { dlg = v }, close: () => close(), heroName: () => heroName(), MIND, wait, resetRoom: () => { people.clear(); taken.clear(); syncPeople(true) }, L, CLK, KIND, OWNER, people, hud, hudSync: () => hudSync(), talk: (a, t) => talk(a, t), toast: t => toast(t), esc });
+  const { services, service, openWard, rest, partyPanel } = SV;
   /* ---------- talking + recruiting ---------- */
   let modalOpen = false, dlg = null;
   function close() { dlg?.remove(); dlg = null; modalOpen = false; talkingTo = null }
@@ -962,16 +939,6 @@
     else talk(a, res.outcome === 'flee' ? 'หนีแล้วหรือ? น่าผิดหวัง' : 'แค่นี้เองหรือ? กลับไปฝึกมาใหม่เถอะ');
   }
   /* party: up to 4 travel, the rest rest at the inn */
-  function partyPanel() {
-    S = L.save(); const el = document.createElement('div'); el.className = 'in-party';
-    const row = (m, where) => `<div class="slot" data-k="${m.key}" data-w="${where}"><span>${esc(m.name)}</span><small>${m.hp}/${m.max} · ${where === 'party' ? 'ออกเดินทาง →' : '← พาไปด้วย'}</small></div>`;
-    el.innerHTML = `<div><h2 style="margin:0 0 6px;color:#5a2e10">👥 จัดทีม</h2><p style="margin:0 0 8px;font-size:13px">ออกเดินทางได้สูงสุด ${L.MAX_ACTIVE} คน (ไม่รวมฮีโร่) ที่เหลือพักที่โรงแรม · คลิกเพื่อสลับ</p>
-      <div class="col"><div><b>ออกเดินทาง (${S.party.length}/${L.MAX_ACTIVE})</b>${S.party.map(m => row(m, 'party')).join('') || '<div style="font-size:12px">—</div>'}</div><div><b>พักที่โรงแรม</b>${S.bench.map(m => row(m, 'bench')).join('') || '<div style="font-size:12px">—</div>'}</div></div>
-      <div style="text-align:right;margin-top:10px"><button class="ghost" id="inPClose" style="background:#4a3e2e;color:#fff;border:0;border-radius:8px;padding:6px 12px">ปิด</button></div></div>`;
-    document.body.append(el); modalOpen = true;
-    el.querySelectorAll('.slot').forEach(s => s.onclick = () => { S = L.save(); const k = s.dataset.k; if (k === 'sib') return; if (s.dataset.w === 'party') { const i = S.party.findIndex(m => m.key === k); S.bench.push(...S.party.splice(i, 1)) } else { if (S.party.length >= L.MAX_ACTIVE) { toast('ทีมเต็มแล้ว (' + L.MAX_ACTIVE + ' คน)'); return } const i = S.bench.findIndex(m => m.key === k); S.party.push(...S.bench.splice(i, 1)) } L.writeSave(S); el.remove(); modalOpen = false; people.clear(); taken.clear(); syncPeople(true); hudSync(); partyPanel() });
-    el.querySelector('#inPClose').onclick = () => { el.remove(); modalOpen = false };
-  }
   /* v98.397 · number keys press the conversation buttons (the number shows on each button) */
   addEventListener('keydown', e => { if (!dlg || !/^[1-9]$/.test(e.key) || /INPUT|TEXTAREA|SELECT/.test(e.target?.tagName || '')) return; const b = dlg.querySelectorAll('.acts button')[+e.key - 1]; if (b && !b.disabled) { e.preventDefault(); b.click() } });
   addEventListener('keydown', e => { if (e.key === 'Escape') { close(); document.querySelector('.in-party')?.remove(); modalOpen = false } });
