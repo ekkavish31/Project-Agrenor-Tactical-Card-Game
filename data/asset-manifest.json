@@ -146296,7 +146296,7 @@
   },
   {
    "id": "scene-inn-dialogue",
-   "file": "assets/generated-village/inn.webp",
+   "file": "assets/generated-village/inn.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -146309,7 +146309,7 @@
   },
   {
    "id": "scene-guild-dialogue",
-   "file": "assets/generated-village/guild.webp",
+   "file": "assets/generated-village/guild.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -146322,7 +146322,7 @@
   },
   {
    "id": "scene-temple-dialogue",
-   "file": "assets/generated-village/temple.webp",
+   "file": "assets/generated-village/temple.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -146335,7 +146335,7 @@
   },
   {
    "id": "scene-healer-dialogue",
-   "file": "assets/generated-village/healer.webp",
+   "file": "assets/generated-village/healer.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -146348,7 +146348,7 @@
   },
   {
    "id": "scene-hilda-farm-dialogue",
-   "file": "assets/generated-village/farm.webp",
+   "file": "assets/generated-village/farm.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -146361,7 +146361,7 @@
   },
   {
    "id": "scene-house-door-dialogue",
-   "file": "assets/generated-village/door.webp",
+   "file": "assets/generated-village/door.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -146374,7 +146374,7 @@
   },
   {
    "id": "portrait-clerk-dialogue",
-   "file": "assets/generated-village/clerk.webp",
+   "file": "assets/generated-village/clerk.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -146387,7 +146387,7 @@
   },
   {
    "id": "portrait-vera-dialogue",
-   "file": "assets/generated-village/vera.webp",
+   "file": "assets/generated-village/vera.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -146400,7 +146400,7 @@
   },
   {
    "id": "portrait-bandit-boss-dialogue",
-   "file": "assets/generated-village/boss.webp",
+   "file": "assets/generated-village/boss.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -146409,7 +146409,7 @@
   },
   {
    "id": "village-vendors-atlas",
-   "file": "assets/generated-village/vendors.webp",
+   "file": "assets/generated-village/vendors.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -146438,7 +146438,7 @@
   },
   {
    "id": "village-farm-props-atlas",
-   "file": "assets/generated-village/farmprops.webp",
+   "file": "assets/generated-village/farmprops.png",
    "category": "tactics-props",
    "status": "final",
    "transparent": true,
@@ -161930,7 +161930,7 @@
   },
   {
    "id": "npc-bryn-portrait-source",
-   "file": "assets/generated-village/portrait-sources/bryn.webp",
+   "file": "assets/generated-village/portrait-sources/bryn.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162000,7 +162000,7 @@
   },
   {
    "id": "npc-ella-portrait-source",
-   "file": "assets/generated-village/portrait-sources/ella.webp",
+   "file": "assets/generated-village/portrait-sources/ella.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162070,7 +162070,7 @@
   },
   {
    "id": "npc-joe-portrait-source",
-   "file": "assets/generated-village/portrait-sources/joe.webp",
+   "file": "assets/generated-village/portrait-sources/joe.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162140,7 +162140,7 @@
   },
   {
    "id": "npc-ken-portrait-source",
-   "file": "assets/generated-village/portrait-sources/ken.webp",
+   "file": "assets/generated-village/portrait-sources/ken.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162210,7 +162210,7 @@
   },
   {
    "id": "npc-finn-portrait-source",
-   "file": "assets/generated-village/portrait-sources/finn.webp",
+   "file": "assets/generated-village/portrait-sources/finn.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162280,7 +162280,7 @@
   },
   {
    "id": "npc-berg-portrait-source",
-   "file": "assets/generated-village/portrait-sources/berg.webp",
+   "file": "assets/generated-village/portrait-sources/berg.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162350,7 +162350,7 @@
   },
   {
    "id": "npc-shep-portrait-source",
-   "file": "assets/generated-village/portrait-sources/shep.webp",
+   "file": "assets/generated-village/portrait-sources/shep.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162420,7 +162420,7 @@
   },
   {
    "id": "npc-pim-portrait-source",
-   "file": "assets/generated-village/portrait-sources/pim.webp",
+   "file": "assets/generated-village/portrait-sources/pim.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162490,7 +162490,7 @@
   },
   {
    "id": "npc-tess-portrait-source",
-   "file": "assets/generated-village/portrait-sources/tess.webp",
+   "file": "assets/generated-village/portrait-sources/tess.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162560,7 +162560,7 @@
   },
   {
    "id": "npc-ash-portrait-source",
-   "file": "assets/generated-village/portrait-sources/ash.webp",
+   "file": "assets/generated-village/portrait-sources/ash.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162630,7 +162630,7 @@
   },
   {
    "id": "npc-pell-portrait-source",
-   "file": "assets/generated-village/portrait-sources/pell.webp",
+   "file": "assets/generated-village/portrait-sources/pell.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162700,7 +162700,7 @@
   },
   {
    "id": "npc-hugo-portrait-source",
-   "file": "assets/generated-village/portrait-sources/hugo.webp",
+   "file": "assets/generated-village/portrait-sources/hugo.png",
    "category": "characters",
    "status": "final",
    "transparent": true,
@@ -162770,7 +162770,7 @@
   },
   {
    "id": "town-event-games",
-   "file": "assets/generated-village/events/games.webp",
+   "file": "assets/generated-village/events/games.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -162782,7 +162782,7 @@
   },
   {
    "id": "town-event-toll",
-   "file": "assets/generated-village/events/toll.webp",
+   "file": "assets/generated-village/events/toll.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -162794,7 +162794,7 @@
   },
   {
    "id": "town-event-collect",
-   "file": "assets/generated-village/events/collect.webp",
+   "file": "assets/generated-village/events/collect.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -162806,7 +162806,7 @@
   },
   {
    "id": "town-event-caravan",
-   "file": "assets/generated-village/events/caravan.webp",
+   "file": "assets/generated-village/events/caravan.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -162818,7 +162818,7 @@
   },
   {
    "id": "town-event-patrol",
-   "file": "assets/generated-village/events/patrol.webp",
+   "file": "assets/generated-village/events/patrol.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
@@ -162830,7 +162830,7 @@
   },
   {
    "id": "town-event-thief",
-   "file": "assets/generated-village/events/thief.webp",
+   "file": "assets/generated-village/events/thief.png",
    "category": "scenes",
    "status": "final",
    "transparent": false,
