@@ -296,7 +296,7 @@ body.fb-open #storyTracker{display:none!important}
 #questAnnouncement h3:empty,#questAnnouncement ul:empty{display:none}
 #questAnnouncement ul{margin:0 0 16px;padding-left:20px;font-size:15px;line-height:1.7}
 #questAnnouncement button{display:block;width:100%;padding:6px 12px;border:8px solid transparent;border-image:url('../assets/ui/battle-btn-hot.webp') 14 fill / 8px / 0 stretch;background:none;color:#38220b;font:700 16px/1.5 VillageThai,system-ui;cursor:pointer;text-shadow:0 1px #fff5}
-/* v98.1191 · the "เข้าใจแล้ว" button is SHORT and centred (it was as wide as the whole card) */
+/* v98.1194 · the "เข้าใจแล้ว" button is SHORT and centred (it was as wide as the whole card) */
 #questAnnouncement button.qa-go{width:auto;min-width:168px;margin:12px auto 0;padding:6px 30px}
 #questAnnouncement button:focus-visible{outline:2px solid #8c6028;outline-offset:3px}#questAnnouncement button:hover{filter:brightness(1.1)}
 #questAnnouncement.qa-fallback .qa-group{--qa-top:max(8px,calc(25dvh - 60px))}#questAnnouncement.qa-fallback .qa-card{max-height:max(120px,calc(100dvh - var(--qa-top) - 120px - 26px))}
