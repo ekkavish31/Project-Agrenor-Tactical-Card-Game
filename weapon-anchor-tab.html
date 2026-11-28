@@ -40,31 +40,46 @@ canvas{background:#d8d8dc;max-width:96%;max-height:96%;aspect-ratio:1;cursor:cro
 <div class="hint">คลิกหรือลากบนภาพ = ย้ายจุดจับ (วงกลมเหลือง) · ลากสี่เหลี่ยมฟ้าที่ปลายอาวุธ = หมุนมุม<br>ค่าบันทึกอัตโนมัติในเบราว์เซอร์ · ต้องการให้ถาวรทุกเครื่อง: เปิด 🛒 Cart แล้ว Push<br>ทิศที่ไม่มีจุดของตัวเองจะใช้ภาพสะท้อนของทิศคู่ (SE↔SW · NE↔NW) · แก้ทิศนั้นเมื่อภาพสองด้านไม่เหมือนกันพอดี</div>
 </aside>
 <main><canvas id="cv" width="768" height="768"></canvas><div id="msg"></div></main>
-<script src="js/editor-store.js?v=v98.1193"></script><script src="js/tactics-sprites.js?v=v98.1193"></script><script src="js/attack-profiles.js?v=v98.1192"></script><script src="js/weapon-anchors.js?v=v98.1193"></script>
+<script src="js/editor-store.js?v=v98.1193"></script><script src="js/tactics-sprites.js?v=v98.1193"></script><script src="js/asset-manifest.js?v=v98.1198"></script><script src="js/attack-profiles.js?v=v98.1192"></script><script src="js/hero-variant.js?v=98.238"></script><script src="js/weapon-anchors.js?v=v98.1199"></script>
 <script>
 (function(){
 const WA=window.WeaponAnchors,A=(typeof TACTICS_SPRITES!=='undefined'?TACTICS_SPRITES:null),$=id=>document.getElementById(id);
-const CHARS={kier:'sword',bram:'hammer',luna:'staff',mil:'knife'},POSES=[['windup','ท่าง้าง'],['strike','ท่าโจมตี'],['guard','ท่ารับ']],DIRS=['SE','SW','NE','NW'];
+const CHARS={'hero-male':'sword','hero-female':'sword',kier:'sword',bram:'hammer',luna:'staff',mil:'knife'},POSES=[['windup','ท่าง้าง'],['strike','ท่าโจมตี'],['guard','ท่ารับ'],['stow','เหน็บหลัง (ยืน/เดิน)']],DIRS=['SE','SW','NE','NW'];
 const WEAPONS=['sword','rapier','knife','oldKnife','spear','axe','hammer','staff','bow','tome'];
 const S={ch:'kier',pose:'windup',dir:'SE',wk:'sword'},IM={},size=768;
 const img=src=>{if(IM[src])return IM[src].ok?IM[src].i:null;const i=new Image();IM[src]={i,ok:false};i.onload=()=>{IM[src].ok=true;draw()};i.onerror=()=>{IM[src].bad=true};i.src=src;return null};
 const cv=$('cv'),g=cv.getContext('2d');
-const frameSrc=(c,p,d)=>`assets/tactics/${c}_${d.toLowerCase()}_${p}.webp`;
+const isHero=c=>c.startsWith('hero-');
+/* a picture of a character: allies = assets/tactics/<char>_<dir>_<pose>.webp · the hero = the sprite table of its look (poses saved in Asset Studio; a direction may be the MIRROR of another picture) → { src, flip } */
+function frameInfo(c,p,d){if(!isHero(c))return{src:`assets/tactics/${c}_${d.toLowerCase()}_${p}.webp`,flip:false};try{const t=HeroVariant.tableFor(c.slice(5)),D=t.directions[d];const e=(p!=='idle'&&D[p+'Frames']&&D[p+'Frames'][0])||D[p]||D.idle;return{src:e.src,flip:!!e.flipImage}}catch(e){return{src:'',flip:false}}}
+const frameSrc=(c,p,d)=>frameInfo(c,p,d).src;
 function btns(el,list,key,fmt){el.innerHTML='';for(const v of list){const b=document.createElement('button');b.textContent=fmt?fmt(v):v;b.dataset.v=Array.isArray(v)?v[0]:v;b.onclick=()=>{S[key]=b.dataset.v;if(key==='ch'){S.wk=CHARS[S.ch]||S.wk;kind=AP.kindOf(S.wk);profUI()}sync()};el.append(b)}}
 btns($('chars'),Object.keys(CHARS),'ch');btns($('poses'),POSES,'pose',v=>v[1]);btns($('dirs'),DIRS,'dir');
 $('wsel').innerHTML=WEAPONS.map(w=>`<option>${w}</option>`).join('');$('wsel').onchange=()=>{S.wk=$('wsel').value;draw()};
-const cur=()=>WA.get(S.ch,S.pose,S.dir),srcOf=()=>WA.source(S.ch,S.pose,S.dir);
+const isStow=()=>S.pose==='stow',key=()=>isStow()?'stow:'+S.wk:S.pose;
+/* STOW (carried on the back): the anchor is stored relative to the figure of each picture (js/weapon-anchors.js) — here shown on the standing picture; ▶ cycles the walk frames */
+const idleImg=()=>img(frameSrc(S.ch,'idle',S.dir)),idleFlip=()=>frameInfo(S.ch,'idle',S.dir).flip;
+function stowAbs(im2,fl){const d=def();const i=im2||idleImg();if(!d||!i)return null;const a=WA.stow(S.ch,S.wk,S.dir,d,i,im2?!!fl:idleFlip());return a}
+function walkSrcs(){try{if(isHero(S.ch)){const D=HeroVariant.tableFor(S.ch.slice(5)).directions[S.dir];return (D.walk||[]).map(f=>({src:f.src,flip:!!f.flipImage})).filter(f=>f.src)}const M=window.ASSET_MANIFEST,c=M.studioAllyWalks?.[S.ch]?.[S.dir];if(!c?.frames?.length)return[];const by=new Map((M.assets||[]).map(a=>[a.id,a]));return c.frames.map(f=>({src:by.get(f.assetId)?.file||f.src,flip:false})).filter(f=>f.src)}catch(e){return[]}}
+const cur=()=>isStow()?(stowAbs()&&{...stowAbs(),rel:WA.stowRel(S.ch,S.wk,S.dir,def())}):WA.get(S.ch,S.pose,S.dir),srcOf=()=>WA.source(S.ch,key(),S.dir);
 const def=()=>WA.defFor(S.wk,A);
 const defaultH=()=>def()?.scale||.63;
 /* the working copy: always an explicit anchor of THIS direction (editing a mirror / default makes it the direction's own) */
-function work(){const a=cur();return a?{x:a.x,y:a.y,a:a.a,h:a.h||defaultH(),layer:a.layer||'under'}:{x:.5,y:.4,a:0,h:defaultH(),layer:'under'}}
-function save(a){WA.set(S.ch,S.pose,S.dir,a);sync(true)}
+function work(){if(isStow()){const r=WA.stowRel(S.ch,S.wk,S.dir,def());return{x:r.x,y:r.y,a:r.a,h:r.h||defaultH(),layer:r.layer||'under'}}const a=cur();return a?{x:a.x,y:a.y,a:a.a,h:a.h||defaultH(),layer:a.layer||'under'}:{x:.5,y:.4,a:0,h:defaultH(),layer:'under'}}
+function save(a){WA.set(S.ch,key(),S.dir,a&&isStow()?{...a,rel:1}:a);sync(true)}
 function drawWeapon(a,sil,alpha,pose,dir){const d=def(),wi=d&&img(d.src);if(!d||!wi)return;g.save();g.globalAlpha=alpha??1;
  if(sil){const t=document.createElement('canvas');t.width=t.height=size;const q=t.getContext('2d');WA.draw(q,wi,d,a,size,0,0);q.globalCompositeOperation='source-in';q.fillStyle='#ff00ff';q.fillRect(0,0,size,size);g.drawImage(t,0,0)}else WA.draw(g,wi,d,a,size,0,0);g.restore()}
-function drawFrame(p,d,alpha){const i=img(frameSrc(S.ch,p,d));if(i){g.save();g.globalAlpha=alpha??1;g.drawImage(i,0,0,size,size);g.restore()}}
+function drawFrame(p,d,alpha){const fi=frameInfo(S.ch,p,d),i=fi.src&&img(fi.src);if(i){g.save();g.globalAlpha=alpha??1;if(fi.flip){g.translate(size,0);g.scale(-1,1)}g.drawImage(i,0,0,size,size);g.restore()}}
 function tipPt(a){const d=def();if(!d)return null;const L=a.h*size*d.pivot[1],r=a.a*Math.PI/180;return [a.x*size+Math.sin(r)*L,a.y*size-Math.cos(r)*L]}
 let playPose=null;
-function draw(){g.clearRect(0,0,size,size);g.fillStyle='#d8d8dc';g.fillRect(0,0,size,size);g.strokeStyle='#c4c4ca';g.lineWidth=1;for(let v=0;v<size;v+=96){g.beginPath();g.moveTo(v,0);g.lineTo(v,size);g.moveTo(0,v);g.lineTo(size,v);g.stroke()}
+function drawStow(fr,label){const frameSrcStr=fr.src,flip=!!fr.flip;g.clearRect(0,0,size,size);g.fillStyle='#d8d8dc';g.fillRect(0,0,size,size);g.strokeStyle='#c4c4ca';for(let v=0;v<size;v+=96){g.beginPath();g.moveTo(v,0);g.lineTo(v,size);g.moveTo(0,v);g.lineTo(size,v);g.stroke()}
+ const fi=img(frameSrcStr),d=def(),wi=d&&img(d.src);if(!fi||!wi)return;const a=WA.stow(S.ch,S.wk,S.dir,d,fi,flip),sil=$('sil').checked;
+ const lm=WA.landmarks(fi),lcx=flip?1-lm.cx:lm.cx;g.save();g.strokeStyle='#ff7a7a';g.setLineDash([4,4]);g.beginPath();g.moveTo(lcx*size,lm.top*size);g.lineTo(lcx*size,(lm.top+lm.H)*size);g.stroke();g.setLineDash([]);g.restore();
+ const dw=()=>drawWeapon(a,sil);if(a.layer!=='over')dw();g.save();if(flip){g.translate(size,0);g.scale(-1,1)}g.drawImage(fi,0,0,size,size);g.restore();if(a.layer==='over')dw();
+ if(label){g.fillStyle='#333';g.font='18px system-ui';g.fillText(label,16,30)}
+ if(!playing){const t=tipPt(a);g.save();g.strokeStyle='#ffe05a';g.lineWidth=2.5;g.fillStyle='rgba(255,224,90,.25)';g.beginPath();g.arc(a.x*size,a.y*size,13,0,7);g.fill();g.stroke();if(t){g.strokeStyle='#4ac8ff';g.fillStyle='#4ac8ff';g.setLineDash([5,4]);g.beginPath();g.moveTo(a.x*size,a.y*size);g.lineTo(t[0],t[1]);g.stroke();g.setLineDash([]);g.fillRect(t[0]-7,t[1]-7,14,14)}g.restore()}}
+let playing=false;
+function draw(){if(isStow()&&!playing){drawStow(frameInfo(S.ch,'idle',S.dir),'ท่ายืน · เส้นประแดง = แนวกลางลำตัวที่ระบบวัดเอง');return}g.clearRect(0,0,size,size);g.fillStyle='#d8d8dc';g.fillRect(0,0,size,size);g.strokeStyle='#c4c4ca';g.lineWidth=1;for(let v=0;v<size;v+=96){g.beginPath();g.moveTo(v,0);g.lineTo(v,size);g.moveTo(0,v);g.lineTo(size,v);g.stroke()}
  const pose=playPose||S.pose,a0=WA.get(S.ch,pose,S.dir),sil=$('sil').checked;
  if($('onion').checked&&!playPose){const other=S.pose==='windup'?'strike':'windup';drawFrame(other,S.dir,.28);const ao=WA.get(S.ch,other,S.dir);if(ao)drawWeapon({...ao,h:ao.h||defaultH()},false,.28)}
  const a=a0&&{...a0,h:a0.h||defaultH()};
@@ -76,21 +91,23 @@ function draw(){g.clearRect(0,0,size,size);g.fillStyle='#d8d8dc';g.fillRect(0,0,
  if(!a&&!playPose){g.fillStyle='#b8321f';g.font='20px system-ui';g.fillText('ยังไม่มีจุดจับในภาพนี้ — คลิกที่มือเพื่อตั้งจุด (ตอนนี้ใช้อาวุธลอย)',20,40)}}
 function sync(saved){for(const b of $('chars').children)b.classList.toggle('on',b.dataset.v===S.ch);for(const b of $('poses').children)b.classList.toggle('on',b.dataset.v===S.pose);for(const b of $('dirs').children)b.classList.toggle('on',b.dataset.v===S.dir);
  $('wsel').value=S.wk;const a=cur(),w=work(),s=srcOf();
- const T={user:['บันทึกไว้เอง (ของคุณ)',''],default:['ค่าเริ่มต้นของเกม','warn'],mirror:['ใช้ภาพสะท้อนของทิศคู่ — คลิกเพื่อแก้เป็นจุดของทิศนี้เอง','warn'],none:['ยังไม่มีจุด — ใช้อาวุธลอยแบบเดิม','warn'],off:['ปิดจุดนี้ไว้ — ใช้อาวุธลอยแบบเดิม','warn']}[s];$('src').textContent='สถานะ: '+T[0]+(saved?' · บันทึกแล้ว':'');$('src').className='st '+T[1];
+ const T={user:['บันทึกไว้เอง (ของคุณ)',''],default:['ค่าเริ่มต้นของเกม','warn'],mirror:['ใช้ภาพสะท้อนของทิศคู่ — คลิกเพื่อแก้เป็นจุดของทิศนี้เอง','warn'],none:[isStow()?'ค่าเริ่มต้นของเกม (สูตรเหน็บหลังตามชนิดอาวุธ)':'ยังไม่มีจุด — ใช้อาวุธลอยแบบเดิม','warn'],off:['ปิดจุดนี้ไว้ — ใช้อาวุธลอยแบบเดิม','warn']}[s];$('src').textContent='สถานะ: '+T[0]+(saved?' · บันทึกแล้ว':'');$('src').className='st '+T[1];
  $('h').value=w.h;$('hv').textContent=w.h.toFixed(2);$('a').value=Math.round(w.a);$('av').value=Math.round(w.a);$('lu').classList.toggle('on',w.layer!=='over');$('lo').classList.toggle('on',w.layer==='over');
  for(const id of ['h','a','av','lu','lo'])$(id).disabled=!a;if(!$('play')?.checked)draw()}
 const edit=f=>{const w=work();f(w);save(w)};
 $('h').oninput=()=>edit(w=>w.h=+$('h').value);$('a').oninput=()=>edit(w=>w.a=+$('a').value);$('av').onchange=()=>edit(w=>w.a=Math.max(-180,Math.min(180,+$('av').value||0)));
 $('lu').onclick=()=>edit(w=>w.layer='under');$('lo').onclick=()=>edit(w=>w.layer='over');
 $('sil').onchange=draw;$('onion').onchange=draw;
-$('reset').onclick=()=>{WA.set(S.ch,S.pose,S.dir,null);sync(true)};$('off').onclick=()=>{WA.set(S.ch,S.pose,S.dir,{off:true});sync(true)};
-$('cpMir').onclick=()=>{const w=cur();if(!w)return;const m=WA.MIR[S.dir];WA.set(S.ch,S.pose,m,{x:1-w.x,y:w.y,a:-w.a,h:w.h||defaultH(),layer:w.layer||'under'});$('msg').textContent='คัดลอกไปทิศ '+m+' แล้ว (สะท้อนซ้าย-ขวา)'};
+$('reset').onclick=()=>{WA.set(S.ch,key(),S.dir,null);sync(true)};$('off').onclick=()=>{WA.set(S.ch,key(),S.dir,{off:true});sync(true)};
+$('cpMir').onclick=()=>{if(isStow()){const w=work(),m=WA.MIR[S.dir];WA.set(S.ch,key().replace(/^/,''),m,{rel:1,x:-w.x,y:w.y,a:-w.a,h:w.h,layer:w.layer});$('msg').textContent='คัดลอกไปทิศ '+m+' แล้ว (สะท้อน)';return}const w=cur();if(!w)return;const m=WA.MIR[S.dir];WA.set(S.ch,S.pose,m,{x:1-w.x,y:w.y,a:-w.a,h:w.h||defaultH(),layer:w.layer||'under'});$('msg').textContent='คัดลอกไปทิศ '+m+' แล้ว (สะท้อนซ้าย-ขวา)'};
 $('cpPose').onclick=()=>{const o=S.pose==='windup'?'strike':'windup',w=WA.get(S.ch,o,S.dir);if(!w)return;WA.set(S.ch,S.pose,S.dir,{x:w.x,y:w.y,a:w.a,h:w.h||defaultH(),layer:w.layer||'under'});sync(true)};
 let drag=null;
 function pt(e){const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width*size,(e.clientY-r.top)/r.height*size]}
+const lmNow=()=>{const l=WA.landmarks(idleImg());return idleFlip()?{...l,cx:1-l.cx}:l};
+const handFromPt=(w,x,y)=>{if(isStow()){const lm=lmNow();w.x=(x/size-lm.cx)/lm.H;w.y=(y/size-lm.top)/lm.H}else{w.x=Math.max(0,Math.min(1,x/size));w.y=Math.max(0,Math.min(1,y/size))}};
 cv.onpointerdown=e=>{if($('play').checked)return;const [x,y]=pt(e),a=cur(),t=a&&tipPt({...a,h:a.h||defaultH()});cv.setPointerCapture(e.pointerId);
- if(t&&Math.hypot(x-t[0],y-t[1])<16){drag='tip'}else{drag='hand';edit(w=>{w.x=Math.max(0,Math.min(1,x/size));w.y=Math.max(0,Math.min(1,y/size))})}};
-cv.onpointermove=e=>{if(!drag)return;const [x,y]=pt(e);if(drag==='hand')edit(w=>{w.x=Math.max(0,Math.min(1,x/size));w.y=Math.max(0,Math.min(1,y/size))});else edit(w=>{let ang=Math.atan2(x-w.x*size,-(y-w.y*size))*180/Math.PI;if(e.shiftKey)ang=Math.round(ang/15)*15;w.a=Math.round(ang)})};
+ if(t&&Math.hypot(x-t[0],y-t[1])<16){drag='tip'}else{drag='hand';edit(w=>handFromPt(w,x,y))}};
+cv.onpointermove=e=>{if(!drag)return;const [x,y]=pt(e);if(drag==='hand')edit(w=>handFromPt(w,x,y));else edit(w=>{const hx=isStow()?(lmNow().cx+w.x*lmNow().H)*size:w.x*size,hy=isStow()?(lmNow().top+w.y*lmNow().H)*size:w.y*size;let ang=Math.atan2(x-hx,-(y-hy))*180/Math.PI;if(e.shiftKey)ang=Math.round(ang/15)*15;w.a=Math.round(ang)})};
 cv.onpointerup=cv.onpointercancel=()=>{drag=null};
 /* ---- attack profiles (js/attack-profiles.js) ---- */
 const AP=window.AttackProfiles;let kind=AP.kindOf(S.wk);
@@ -116,10 +133,10 @@ function drawPlay(e,P){g.clearRect(0,0,size,size);g.fillStyle='#d8d8dc';g.fillRe
  const d=def(),L=d?an.h*size*d.pivot[1]:0,r=an.a*Math.PI/180,m=g.getTransform();const tp=new DOMPoint(an.x*size+Math.sin(r)*L,an.y*size-Math.cos(r)*L).matrixTransform(m);tip.push({x:tp.x,y:tp.y,t:es});if(tip.length>14)tip.shift();
  if(an.layer!=='over')drawWeapon(an,$('sil').checked);drawFrame('strike',S.dir);if(an.layer==='over')drawWeapon(an,$('sil').checked);g.restore();
  if(es<P.strikeMs+P.hold){const pts=tip.filter(p=>es-p.t<(P.trail==='line'?120:170));if(pts.length>1){g.save();g.globalCompositeOperation='lighter';g.lineCap='round';for(let i=1;i<pts.length;i++){const k=i/(pts.length-1),w=(P.trail==='line'?.012:.05*k)*size,age=Math.max(0,1-(es-pts[i].t)/170);for(const [wm,al,col] of [[2.4,.16,'255,205,130'],[1,.55,'255,236,200'],[.38,.95,'255,255,248']]){g.strokeStyle=`rgba(${col},${al*age*(P.trail==='line'?1:k)})`;g.lineWidth=Math.max(1,w*wm);g.beginPath();g.moveTo(pts[i-1].x,pts[i-1].y);g.lineTo(pts[i].x,pts[i].y);g.stroke()}}g.restore()}}}
-function loop(ts){if(!$('play').checked)return;const P=AP.get(kind),cyc=P.windMs+250+P.strikeMs+P.hold+520;if(!t0)t0=ts;drawPlay((ts-t0)%cyc,P);raf=requestAnimationFrame(loop)}
-$('play').onchange=()=>{cancelAnimationFrame(raf);t0=0;tip=[];if($('play').checked)raf=requestAnimationFrame(loop);else draw()};
+function loop(ts){if(!$('play').checked)return;if(isStow()){const f=walkSrcs();if(!t0)t0=ts;if(!f.length){drawStow(frameInfo(S.ch,'idle',S.dir),'ไม่มีเฟรมเดินของตัวละคร/ทิศนี้ในสตูดิโอ');raf=requestAnimationFrame(loop);return}const n=Math.floor((ts-t0)/80)%f.length;drawStow(f[n],'เฟรมเดิน '+(n+1)+' / '+f.length);raf=requestAnimationFrame(loop);return}const P=AP.get(kind),cyc=P.windMs+250+P.strikeMs+P.hold+520;if(!t0)t0=ts;drawPlay((ts-t0)%cyc,P);raf=requestAnimationFrame(loop)}
+$('play').onchange=()=>{cancelAnimationFrame(raf);t0=0;tip=[];playing=$('play').checked;if(playing)raf=requestAnimationFrame(loop);else draw()};
 /* characters without pictures are dropped */
-Promise.all(Object.keys(CHARS).map(c=>new Promise(r=>{const i=new Image();i.onload=()=>r(c);i.onerror=()=>r(null);i.src=frameSrc(c,'windup','SE')}))).then(l=>{const ok=l.filter(Boolean);for(const b of [...$('chars').children])if(!ok.includes(b.dataset.v))b.remove();if(!ok.includes(S.ch)&&ok[0])S.ch=ok[0];S.wk=CHARS[S.ch]||'sword';sync()});
+Promise.all(Object.keys(CHARS).map(c=>new Promise(r=>{if(isHero(c)){r(c);return}const i=new Image();i.onload=()=>r(c);i.onerror=()=>r(null);i.src=frameSrc(c,'windup','SE')}))).then(l=>{const ok=l.filter(Boolean);for(const b of [...$('chars').children])if(!ok.includes(b.dataset.v))b.remove();if(!ok.includes(S.ch)&&ok[0])S.ch=ok[0];S.wk=CHARS[S.ch]||'sword';sync()});
 profUI();sync();addEventListener('storage',()=>sync());
 })();
 </script></body></html>

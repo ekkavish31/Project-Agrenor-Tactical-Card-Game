@@ -616,7 +616,7 @@
     try { window.ProcMotion?.apply(g, 'tactics.' + (walking ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: walking ? (MOT.directions?.[face]?.walk?.length || 1) : 1, pose: walking ? 'walk' : 'idle' }, t, s, 'town-hero') } catch (e) { }
     if (f.flipImage) g.scale(-1, 1);
     if (LOOK && !motArg) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, false);
-    g.drawImage(im, -s * a[0], -s * a[1], s, s);
+    { const stw = window.WeaponAnchors?.heroStow({ im: im0, f, d: face, size: s, a, follower: !!motArg, look }); if (stw && stw.layer !== 'over') stw.draw(g); g.drawImage(im, -s * a[0], -s * a[1], s, s); if (stw && stw.layer === 'over') stw.draw(g) }   /* v98.1197 · stowed weapon on the back */
     if (LOOK && !motArg) JobLook.aura(g, LOOK, { x: 0, y: 0 }, s, t, true);
     g.restore(); return true;
   }

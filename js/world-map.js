@@ -278,7 +278,7 @@
     try { window.ProcMotion?.apply(g, 'tactics.' + (walk0 ? 'walk' : 'idle') + '.' + face.toLowerCase(), { frames: walk0 ? (MOT.directions?.[face]?.walk?.length || 1) : 1, pose: walk0 ? 'walk' : 'idle' }, now, s, 'town-hero') } catch (e) { }
     if (f.flipImage) g.scale(-1, 1);
     if (LOOK && !motArg) JobLook.aura(g, LOOK, ap, s, now, false);
-    g.drawImage(im, -s * a[0], -s * a[1], s, s);
+    { const stw = window.WeaponAnchors?.heroStow({ im: im0, f, d: face, size: s, a, follower: !!motArg, look }); if (stw && stw.layer !== 'over') stw.draw(g); g.drawImage(im, -s * a[0], -s * a[1], s, s); if (stw && stw.layer === 'over') stw.draw(g) }   /* v98.1199 · the equipped weapon is carried on the back while the party walks the world map (js/weapon-anchors.js) */
     if (LOOK && !motArg) JobLook.aura(g, LOOK, ap, s, now, true);
     g.restore(); return true;
   }
