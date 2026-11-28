@@ -1,7 +1,9 @@
 /* v98.1190 · PlaceServices — the rules of what a place SELLS / DOES for the player (TODO §45 step B): healer (treat the party · potions) · shop / market (potions · travel food · trade) · temple (prayer · offering) ·
    guild contracts / bounties · a household's goods (house) · "steal". Moved out of js/interior.js unchanged so the sub-map engine (village-place.html) can use the same rules.
    PlaceServices.create(E) → { services(), service(key), contract(), missing(), healCost(), PRICE, keeperIn(), HOUSE_SVC }
-   E = the host's accessors:  S (get / set the save snapshot) · L (VillageLife) · CLK (VillageClock) · KIND · OWNER · people (Map of the people in the room) · hud ({_html}) · hudSync() · talk(actor, line) · toast(text) · esc(text) */
+   + inn / healer panels: openWard() · rest(cost) · partyPanel()
+   E = the host's accessors:  S (get / set the save snapshot) · L (VillageLife) · CLK (VillageClock) · KIND · OWNER · people (Map of the people in the room) · hud ({_html}) · hudSync() · talk(actor, line) · toast(text) · esc(text)
+       · modalOpen / dlg (get / set) · close() · heroName() · MIND · wait(ms) · resetRoom() (the room's people are rebuilt) */
 (function (root) {
   'use strict';
   function create(E) {
@@ -68,7 +70,41 @@
       hud._html = ''; hudSync();
     }
 
-    return { services, service, contract, missing, healCost, PRICE, keeperIn, HOUSE_SVC };
+    /* v98.1196 · the inn's party panel + room rental and the healer's ward (moved unchanged from interior.js; DOM panels — the host gives the modal state / room refresh through E) */
+    function openWard() {
+      const I = window.Injury, g = window.WorldState?.game?.(); if (!I || !g) return toast('ระบบบาดเจ็บยังไม่พร้อม');
+      E.close(); E.modalOpen = true; const TOWN = 'fernvale', q = I.quality(TOWN), v = g.village || {};
+      const people = [{ id: 'hero', name: E.heroName() }, { id: 'sib', name: v.siblingName || (window.HeroVariant?.get?.() === 'female' ? 'พี่ชาย' : 'น้องสาว') }, ...[...(v.party || []), ...(v.bench || [])].filter(m => m.key !== 'sib').map(m => ({ id: m.key, name: m.name }))];
+      const day = CLK.read().day, rows = people.filter(p => I.hurt(g, p.id) || I.of(g, p.id)).map(p => {
+        const r = I.of(g, p.id), heavy = I.heavyParts(g, p.id).length > 0;
+        return `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin:8px 0;padding:6px 8px;background:#fff7e3;border-radius:8px"><span><b>${esc(p.name)}</b> · ${esc(I.describe(g, p.id))}${r.bed ? ' · 🛏 นอนพักอยู่' : ''}</span><span>${heavy && !r.bed ? `<button data-a="admit" data-id="${p.id}">ฝากรักษา ${q.cost}💰/วัน</button>` : ''}${r.bed ? `<button data-a="out" data-id="${p.id}">รับกลับ</button>` : ''}${r.bed && r.visitDay !== day ? `<button data-a="visit" data-id="${p.id}">เยี่ยม</button>` : ''}</span></div>`;
+      }).join('');
+      const bg = document.createElement('div'); bg.className = 'in-dlg-bg';
+      bg.innerHTML = `<div class="in-dlg" style="grid-template-columns:1fr"><div><h2>🏥 ห้องผู้ป่วย</h2><p>บาดเจ็บหนักหายได้เฉพาะที่นี่ · เตียงเมืองเล็ก ${q.cost}💰/วัน · ยิ่งนอนนาน โอกาสหายยิ่งสูงขึ้นทุกเช้า</p>${rows || '<p>ตอนนี้ไม่มีใครบาดเจ็บ 🙂</p>'}<div class="acts"><button class="ghost" data-a="x">ออก</button></div></div></div>`;
+      document.body.append(bg); E.dlg = bg;
+      bg.onclick = e => { const b = e.target.closest('[data-a]'); if (e.target === bg || b?.dataset.a === 'x') return E.close(); if (!b) return; const id = b.dataset.id;
+        if (b.dataset.a === 'admit') { const r = I.admit(g, id, TOWN); toast(r.ok ? '🛏 รับเข้าพักฟื้นแล้ว · ' + r.cost + '💰/วัน' : r.why) }
+        else if (b.dataset.a === 'out') { I.discharge(g, id); toast('รับกลับบ้านแล้ว') }
+        else if (b.dataset.a === 'visit') { const r = I.visit(g, id, day); if (r.ok) { try { if (E.MIND && L.P[id]) { E.MIND.affect(id, r.rel); E.MIND.save() } } catch (e) { } toast('💛 เยี่ยมไข้ · ความสนิท +' + r.rel + ' · พรุ่งนี้หายง่ายขึ้นเล็กน้อย') } }
+        try { window.WorldState.commit?.() } catch (e) { } E.close(); openWard() };
+    }
+    async function rest(cost) {
+      E.S = L.save(); if (E.S.gold < cost) { toast('เงินไม่พอ'); return }
+      E.S.gold -= cost; for (const p of [...E.S.party, ...E.S.bench]) p.hp = p.max; L.writeSave(E.S);
+      document.body.style.transition = 'filter .6s'; document.body.style.filter = 'brightness(0)'; await E.wait(700);
+      window.WorldState.sleep({ relief: cost ? 80 : 70 }); /* v94: same as sleeping at home (next morning 08:00) */ E.resetRoom(); document.body.style.filter = ''; toast('พักจนถึงเช้า · ทีมฟื้นเต็ม'); hudSync();
+    }
+    function partyPanel() {
+      E.S = L.save(); const el = document.createElement('div'); el.className = 'in-party';
+      const row = (m, where) => `<div class="slot" data-k="${m.key}" data-w="${where}"><span>${esc(m.name)}</span><small>${m.hp}/${m.max} · ${where === 'party' ? 'ออกเดินทาง →' : '← พาไปด้วย'}</small></div>`;
+      el.innerHTML = `<div><h2 style="margin:0 0 6px;color:#5a2e10">👥 จัดทีม</h2><p style="margin:0 0 8px;font-size:13px">ออกเดินทางได้สูงสุด ${L.MAX_ACTIVE} คน (ไม่รวมฮีโร่) ที่เหลือพักที่โรงแรม · คลิกเพื่อสลับ</p>
+        <div class="col"><div><b>ออกเดินทาง (${E.S.party.length}/${L.MAX_ACTIVE})</b>${E.S.party.map(m => row(m, 'party')).join('') || '<div style="font-size:12px">—</div>'}</div><div><b>พักที่โรงแรม</b>${E.S.bench.map(m => row(m, 'bench')).join('') || '<div style="font-size:12px">—</div>'}</div></div>
+        <div style="text-align:right;margin-top:10px"><button class="ghost" id="inPClose" style="background:#4a3e2e;color:#fff;border:0;border-radius:8px;padding:6px 12px">ปิด</button></div></div>`;
+      document.body.append(el); E.modalOpen = true;
+      el.querySelectorAll('.slot').forEach(s => s.onclick = () => { E.S = L.save(); const k = s.dataset.k; if (k === 'sib') return; if (s.dataset.w === 'party') { const i = E.S.party.findIndex(m => m.key === k); E.S.bench.push(...E.S.party.splice(i, 1)) } else { if (E.S.party.length >= L.MAX_ACTIVE) { toast('ทีมเต็มแล้ว (' + L.MAX_ACTIVE + ' คน)'); return } const i = E.S.bench.findIndex(m => m.key === k); E.S.party.push(...E.S.bench.splice(i, 1)) } L.writeSave(E.S); el.remove(); E.modalOpen = false; E.resetRoom(); hudSync(); partyPanel() });
+      el.querySelector('#inPClose').onclick = () => { el.remove(); E.modalOpen = false };
+    }
+    return { services, service, contract, missing, healCost, PRICE, keeperIn, HOUSE_SVC, openWard, rest, partyPanel };
   }
   root.PlaceServices = { create };
 })(globalThis);
