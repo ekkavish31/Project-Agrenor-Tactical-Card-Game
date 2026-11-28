@@ -1,0 +1,125 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agrenor · จุดจับอาวุธ</title>
+<!-- v98.1191 · Editor › 🗡 จุดจับอาวุธ: ตั้งจุดที่มือจับอาวุธในภาพท่าง้าง/ท่าโจมตี/ท่ารับ ของแต่ละตัวละคร ต่อทิศ · ค่าเก็บใน project-a-weapon-anchors-v1 (js/weapon-anchors.js) แล้ว Push ผ่าน 🛒 Cart -->
+<style>
+html,body{margin:0;height:100%;background:#14130f;color:#eee;font:13px system-ui,"Noto Sans Thai",sans-serif}
+body{display:grid;grid-template-columns:320px 1fr;height:100vh}
+aside{padding:10px 12px;overflow:auto;border-right:1px solid #333;background:#191812}
+h2{margin:10px 0 4px;font-size:13px;color:#ffd98a}h1{margin:0 0 6px;font-size:15px}
+.row{display:flex;flex-wrap:wrap;gap:5px;margin:3px 0 7px}
+button,select,input[type=number]{font:inherit;color:#eee;background:#2b2f25;border:1px solid #4a5140;border-radius:7px;padding:4px 9px;cursor:pointer}
+button.on{background:#496b3b;border-color:#8fc27a;font-weight:700}button:hover{background:#3a4032}button.on:hover{background:#56803f}
+label{display:flex;align-items:center;gap:6px;margin:3px 0}input[type=range]{flex:1}
+.st{padding:5px 8px;border-radius:7px;background:#23261e;margin:4px 0;color:#cfc}.st.warn{color:#ffd98a}
+.hint{color:#9a9a8a;font-size:12px;line-height:1.5;margin-top:8px}
+main{display:grid;place-items:center;background:#0e0d0a;position:relative;overflow:hidden}
+canvas{background:#d8d8dc;max-width:96%;max-height:96%;aspect-ratio:1;cursor:crosshair;touch-action:none;border:1px solid #444}
+#msg{position:absolute;left:10px;bottom:8px;color:#9fe39f}
+</style></head><body>
+<aside>
+<h1>🗡 จุดจับอาวุธ</h1>
+<h2>ตัวละคร</h2><div class="row" id="chars"></div>
+<h2>ท่า</h2><div class="row" id="poses"></div>
+<h2>ทิศของภาพ</h2><div class="row" id="dirs"></div>
+<h2>อาวุธที่ใช้ทดลอง</h2><div class="row"><select id="wsel"></select></div>
+<div class="st" id="src"></div>
+<h2>ค่าของจุดนี้</h2>
+<label>ขนาดอาวุธ <input id="h" type="range" min=".15" max="1.3" step=".01"><b id="hv" style="width:40px"></b></label>
+<label>มุม (°) <input id="a" type="range" min="-180" max="180" step="1"><input id="av" type="number" min="-180" max="180" style="width:64px"></label>
+<div class="row"><button id="lu" class="on">วาดใต้ตัวละคร</button><button id="lo">วาดทับตัวละคร</button></div>
+<h2>แสดงผล</h2>
+<label><input type="checkbox" id="sil"> เงาสีชมพู (ตัวจองตำแหน่ง)</label>
+<label><input type="checkbox" id="onion" checked> เห็นท่าอีกท่าจางๆ เทียบ</label>
+<label><input type="checkbox" id="play"> ▶ เล่น เตรียม → โจมตี วนซ้ำ</label>
+<h2>โปรไฟล์การโจมตี (ฟัน / แทง ต่างกันอย่างไร)</h2>
+<div class="row" id="kinds"></div>
+<div class="hint" style="margin:0 0 4px">ใช้กับทุกตัวที่ถืออาวุธชนิดนั้น · กด "▶ เล่น" ด้านบนเพื่อดูผลทันที</div>
+<div id="prof"></div>
+<div class="row"><button id="profReset">รีเซ็ตโปรไฟล์นี้</button></div>
+<h2>จัดการ</h2>
+<div class="row"><button id="cpMir">คัดลอกไปทิศสะท้อน</button><button id="cpPose">คัดลอกจากท่าอื่น</button><button id="reset">รีเซ็ตเป็นค่าเริ่มต้น</button><button id="off">ปิดจุดนี้ (ใช้อาวุธลอย)</button></div>
+<div class="hint">คลิกหรือลากบนภาพ = ย้ายจุดจับ (วงกลมเหลือง) · ลากสี่เหลี่ยมฟ้าที่ปลายอาวุธ = หมุนมุม<br>ค่าบันทึกอัตโนมัติในเบราว์เซอร์ · ต้องการให้ถาวรทุกเครื่อง: เปิด 🛒 Cart แล้ว Push<br>ทิศที่ไม่มีจุดของตัวเองจะใช้ภาพสะท้อนของทิศคู่ (SE↔SW · NE↔NW) · แก้ทิศนั้นเมื่อภาพสองด้านไม่เหมือนกันพอดี</div>
+</aside>
+<main><canvas id="cv" width="768" height="768"></canvas><div id="msg"></div></main>
+<script src="js/editor-store.js?v=v98.1191"></script><script src="js/tactics-sprites.js?v=v98.1191"></script><script src="js/attack-profiles.js?v=v98.1192"></script><script src="js/weapon-anchors.js?v=v98.1193"></script>
+<script>
+(function(){
+const WA=window.WeaponAnchors,A=(typeof TACTICS_SPRITES!=='undefined'?TACTICS_SPRITES:null),$=id=>document.getElementById(id);
+const CHARS={kier:'sword',bram:'hammer',luna:'staff',mil:'knife'},POSES=[['windup','ท่าง้าง'],['strike','ท่าโจมตี'],['guard','ท่ารับ']],DIRS=['SE','SW','NE','NW'];
+const WEAPONS=['sword','rapier','knife','oldKnife','spear','axe','hammer','staff','bow','tome'];
+const S={ch:'kier',pose:'windup',dir:'SE',wk:'sword'},IM={},size=768;
+const img=src=>{if(IM[src])return IM[src].ok?IM[src].i:null;const i=new Image();IM[src]={i,ok:false};i.onload=()=>{IM[src].ok=true;draw()};i.onerror=()=>{IM[src].bad=true};i.src=src;return null};
+const cv=$('cv'),g=cv.getContext('2d');
+const frameSrc=(c,p,d)=>`assets/tactics/${c}_${d.toLowerCase()}_${p}.webp`;
+function btns(el,list,key,fmt){el.innerHTML='';for(const v of list){const b=document.createElement('button');b.textContent=fmt?fmt(v):v;b.dataset.v=Array.isArray(v)?v[0]:v;b.onclick=()=>{S[key]=b.dataset.v;if(key==='ch'){S.wk=CHARS[S.ch]||S.wk;kind=AP.kindOf(S.wk);profUI()}sync()};el.append(b)}}
+btns($('chars'),Object.keys(CHARS),'ch');btns($('poses'),POSES,'pose',v=>v[1]);btns($('dirs'),DIRS,'dir');
+$('wsel').innerHTML=WEAPONS.map(w=>`<option>${w}</option>`).join('');$('wsel').onchange=()=>{S.wk=$('wsel').value;draw()};
+const cur=()=>WA.get(S.ch,S.pose,S.dir),srcOf=()=>WA.source(S.ch,S.pose,S.dir);
+const def=()=>WA.defFor(S.wk,A);
+const defaultH=()=>def()?.scale||.63;
+/* the working copy: always an explicit anchor of THIS direction (editing a mirror / default makes it the direction's own) */
+function work(){const a=cur();return a?{x:a.x,y:a.y,a:a.a,h:a.h||defaultH(),layer:a.layer||'under'}:{x:.5,y:.4,a:0,h:defaultH(),layer:'under'}}
+function save(a){WA.set(S.ch,S.pose,S.dir,a);sync(true)}
+function drawWeapon(a,sil,alpha,pose,dir){const d=def(),wi=d&&img(d.src);if(!d||!wi)return;g.save();g.globalAlpha=alpha??1;
+ if(sil){const t=document.createElement('canvas');t.width=t.height=size;const q=t.getContext('2d');WA.draw(q,wi,d,a,size,0,0);q.globalCompositeOperation='source-in';q.fillStyle='#ff00ff';q.fillRect(0,0,size,size);g.drawImage(t,0,0)}else WA.draw(g,wi,d,a,size,0,0);g.restore()}
+function drawFrame(p,d,alpha){const i=img(frameSrc(S.ch,p,d));if(i){g.save();g.globalAlpha=alpha??1;g.drawImage(i,0,0,size,size);g.restore()}}
+function tipPt(a){const d=def();if(!d)return null;const L=a.h*size*d.pivot[1],r=a.a*Math.PI/180;return [a.x*size+Math.sin(r)*L,a.y*size-Math.cos(r)*L]}
+let playPose=null;
+function draw(){g.clearRect(0,0,size,size);g.fillStyle='#d8d8dc';g.fillRect(0,0,size,size);g.strokeStyle='#c4c4ca';g.lineWidth=1;for(let v=0;v<size;v+=96){g.beginPath();g.moveTo(v,0);g.lineTo(v,size);g.moveTo(0,v);g.lineTo(size,v);g.stroke()}
+ const pose=playPose||S.pose,a0=WA.get(S.ch,pose,S.dir),sil=$('sil').checked;
+ if($('onion').checked&&!playPose){const other=S.pose==='windup'?'strike':'windup';drawFrame(other,S.dir,.28);const ao=WA.get(S.ch,other,S.dir);if(ao)drawWeapon({...ao,h:ao.h||defaultH()},false,.28)}
+ const a=a0&&{...a0,h:a0.h||defaultH()};
+ if(a&&a.layer!=='over')drawWeapon(a,sil);
+ drawFrame(pose,S.dir);
+ if(a&&a.layer==='over')drawWeapon(a,sil);
+ if(a&&!playPose){const t=tipPt(a);g.save();g.strokeStyle='#ffe05a';g.lineWidth=2.5;g.fillStyle='rgba(255,224,90,.25)';g.beginPath();g.arc(a.x*size,a.y*size,13,0,7);g.fill();g.stroke();g.beginPath();g.moveTo(a.x*size-18,a.y*size);g.lineTo(a.x*size+18,a.y*size);g.moveTo(a.x*size,a.y*size-18);g.lineTo(a.x*size,a.y*size+18);g.stroke();
+  if(t){g.strokeStyle='#4ac8ff';g.fillStyle='#4ac8ff';g.lineWidth=1.5;g.setLineDash([5,4]);g.beginPath();g.moveTo(a.x*size,a.y*size);g.lineTo(t[0],t[1]);g.stroke();g.setLineDash([]);g.fillRect(t[0]-7,t[1]-7,14,14)}g.restore()}
+ if(!a&&!playPose){g.fillStyle='#b8321f';g.font='20px system-ui';g.fillText('ยังไม่มีจุดจับในภาพนี้ — คลิกที่มือเพื่อตั้งจุด (ตอนนี้ใช้อาวุธลอย)',20,40)}}
+function sync(saved){for(const b of $('chars').children)b.classList.toggle('on',b.dataset.v===S.ch);for(const b of $('poses').children)b.classList.toggle('on',b.dataset.v===S.pose);for(const b of $('dirs').children)b.classList.toggle('on',b.dataset.v===S.dir);
+ $('wsel').value=S.wk;const a=cur(),w=work(),s=srcOf();
+ const T={user:['บันทึกไว้เอง (ของคุณ)',''],default:['ค่าเริ่มต้นของเกม','warn'],mirror:['ใช้ภาพสะท้อนของทิศคู่ — คลิกเพื่อแก้เป็นจุดของทิศนี้เอง','warn'],none:['ยังไม่มีจุด — ใช้อาวุธลอยแบบเดิม','warn'],off:['ปิดจุดนี้ไว้ — ใช้อาวุธลอยแบบเดิม','warn']}[s];$('src').textContent='สถานะ: '+T[0]+(saved?' · บันทึกแล้ว':'');$('src').className='st '+T[1];
+ $('h').value=w.h;$('hv').textContent=w.h.toFixed(2);$('a').value=Math.round(w.a);$('av').value=Math.round(w.a);$('lu').classList.toggle('on',w.layer!=='over');$('lo').classList.toggle('on',w.layer==='over');
+ for(const id of ['h','a','av','lu','lo'])$(id).disabled=!a;if(!$('play')?.checked)draw()}
+const edit=f=>{const w=work();f(w);save(w)};
+$('h').oninput=()=>edit(w=>w.h=+$('h').value);$('a').oninput=()=>edit(w=>w.a=+$('a').value);$('av').onchange=()=>edit(w=>w.a=Math.max(-180,Math.min(180,+$('av').value||0)));
+$('lu').onclick=()=>edit(w=>w.layer='under');$('lo').onclick=()=>edit(w=>w.layer='over');
+$('sil').onchange=draw;$('onion').onchange=draw;
+$('reset').onclick=()=>{WA.set(S.ch,S.pose,S.dir,null);sync(true)};$('off').onclick=()=>{WA.set(S.ch,S.pose,S.dir,{off:true});sync(true)};
+$('cpMir').onclick=()=>{const w=cur();if(!w)return;const m=WA.MIR[S.dir];WA.set(S.ch,S.pose,m,{x:1-w.x,y:w.y,a:-w.a,h:w.h||defaultH(),layer:w.layer||'under'});$('msg').textContent='คัดลอกไปทิศ '+m+' แล้ว (สะท้อนซ้าย-ขวา)'};
+$('cpPose').onclick=()=>{const o=S.pose==='windup'?'strike':'windup',w=WA.get(S.ch,o,S.dir);if(!w)return;WA.set(S.ch,S.pose,S.dir,{x:w.x,y:w.y,a:w.a,h:w.h||defaultH(),layer:w.layer||'under'});sync(true)};
+let drag=null;
+function pt(e){const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width*size,(e.clientY-r.top)/r.height*size]}
+cv.onpointerdown=e=>{if($('play').checked)return;const [x,y]=pt(e),a=cur(),t=a&&tipPt({...a,h:a.h||defaultH()});cv.setPointerCapture(e.pointerId);
+ if(t&&Math.hypot(x-t[0],y-t[1])<16){drag='tip'}else{drag='hand';edit(w=>{w.x=Math.max(0,Math.min(1,x/size));w.y=Math.max(0,Math.min(1,y/size))})}};
+cv.onpointermove=e=>{if(!drag)return;const [x,y]=pt(e);if(drag==='hand')edit(w=>{w.x=Math.max(0,Math.min(1,x/size));w.y=Math.max(0,Math.min(1,y/size))});else edit(w=>{let ang=Math.atan2(x-w.x*size,-(y-w.y*size))*180/Math.PI;if(e.shiftKey)ang=Math.round(ang/15)*15;w.a=Math.round(ang)})};
+cv.onpointerup=cv.onpointercancel=()=>{drag=null};
+/* ---- attack profiles (js/attack-profiles.js) ---- */
+const AP=window.AttackProfiles;let kind=AP.kindOf(S.wk);
+const FIELDS=[['windMs','เวลาง้าง (ms)',50,500,5],['strikeMs','ความเร็วฟัน/แทง (ms) — น้อย = เร็ว',20,300,1],['hold','ค้างที่สุดการโจมตี (ms)',0,500,5],['lunge','พุ่งตัวไปข้างหน้า (px)',0,50,1],['lean','เอนตัว',0,.5,.01],['squash','บีบ/ยืดตัว',0,.2,.01],['bulge','ความโค้งของเส้นทางอาวุธ',0,.6,.01],['overshoot','เลยจุดแล้วดีดกลับ',0,.4,.01],['pull','ดึงถอยก่อนแทง (เฉพาะเส้นตรง)',0,.3,.01],['smear','จำนวนเงาตามหลัง',0,6,1],['roll','กล้องเอียง',0,4,.1],['shake','กล้องสั่น (px)',0,30,1]];
+const SELS=[['path','เส้นทางอาวุธ',[['arc','โค้ง (ฟัน)'],['line','ตรง (แทง)']]],['trail','รอยเอฟเฟกต์',[['arc','เสี้ยวพระจันทร์'],['line','เส้นตรงเรียว']]],['sfx','เสียงตอนโจมตี',[['swing','ลมกวาด'],['knife','แหลมสั้น'],['hammer','ทุ้มหนัก'],['axe','ขวาน']]]];
+const profEl=$('prof');
+function profUI(){const P=AP.get(kind);for(const b of $('kinds').children)b.classList.toggle('on',b.dataset.v===kind);profEl.innerHTML='';
+ for(const [k,label,opts] of SELS){const l=document.createElement('label');l.textContent=label+' ';const sel=document.createElement('select');sel.innerHTML=opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('');sel.value=P[k];sel.onchange=()=>{AP.set(kind,{[k]:sel.value});profUI()};l.append(sel);profEl.append(l)}
+ for(const [k,label,min,max,step] of FIELDS){if(k==='pull'&&P.path!=='line')continue;const l=document.createElement('label');const sp=document.createElement('span');sp.textContent=label;sp.style.cssText='width:150px;font-size:12px';const r=document.createElement('input');r.type='range';r.min=min;r.max=max;r.step=step;r.value=P[k]??0;const v=document.createElement('b');v.style.width='42px';v.textContent=(+r.value).toFixed(step<1?2:0);r.oninput=()=>{v.textContent=(+r.value).toFixed(step<1?2:0);AP.set(kind,{[k]:+r.value})};l.append(sp,r,v);profEl.append(l)}}
+for(const k of Object.keys(AP.NAMES)){const b=document.createElement('button');b.textContent=AP.NAMES[k];b.dataset.v=k;b.onclick=()=>{kind=k;profUI()};$('kinds').append(b)}
+$('profReset').onclick=()=>{AP.set(kind,null);profUI()};
+const oldWsel=$('wsel').onchange;$('wsel').onchange=()=>{S.wk=$('wsel').value;kind=AP.kindOf(S.wk);profUI();draw()};
+/* ---- play: windup hold → strike with the profile (weapon path · body lunge · smear · tip trail) ---- */
+let raf=0,t0=0,tip=[];
+const ease=x=>1-Math.pow(1-Math.min(1,Math.max(0,x)),3);
+function drawPlay(e,P){g.clearRect(0,0,size,size);g.fillStyle='#d8d8dc';g.fillRect(0,0,size,size);
+ const aw=WA.get(S.ch,'windup',S.dir),as=WA.get(S.ch,'strike',S.dir);if(!aw||!as){g.fillStyle='#b8321f';g.font='20px system-ui';g.fillText('ต้องมีจุดจับทั้งท่าง้างและท่าโจมตีของทิศนี้',20,40);return}
+ const dh=defaultH(),A0={...aw,h:aw.h||dh},A1={...as,h:as.h||dh},wind=P.windMs+250;
+ if(e<wind){tip=[];const k=ease(e/P.windMs);g.save();g.translate(size*.5,size*.94);g.translate(-k*7,0);g.rotate(-.15*k);g.scale(1+.03*k,1-.05*k);g.translate(-size*.5,-size*.94);
+  if(A0.layer!=='over')drawWeapon(A0,$('sil').checked);drawFrame('windup',S.dir);if(A0.layer==='over')drawWeapon(A0,$('sil').checked);g.restore();return}
+ const es=e-wind,an=AP.solve(P,A0,A1,es,1),b=AP.body(P,es,1);g.save();g.translate(size*.5,size*.94);g.translate(b.dx,0);g.rotate(b.rot);g.scale(b.sx,b.sy);g.translate(-size*.5,-size*.94);
+ if(es<P.strikeMs+60)for(let j=1;j<=P.smear;j++){const ee=es-j*15;if(ee>=0)drawWeapon(AP.solve(P,A0,A1,ee,1),false,.3/j)}
+ const d=def(),L=d?an.h*size*d.pivot[1]:0,r=an.a*Math.PI/180,m=g.getTransform();const tp=new DOMPoint(an.x*size+Math.sin(r)*L,an.y*size-Math.cos(r)*L).matrixTransform(m);tip.push({x:tp.x,y:tp.y,t:es});if(tip.length>14)tip.shift();
+ if(an.layer!=='over')drawWeapon(an,$('sil').checked);drawFrame('strike',S.dir);if(an.layer==='over')drawWeapon(an,$('sil').checked);g.restore();
+ if(es<P.strikeMs+P.hold){const pts=tip.filter(p=>es-p.t<(P.trail==='line'?120:170));if(pts.length>1){g.save();g.globalCompositeOperation='lighter';g.lineCap='round';for(let i=1;i<pts.length;i++){const k=i/(pts.length-1),w=(P.trail==='line'?.012:.05*k)*size,age=Math.max(0,1-(es-pts[i].t)/170);for(const [wm,al,col] of [[2.4,.16,'255,205,130'],[1,.55,'255,236,200'],[.38,.95,'255,255,248']]){g.strokeStyle=`rgba(${col},${al*age*(P.trail==='line'?1:k)})`;g.lineWidth=Math.max(1,w*wm);g.beginPath();g.moveTo(pts[i-1].x,pts[i-1].y);g.lineTo(pts[i].x,pts[i].y);g.stroke()}}g.restore()}}}
+function loop(ts){if(!$('play').checked)return;const P=AP.get(kind),cyc=P.windMs+250+P.strikeMs+P.hold+520;if(!t0)t0=ts;drawPlay((ts-t0)%cyc,P);raf=requestAnimationFrame(loop)}
+$('play').onchange=()=>{cancelAnimationFrame(raf);t0=0;tip=[];if($('play').checked)raf=requestAnimationFrame(loop);else draw()};
+/* characters without pictures are dropped */
+Promise.all(Object.keys(CHARS).map(c=>new Promise(r=>{const i=new Image();i.onload=()=>r(c);i.onerror=()=>r(null);i.src=frameSrc(c,'windup','SE')}))).then(l=>{const ok=l.filter(Boolean);for(const b of [...$('chars').children])if(!ok.includes(b.dataset.v))b.remove();if(!ok.includes(S.ch)&&ok[0])S.ch=ok[0];S.wk=CHARS[S.ch]||'sword';sync()});
+profUI();sync();addEventListener('storage',()=>sync());
+})();
+</script></body></html>

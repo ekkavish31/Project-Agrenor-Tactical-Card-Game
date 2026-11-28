@@ -19,7 +19,7 @@
     /* (v92.13: the way to the world map is now an icon in the town's top-right icon row — town-ux.js) */
     return;
   }
-  const V = '98.1185';
+  const V = '98.1193';
   const SLOW = ['mud', 'snow', 'sand', 'swamp', 'sand-coarse'], COVER = ['moss', 'clover', 'forest'], WATER = ['water', 'pond'];   /* v98.543 · new ground materials: swamp · coarse sand slow like mud · sand · forest floor covers like moss */
   const COL = { normal: null, slow: 'rgba(170,110,40,.38)', cover: 'rgba(60,170,80,.38)', blocked: 'rgba(210,60,60,.32)' };
   /* v98.139 · the ONE size multiplier of this battle map (the biome, js/map-scale.js) for hero, allies, villagers and monsters; sizes against each other = ⚖ Scale Lineup */
@@ -974,7 +974,7 @@
     await cinemaIf(heavy || last || r.hits.some(x => x.crit || x.down || x.dead || (x.hp ?? 1) <= 0), h, m, async () => {
       if (r.leap) { const from = { vu: h.vu, vv: h.vv }; h.pose = 'windup'; await wait(160); await leapAnim(h, r.leap.to); fx('diveTrail', m, from); shake(9, 260) }
       h.dir = dirTo(h, m); h.pose = 'windup'; if (cine) { cine.z += .18; cine.speed = 4 } if (heavy) await chargeAttack(h); else await wait(280);
-      h.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3)); lines(m, 220);
+      { const PH = profOf(h); h.pose = 'strike'; sfx(PH?.sfx || 'swing'); if (cine) cine.speed = 9; roll(dirSign(h, m) * (heavy ? 2.2 : 1.3) * (PH ? PH.roll / 1.4 : 1)); if (PH?.shake) shake(PH.shake, 140); lines(m, 220) }
       const dur = r.card === 'rockfall' ? (fx('rockfall', m), 700) : fx(r.fx, m, h, { scale: r.big, color: r.fx === 'arcane' ? '#b49ae8' : '#7cc5db' });
       await wait(Math.min(320, dur * .45));
       for (const [n, x] of r.hits.entries()) {
@@ -1053,7 +1053,7 @@
     const isHero = t === FB.hero(st), down = t.hp <= 0, guarded = s.notes.some(n => n.startsWith('ป้องกัน')), full = isHero || s.crit || down || a.boss; tally(a, t, s, down);
     await cinemaIf(s.crit || s.damage >= 20 || a.boss || (down && isHero), a, t, async () => {
       a.pose = 'windup'; if (cine) { cine.z += .12; cine.speed = 4 } if (isMon) await monsterCharge(a, Math.max(a.boss || s.damage >= 20 ? 900 : full ? 800 : 650, tw?.duration || 0)); else if (a.boss || s.damage >= 20) await chargeAttack(a, Math.max(560, Math.min(900, tw?.duration || 0))); else await wait(full ? 300 : 200);
-      a.pose = strikePose; sfx('swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * 1.4); lines(t, 200) } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
+      { const PA = profOf(a); a.pose = strikePose; sfx(PA?.sfx || 'swing'); if (cine) cine.speed = 9; if (full) { roll(dirSign(a, t) * (PA ? PA.roll : 1.4)); if (PA?.shake) shake(PA.shake, 140); lines(t, 200) } } await wait(isMon ? Math.min(600, ts?.impactMs ?? 160) : 110);
       if (s.evaded) { const o = { u: t.vu, v: t.vv }; t.vu += (t.vu - a.vu) * .35; t.vv += (t.vv - a.vv) * .35; fx('wind', t, a, {}); sfx('swing'); floatText(t, 'MISS', '#bfe8ff', false, true); await wait(420); t.vu = o.u; t.vv = o.v; a.pose = 'idle'; return }
       fx(guarded ? 'parry' : fxk, t, a, { color: isMon ? '#ffb36a' : '#9fd4ff' }); impact(t, guarded ? 'parry' : fxk, { big: s.crit || s.damage >= 12, crit: s.crit, kill: down && (isHero || !FB.monsters(st).some(u => u.hp > 0)), from: a });
       if (s.crit) banner('CRITICAL!', 'crit'); if (isHero && s.damage && CINE) screenFlash('255,30,20', s.crit || down ? .38 : .22, 320);
@@ -1086,7 +1086,7 @@
     } else {
       const t = r.target, last = !FB.monsters(st).some(u => u.hp > 0);
       await cinematic(a, t, async () => {
-        a.dir = dirTo(a, t); a.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await chargeAttack(a); a.pose = 'strike'; sfx('swing'); if (cine) cine.speed = 9; roll(dirSign(a, t) * 1.6); lines(t, 220);
+        a.dir = dirTo(a, t); a.pose = 'windup'; if (cine) { cine.z += .15; cine.speed = 4 } await chargeAttack(a); { const PA = profOf(a); a.pose = 'strike'; sfx(PA?.sfx || 'swing'); if (cine) cine.speed = 9; roll(dirSign(a, t) * 1.6 * (PA ? PA.roll / 1.4 : 1)); if (PA?.shake) shake(PA.shake, 140); } lines(t, 220);
         fx(r.fx, t, a, { scale: 1.2, color: '#9fd4ff' }); await wait(200);
         for (const [n, x] of r.hits.entries()) {
           const tu = x.target, down = tu.hp <= 0 && !r.hits.slice(n + 1).some(y => y.target === tu);
@@ -1731,6 +1731,8 @@
     // The pose already contains bent knees. Keep its feet fixed on the shadow.
     return { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, wpn: 0 };
   }
+  /* v98.1192 · ATTACK PROFILES (js/attack-profiles.js): slash / thrust / smash / jab by the weapon the fighter carries — timing, body lunge, weapon path, trail, camera, sound */
+  const profOf = u => { const AP = window.AttackProfiles; if (!AP || !u || u.side === 'monster') return null; const wk = u.key && ALLYW[u.key] ? ALLYW[u.key] : u.weapon; return wk ? AP.get(AP.kindOf(wk)) : null };
   function poseMotion(u, t) {
     const name = u.hp <= 0 ? 'down' : u.walking ? 'walk' : u.pose || 'idle';
     if (u._rdy && name === 'windup' && u.hp > 0) { if (u._lp !== name) { u._lp = name; u._pt = t } return readyMotion(u, t, !!u._edPose) }
@@ -1738,7 +1740,9 @@
     const e = t - (u._pt || t), fs = ['SE', 'NE'].includes(u.dir) ? 1 : -1, ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), m = { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, wpn: 0 };
     if (name === 'idle' && u.hp > 0 && !OLDPOSE) { const k = Math.sin(t * .0032 + (u.id?.length || 0) * 1.3) * .012; m.sy = 1 + k; m.sx = 1 - k * .5 }   /* v98.251 · a slow breath so a one-picture idle is not frozen */
     if (OLDPOSE || u._edPose) return m;   /* a multi-frame editor pose carries its own motion; a single picture still gets the lean / lunge */
-    if (name === 'windup') { const k = ease(e / 200); Object.assign(m, { dx: -fs * 7 * k, rot: -fs * .15 * k, sx: 1 + .03 * k, sy: 1 - .05 * k, wpn: -fs * 75 * k }) }
+    const PRF = !OLDPOSE ? profOf(u) : null;
+    if (name === 'windup') { const k = ease(e / (PRF?.windMs || 200)); Object.assign(m, { dx: -fs * 7 * k, rot: -fs * .15 * k, sx: 1 + .03 * k, sy: 1 - .05 * k, wpn: -fs * 75 * k }) }
+    else if (name === 'strike' && PRF) { const k = ease(e / PRF.strikeMs), d = 1 - ease((e - PRF.strikeMs - PRF.hold) / 320), b = window.AttackProfiles.body(PRF, e, fs); Object.assign(m, { dx: b.dx, dy: -2 * k * d, rot: b.rot, sx: b.sx, sy: b.sy, wpn: fs * (-75 + 170 * k) * d }) }
     else if (name === 'strike') { const k = ease(e / 90), d = 1 - ease((e - 220) / 320); Object.assign(m, { dx: fs * 18 * k * d, dy: -2 * k * d, rot: fs * .17 * k * d, sx: 1 - .03 * k * d, sy: 1 + .05 * k * d, wpn: fs * (-75 + 170 * k) * d }) }
     else if (name === 'hit') { const k = Math.exp(-e / 170); Object.assign(m, { dx: -fs * 9 * k, rot: -fs * .13 * k, sy: 1 - .04 * k }) }
     else if (name === 'guard') { const k = ease(e / 130); Object.assign(m, { dx: -fs * 3 * k, sx: 1 + .04 * k, sy: 1 - .08 * k, wpn: -fs * 40 * k }) }
@@ -1775,6 +1779,15 @@
     g.save();
     if (P.glow > 0) { const r = size * .22, gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(255,230,170,${.45 * P.glow})`); gr.addColorStop(1, 'rgba(255,200,120,0)'); g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.globalCompositeOperation = 'source-over' }
     g.translate(x, y); g.rotate(S.fs * (['NE', 'NW'].includes(u.dir) && P.a > 0 ? P.a * .4 : P.a) * Math.PI / 180); g.drawImage(i, -W.pivot[0] * w, -W.pivot[1] * h, w, h); g.restore();
+  }
+  /* v98.1192 · the trail follows the REAL path of the weapon tip (positions saved in device pixels while the weapon is drawn): slash = a wide fading crescent · thrust / jab = a thin straight streak with a bright point */
+  function tipTrail(g, u, P, t, size) {
+    const pts = (u._tip || []).filter(p => t - p.t < (P.trail === 'line' ? 120 : 170)); if (pts.length < 2) return; const sc = g.getTransform().a || 1;
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineJoin = 'round';
+    for (let i = 1; i < pts.length; i++) { const k = i / (pts.length - 1), age = 1 - (t - pts[i].t) / 170, w = (P.trail === 'line' ? .012 : .05 * k) * size * sc;
+      for (const [wm, al, col] of [[2.4, .16, '255,205,130'], [1, .55, '255,236,200'], [.38, .95, '255,255,248']]) { g.strokeStyle = `rgba(${col},${al * Math.max(0, age) * (P.trail === 'line' ? 1 : k)})`; g.lineWidth = Math.max(1, w * wm); g.beginPath(); g.moveTo(pts[i - 1].x, pts[i - 1].y); g.lineTo(pts[i].x, pts[i].y); g.stroke() } }
+    const l = pts[pts.length - 1]; if (P.trail === 'line') { const r = size * sc * .035, gr = g.createRadialGradient(l.x, l.y, 0, l.x, l.y, r); gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(1, 'rgba(255,230,170,0)'); g.fillStyle = gr; g.beginPath(); g.arc(l.x, l.y, r, 0, 7); g.fill() }
+    g.restore();
   }
   function actionTrail(g, u, t, wkey, cx, top, size, gy, cyN) {
     if (!wkey) return; const S = actState(u, t), { act, e, fs } = S; if (!['strike', 'guard'].includes(act)) return;
@@ -1878,6 +1891,7 @@
     const fa = _assetById.get(fr.assetId), src = (fa?.file || fr.src) + (fa?.artRevision ? '?r=' + fa.artRevision : ''); return im(src);
   }
   function drawAlly(g, u, t) {
+    let anchoredW = null;
     if (u.key === 'sib') {   /* v98.237 · the other hero is drawn by the lead's own routine (drawHero) on the sprite table of its look, so every picture the studio saved for it is used */
       const look = (() => { try { return window.HeroVariant?.get?.() === 'female' ? 'male' : 'female' } catch (e) { return 'female' } })(), tab = window.HeroVariant?.tableFor?.(look);
       if (tab) { SPR_TABLE = tab; try { drawHero(g, u, t) } finally { SPR_TABLE = null } return }
@@ -1896,14 +1910,27 @@
     shadow(g, p, UNIT * .24);
     if (!i) return; const size = UNIT * CharSize.DRAW.ally * MAPK * (window.CharScaleAdjust?.factor('battle', u.key) || 1) * (window.CharScaleAdjust?.poseFactor(u.key, u.walking && u.hp > 0 ? 'walk' : pose, null, u.dir) || 1), pm = poseMotion(u, t);
     g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.walking ? Math.abs(Math.sin(t * .02)) * 3 : 0) - (u.lift || 0)); g.rotate(pm.rot * .5); if (useFlip) g.scale(-1, 1); if (u.hp <= 0) g.globalAlpha *= .5;
+    /* v98.1186 · WEAPON ANCHORS (Editor › 🗡 จุดจับอาวุธ): a real attack picture with a hand anchor draws the class weapon IN the hand — under the body (the fingers close over the grip) or over it — instead of the floating weapon */
+    { const wkA = ALLYW[u.key], A0 = sprites(), WA = window.WeaponAnchors;
+      if (!OLDPOSE && WA && A0 && wkA && u.hp > 0 && !u._rdy && !u.walking && ['windup', 'strike', 'guard'].includes(pose) && FLOATPOSE.includes(actState(u, t).act)) {
+        const imgDir = useFlip ? (back ? 'NE' : 'SE') : u.dir, an = WA.get(u.key, pose, imgDir), Wd = an && weaponDef(A0, wkA, u), wi = Wd && im(Wd.src);
+        if (an && Wd && wi) {
+          const AP = window.AttackProfiles, PR = profOf(u), a0 = pose === 'strike' && AP && PR ? WA.get(u.key, 'windup', imgDir) : null, S0 = actState(u, t);
+          let ghosts = null, cur = an;
+          if (a0 && PR) { cur = AP.solve(PR, { ...a0, h: a0.h || Wd.scale || .63 }, { ...an, h: an.h || Wd.scale || .63 }, S0.e, S0.fs); if (S0.e < PR.strikeMs + 60) { ghosts = []; for (let j = 1; j <= PR.smear; j++) { const ee = S0.e - j * 15; if (ee >= 0) ghosts.push(AP.solve(PR, { ...a0, h: a0.h || Wd.scale || .63 }, { ...an, h: an.h || Wd.scale || .63 }, ee, S0.fs)) } } }
+          anchoredW = { an: cur, Wd, wi, ghosts, PR, pose } } } }
     const stowK = !OLDPOSE && u.hp > 0 && sprites() && ALLYW[u.key] && (u.walking || u._rdy || !FLOATPOSE.includes(actState(u, t).act)) ? ALLYW[u.key] : null, aAway = ['NE', 'NW'].includes(u.dir);   /* v98.1131 · the class weapon is stowed on the back unless the ally is really attacking */
     if (stowK && !aAway) stowWeapon(g, u, sprites(), stowK, -size / 2, -size * .94, size);
+    if (anchoredW?.ghosts) { g.save(); anchoredW.ghosts.forEach((ga, j) => { g.globalAlpha = .3 / (j + 1); window.WeaponAnchors.draw(g, anchoredW.wi, anchoredW.Wd, ga, size, -size / 2, -size * .94) }); g.restore() }   /* v98.1192 · smear: faint copies of the weapon a few ms behind */
+    if (anchoredW) { const A = anchoredW.an, L = (A.h || .6) * size * anchoredW.Wd.pivot[1], r = A.a * Math.PI / 180, tp = g.getTransform().transformPoint(new DOMPoint(-size / 2 + A.x * size + Math.sin(r) * L, -size * .94 + A.y * size - Math.cos(r) * L)); (u._tip ||= []).push({ x: tp.x, y: tp.y, t }); if (u._tip.length > 14) u._tip.shift() }
+    if (anchoredW && anchoredW.an.layer !== 'over') window.WeaponAnchors.draw(g, anchoredW.wi, anchoredW.Wd, anchoredW.an, size, -size / 2, -size * .94);
     g.drawImage(i, -size / 2, -size * .94, size, size);
     if ((u.flashUntil || 0) > t) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .85; g.drawImage(i, -size / 2, -size * .94, size, size); g.drawImage(i, -size / 2, -size * .94, size, size) }
+    if (anchoredW && anchoredW.an.layer === 'over') window.WeaponAnchors.draw(g, anchoredW.wi, anchoredW.Wd, anchoredW.an, size, -size / 2, -size * .94);
     if (stowK && aAway) stowWeapon(g, u, sprites(), stowK, -size / 2, -size * .94, size);
     g.restore();
     { const A = sprites(), wk = ALLYW[u.key];   /* v97.48: class weapon floating in front + swing trail */
-      if (!OLDPOSE && A && wk && u.hp > 0 && !u._rdy && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56); g.restore() } }
+      if (!OLDPOSE && A && wk && u.hp > 0 && !u._rdy && FLOATPOSE.includes(actState(u, t).act)) { g.save(); g.translate(p.x + pm.dx * .6, p.y + pm.dy - (u.lift || 0)); if (!anchoredW) { actionWeapon(g, u, t, wk, A, 0, -size * .94, size); actionTrail(g, u, t, wk, 0, -size * .94, size, 0, .56) } g.restore(); if (anchoredW?.PR && anchoredW.pose === 'strike') tipTrail(g, u, anchoredW.PR, t, size) } }
     if (u.hp > 0) bar(g, p, p.y - size * .8, u.shown / u.maxHp, '#7fc8a0');
   }
   function frozenMark(g, u, t) { if (!u.stun || u.hp <= 0) return; const p = project(u.vu, u.vv); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(140,210,255,.28)'; g.beginPath(); g.ellipse(p.x, p.y, UNIT * .38, UNIT * .16, 0, 0, 7); g.fill(); g.strokeStyle = 'rgba(200,240,255,.8)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + t * .0005, x = p.x + Math.cos(a) * UNIT * .3, y = p.y + Math.sin(a) * UNIT * .12; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y - 14 - (i % 3) * 5); g.stroke() } g.restore(); g.save(); g.font = '18px AgThai,system-ui'; g.textAlign = 'center'; g.fillText('❄', p.x, p.y - UNIT * 1.7); g.restore() }
@@ -2208,6 +2235,6 @@
     return o;
   }
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') padOn = false }, true);
-  window.TownBattle = { calm: () => !!st && !busy && !cine && st.turn === 'hero' && !anims.length && !effects.length && !texts.length, fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
+  window.TownBattle = { units: () => st?.units, calm: () => !!st && !busy && !cine && st.turn === 'hero' && !anims.length && !effects.length && !texts.length, fx: (k, a, b, o) => fx(k, a, b, o), shiftCam: (dx, dy) => { cam.x += dx; cam.y += dy }, pad: { menuOpen: () => !!(pauseEl || facing), cursor: () => padCur, step: padStep, confirm: padConfirm, target: padTarget, context: padContext, end: () => padReady() && endHeroTurn(), undo: () => !busy && undoWalk(), auto: () => setAuto(!auto), ready: padReady }, pre, active: () => ON, click, draw, state: () => st, reach: () => (busy ? null : reachMap), cells: () => cells, hero: () => st && FB.hero(st), monster: () => st && FB.monster(st), target: id => st && FB.setTarget(st, id),
     act: { undo: undoWalk, attackPlan: id => st && FB.autoAttack(st, id), skill: allySkillAct, order: (id, o) => { FB.setOrder(st, id, o); hudSync() }, move: heroMove, end: endHeroTurn, card: (group, i) => { const b = hand?.querySelector(`.fb-card[data-group="${group}"][data-i="${i}"]`); return b ? cardClick(b) : null }, crystal: crystalAct }, busy: () => busy };
 })();
