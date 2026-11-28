@@ -186,9 +186,12 @@
   const variants = k => { k = nameOf(k); return [['old', 'เดิม (ภาพวาดแปะ)'], ['new', 'ใหม่ (วาดด้วยโค้ด)'], ...Object.entries(EXTRA[k] || {}).map(([id, v]) => [id, v.label])] };
   const addVariant = (k, id, label, fn) => { k = nameOf(k); if (!id || id === 'old' || id === 'new' || typeof fn !== 'function') return false; (EXTRA[k] = EXTRA[k] || {})[id] = { label: label || id, fn }; return true };
   root.addEventListener?.('storage', e => { if (e.key === KEY || e.key === null) cache = null; });
+  /* a look with its own timeline: {life, hit} in ms — the effect plays for `life`, the fight waits only until `hit` (the contact) */
+  const OWN_TIMING = { fire: { fireball: () => root.FireballGL?.ready?.() && root.FireballGL.TIMING } };
+  const timingOf = kind => { const k = nameOf(kind), f = OWN_TIMING[k]?.[choiceOf(k)]; return f ? f() || null : null };
   const defaultChoice = kind => {
     const looks = EXTRA[nameOf(kind)];
-    return ['drawnImpact', 'drawnSequence', 'painted8', 'atlas', 'paintedLight'].find(id => looks?.[id]) || 'old';
+    return ['fireball', 'drawnImpact', 'drawnSequence', 'painted8', 'atlas', 'paintedLight'].find(id => looks?.[id]) || 'old';
   };
   const choiceOf = kind => {
     const k = nameOf(kind);
@@ -205,7 +208,7 @@
   const setChoice = (k, v) => { try { const c = JSON.parse(root.localStorage.getItem(KEY) || '{}') || {}; c[nameOf(k)] = (v === 'new' || (v && v !== 'old')) ? String(v) : 'old'; root.localStorage.setItem(KEY, JSON.stringify(c)); cache = null } catch (_) { } };
   const enabled = () => Object.keys(FX).some(uses);
   function draw(e, t, p, a, g, camera, variant) { const k = nameOf(e.kind), id = variant || choiceOf(k), f = (id !== 'old' && id !== 'new' && EXTRA[k]?.[id]?.fn) || FX[k]; if (!f) return false; g.save(); try { return !!f(g, e, clamp(t), p, a || p, camera.w) } catch (err) { return false } finally { g.restore() } }
-  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], resetChoices, kinds: Object.keys(FX), uses, setChoice, choiceOf, variants, addVariant, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
+  root.VfxKit = { KEY, draw, has: k => !!FX[nameOf(k)], resetChoices, timingOf, kinds: Object.keys(FX), uses, setChoice, choiceOf, variants, addVariant, enabled, setEnabled: v => { for (const k of Object.keys(FX)) setChoice(k, v ? 'new' : 'old') } };
 
   /* v98.621 · FIRE — hand-painted frame animation (two 4×4 sheets, 16 frames each: assets/fx/anim/fire-ball.webp = the flying fireball, fire-impact.webp = the burst that grows, burns and fades into smoke).
      Added as an extra look of 'fire' (id 'atlas'); the editor lists it next to 'old' and 'new', and the game plays it when it is the chosen one. Frames cross-fade, so it stays smooth at any frame rate. */
@@ -338,6 +341,13 @@
     }
     return true;
   }
+  /* v98.1201 · FIRE "fireball" — the WebGL reference spell (js/vfx-gl.js, Agrenor Fireball I rev. 7): charge at the caster → flight → impact with a lens, flash, ground fire and smoke. Falls back to the painted 'atlas' look when WebGL is missing, the shooter is too close, or reduced motion is on. */
+  function fireGL(g, e, t, p, a, cw) {
+    const reduced = e.reducedMotion || root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced && root.FireballGL && root.FireballGL.draw(g, e, t, p, a, cw)) return true;
+    return fireAtlas(g, e, t, p, a, cw);
+  }
+  if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'fireball', 'ไฟ · ลูกไฟ WebGL (Fireball I)', fireGL);
   if (root.VfxKit && root.VfxKit.addVariant) root.VfxKit.addVariant('fire', 'layered', 'ไฟ · หลายชั้น (ต้นแบบ)', fireLayered);
 
   /* Painted spell animation. Fixed 4×2 cells share a feet anchor; never trim frames

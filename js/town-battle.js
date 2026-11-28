@@ -102,7 +102,7 @@
   function loadCss(href) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=' + V; document.head.append(l) }
   async function boot() {
     loadCss('css/card-studio.css'); loadCss('css/battle-hud-art.css');
-    const want = { 'js/battle-hud-art.js': 'BattleHudArt', 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing', 'js/head-arrow.js': 'HeadArrow' };
+    const want = { 'js/battle-hud-art.js': 'BattleHudArt', 'js/set-pieces.js': 'SetPieces', 'js/elements.js': 'ElementWheel', 'js/tactics-decks.js': 'TacticsDecks', 'js/flat-battle.js': 'FlatBattle', 'js/monster-animation.js': 'MonsterArt', 'js/battle-vfx.js': 'BattleVFX', 'js/battle-polish.js': 'BattlePolish', 'js/card-design.js': 'CARD_DESIGN', 'js/adventure-data.js': 'ADVENTURE_DATA', 'js/card-studio.js': 'CardStudio', 'js/job-look.js': 'JobLook', 'js/party-talk.js': 'PartyTalk', 'js/code-monsters.js': 'CodeMonsters', 'js/status-fx.js': 'StatusFX', 'js/vfx-gl.js': 'VfxGL', 'js/vfx-kit.js': 'VfxKit', 'js/battle-portrait.js': 'BattlePortrait', 'js/dialogue-fx.js': 'DialogueFX', 'js/story-data.js': 'STORY_DATA', 'js/battle-talk.js': 'BattleTalk', 'js/portrait-scale.js': 'PortraitScale', 'js/portrait-facing.js': 'PortraitFacing', 'js/head-arrow.js': 'HeadArrow' };
     await Promise.all(Object.keys(want).filter(s => !window[want[s]]).map(loadScript));
     FB = window.FlatBattle; TD = window.TacticsDecks; ready = !!(FB && TD);
     window.MonsterArt?.preload?.([...new Set(GROUP.map(g => g.kind))], ['idle', 'walk', 'windup', 'strike', 'cast', 'hit', 'down', 'loot']);
@@ -1511,7 +1511,8 @@
   }
   const kdraw = (g, name, col, x, y, w, rot, alpha) => { const c = kimg(name, col); if (!c || alpha <= 0) return; g.save(); g.globalAlpha = Math.min(1, alpha); g.translate(x, y); g.rotate(rot); g.drawImage(c.cv, -w / 2, -w / 2, w, w); g.restore() };
   function fx(kind, to, from, o = {}) {
-    const dur = o.duration || (kind === 'heal' || kind === 'shield' ? 900 : 650);
+    const tm = !o.duration && from && from !== to && window.VfxKit?.timingOf?.(kind);   /* a look with its own timeline plays for tm.life; the fight waits only until the contact (tm.hit) */
+    const dur = o.duration || (tm ? tm.life : kind === 'heal' || kind === 'shield' ? 900 : 650), hitMs = tm ? tm.hit : dur;
     if (from && from !== to) { const act = duel.a; if (from === act) { duel.t = to; duel.tAt = now() } else if (to === act) { duel.t = from; duel.tAt = now() } }
     if (kind === 'heal' || kind === 'shield') { to.mood = kind === 'heal' ? 'heal' : 'guard'; to.moodUntil = now() + 1100 }
     effects.push({ kind, tier: o.tier, reducedMotion: o.reducedMotion, seed: (Math.random() * 1e6) | 0, scale: o.scale || 1, color: o.color, to: { x: to.vu, y: to.vv }, from: from && from !== to ? { x: from.vu, y: from.vv } : null, start: now(), duration: dur });
@@ -1519,10 +1520,10 @@
     /* v98.332 · free CC0 light / slash sprites (Kenney Particle Pack, assets/fx/kenney) on top of the old effects: a sweep for melee, a flare + star + ring for elements */
     if (to && !o.noK) { const base = effects[effects.length - 1], col = KFX_BURST[kind];
       const visual = window.VfxKit?.choiceOf(kind);
-      if (visual === 'atlas' || visual === 'painted8' || visual === 'drawnImpact' || visual === 'drawnSequence' || visual === 'paintedLight' || SPECIAL_ART[kind]) return dur;
+      if (visual === 'atlas' || visual === 'painted8' || visual === 'drawnImpact' || visual === 'drawnSequence' || visual === 'paintedLight' || visual === 'fireball' || SPECIAL_ART[kind]) return hitMs;
       if (KFX_MELEE.has(kind)) effects.push({ ...base, kind: 'kslash', color: '#fff0c0', duration: 380 });
       else if (col) effects.push({ ...base, kind: 'kburst', color: col, duration: 560 }) }
-    return dur;
+    return hitMs;
   }
   /* v94.03 · code-drawn effects for the height cards: rocks raining down, climb chevrons, the perch banner, landing dust, the dive streak */
   const HEIGHT_FX = {
