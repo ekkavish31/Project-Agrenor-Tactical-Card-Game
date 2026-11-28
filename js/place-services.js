@@ -104,7 +104,7 @@
       el.querySelectorAll('.slot').forEach(s => s.onclick = () => { E.S = L.save(); const k = s.dataset.k; if (k === 'sib') return; if (s.dataset.w === 'party') { const i = E.S.party.findIndex(m => m.key === k); E.S.bench.push(...E.S.party.splice(i, 1)) } else { if (E.S.party.length >= L.MAX_ACTIVE) { toast('ทีมเต็มแล้ว (' + L.MAX_ACTIVE + ' คน)'); return } const i = E.S.bench.findIndex(m => m.key === k); E.S.party.push(...E.S.bench.splice(i, 1)) } L.writeSave(E.S); el.remove(); E.modalOpen = false; E.resetRoom(); hudSync(); partyPanel() });
       el.querySelector('#inPClose').onclick = () => { el.remove(); E.modalOpen = false };
     }
-    /* v98.1197 · the CONVERSATION: talk window, topics, gifts, recruiting (hire · drinks · visits · battles · duel · offering · boss …) and the hold-to-act ring — moved unchanged from interior.js */
+    /* v98.1200 · the CONVERSATION: talk window, topics, gifts, recruiting (hire · drinks · visits · battles · duel · offering · boss …) and the hold-to-act ring — moved unchanged from interior.js */
     /* v97.30 · relationship tiers (Mind npc.aff −5…10) and gifts by what each person likes (p.likes) — once a day per person */
     const TIERS = [[-99, 'ไม่ไว้ใจ', '💢'], [-1, 'คนแปลกหน้า', '·'], [1, 'คนรู้จัก', '♡'], [3, 'คุ้นเคย', '♥'], [6, 'เพื่อน', '♥♥'], [9, 'เพื่อนรัก', '💛']];
     const tierOf = aff => TIERS.filter(t => aff >= t[0]).at(-1);
